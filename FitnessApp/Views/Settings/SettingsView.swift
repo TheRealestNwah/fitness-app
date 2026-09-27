@@ -149,6 +149,8 @@ struct SettingsView: View {
 
                 BudgetSection(profile: profile)
 
+                ExerciseSection()
+
                 Section {
                     if !HealthKitManager.isAvailable {
                         Text("Apple Health isn't available on this device.")

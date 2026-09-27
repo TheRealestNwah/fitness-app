@@ -152,6 +152,7 @@ struct DayDiaryView: View {
     @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
     @Query private var yesterdayEntries: [FoodLogEntry]
+    @Query private var exercise: [ExerciseEntry]
     @Query private var earlierThisWeek: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
@@ -168,6 +169,7 @@ struct DayDiaryView: View {
                          sort: \FoodLogEntry.date)
         _yesterdayEntries = Query(filter: #Predicate<FoodLogEntry> { $0.date >= yesterday && $0.date < start },
                                   sort: \FoodLogEntry.date)
+        _exercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
         let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
         _earlierThisWeek = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < start })
     }
@@ -183,7 +185,10 @@ struct DayDiaryView: View {
             base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: byDay,
                                                          floor: NutritionCalculator.calorieFloor(for: profile.sex))
         }
-        return base + HealthKitManager.shared.activeEnergyCredit
+        return base + ExerciseCatalog.combinedCredit(
+            health: HealthKitManager.shared.activeEnergyCredit,
+            exercise: ExerciseCatalog.earnBack(exerciseKcal: exercise.reduce(0) { $0 + $1.calories },
+                                               percent: ExerciseSettings.earnBackPercent))
     }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 

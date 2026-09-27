@@ -14,6 +14,7 @@ struct DashboardView: View {
     @Query private var recentFood: [FoodLogEntry]
     @Query private var recentWeights: [WeightEntry]
     @Query private var todaysPlan: [MealPlanEntry]
+    @Query private var todaysExercise: [ExerciseEntry]
     @Query(sort: \FastingSession.start, order: .reverse) private var fasts: [FastingSession]
 
     @State private var showAddWeight = false
@@ -35,6 +36,7 @@ struct DashboardView: View {
         _recentFood = Query(filter: #Predicate<FoodLogEntry> { $0.date >= sixtyDaysAgo })
         _recentWeights = Query(filter: #Predicate<WeightEntry> { $0.date >= sixtyDaysAgo })
         _todaysPlan = Query(filter: #Predicate<MealPlanEntry> { $0.day >= start && $0.day < end })
+        _todaysExercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
     }
 
     // MARK: Derived
@@ -56,7 +58,13 @@ struct DashboardView: View {
         return BudgetCalculator.weeklyAdjustedTarget(dailyTarget: dailyTarget, intakeByDay: intakeByDay,
                                                      floor: NutritionCalculator.calorieFloor(for: profile.sex))
     }
-    private var activeCredit: Int { HealthKitManager.shared.activeEnergyCredit }
+    /// Calories added back from activity: Health active energy or logged exercise, whichever is larger.
+    private var activeCredit: Int {
+        ExerciseCatalog.combinedCredit(
+            health: HealthKitManager.shared.activeEnergyCredit,
+            exercise: ExerciseCatalog.earnBack(exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
+                                               percent: ExerciseSettings.earnBackPercent))
+    }
     private var calorieTarget: Int { baseTarget + activeCredit }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
@@ -163,6 +171,7 @@ struct DashboardView: View {
             if !todaysPlan.isEmpty { planCard }
         case .vitals: vitalsCard
         case .tip: tipCard
+        case .exercise: ExerciseCard(weightKg: currentKg)
         case .fasting: FastingCard()
         }
     }
