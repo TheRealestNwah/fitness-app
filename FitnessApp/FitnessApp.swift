@@ -16,6 +16,7 @@ struct FitnessApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .appLockGate()
         }
         .modelContainer(container)
     }
