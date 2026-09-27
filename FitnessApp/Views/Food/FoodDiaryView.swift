@@ -24,6 +24,7 @@ struct DayDiaryView: View {
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
     @Query private var yesterdayEntries: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
@@ -75,8 +76,7 @@ struct DayDiaryView: View {
     }
 
     private func clear(_ meal: MealType) {
-        for e in entries(for: meal) { context.deleteDiaryEntry(e) }
-        try? context.save()
+        context.deleteDiaryEntries(entries(for: meal), undo: undoCenter)
     }
 
     var body: some View {
@@ -118,8 +118,7 @@ struct DayDiaryView: View {
                         }
                     }
                     .onDelete { offsets in
-                        for i in offsets { context.deleteDiaryEntry(items[i]) }
-                        try? context.save()
+                        context.deleteDiaryEntries(offsets.map { items[$0] }, undo: undoCenter)
                     }
                     Button {
                         addingTo = meal
@@ -227,6 +226,7 @@ struct DayDiaryView: View {
 
 struct EditLogEntrySheet: View {
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(\.dismiss) private var dismiss
     let entry: FoodLogEntry
 
@@ -252,8 +252,7 @@ struct EditLogEntrySheet: View {
                 }
                 Section {
                     Button("Delete entry", role: .destructive) {
-                        context.deleteDiaryEntry(entry)
-                        try? context.save()
+                        context.deleteDiaryEntries([entry], undo: undoCenter)
                         dismiss()
                     }
                 }

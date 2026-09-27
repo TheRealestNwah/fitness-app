@@ -43,6 +43,7 @@ struct MealPlanView: View {
 struct PlannerView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query(sort: \MealPlanEntry.day) private var allEntries: [MealPlanEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query private var recipes: [Recipe]
@@ -130,8 +131,7 @@ struct PlannerView: View {
                         PlanEntryRow(entry: entry, onLog: { log(entry) })
                     }
                     .onDelete { offsets in
-                        for i in offsets { context.delete(items[i]) }
-                        try? context.save()
+                        context.deletePlanEntries(offsets.map { items[$0] }, undo: undoCenter)
                     }
                     Button { pickingFor = meal } label: {
                         Label("Add to \(meal.label.lowercased())", systemImage: "plus.circle.fill")
@@ -204,8 +204,7 @@ struct PlannerView: View {
     }
 
     private func clearDay() {
-        for e in dayEntries { context.delete(e) }
-        try? context.save()
+        context.deletePlanEntries(dayEntries, undo: undoCenter)
     }
 
     private func copyToTomorrow() {
@@ -223,7 +222,7 @@ struct PlannerView: View {
     /// Picks, for each meal, the recipe whose calories best match that meal's share of the daily budget.
     /// Recently used recipes on nearby days are avoided so the week has some variety.
     private func autoFill(replace: Bool) {
-        if replace { clearDay() }
+        if replace { for e in dayEntries { context.delete(e) } }
         let window = allEntries.filter { abs($0.day.timeIntervalSince(selectedDay)) < 3 * 86_400 }
         let recentlyUsed = Set(window.compactMap(\.recipeID))
         for meal in MealType.allCases {

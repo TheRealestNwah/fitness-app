@@ -5,6 +5,7 @@ import Charts
 struct WeightView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query(sort: \WeightEntry.date, order: .reverse) private var entries: [WeightEntry]
 
     @State private var showAdd = false
@@ -229,14 +230,14 @@ struct WeightView: View {
     }
 
     private func delete(_ entry: WeightEntry) {
-        context.delete(entry)
-        try? context.save()
+        context.deleteWeightEntries([entry], undo: undoCenter)
     }
 }
 
 struct AddWeightSheet: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \WeightEntry.date, order: .reverse) private var entries: [WeightEntry]
 
@@ -285,8 +286,7 @@ struct AddWeightSheet: View {
                 if entry != nil {
                     Section {
                         Button("Delete weigh-in", role: .destructive) {
-                            if let entry { context.delete(entry) }
-                            try? context.save()
+                            if let entry { context.deleteWeightEntries([entry], undo: undoCenter) }
                             dismiss()
                         }
                     }
