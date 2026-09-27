@@ -29,6 +29,9 @@ struct MainTabView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: Tab = .today
+    /// Start of the current day. Today's queries are built from it, so it's refreshed at
+    /// midnight and whenever the app comes back to the foreground.
+    @State private var today = Date.now.startOfDay
 
     enum Tab: Hashable {
         case today, food, weight, vitals, plan
@@ -36,7 +39,8 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selection) {
-            DashboardView(selectTab: { selection = $0 })
+            DashboardView(day: today, selectTab: { selection = $0 })
+                .id(today)
                 .tabItem { Label("Today", systemImage: "sun.horizon.fill") }
                 .tag(Tab.today)
 
@@ -59,8 +63,20 @@ struct MainTabView: View {
         .onAppear { NotificationManager.sync(with: profile) }
         .task { await refreshHealth() }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { Task { await refreshHealth() } }
+            if phase == .active {
+                refreshToday()
+                Task { await refreshHealth() }
+            }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+            // Posted on a background thread.
+            Task { @MainActor in refreshToday() }
+        }
+    }
+
+    private func refreshToday() {
+        let start = Date.now.startOfDay
+        if start != today { today = start }
     }
 
     private func refreshHealth() async {

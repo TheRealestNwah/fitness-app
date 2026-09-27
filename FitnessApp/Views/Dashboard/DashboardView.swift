@@ -20,9 +20,9 @@ struct DashboardView: View {
     @State private var showAddVitals = false
     @State private var showSettings = false
 
-    init(selectTab: @escaping (MainTabView.Tab) -> Void) {
+    init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void) {
         self.selectTab = selectTab
-        let start = Calendar.current.startOfDay(for: .now)
+        let start = Calendar.current.startOfDay(for: day)
         let end = start.adding(days: 1)
         let sixtyDaysAgo = start.adding(days: -60)
         _todaysFood = Query(filter: #Predicate<FoodLogEntry> { $0.date >= start && $0.date < end },
