@@ -48,6 +48,32 @@ final class NutritionCalculatorTests: XCTestCase {
         XCTAssertEqual(n.protein + n.carbs, 2000 * (2.0 / 3.0) / 4, accuracy: 0.01)
     }
 
+    func testRebalancedMacrosAlwaysTotalOneHundred() {
+        for index in 0..<3 {
+            for value in stride(from: 10.0, through: 60.0, by: 5) {
+                let split = NutritionCalculator.rebalancedMacros([30, 40, 30], changing: index, to: value)
+                XCTAssertEqual(split.reduce(0, +), 100, "index \(index) value \(value)")
+                XCTAssertEqual(split[index], value)
+                for v in split {
+                    XCTAssertTrue(NutritionCalculator.macroPercentRange.contains(v), "\(split)")
+                    XCTAssertEqual(v.truncatingRemainder(dividingBy: 5), 0, "\(split)")
+                }
+            }
+        }
+    }
+
+    func testRebalancedMacrosKeepsOthersInProportion() {
+        // Protein 30 -> 40 leaves 60 for carbs and fat, split 40:30 -> ~34:26, snapped to 35/25.
+        XCTAssertEqual(NutritionCalculator.rebalancedMacros([30, 40, 30], changing: 0, to: 40), [40, 35, 25])
+        // Others would need to go below the minimum, so they are clamped.
+        XCTAssertEqual(NutritionCalculator.rebalancedMacros([30, 60, 10], changing: 0, to: 60), [60, 30, 10])
+    }
+
+    func testNormalizedMacrosFixesLegacySplits() {
+        XCTAssertEqual(NutritionCalculator.normalizedMacros([50, 50, 50]), [35, 35, 30])
+        XCTAssertEqual(NutritionCalculator.normalizedMacros([30, 40, 30]), [30, 40, 30])
+    }
+
     func testWaterGoalRoundsToQuarterLitre() {
         XCTAssertEqual(NutritionCalculator.waterGoalMl(weightKg: 80), 2750)
         XCTAssertEqual(NutritionCalculator.waterGoalMl(weightKg: 60), 2000)

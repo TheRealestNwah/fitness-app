@@ -60,6 +60,36 @@ enum NutritionCalculator {
                             fat: kcal * (fatPercent / total) / 9)
     }
 
+    static let macroPercentRange: ClosedRange<Double> = 10...60
+    static let macroPercentStep: Double = 5
+
+    /// Sets one macro percentage and shares the rest of 100% between the other two in
+    /// proportion to their current values, keeping every value on the slider's range and step.
+    /// `split` is [protein, carbs, fat].
+    static func rebalancedMacros(_ split: [Double], changing index: Int, to value: Double) -> [Double] {
+        let range = macroPercentRange, step = macroPercentStep
+        func snap(_ v: Double) -> Double { (v / step).rounded() * step }
+        let changed = min(max(snap(value), range.lowerBound), range.upperBound)
+        let others = split.indices.filter { $0 != index }
+        let remaining = 100 - changed
+        let weightA = max(split[others[0]], 0), weightB = max(split[others[1]], 0)
+        let shareA = weightA + weightB > 0 ? weightA / (weightA + weightB) : 0.5
+        let a = min(max(snap(remaining * shareA), max(range.lowerBound, remaining - range.upperBound)),
+                    min(range.upperBound, remaining - range.lowerBound))
+        var result = split
+        result[index] = changed
+        result[others[0]] = a
+        result[others[1]] = remaining - a
+        return result
+    }
+
+    /// Brings a stored split (possibly from before rebalancing existed) to 100% on the slider's step.
+    static func normalizedMacros(_ split: [Double]) -> [Double] {
+        let total = split.reduce(0, +)
+        guard total > 0 else { return [30, 40, 30] }
+        return rebalancedMacros(split, changing: 0, to: split[0] / total * 100)
+    }
+
     /// ~35 ml per kg of body weight, rounded to the nearest 250 ml.
     static func waterGoalMl(weightKg: Double) -> Double {
         let raw = weightKg * 35
