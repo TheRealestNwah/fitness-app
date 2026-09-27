@@ -125,6 +125,8 @@ struct DashboardView: View {
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
+            .modifier(TodayHaptics(foodCount: todaysFood.count, weighIns: weights.count,
+                                   waterMl: waterMl, waterGoalMl: profile.waterGoalMl, streak: streak))
         }
     }
 
@@ -525,4 +527,30 @@ extension MealType {
         case .snack: return 3
         }
     }
+}
+
+/// Haptics follow the data rather than the buttons, so they fire however an entry
+/// was added. The system's own haptics setting still applies.
+struct TodayHaptics: ViewModifier {
+    var foodCount: Int
+    var weighIns: Int
+    var waterMl: Double
+    var waterGoalMl: Double
+    var streak: Int
+
+    private var waterGoalReached: Bool { waterMl >= waterGoalMl }
+
+    func body(content: Content) -> some View {
+        // Named conditions with concrete types: inline closures here overwhelm the type checker.
+        content
+            .sensoryFeedback(SensoryFeedback.success, trigger: foodCount, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.success, trigger: weighIns, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.impact(weight: .light), trigger: waterMl, condition: Self.rose)
+            .sensoryFeedback(SensoryFeedback.success, trigger: waterGoalReached, condition: Self.becameTrue)
+            .sensoryFeedback(SensoryFeedback.levelChange, trigger: streak, condition: Self.grew)
+    }
+
+    private static func grew(_ old: Int, _ new: Int) -> Bool { new > old }
+    private static func rose(_ old: Double, _ new: Double) -> Bool { new > old }
+    private static func becameTrue(_ old: Bool, _ new: Bool) -> Bool { !old && new }
 }

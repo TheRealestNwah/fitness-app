@@ -114,6 +114,7 @@ struct WeightView: View {
             }
             .sheet(isPresented: $showAdd) { AddWeightSheet() }
             .sheet(item: $editing) { AddWeightSheet(entry: $0) }
+            .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
         }
     }
 

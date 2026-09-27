@@ -193,6 +193,7 @@ struct DayDiaryView: View {
         .sheet(item: $savingFavourite) { meal in
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
+        .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
     }
 
     private var summary: some View {
