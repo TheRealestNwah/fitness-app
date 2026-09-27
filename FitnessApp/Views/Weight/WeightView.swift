@@ -85,7 +85,9 @@ struct WeightView: View {
     }
 
     private var projected: Date? {
-        NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg)
+        BudgetCalculator.goalDate(
+            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
+            breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
     }
 
     private var yDomain: ClosedRange<Double> {
