@@ -152,7 +152,7 @@ struct BarcodeScanSheet: View {
         Section {
             VStack(alignment: .leading, spacing: 4) {
                 Text(name).font(.headline)
-                Text("Per \(serving) · \(Int(kcal.rounded())) kcal")
+                Text("Per \(serving) · \(Energy.string(kcal))")
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
                 MacroSummary(protein: protein, carbs: carbs, fat: fat)

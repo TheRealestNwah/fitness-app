@@ -311,7 +311,7 @@ struct LogFoodSheet: View {
                                     presets: food.servingPresets)
                 }
                 Section("This entry") {
-                    LabeledContent("Calories", value: "\(Int((food.calories * servings).rounded())) kcal")
+                    LabeledContent("Calories", value: "\(Energy.string((food.calories * servings)))")
                     LabeledContent("Protein", value: "\(Int((food.protein * servings).rounded())) g")
                     LabeledContent("Carbs", value: "\(Int((food.carbs * servings).rounded())) g")
                     LabeledContent("Fat", value: "\(Int((food.fat * servings).rounded())) g")
@@ -379,7 +379,7 @@ struct LogRecipeSheet: View {
                     ServingsControl(servings: $servings, description: "1 serving of recipe")
                 }
                 Section("This entry") {
-                    LabeledContent("Calories", value: "\(Int((recipe.caloriesPerServing * servings).rounded())) kcal")
+                    LabeledContent("Calories", value: "\(Energy.string((recipe.caloriesPerServing * servings)))")
                     MacroSummary(protein: recipe.proteinPerServing * servings,
                                  carbs: recipe.carbsPerServing * servings,
                                  fat: recipe.fatPerServing * servings)

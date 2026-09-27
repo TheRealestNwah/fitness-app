@@ -91,7 +91,7 @@ struct PlannerView: View {
             Section {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("\(Int(plannedCalories.rounded())) of \(target) kcal planned")
+                        Text("\(Energy.number(plannedCalories)) of \(Energy.string(target)) planned")
                             .font(.subheadline.weight(.medium))
                         MacroSummary(protein: dayEntries.reduce(0) { $0 + $1.totalProtein },
                                      carbs: dayEntries.reduce(0) { $0 + $1.totalCarbs },
@@ -141,7 +141,7 @@ struct PlannerView: View {
                     HStack {
                         Label(meal.label, systemImage: meal.systemImage)
                         Spacer()
-                        Text("target ~\(Int(Double(target) * meal.budgetShare)) kcal")
+                        Text("target ~\(Energy.string(Double(target) * meal.budgetShare))")
                     }
                 }
             }
@@ -269,7 +269,7 @@ struct PlanEntryRow: View {
                     Text(entry.title)
                 }
                 HStack(spacing: 8) {
-                    Text("\(Int(entry.totalCalories.rounded())) kcal")
+                    Text("\(Energy.string(entry.totalCalories))")
                     if entry.servings != 1 {
                         Text("× \(entry.servings.cleanString)")
                     }

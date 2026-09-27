@@ -304,7 +304,7 @@ struct DayDiaryView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text("Copy yesterday's \(meal.label.lowercased())")
                                         .font(.subheadline.weight(.medium))
-                                    Text("\(fromYesterday.count) item\(fromYesterday.count == 1 ? "" : "s") · \(Int(kcal.rounded())) kcal")
+                                    Text("\(fromYesterday.count) item\(fromYesterday.count == 1 ? "" : "s") · \(Energy.string(kcal))")
                                         .font(.caption)
                                         .foregroundStyle(Color.secondary)
                                 }
@@ -319,7 +319,7 @@ struct DayDiaryView: View {
                         Spacer()
                         let kcal = items.reduce(0) { $0 + $1.calories }
                         if kcal > 0 {
-                            Text("\(Int(kcal.rounded())) kcal")
+                            Text("\(Energy.string(kcal))")
                         }
                         Menu {
                             Button {
@@ -377,10 +377,10 @@ struct DayDiaryView: View {
                 ZStack {
                     ProgressRing(progress: target > 0 ? consumed / Double(target) : 0, lineWidth: 10)
                     VStack(spacing: 0) {
-                        Text("\(Int(consumed.rounded()))")
+                        Text(Energy.number(consumed))
                             .font(.headline.monospacedDigit())
                             .minimumScaleFactor(0.5)
-                        Text("of \(target)")
+                        Text("of \(Energy.string(target))")
                             .font(.caption2)
                             .foregroundStyle(Color.secondary)
                             .minimumScaleFactor(0.5)
@@ -403,7 +403,7 @@ struct DayDiaryView: View {
                         sodium: entries.reduce(0) { $0 + $1.sodium },
                         profile: profile)
             let remaining = Double(target) - consumed
-            Text(remaining >= 0 ? "\(Int(remaining.rounded())) kcal remaining" : "\(Int((-remaining).rounded())) kcal over budget")
+            Text(remaining >= 0 ? "\(Energy.string(remaining)) remaining" : "\(Energy.string((-remaining))) over budget")
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(remaining >= 0 ? Color.primary : Color.orange)
         }
@@ -434,7 +434,7 @@ struct EditLogEntrySheet: View {
                         ForEach(MealType.allCases) { Text($0.label).tag($0) }
                     }
                     ServingsControl(servings: $servings, description: entry.servingDescription)
-                    LabeledContent("Calories", value: "\(Int((perServing.kcal * servings).rounded())) kcal")
+                    LabeledContent("Calories", value: "\(Energy.string((perServing.kcal * servings)))")
                     MacroSummary(protein: perServing.p * servings, carbs: perServing.c * servings, fat: perServing.f * servings)
                 }
                 Section {
@@ -578,7 +578,7 @@ struct SaveFavouriteMealSheet: View {
                 } footer: {
                     Text("Favourite meals appear at the top of food search and log every line with one tap.")
                 }
-                Section("\(entries.count) item\(entries.count == 1 ? "" : "s") · \(Int(totalCalories.rounded())) kcal") {
+                Section("\(entries.count) item\(entries.count == 1 ? "" : "s") · \(Energy.string(totalCalories))") {
                     ForEach(entries) { e in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
