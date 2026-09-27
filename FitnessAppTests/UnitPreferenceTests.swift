@@ -1,7 +1,7 @@
 import XCTest
 @testable import FitnessApp
 
-final class UnitsTests: XCTestCase {
+final class UnitPreferenceTests: XCTestCase {
     func testWeightFollowsTheUnitSystemByDefault() {
         XCTAssertEqual(Units(system: .metric).weightUnit, "kg")
         XCTAssertEqual(Units(system: .imperial).weightUnit, "lb")
