@@ -89,6 +89,7 @@ extension WeightEntry {
         let copy = WeightEntry(date: date, weightKg: weightKg, note: note)
         copy.uuid = uuid
         copy.sourceID = sourceID
+        copy.photo = photo
         return copy
     }
 }

@@ -9,6 +9,8 @@ final class WeightEntry {
     var note: String = ""
     /// HealthKit sample id when the entry came from, or was written to, Apple Health.
     var sourceID: String?
+    /// Optional progress photo, stored outside the database file.
+    @Attribute(.externalStorage) var photo: Data?
 
     init(date: Date, weightKg: Double, note: String = "") {
         self.uuid = UUID()
