@@ -121,6 +121,7 @@ struct MainTabView: View {
         .onAppear { NotificationManager.sync(with: profile) }
         .task { await refreshHealth() }
         .onChange(of: scenePhase) { _, phase in
+            if phase == .background { BackgroundRefresh.schedule() }
             if phase == .active {
                 refreshToday()
                 if let context = profile.modelContext {

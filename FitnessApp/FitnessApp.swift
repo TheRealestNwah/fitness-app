@@ -19,6 +19,9 @@ struct FitnessApp: App {
                 .appLockGate()
         }
         .modelContainer(container)
+        .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
+            await BackgroundRefresh.run()
+        }
     }
 }
 
