@@ -8,6 +8,7 @@ struct RecipeLibraryView: View {
     @State private var search = ""
     @State private var filter: MealType?
     @State private var showEditor = false
+    @State private var showImport = false
 
     private var filtered: [Recipe] {
         let q = search.trimmingCharacters(in: .whitespaces).lowercased()
@@ -54,8 +55,11 @@ struct RecipeLibraryView: View {
                 HStack {
                     Text("\(filtered.count) recipes")
                     Spacer()
-                    Button { showEditor = true } label: {
-                        Label("New recipe", systemImage: "plus")
+                    Menu {
+                        Button { showEditor = true } label: { Label("New recipe", systemImage: "square.and.pencil") }
+                        Button { showImport = true } label: { Label("Import from a web page", systemImage: "link") }
+                    } label: {
+                        Label("Add recipe", systemImage: "plus")
                     }
                     .font(.caption)
                 }
@@ -64,6 +68,7 @@ struct RecipeLibraryView: View {
         .listStyle(.insetGrouped)
         .searchable(text: $search, prompt: "Search recipes or tags")
         .sheet(isPresented: $showEditor) { RecipeEditorView() }
+        .sheet(isPresented: $showImport) { ImportRecipeSheet() }
     }
 }
 
@@ -122,6 +127,10 @@ struct RecipeDetailView: View {
     @State private var showPlan = false
     @State private var showLog = false
     @State private var showEditor = false
+    @State private var scaledServings = 0
+
+    private var servingsShown: Int { scaledServings > 0 ? scaledServings : recipe.servings }
+    private var factor: Double { Double(servingsShown) / Double(max(recipe.servings, 1)) }
 
     var body: some View {
         ScrollView {
@@ -166,15 +175,30 @@ struct RecipeDetailView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Ingredients").font(.headline)
+                    HStack {
+                        Text("Ingredients").font(.headline)
+                        Spacer()
+                        Stepper(value: Binding(get: { servingsShown }, set: { scaledServings = $0 }), in: 1...40) {
+                            Text("for \(servingsShown)")
+                                .font(.subheadline.monospacedDigit())
+                                .foregroundStyle(servingsShown == recipe.servings ? Color.secondary : Color.accentColor)
+                        }
+                        .fixedSize()
+                        .accessibilityLabel("Servings to cook")
+                    }
                     ForEach(recipe.ingredients) { ing in
                         HStack(alignment: .top) {
                             Text("•")
                             Text(ing.name)
                             Spacer()
-                            Text(ing.amount).foregroundStyle(Color.secondary)
+                            Text(RecipeScaler.scale(ing.amount, by: factor)).foregroundStyle(Color.secondary)
                         }
                         .font(.subheadline)
+                    }
+                    if servingsShown != recipe.servings {
+                        Text("Scaled from \(recipe.servings) serving\(recipe.servings == 1 ? "" : "s"). Nutrition per serving is unchanged.")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -265,6 +289,8 @@ struct AddToPlanSheet: View {
 
 struct RecipeEditorView: View {
     var recipe: Recipe?
+    /// Pre-fills a new recipe from a web page.
+    var imported: RecipeImporter.Imported? = nil
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -335,7 +361,13 @@ struct RecipeEditorView: View {
                 IngredientEditor { ingredients.append($0) }
             }
             .onAppear {
-                guard !loaded, let recipe else { return }
+                guard !loaded else { return }
+                if recipe == nil, let imported {
+                    loaded = true
+                    load(imported)
+                    return
+                }
+                guard let recipe else { return }
                 loaded = true
                 name = recipe.name
                 mealType = recipe.mealType
@@ -345,6 +377,21 @@ struct RecipeEditorView: View {
                 instructions = recipe.instructions
                 tagsText = recipe.tags.joined(separator: ", ")
             }
+        }
+    }
+
+    private func load(_ page: RecipeImporter.Imported) {
+        name = page.name
+        servings = min(max(page.servings, 1), 20)
+        prepMinutes = min(page.prepMinutes, 240)
+        instructions = page.instructions
+        // Lines arrive without nutrition. If the page lists nutrition, keep it as one line.
+        ingredients = page.ingredients.map { Ingredient(name: $0, amount: "", calories: 0, protein: 0, carbs: 0, fat: 0) }
+        if let kcal = page.calories {
+            let n = Double(servings)
+            ingredients.append(Ingredient(name: "Nutrition from the recipe page", amount: "\(servings) servings",
+                                          calories: kcal * n, protein: (page.protein ?? 0) * n,
+                                          carbs: (page.carbs ?? 0) * n, fat: (page.fat ?? 0) * n))
         }
     }
 
@@ -381,6 +428,8 @@ struct IngredientEditor: View {
     @State private var carbs: Double?
     @State private var fat: Double?
     @State private var search = ""
+    @State private var picked: FoodItem?
+    @State private var quantity: Double = 1
 
     private var suggestions: [FoodItem] {
         let q = search.trimmingCharacters(in: .whitespaces).lowercased()
@@ -396,11 +445,9 @@ struct IngredientEditor: View {
                     ForEach(suggestions) { food in
                         Button {
                             name = food.name
-                            amount = food.servingDescription
-                            calories = food.calories
-                            protein = food.protein
-                            carbs = food.carbs
-                            fat = food.fat
+                            picked = food
+                            quantity = 1
+                            apply(food)
                             search = ""
                         } label: {
                             HStack {
@@ -410,6 +457,14 @@ struct IngredientEditor: View {
                             }
                         }
                     }
+                }
+                if let picked {
+                    Section("How much \(picked.name)") {
+                        ServingsControl(servings: $quantity, description: picked.servingDescription,
+                                        metric: ServingUnits.metricPerServing(picked.servingDescription),
+                                        presets: picked.servingPresets)
+                    }
+                    .onChange(of: quantity) { _, _ in apply(picked) }
                 }
                 Section("Ingredient") {
                     TextField("Name", text: $name)
@@ -434,6 +489,78 @@ struct IngredientEditor: View {
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
+            }
+        }
+    }
+}
+
+extension IngredientEditor {
+    /// Nutrition and amount for `quantity` servings of a food from the list.
+    fileprivate func apply(_ food: FoodItem) {
+        calories = food.calories * quantity
+        protein = food.protein * quantity
+        carbs = food.carbs * quantity
+        fat = food.fat * quantity
+        if let metric = ServingUnits.metricPerServing(food.servingDescription) {
+            amount = "\(RecipeScaler.formatMetric(metric.value * quantity)) \(metric.unit)"
+        } else {
+            amount = quantity == 1 ? food.servingDescription
+                : "\(RecipeScaler.formatQuantity(quantity)) × \(food.servingDescription)"
+        }
+    }
+}
+
+/// Paste a recipe page's address; the recipe opens in the editor to check before saving.
+struct ImportRecipeSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var address = ""
+    @State private var loading = false
+    @State private var error: String?
+    @State private var imported: RecipeImporter.Imported?
+
+    var body: some View {
+        if let imported {
+            RecipeEditorView(imported: imported)
+        } else {
+            NavigationStack {
+                Form {
+                    Section {
+                        TextField("https://", text: $address)
+                            .keyboardType(.URL)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    } footer: {
+                        Text("Works with most recipe sites. Ingredients come in without nutrition unless the page lists it; edit them in the recipe to add it from your food list.")
+                    }
+                    if let error {
+                        Section { Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.orange) }
+                    }
+                    if loading {
+                        Section { ProgressView("Reading the page") }
+                    }
+                }
+                .navigationTitle("Import recipe")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Import") { load() }
+                            .disabled(address.trimmingCharacters(in: .whitespaces).isEmpty || loading)
+                    }
+                }
+            }
+        }
+    }
+
+    private func load() {
+        loading = true
+        error = nil
+        Task { @MainActor in
+            defer { loading = false }
+            do {
+                imported = try await RecipeImporter.fetch(address)
+            } catch {
+                self.error = error.localizedDescription
             }
         }
     }
