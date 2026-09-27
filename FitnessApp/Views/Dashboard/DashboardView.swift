@@ -14,6 +14,7 @@ struct DashboardView: View {
     @Query private var recentFood: [FoodLogEntry]
     @Query private var recentWeights: [WeightEntry]
     @Query private var todaysPlan: [MealPlanEntry]
+    @Query(sort: \FastingSession.start, order: .reverse) private var fasts: [FastingSession]
 
     @State private var showAddWeight = false
     @State private var showAddFood = false
@@ -71,7 +72,8 @@ struct DashboardView: View {
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
             budget: calorieTarget,
-            plannedWeeklyLossKg: profile.weeklyLossKg)
+            plannedWeeklyLossKg: profile.weeklyLossKg,
+            fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
     }
 
     private var weightDays: [WeeklyReviewCalculator.WeightDay] {
@@ -146,6 +148,7 @@ struct DashboardView: View {
             if !todaysPlan.isEmpty { planCard }
         case .vitals: vitalsCard
         case .tip: tipCard
+        case .fasting: FastingCard()
         }
     }
 
@@ -429,6 +432,11 @@ struct DashboardView: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+            if review.completedFasts > 0 {
+                Label("\(review.completedFasts) fast\(review.completedFasts == 1 ? "" : "s") completed", systemImage: "timer")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
             }
         }
         .card()
