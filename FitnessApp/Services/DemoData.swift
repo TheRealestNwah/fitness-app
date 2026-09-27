@@ -87,10 +87,22 @@ enum DemoData {
             context.insert(FoodLogEntry(date: day(0, hour: hour), mealType: meal, foodName: name, servings: servings,
                                         servingDescription: serving, calories: kcal, protein: p, carbs: c, fat: f))
         }
-        // Recent days so the streak counter has something to show.
+        // Previous days with realistic full logs so the streak and weekly review have something to show.
+        let dailyPattern: [(MealType, Int, String, Double, Double, Double, Double)] = [
+            (.breakfast, 8, "Veggie egg scramble on toast", 315, 19.5, 24, 15.9),
+            (.lunch, 13, "Turkey and avocado wrap", 344, 21, 38, 13),
+            (.snack, 16, "Apple with peanut butter", 189, 4.5, 28.5, 8.3),
+            (.dinner, 19, "Chicken stir-fry with rice", 580, 56, 60, 12),
+        ]
         for offset in -6...(-1) {
-            context.insert(FoodLogEntry(date: day(offset, hour: 13), mealType: .lunch, foodName: "Turkey and avocado wrap",
-                                        servings: 1, servingDescription: "serving", calories: 344, protein: 21, carbs: 38, fat: 13))
+            for (meal, hour, name, kcal, p, c, f) in dailyPattern {
+                // Skip one dinner and one snack across the week so the days vary.
+                if offset == -3, meal == .snack { continue }
+                let extra = (offset == -5 && meal == .dinner) ? 210.0 : 0   // a dessert one night
+                context.insert(FoodLogEntry(date: day(offset, hour: hour), mealType: meal, foodName: name,
+                                            servings: 1, servingDescription: "serving",
+                                            calories: kcal + extra, protein: p, carbs: c + extra / 4, fat: f))
+            }
         }
 
         for i in 0..<4 {

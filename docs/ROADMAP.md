@@ -11,8 +11,7 @@ The items below are ordered by how much they help someone in the first weeks of 
 2. **Barcode scanning + a bigger food database.**
    Camera scan (VisionKit) looking up Open Food Facts, with results cached as custom foods. Done when: scanning a packaged food logs it in two taps, and an offline fallback lets the user type in the label.
 3. ~~**Copy yesterday / repeat meal / favourite meals.**~~ Shipped: per-meal "copy from yesterday", save-as-favourite from the meal menu, favourite meals at the top of food search with one-tap logging.
-4. **Weekly review card.**
-   Every Monday (or on demand): average intake vs. budget, weight change vs. the trend, logging consistency, and one concrete suggestion. Done when: the card appears on Today, and its numbers match the unit-tested calculator.
+4. ~~**Weekly review card.**~~ Shipped: "Last 7 days" card on Today with average intake vs. budget, weight change vs. plan, days logged, and a rule-based headline and suggestion (`WeeklyReviewCalculator`, unit-tested).
 5. **Adaptive calorie target.**
    Re-estimate maintenance from actual intake and weight change over the last 3–4 weeks and propose a target adjustment. Done when: Settings shows "measured maintenance" next to the formula estimate and offers a one-tap apply.
 

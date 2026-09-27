@@ -7,6 +7,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 **Today dashboard**
 - Calorie ring with calories left/over, protein / carbs / fat bars against personalised targets
 - Weight progress bar, projected goal date, days since last weigh-in
+- Weekly review: average intake vs. budget, weight change vs. plan, days logged, and one concrete suggestion
 - Water tracker with one-tap glasses, daily logging streak, rotating tips
 - Quick actions: log food, weigh in, log vitals, add water
 

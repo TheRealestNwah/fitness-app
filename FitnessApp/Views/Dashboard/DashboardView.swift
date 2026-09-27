@@ -61,6 +61,14 @@ struct DashboardView: View {
         return profile.name.isEmpty ? base : "\(base), \(profile.name)"
     }
 
+    private var weeklyReview: WeeklyReview {
+        WeeklyReviewCalculator.review(
+            foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+            weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
+            budget: calorieTarget,
+            plannedWeeklyLossKg: profile.weeklyLossKg)
+    }
+
     private var tip: String {
         let day = Calendar.current.ordinality(of: .day, in: .year, for: .now) ?? 0
         return SeedData.tips[day % SeedData.tips.count]
@@ -74,6 +82,7 @@ struct DashboardView: View {
                     calorieCard
                     quickActions
                     weightCard
+                    if weeklyReview.hasContent { weeklyReviewCard }
                     waterCard
                     if !todaysPlan.isEmpty { planCard }
                     vitalsCard
@@ -216,6 +225,48 @@ struct DashboardView: View {
             }
         }
         .buttonStyle(.plain)
+        .card()
+    }
+
+    private var weeklyReviewCard: some View {
+        let review = weeklyReview
+        let intakeValue = review.averageIntake.map { "\(Int($0.rounded())) kcal" } ?? "—"
+        let intakeSubtitle: String = {
+            guard let over = review.overBudget else { return "budget \(review.budget)" }
+            if abs(over) < 25 { return "on budget" }
+            return over > 0 ? "\(Int(over.rounded())) over budget" : "\(Int((-over).rounded())) under budget"
+        }()
+        let weightValue = review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—"
+        let weightSubtitle = review.weightChangeKg == nil
+            ? "needs two weeks of weigh-ins"
+            : "plan \(units.weightString(kg: -review.plannedWeeklyLossKg, signed: true))"
+        let intakeTint: Color = (review.overBudget ?? 0) > Double(review.budget) * 0.10 ? .orange : .green
+        let weightTint: Color = (review.weightChangeKg ?? 0) <= 0 ? .green : .orange
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Last 7 days", systemImage: "calendar.badge.clock")
+                    .font(.headline)
+                Spacer()
+                Text("\(review.daysLogged)/7 days logged")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            }
+            HStack(spacing: 12) {
+                StatTile(title: "Average intake", value: intakeValue, subtitle: intakeSubtitle,
+                         systemImage: "fork.knife", tint: intakeTint)
+                StatTile(title: "Weight change", value: weightValue, subtitle: weightSubtitle,
+                         systemImage: "scalemass", tint: weightTint)
+            }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(review.headline)
+                    .font(.subheadline.weight(.semibold))
+                Text(review.suggestion)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
         .card()
     }
 

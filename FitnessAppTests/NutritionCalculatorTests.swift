@@ -123,6 +123,51 @@ final class UnitsTests: XCTestCase {
     }
 }
 
+final class WeeklyReviewTests: XCTestCase {
+    private let cal = Calendar.current
+    private var today: Date { cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000)) }
+    private func day(_ offset: Int, hour: Int = 12) -> Date {
+        cal.date(byAdding: .hour, value: hour, to: cal.date(byAdding: .day, value: offset, to: today)!)!
+    }
+
+    func testCountsOnlyCompleteDaysInWindow() {
+        var logs: [WeeklyReviewCalculator.FoodDay] = []
+        for offset in -7...(-1) { logs.append(.init(date: day(offset), calories: 1500)) }
+        logs.append(.init(date: day(0), calories: 900))     // today: excluded
+        logs.append(.init(date: day(-8), calories: 3000))   // before window: excluded
+        let r = WeeklyReviewCalculator.review(foodLogs: logs, weights: [], budget: 1600, plannedWeeklyLossKg: 0.5, today: today, calendar: cal)
+        XCTAssertEqual(r.daysLogged, 7)
+        XCTAssertEqual(r.averageIntake!, 1500, accuracy: 0.001)
+        XCTAssertNil(r.weightChangeKg)
+        XCTAssertEqual(r.headline, "Intake on budget")
+    }
+
+    func testWeightChangeComparesWindowMeans() {
+        var weights: [WeeklyReviewCalculator.WeightDay] = []
+        for offset in -14...(-8) { weights.append(.init(date: day(offset, hour: 7), weightKg: 82.0)) }
+        for offset in -7...(-1) { weights.append(.init(date: day(offset, hour: 7), weightKg: 81.4)) }
+        let logs = (-7...(-1)).map { WeeklyReviewCalculator.FoodDay(date: day($0), calories: 1550) }
+        let r = WeeklyReviewCalculator.review(foodLogs: logs, weights: weights, budget: 1555, plannedWeeklyLossKg: 0.5, today: today, calendar: cal)
+        XCTAssertEqual(r.weightChangeKg!, -0.6, accuracy: 0.0001)
+        XCTAssertTrue(r.headline.hasPrefix("On track"), r.headline)
+    }
+
+    func testAdviceRulesInPriorityOrder() {
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 0, averageIntake: nil, budget: 1600, weightChange: nil, planned: 0.5).headline,
+                       "Nothing logged in the last 7 days")
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 2, averageIntake: 1500, budget: 1600, weightChange: -0.5, planned: 0.5).headline,
+                       "Only 2 of 7 days logged")
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1900, budget: 1600, weightChange: -0.5, planned: 0.5).headline,
+                       "Averaging 300 kcal over budget")
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 700, budget: 1600, weightChange: -0.5, planned: 0.5).headline,
+                       "Logged intake looks incomplete")
+        XCTAssertTrue(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: -1.2, planned: 0.5).headline.hasPrefix("Losing faster"))
+        XCTAssertTrue(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: 0.6, planned: 0.5).headline.hasPrefix("Weight up"))
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: -0.1, planned: 0.5).headline,
+                       "Intake on budget, scale moving slowly")
+    }
+}
+
 final class SavedMealTests: XCTestCase {
     func testTotalsSumItems() {
         let meal = SavedMeal(name: "Test", mealType: .lunch, items: [
