@@ -1,0 +1,121 @@
+import Foundation
+
+/// Every 5% of starting weight lost, measured on the 7-day trend so a single light morning doesn't count.
+struct Milestone: Equatable {
+    var percent: Int
+    var thresholdKg: Double
+    /// First day the trend reached the threshold.
+    var reachedOn: Date
+}
+
+/// The trend has stalled while there is still weight to lose.
+struct Plateau: Equatable {
+    /// How long the trend has stayed within `ProgressCalculator.plateauToleranceKg`.
+    var days: Int
+    var trendKg: Double
+    var suggestions: [String]
+}
+
+enum ProgressCalculator {
+    static let milestoneStepPercent = 5
+    static let trendWindowDays = 7
+    static let plateauMinimumDays = 14
+    /// Movement smaller than this over the plateau window counts as "hasn't moved".
+    static let plateauToleranceKg = 0.3
+    static let plateauMinimumWeighIns = 4
+
+    typealias WeightDay = WeeklyReviewCalculator.WeightDay
+
+    /// Mean of the weigh-ins in the `trendWindowDays` ending on `day` (inclusive), or nil if there are none.
+    static func trend(on day: Date, weights: [WeightDay], calendar: Calendar = .current) -> Double? {
+        let end = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: day)) ?? day
+        let start = calendar.date(byAdding: .day, value: -trendWindowDays, to: end) ?? end
+        let window = weights.filter { $0.date >= start && $0.date < end }.map(\.weightKg)
+        return window.isEmpty ? nil : window.reduce(0, +) / Double(window.count)
+    }
+
+    /// Every milestone reached so far, oldest first.
+    static func milestones(startKg: Double, weights: [WeightDay], calendar: Calendar = .current) -> [Milestone] {
+        guard startKg > 0 else { return [] }
+        let days = Set(weights.map { calendar.startOfDay(for: $0.date) }).sorted()
+        var reached: [Milestone] = []
+        var next = milestoneStepPercent
+        for day in days {
+            guard let trend = trend(on: day, weights: weights, calendar: calendar) else { continue }
+            while trend <= startKg * (1 - Double(next) / 100) {
+                reached.append(Milestone(percent: next, thresholdKg: startKg * (1 - Double(next) / 100), reachedOn: day))
+                next += milestoneStepPercent
+            }
+        }
+        return reached
+    }
+
+    /// The next milestone and how far away it is on the current trend.
+    static func nextMilestone(startKg: Double, weights: [WeightDay], today: Date = .now,
+                              calendar: Calendar = .current) -> (percent: Int, remainingKg: Double)? {
+        guard startKg > 0,
+              let current = trend(on: today, weights: weights, calendar: calendar)
+                ?? weights.max(by: { $0.date < $1.date })?.weightKg else { return nil }
+        let reached = milestones(startKg: startKg, weights: weights, calendar: calendar).last?.percent ?? 0
+        let percent = reached + milestoneStepPercent
+        let threshold = startKg * (1 - Double(percent) / 100)
+        return (percent, max(current - threshold, 0))
+    }
+
+    /// A milestone reached in the last `withinDays` days, for a celebration card.
+    static func recentMilestone(startKg: Double, weights: [WeightDay], today: Date = .now,
+                                withinDays: Int = 7, calendar: Calendar = .current) -> Milestone? {
+        guard let latest = milestones(startKg: startKg, weights: weights, calendar: calendar).last,
+              let days = calendar.dateComponents([.day], from: latest.reachedOn,
+                                                 to: calendar.startOfDay(for: today)).day,
+              days < withinDays else { return nil }
+        return latest
+    }
+
+    /// Detects a stall: the 7-day trend has moved less than `plateauToleranceKg` for at least
+    /// `plateauMinimumDays`, with regular weigh-ins, while the goal is still ahead.
+    static func plateau(weights: [WeightDay],
+                        goalKg: Double,
+                        currentTarget: Int,
+                        maintenance: MaintenanceEstimate?,
+                        weeklyLossKg: Double,
+                        sex: BiologicalSex,
+                        today: Date = .now,
+                        calendar: Calendar = .current) -> Plateau? {
+        let todayStart = calendar.startOfDay(for: today)
+        guard let now = trend(on: todayStart, weights: weights, calendar: calendar), now > goalKg else { return nil }
+
+        // Walk back day by day while the trend stays within tolerance of today's.
+        var days = 0
+        var cursor = todayStart
+        while let previous = calendar.date(byAdding: .day, value: -1, to: cursor),
+              let value = trend(on: previous, weights: weights, calendar: calendar),
+              abs(value - now) < plateauToleranceKg {
+            days += 1
+            cursor = previous
+            if days > 365 { break }
+        }
+        guard days >= plateauMinimumDays else { return nil }
+        let windowStart = calendar.date(byAdding: .day, value: -days, to: todayStart) ?? todayStart
+        let weighIns = weights.filter { $0.date >= windowStart }.count
+        guard weighIns >= plateauMinimumWeighIns else { return nil }
+
+        var suggestions: [String] = []
+        if let maintenance {
+            let suggested = maintenance.suggestedTarget(weeklyLossKg: weeklyLossKg, sex: sex)
+            if suggested < currentTarget {
+                suggestions.append("Your measured maintenance is about \(maintenance.maintenanceKcal) kcal. "
+                                   + "A target of \(suggested) kcal matches your planned rate; you can apply it in Settings.")
+            } else {
+                suggestions.append("Your target already sits below your measured maintenance of about "
+                                   + "\(maintenance.maintenanceKcal) kcal, so the gap is more likely in logging than in the plan.")
+            }
+        } else {
+            suggestions.append("Log food on most days for two more weeks so the adaptive target can measure your real maintenance.")
+        }
+        suggestions.append("Weigh portions for a week. Oils, sauces and drinks are the usual under-counts.")
+        suggestions.append("Water retention from stress, sleep or new training can hide fat loss for a week or two.")
+        suggestions.append("If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier.")
+        return Plateau(days: days, trendKg: now, suggestions: suggestions)
+    }
+}

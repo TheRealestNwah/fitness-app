@@ -71,6 +71,23 @@ struct DashboardView: View {
             plannedWeeklyLossKg: profile.weeklyLossKg)
     }
 
+    private var weightDays: [WeeklyReviewCalculator.WeightDay] {
+        weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
+    }
+
+    private var recentMilestone: Milestone? {
+        ProgressCalculator.recentMilestone(startKg: profile.startWeightKg, weights: weightDays)
+    }
+
+    private var plateau: Plateau? {
+        let estimate = AdaptiveTargetCalculator.estimate(
+            foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+            weights: weightDays)
+        return ProgressCalculator.plateau(weights: weightDays, goalKg: profile.goalWeightKg,
+                                          currentTarget: baseTarget, maintenance: estimate,
+                                          weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
+    }
+
     private var tip: String {
         let day = Calendar.current.ordinality(of: .day, in: .year, for: .now) ?? 0
         return SeedData.tips[day % SeedData.tips.count]
@@ -84,6 +101,8 @@ struct DashboardView: View {
                     calorieCard
                     quickActions
                     weightCard
+                    if let milestone = recentMilestone { milestoneCard(milestone) }
+                    if let plateau { plateauCard(plateau) }
                     if HealthSettings.isEnabled, HealthKitManager.isAvailable { activityCard }
                     if weeklyReview.hasContent { weeklyReviewCard }
                     waterCard
@@ -252,6 +271,46 @@ struct DashboardView: View {
                 Text(error).font(.caption).foregroundStyle(.orange)
             }
         }
+        .card()
+    }
+
+    private func milestoneCard(_ milestone: Milestone) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "trophy.fill")
+                .font(.title2)
+                .foregroundStyle(.yellow)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("\(milestone.percent)% of your starting weight lost")
+                    .font(.headline)
+                Text("Your 7-day average passed \(units.weightString(kg: milestone.thresholdKg)) on \(milestone.reachedOn.formatted(.dateTime.weekday(.wide).month(.abbreviated).day())). That's a real change, not a good morning.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .card()
+        .accessibilityElement(children: .combine)
+    }
+
+    private func plateauCard(_ plateau: Plateau) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("Weight has held steady for \(plateau.days) days", systemImage: "chart.line.flattrend.xyaxis")
+                .font(.headline)
+            Text("Your 7-day average has stayed around \(units.weightString(kg: plateau.trendKg)). Plateaus are normal; a few things worth checking:")
+                .font(.subheadline)
+                .foregroundStyle(Color.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            ForEach(plateau.suggestions, id: \.self) { suggestion in
+                Label {
+                    Text(suggestion).fixedSize(horizontal: false, vertical: true)
+                } icon: {
+                    Image(systemName: "checkmark.circle").foregroundStyle(.indigo)
+                }
+                .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .card()
     }
 
