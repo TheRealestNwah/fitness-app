@@ -226,6 +226,7 @@ struct SettingsView: View {
                     } label: {
                         Label("Export and share", systemImage: "square.and.arrow.up")
                     }
+                    ImportCSVButton()
                     Button {
                         FeatureTips.resetOnNextLaunch()
                         tipsWillReset = true
