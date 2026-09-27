@@ -237,7 +237,8 @@ struct DashboardView: View {
         for e in entries {
             context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
                                                   servingDescription: e.servingDescription, calories: e.calories,
-                                                  protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+                                                  protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
+                                                  fiber: e.fiber, sugar: e.sugar, sodium: e.sodium))
         }
         try? context.save()
     }
