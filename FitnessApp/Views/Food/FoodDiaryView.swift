@@ -25,17 +25,22 @@ struct DayDiaryView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Query private var entries: [FoodLogEntry]
+    @Query private var yesterdayEntries: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
     @State private var addingTo: MealType?
     @State private var editing: FoodLogEntry?
+    @State private var savingFavourite: MealType?
 
     init(date: Date) {
         self.date = date
         let start = date.startOfDay
         let end = start.adding(days: 1)
+        let yesterday = start.adding(days: -1)
         _entries = Query(filter: #Predicate<FoodLogEntry> { $0.date >= start && $0.date < end },
                          sort: \FoodLogEntry.date)
+        _yesterdayEntries = Query(filter: #Predicate<FoodLogEntry> { $0.date >= yesterday && $0.date < start },
+                                  sort: \FoodLogEntry.date)
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
@@ -49,6 +54,26 @@ struct DayDiaryView: View {
 
     private func entries(for meal: MealType) -> [FoodLogEntry] {
         entries.filter { $0.mealType == meal }
+    }
+
+    private func yesterday(for meal: MealType) -> [FoodLogEntry] {
+        yesterdayEntries.filter { $0.mealType == meal }
+    }
+
+    /// Re-logs yesterday's lines for this meal onto the current day.
+    private func copyYesterday(_ meal: MealType) {
+        let stamp = meal.logDate(on: date)
+        for e in yesterday(for: meal) {
+            context.insert(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
+                                        servingDescription: e.servingDescription, calories: e.calories,
+                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+        }
+        try? context.save()
+    }
+
+    private func clear(_ meal: MealType) {
+        for e in entries(for: meal) { context.delete(e) }
+        try? context.save()
     }
 
     var body: some View {
@@ -83,6 +108,25 @@ struct DayDiaryView: View {
                         Label("Add food", systemImage: "plus.circle.fill")
                             .font(.subheadline.weight(.medium))
                     }
+                    let fromYesterday = yesterday(for: meal)
+                    if items.isEmpty, !fromYesterday.isEmpty {
+                        let kcal = fromYesterday.reduce(0) { $0 + $1.calories }
+                        Button {
+                            copyYesterday(meal)
+                        } label: {
+                            Label {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Copy yesterday's \(meal.label.lowercased())")
+                                        .font(.subheadline.weight(.medium))
+                                    Text("\(fromYesterday.count) item\(fromYesterday.count == 1 ? "" : "s") · \(Int(kcal.rounded())) kcal")
+                                        .font(.caption)
+                                        .foregroundStyle(Color.secondary)
+                                }
+                            } icon: {
+                                Image(systemName: "arrow.uturn.backward.circle.fill")
+                            }
+                        }
+                    }
                 } header: {
                     HStack {
                         Label(meal.label, systemImage: meal.systemImage)
@@ -91,16 +135,45 @@ struct DayDiaryView: View {
                         if kcal > 0 {
                             Text("\(Int(kcal.rounded())) kcal")
                         }
+                        Menu {
+                            Button {
+                                copyYesterday(meal)
+                            } label: {
+                                Label("Copy from yesterday", systemImage: "arrow.uturn.backward")
+                            }
+                            .disabled(yesterday(for: meal).isEmpty)
+                            Button {
+                                savingFavourite = meal
+                            } label: {
+                                Label("Save as favourite meal", systemImage: "star")
+                            }
+                            .disabled(items.isEmpty)
+                            if !items.isEmpty {
+                                Button(role: .destructive) {
+                                    clear(meal)
+                                } label: {
+                                    Label("Clear \(meal.label.lowercased())", systemImage: "trash")
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                                .font(.body)
+                                .accessibilityLabel("\(meal.label) options")
+                        }
+                        .textCase(nil)
                     }
                 }
             }
         }
         .listStyle(.insetGrouped)
         .sheet(item: $addingTo) { meal in
-            FoodSearchView(date: date.isToday ? .now : date, mealType: meal)
+            FoodSearchView(date: date, mealType: meal)
         }
         .sheet(item: $editing) { entry in
             EditLogEntrySheet(entry: entry)
+        }
+        .sheet(item: $savingFavourite) { meal in
+            SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
     }
 
@@ -227,5 +300,65 @@ struct ServingsControl: View {
                 }
             }
         }
+    }
+}
+
+/// Names a set of diary lines and stores them as a `SavedMeal`.
+struct SaveFavouriteMealSheet: View {
+    let mealType: MealType
+    let entries: [FoodLogEntry]
+
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @State private var name = ""
+
+    private var totalCalories: Double { entries.reduce(0) { $0 + $1.calories } }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Name (e.g. Weekday breakfast)", text: $name)
+                } footer: {
+                    Text("Favourite meals appear at the top of food search and log every line with one tap.")
+                }
+                Section("\(entries.count) item\(entries.count == 1 ? "" : "s") · \(Int(totalCalories.rounded())) kcal") {
+                    ForEach(entries) { e in
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(e.foodName)
+                                Text(e.servingsLabel).font(.caption).foregroundStyle(Color.secondary)
+                            }
+                            Spacer()
+                            Text("\(Int(e.calories.rounded()))")
+                                .font(.body.monospacedDigit())
+                                .foregroundStyle(Color.secondary)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Save favourite")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let meal = SavedMeal(name: name.trimmingCharacters(in: .whitespaces),
+                                             mealType: mealType,
+                                             items: entries.map(SavedMealItem.init(entry:)))
+                        context.insert(meal)
+                        try? context.save()
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || entries.isEmpty)
+                }
+            }
+            .onAppear {
+                if name.isEmpty {
+                    name = "\(mealType.label) · \(Date.now.formatted(.dateTime.weekday(.abbreviated)))"
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }

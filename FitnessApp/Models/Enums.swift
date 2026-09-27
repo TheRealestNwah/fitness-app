@@ -99,6 +99,22 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
         }
     }
 
+    /// Hour of day used when logging to a day other than today.
+    var typicalHour: Int {
+        switch self {
+        case .breakfast: return 8
+        case .lunch: return 13
+        case .dinner: return 19
+        case .snack: return 16
+        }
+    }
+
+    /// Timestamp for a new diary entry: now when logging today, otherwise a sensible hour on that day.
+    func logDate(on day: Date) -> Date {
+        if Calendar.current.isDateInToday(day) { return .now }
+        return Calendar.current.date(bySettingHour: typicalHour, minute: 0, second: 0, of: day) ?? day
+    }
+
     /// The meal a user is most likely logging right now.
     static func current(at date: Date = .now) -> MealType {
         let hour = Calendar.current.component(.hour, from: date)

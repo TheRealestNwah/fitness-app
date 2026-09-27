@@ -30,6 +30,7 @@ enum DemoData {
         deleteAll(VitalsEntry.self, in: context)
         deleteAll(WaterEntry.self, in: context)
         deleteAll(MealPlanEntry.self, in: context)
+        deleteAll(SavedMeal.self, in: context)
         deleteAll(FoodItem.self, in: context)
         deleteAll(Recipe.self, in: context)
         deleteAll(UserProfile.self, in: context)
@@ -147,6 +148,20 @@ enum DemoData {
                 f.useCount = 5 - i
             }
         }
+        // Two favourite meals so the one-tap section has content.
+        context.insert(SavedMeal(name: "Weekday breakfast", mealType: .breakfast, items: [
+            SavedMealItem(foodName: "Overnight oats with berries", servings: 1, servingDescription: "serving",
+                          calories: 383, protein: 23.5, carbs: 58, fat: 7.5),
+            SavedMealItem(foodName: "Coffee, black", servings: 1, servingDescription: "1 cup (240 ml)",
+                          calories: 2, protein: 0.3, carbs: 0, fat: 0),
+        ]))
+        context.insert(SavedMeal(name: "Desk lunch", mealType: .lunch, items: [
+            SavedMealItem(foodName: "Turkey and avocado wrap", servings: 1, servingDescription: "serving",
+                          calories: 344, protein: 21, carbs: 38, fat: 13),
+            SavedMealItem(foodName: "Apple", servings: 1, servingDescription: "1 medium (182 g)",
+                          calories: 95, protein: 0.5, carbs: 25, fat: 0.3),
+        ]))
+
         if let f = foods.first(where: { $0.name == "Oats, rolled (dry)" }) { f.isFavorite = true }
         if let f = foods.first(where: { $0.name == "Salmon, baked" }) { f.isFavorite = true }
     }

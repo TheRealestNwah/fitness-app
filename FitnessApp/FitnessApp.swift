@@ -15,6 +15,7 @@ struct FitnessApp: App {
             WaterEntry.self,
             Recipe.self,
             MealPlanEntry.self,
+            SavedMeal.self,
         ])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {

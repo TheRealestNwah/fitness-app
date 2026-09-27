@@ -175,7 +175,7 @@ struct PlannerView: View {
     // MARK: Actions
 
     private func log(_ entry: MealPlanEntry) {
-        let logDate = selectedDay.isToday ? Date.now : selectedDay
+        let logDate = entry.mealType.logDate(on: selectedDay)
         context.insert(FoodLogEntry(date: logDate, mealType: entry.mealType, foodName: entry.title,
                                     servings: entry.servings, servingDescription: "serving",
                                     calories: entry.totalCalories, protein: entry.totalProtein,
