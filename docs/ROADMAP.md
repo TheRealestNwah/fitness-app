@@ -8,8 +8,7 @@ The items below are ordered by how much they help someone in the first weeks of 
 
 1. **HealthKit sync (weight, steps, active energy, sleep, heart rate).**
    Read weigh-ins from a smart scale, steps and active energy from the watch, and write weight and dietary energy back. Done when: a HealthKit toggle in Settings imports the last 90 days, new samples appear without manual entry, and the calorie budget can optionally add a share of active energy.
-2. **Barcode scanning + a bigger food database.**
-   Camera scan (VisionKit) looking up Open Food Facts, with results cached as custom foods. Done when: scanning a packaged food logs it in two taps, and an offline fallback lets the user type in the label.
+2. ~~**Barcode scanning + a bigger food database.**~~ Shipped: VisionKit scanner (typed-number fallback where the camera isn't available) with Open Food Facts lookup, cached as custom foods with the barcode, and a create-food path for unknown codes.
 3. ~~**Copy yesterday / repeat meal / favourite meals.**~~ Shipped: per-meal "copy from yesterday", save-as-favourite from the meal menu, favourite meals at the top of food search with one-tap logging.
 4. ~~**Weekly review card.**~~ Shipped: "Last 7 days" card on Today with average intake vs. budget, weight change vs. plan, days logged, and a rule-based headline and suggestion (`WeeklyReviewCalculator`, unit-tested).
 5. ~~**Adaptive calorie target.**~~ Shipped: `AdaptiveTargetCalculator` estimates maintenance from 28 days of intake and weigh-ins (energy balance, with data-sufficiency and confidence rules); Settings shows it against the formula with a one-tap apply.

@@ -16,6 +16,8 @@ final class FoodItem {
     var isCustom: Bool = false
     var lastUsed: Date?
     var useCount: Int = 0
+    /// Product barcode when the food came from a scan, so the next scan is instant and offline.
+    var barcode: String?
 
     init(name: String,
          brand: String = "",

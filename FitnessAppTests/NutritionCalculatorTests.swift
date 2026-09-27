@@ -123,6 +123,51 @@ final class UnitsTests: XCTestCase {
     }
 }
 
+final class OpenFoodFactsParserTests: XCTestCase {
+    func testNormaliseBarcode() {
+        XCTAssertEqual(OpenFoodFactsClient.normalise(" 5000 159 484 695 "), "5000159484695")
+        XCTAssertNil(OpenFoodFactsClient.normalise("12"))
+        XCTAssertNil(OpenFoodFactsClient.normalise("abc"))
+    }
+
+    func testParsesPerServingValuesWhenPresent() throws {
+        let json = """
+        {"status":1,"code":"5000159484695","product":{"product_name":"Test Bar","brands":"Acme, Other",
+         "serving_size":"45 g","serving_quantity":45,
+         "nutriments":{"energy-kcal_100g":450,"energy-kcal_serving":202.5,"proteins_serving":9,
+                       "carbohydrates_serving":"25.5","fat_serving":7,"fiber_serving":3}}}
+        """
+        let p = try XCTUnwrap(try OpenFoodFactsClient.parse(Data(json.utf8), barcode: "5000159484695"))
+        XCTAssertEqual(p.name, "Test Bar")
+        XCTAssertEqual(p.brand, "Acme")
+        XCTAssertEqual(p.servingDescription, "45 g")
+        XCTAssertEqual(p.calories, 202.5, accuracy: 0.001)
+        XCTAssertEqual(p.carbs, 25.5, accuracy: 0.001)
+    }
+
+    func testScalesPer100gByServingQuantity() throws {
+        let json = """
+        {"status":1,"product":{"product_name":"Yogurt","serving_size":"150 g","serving_quantity":"150",
+         "nutriments":{"energy-kj_100g":251.04,"proteins_100g":10,"carbohydrates_100g":4,"fat_100g":0.2}}}
+        """
+        let p = try XCTUnwrap(try OpenFoodFactsClient.parse(Data(json.utf8), barcode: "1234567"))
+        XCTAssertEqual(p.servingDescription, "150 g")
+        XCTAssertEqual(p.calories, 90, accuracy: 0.1)      // 60 kcal/100 g × 1.5
+        XCTAssertEqual(p.protein, 15, accuracy: 0.001)
+    }
+
+    func testFallsBackTo100gAndHandlesUnknown() throws {
+        let json = """
+        {"status":1,"product":{"product_name":"Rice","nutriments":{"energy-kcal_100g":130,"proteins_100g":2.7}}}
+        """
+        let p = try XCTUnwrap(try OpenFoodFactsClient.parse(Data(json.utf8), barcode: "1234567"))
+        XCTAssertEqual(p.servingDescription, "100 g")
+        XCTAssertEqual(p.calories, 130)
+        XCTAssertNil(try OpenFoodFactsClient.parse(Data("{\"status\":0}".utf8), barcode: "1234567"))
+        XCTAssertThrowsError(try OpenFoodFactsClient.parse(Data("not json".utf8), barcode: "1234567"))
+    }
+}
+
 final class AdaptiveTargetTests: XCTestCase {
     private let cal = Calendar.current
     private var today: Date { cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000)) }

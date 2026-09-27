@@ -18,6 +18,8 @@ struct FoodSearchView: View {
     @State private var selectedRecipe: Recipe?
     @State private var showCreate = false
     @State private var showQuickAdd = false
+    @State private var showScanner = false
+    @State private var unknownBarcode: UnknownBarcode?
 
     init(date: Date, mealType: MealType) {
         self.date = date
@@ -28,7 +30,10 @@ struct FoodSearchView: View {
 
     private var filtered: [FoodItem] {
         guard !query.isEmpty else { return foods }
-        return foods.filter { $0.name.lowercased().contains(query) || $0.brand.lowercased().contains(query) }
+        return foods.filter {
+            $0.name.lowercased().contains(query) || $0.brand.lowercased().contains(query)
+                || ($0.barcode?.contains(query) ?? false)
+        }
     }
 
     private var filteredRecipes: [Recipe] {
@@ -118,6 +123,9 @@ struct FoodSearchView: View {
                 }
                 if query.isEmpty {
                     Section {
+                        Button { showScanner = true } label: {
+                            Label("Scan a barcode", systemImage: "barcode.viewfinder")
+                        }
                         Button { showQuickAdd = true } label: {
                             Label("Quick add calories", systemImage: "bolt.fill")
                         }
@@ -183,6 +191,20 @@ struct FoodSearchView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         selected = created
                     }
+                }
+            }
+            .sheet(isPresented: $showScanner) {
+                BarcodeScanSheet(onFound: { food in
+                    showScanner = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { selected = food }
+                }, onNotFound: { code in
+                    showScanner = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { unknownBarcode = UnknownBarcode(code: code) }
+                })
+            }
+            .sheet(item: $unknownBarcode) { unknown in
+                CreateFoodSheet(initialName: "", barcode: unknown.code) { created in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { selected = created }
                 }
             }
             .sheet(isPresented: $showQuickAdd) {
@@ -400,6 +422,7 @@ struct QuickAddSheet: View {
 
 struct CreateFoodSheet: View {
     var initialName: String = ""
+    var barcode: String? = nil
     var onCreate: ((FoodItem) -> Void)? = nil
 
     @Environment(\.modelContext) private var context
@@ -416,10 +439,16 @@ struct CreateFoodSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Food") {
+                Section {
                     TextField("Name", text: $name)
                     TextField("Brand (optional)", text: $brand)
                     TextField("Serving size (e.g. 1 cup, 100 g)", text: $serving)
+                } header: {
+                    Text("Food")
+                } footer: {
+                    if let barcode {
+                        Text("Barcode \(barcode) wasn't in the database. Copy the numbers from the label and this food will be found instantly next time you scan it.")
+                    }
                 }
                 Section("Nutrition per serving") {
                     DecimalField(title: "Calories", value: $calories, unit: "kcal")
@@ -441,6 +470,7 @@ struct CreateFoodSheet: View {
                                             calories: calories ?? 0, protein: protein ?? 0,
                                             carbs: carbs ?? 0, fat: fat ?? 0, fiber: fiber ?? 0,
                                             isCustom: true)
+                        item.barcode = barcode
                         context.insert(item)
                         try? context.save()
                         dismiss()

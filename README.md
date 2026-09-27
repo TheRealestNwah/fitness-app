@@ -20,6 +20,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 - Diary by day and meal (breakfast / lunch / dinner / snacks) with per-meal subtotals
 - Built-in database of ~100 common foods with macros; search, recents, favourites
 - Custom foods, quick-add calories for meals you can't look up, log recipes as a meal
+- Barcode scanning (camera, or typed number where the camera isn't available) with Open Food Facts lookup; results are cached as custom foods so repeat scans work offline
 - Adjustable servings; entries are snapshots so history never changes
 - Copy yesterday's meal in one tap, save any meal as a named favourite, and log a favourite meal from the top of search
 
