@@ -159,6 +159,8 @@ final class WeeklyReviewTests: XCTestCase {
                        "Only 2 of 7 days logged")
         XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1900, budget: 1600, weightChange: -0.5, planned: 0.5).headline,
                        "Averaging 300 kcal over budget")
+        XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 700, budget: 1600, weightChange: -0.5, planned: 0.5).headline,
+                       "Logged intake looks incomplete")
         XCTAssertTrue(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: -1.2, planned: 0.5).headline.hasPrefix("Losing faster"))
         XCTAssertTrue(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: 0.6, planned: 0.5).headline.hasPrefix("Weight up"))
         XCTAssertEqual(WeeklyReviewCalculator.advice(daysLogged: 6, averageIntake: 1550, budget: 1600, weightChange: -0.1, planned: 0.5).headline,
