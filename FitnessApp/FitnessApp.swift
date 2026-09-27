@@ -25,6 +25,7 @@ struct FitnessApp: App {
         }
         // "-resetData" / "-demoData" launch arguments (UI tests, demos).
         DemoData.applyLaunchArguments(context: container.mainContext)
+        FeatureTips.configure()
     }
 
     var body: some Scene {
