@@ -41,8 +41,14 @@ struct CaloriesWidget: Widget {
         }
         .configurationDisplayName("Today")
         .description("Calories left, water and your latest weigh-in.")
-        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies(Self.families)
     }
+
+#if os(watchOS)
+    static let families: [WidgetFamily] = [.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner]
+#else
+    static let families: [WidgetFamily] = [.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular, .accessoryInline]
+#endif
 }
 
 struct CaloriesWidgetView: View {
@@ -52,10 +58,14 @@ struct CaloriesWidgetView: View {
     var body: some View {
         if let s = entry.snapshot {
             switch family {
+#if os(watchOS)
+            case .accessoryCorner: corner(s)
+#else
+            case .systemMedium: medium(s)
+#endif
             case .accessoryCircular: circular(s)
             case .accessoryRectangular: rectangular(s)
             case .accessoryInline: Text("\(s.energy(abs(s.remainingKcal))) \(s.energyUnit) \(s.remainingKcal >= 0 ? "left" : "over")")
-            case .systemMedium: medium(s)
             default: small(s)
             }
         } else {
@@ -130,6 +140,16 @@ struct CaloriesWidgetView: View {
         }
         .gaugeStyle(.accessoryCircularCapacity)
     }
+
+#if os(watchOS)
+    private func corner(_ s: Snapshot) -> some View {
+        Text(s.energy(abs(s.remainingKcal)))
+            .font(.title3.monospacedDigit())
+            .widgetLabel {
+                Gauge(value: min(max(s.progress, 0), 1)) { Text(s.energyUnit) }
+            }
+    }
+#endif
 
     private func rectangular(_ s: Snapshot) -> some View {
         VStack(alignment: .leading, spacing: 2) {

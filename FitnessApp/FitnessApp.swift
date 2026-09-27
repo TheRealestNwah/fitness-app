@@ -23,6 +23,7 @@ struct FitnessApp: App {
         // "-resetData" / "-demoData" launch arguments (UI tests, demos).
         DemoData.applyLaunchArguments(context: container.mainContext)
         FeatureTips.configure()
+        WatchSync.shared.start(container: container)
     }
 
     var body: some Scene {
