@@ -40,24 +40,30 @@ struct WidgetSnapshot: Codable, Equatable {
     /// Recomputes today's snapshot from the store, saves it for the widgets and asks them to reload.
     @MainActor
     static func publish(profile: UserProfile) {
-        guard let context = profile.modelContext else { return }
-        let since = Calendar.current.date(byAdding: .day, value: -60, to: .now.startOfDay) ?? .now
-        let food = (try? context.fetch(FetchDescriptor<FoodLogEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
-        let water = (try? context.fetch(FetchDescriptor<WaterEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
-        var latest = FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
-        latest.fetchLimit = 1
-        let weights = (try? context.fetch(FetchDescriptor<WeightEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
-        let snapshot = make(profile: profile,
-                            food: food.map { (date: $0.date, calories: $0.calories) },
-                            water: water.map { (date: $0.date, ml: $0.amountMl) },
-                            latestWeightKg: (try? context.fetch(latest))?.first?.weightKg,
-                            logDates: food.map(\.date) + weights.map(\.date))
-        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        guard let snapshot = current(profile: profile),
+              let data = try? JSONEncoder().encode(snapshot) else { return }
         WatchSync.shared.send(snapshot: data)
         guard let shared = UserDefaults(suiteName: appGroup) else { return }
         if shared.data(forKey: key) != data {
             shared.set(data, forKey: key)
             WidgetCenter.shared.reloadAllTimelines()
         }
+    }
+
+    /// Today's snapshot, computed from the store the profile lives in.
+    @MainActor
+    static func current(profile: UserProfile, now: Date = .now) -> WidgetSnapshot? {
+        guard let context = profile.modelContext else { return nil }
+        let since = Calendar.current.date(byAdding: .day, value: -60, to: now.startOfDay) ?? now
+        let food = (try? context.fetch(FetchDescriptor<FoodLogEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
+        let water = (try? context.fetch(FetchDescriptor<WaterEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
+        var latest = FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        latest.fetchLimit = 1
+        let weights = (try? context.fetch(FetchDescriptor<WeightEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
+        return make(profile: profile,
+                    food: food.map { (date: $0.date, calories: $0.calories) },
+                    water: water.map { (date: $0.date, ml: $0.amountMl) },
+                    latestWeightKg: (try? context.fetch(latest))?.first?.weightKg,
+                    logDates: food.map(\.date) + weights.map(\.date), now: now)
     }
 }
