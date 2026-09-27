@@ -57,3 +57,7 @@ FitnessAppTests/            XCTest coverage for the calculation engine, units, r
 - iOS 17.0+ (SwiftData, Swift Charts, `@Observable`)
 
 Open `FitnessApp.xcodeproj`, pick a simulator, and run. Tests: ⌘U.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` builds the app and runs the unit tests on an iOS simulator (macOS runner, Xcode 16) for every pull request and push to `main`. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
