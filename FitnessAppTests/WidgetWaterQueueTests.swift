@@ -4,12 +4,14 @@ import XCTest
 
 @MainActor
 final class WidgetWaterQueueTests: XCTestCase {
+    // Held so the context stays valid: a ModelContext doesn't keep its container alive.
+    private var container: ModelContainer!
     private var context: ModelContext!
     private var defaults: UserDefaults!
     private let suite = "WidgetWaterQueueTests"
 
     override func setUp() async throws {
-        let container = try ModelContainer(for: AppStore.schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
+        container = try ModelContainer(for: AppStore.schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
         context = container.mainContext
         defaults = UserDefaults(suiteName: suite)
         defaults.removePersistentDomain(forName: suite)
