@@ -387,7 +387,9 @@ struct AddWeightSheet: View {
 
     /// Steps in tenths without the drift repeated 0.1 additions pick up.
     private func nudge(by delta: Double) {
-        weight = min(max(((weight + delta) * 10).rounded() / 10, 20), 400)
+        // Limits are in kilograms so they hold whatever unit the field shows.
+        let low = units.weightValue(kg: 20), high = units.weightValue(kg: 400)
+        weight = min(max(((weight + delta) * 10).rounded() / 10, low), high)
     }
 
     private func save() {
