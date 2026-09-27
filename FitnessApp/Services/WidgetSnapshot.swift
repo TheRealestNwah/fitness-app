@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 import WidgetKit
 
-/// What the widgets show, written by the app to the shared App Group after every change.
+/// What the widgets and the watch app show, written by the app to the shared App Group after every change.
 /// The widget extension decodes the same JSON (see StrideWidgets/Snapshot.swift).
 struct WidgetSnapshot: Codable, Equatable {
     var day: Date
@@ -52,8 +52,9 @@ struct WidgetSnapshot: Codable, Equatable {
                             water: water.map { (date: $0.date, ml: $0.amountMl) },
                             latestWeightKg: (try? context.fetch(latest))?.first?.weightKg,
                             logDates: food.map(\.date) + weights.map(\.date))
-        guard let data = try? JSONEncoder().encode(snapshot),
-              let shared = UserDefaults(suiteName: appGroup) else { return }
+        guard let data = try? JSONEncoder().encode(snapshot) else { return }
+        WatchSync.shared.send(snapshot: data)
+        guard let shared = UserDefaults(suiteName: appGroup) else { return }
         if shared.data(forKey: key) != data {
             shared.set(data, forKey: key)
             WidgetCenter.shared.reloadAllTimelines()
