@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum BiologicalSex: String, Codable, CaseIterable, Identifiable {
     case female
@@ -172,4 +173,31 @@ enum BloodPressureCategory: String {
     case stage1 = "High (stage 1)"
     case stage2 = "High (stage 2)"
     case crisis = "Hypertensive crisis"
+}
+
+/// User-selectable colour scheme, stored in UserDefaults under "appearance".
+enum Appearance: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
+
+    static let storageKey = "appearance"
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .system: return "Match system"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
 }
