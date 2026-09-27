@@ -83,6 +83,7 @@ struct DashboardView: View {
     }
 
     private var plateau: Plateau? {
+        guard !profile.isMaintaining else { return nil }      // holding steady is the point
         let estimate = AdaptiveTargetCalculator.estimate(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays)
@@ -279,53 +280,94 @@ struct DashboardView: View {
     }
 
     private var weightCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Button {
+                selectTab(.weight)
+            } label: {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Label(profile.isMaintaining ? "Maintaining" : "Weight", systemImage: "scalemass.fill")
+                            .font(.headline)
+                        Spacer()
+                        Image(systemName: "chevron.right").foregroundStyle(.tertiary)
+                    }
+                    weightHeadline
+                    if profile.isMaintaining {
+                        MaintenanceBandView(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays) ?? currentKg,
+                                            centerKg: profile.maintenanceCenterKg,
+                                            bandKg: profile.maintenanceBandKg, units: units)
+                    } else {
+                        goalProgress
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            if MaintenanceCalculator.shouldOffer(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays),
+                                                 goalKg: profile.goalWeightKg,
+                                                 isMaintaining: profile.isMaintaining) {
+                Divider()
+                maintenanceOffer
+            }
+        }
+        .card()
+    }
+
+    private var weightHeadline: some View {
+        let lost = profile.startWeightKg - currentKg
+        let daysSinceWeighIn = weights.first.map { Calendar.current.dateComponents([.day], from: $0.date.startOfDay, to: Date.now.startOfDay).day ?? 0 }
+        return HStack(alignment: .firstTextBaseline) {
+            Text(units.weightString(kg: currentKg))
+                .font(.title.bold().monospacedDigit())
+            Text(units.weightString(kg: -lost, signed: true))
+                .font(.subheadline.monospacedDigit())
+                .foregroundStyle(lost >= 0 ? .green : .orange)
+            Spacer()
+            if let days = daysSinceWeighIn, days > 0 {
+                Text(days == 1 ? "Yesterday" : "\(days) days ago")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            }
+        }
+    }
+
+    private var goalProgress: some View {
         let lost = profile.startWeightKg - currentKg
         let remaining = max(currentKg - profile.goalWeightKg, 0)
         let total = max(profile.startWeightKg - profile.goalWeightKg, 0.001)
         let progress = min(max(lost / total, 0), 1)
         let projected = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg)
-        let daysSinceWeighIn = weights.first.map { Calendar.current.dateComponents([.day], from: $0.date.startOfDay, to: Date.now.startOfDay).day ?? 0 }
+        return VStack(alignment: .leading, spacing: 12) {
+            ProgressView(value: progress)
+                .tint(.indigo)
+            HStack {
+                Text("\(units.weightString(kg: remaining)) to go")
+                Spacer()
+                if remaining == 0 {
+                    Text("Goal reached!")
+                } else if let projected {
+                    Text("ETA \(projected.formatted(.dateTime.month(.abbreviated).day()))")
+                }
+            }
+            .font(.caption)
+            .foregroundStyle(Color.secondary)
+        }
+    }
 
-        return Button {
-            selectTab(.weight)
-        } label: {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Label("Weight", systemImage: "scalemass.fill")
-                        .font(.headline)
-                    Spacer()
-                    Image(systemName: "chevron.right").foregroundStyle(.tertiary)
-                }
-                HStack(alignment: .firstTextBaseline) {
-                    Text(units.weightString(kg: currentKg))
-                        .font(.title.bold().monospacedDigit())
-                    Text(units.weightString(kg: -lost, signed: true))
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundStyle(lost >= 0 ? .green : .orange)
-                    Spacer()
-                    if let days = daysSinceWeighIn, days > 0 {
-                        Text(days == 1 ? "Yesterday" : "\(days) days ago")
-                            .font(.caption)
-                            .foregroundStyle(Color.secondary)
-                    }
-                }
-                ProgressView(value: progress)
-                    .tint(.indigo)
-                HStack {
-                    Text("\(units.weightString(kg: remaining)) to go")
-                    Spacer()
-                    if remaining == 0 {
-                        Text("Goal reached!")
-                    } else if let projected {
-                        Text("ETA \(projected.formatted(.dateTime.month(.abbreviated).day()))")
-                    }
-                }
+    private var maintenanceOffer: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("You've reached your goal", systemImage: "party.popper.fill")
+                .font(.subheadline.weight(.semibold))
+            Text("Switch to maintenance: your target becomes your maintenance calories, and you'll hold \(units.weightString(kg: profile.goalWeightKg)) within ± \(units.weightString(kg: MaintenanceCalculator.defaultBandKg)).")
                 .font(.caption)
                 .foregroundStyle(Color.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Button("Switch to maintenance") {
+                profile.startMaintenance(atKg: profile.goalWeightKg)
+                try? context.save()
             }
+            .buttonStyle(.borderedProminent)
+            .font(.subheadline)
         }
-        .buttonStyle(.plain)
-        .card()
     }
 
     private var activityCard: some View {
