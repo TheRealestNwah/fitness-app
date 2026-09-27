@@ -109,7 +109,7 @@ struct RecipeRow: View {
                     Text("\(recipe.prepMinutes) min")
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
             }
         }
     }
@@ -138,7 +138,7 @@ struct RecipeDetailView: View {
                     Label(recipe.mealType.label, systemImage: recipe.mealType.systemImage)
                 }
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
 
                 if !recipe.tags.isEmpty {
                     HStack {
@@ -172,7 +172,7 @@ struct RecipeDetailView: View {
                             Text("•")
                             Text(ing.name)
                             Spacer()
-                            Text(ing.amount).foregroundStyle(.secondary)
+                            Text(ing.amount).foregroundStyle(Color.secondary)
                         }
                         .font(.subheadline)
                     }
@@ -298,12 +298,12 @@ struct RecipeEditorView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(ing.name)
-                                Text(ing.amount).font(.caption).foregroundStyle(.secondary)
+                                Text(ing.amount).font(.caption).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Int(ing.calories.rounded())) kcal")
                                 .font(.caption.monospacedDigit())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.secondary)
                         }
                     }
                     .onDelete { ingredients.remove(atOffsets: $0) }
@@ -404,9 +404,9 @@ struct IngredientEditor: View {
                             search = ""
                         } label: {
                             HStack {
-                                Text(food.name).foregroundStyle(.primary)
+                                Text(food.name).foregroundStyle(Color.primary)
                                 Spacer()
-                                Text("\(Int(food.calories.rounded())) kcal").foregroundStyle(.secondary)
+                                Text("\(Int(food.calories.rounded())) kcal").foregroundStyle(Color.secondary)
                             }
                         }
                     }

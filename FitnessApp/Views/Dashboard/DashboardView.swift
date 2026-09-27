@@ -105,7 +105,7 @@ struct DashboardView: View {
                 Text(greeting)
                     .font(.title2.bold())
                 Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             Spacer()
             if streak > 0 {
@@ -130,7 +130,7 @@ struct DashboardView: View {
                             .font(.title.bold().monospacedDigit())
                         Text(remaining >= 0 ? "left" : "over")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 .frame(width: 130, height: 130)
@@ -197,7 +197,7 @@ struct DashboardView: View {
                     if let days = daysSinceWeighIn, days > 0 {
                         Text(days == 1 ? "Yesterday" : "\(days) days ago")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 ProgressView(value: progress)
@@ -212,7 +212,7 @@ struct DashboardView: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
             }
         }
         .buttonStyle(.plain)
@@ -230,7 +230,7 @@ struct DashboardView: View {
                 Spacer()
                 Text("\(units.volumeString(ml: waterMl)) / \(units.volumeString(ml: goal))")
                     .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             HStack(spacing: 6) {
                 ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
@@ -268,12 +268,12 @@ struct DashboardView: View {
                     Spacer()
                     Text("\(Int(planned.rounded())) kcal planned")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
                 ForEach(todaysPlan.sorted { $0.mealType.order < $1.mealType.order }) { entry in
                     HStack {
                         Image(systemName: entry.mealType.systemImage)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                             .frame(width: 20)
                         Text(entry.title)
                             .lineLimit(1)
@@ -282,7 +282,7 @@ struct DashboardView: View {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                         } else {
                             Text("\(Int(entry.totalCalories.rounded()))")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.secondary)
                         }
                     }
                     .font(.subheadline)
@@ -320,7 +320,7 @@ struct DashboardView: View {
                 if vitals.isEmpty {
                     Text("No vitals yet. Log blood pressure, measurements or sleep to see trends.")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
             }
             .font(.subheadline)
@@ -335,7 +335,7 @@ struct DashboardView: View {
                 .foregroundStyle(.yellow)
             Text(tip)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
@@ -371,7 +371,7 @@ struct QuickActionButton: View {
                     .foregroundStyle(tint)
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.primary)
             }
             .frame(maxWidth: .infinity)
         }

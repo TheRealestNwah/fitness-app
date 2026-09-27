@@ -53,7 +53,7 @@ struct MacroBar: View {
             HStack {
                 Text(name)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                 Spacer()
                 Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
                     .font(.caption.monospacedDigit())
@@ -87,7 +87,7 @@ struct StatTile: View {
                 }
                 Text(title)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             Text(value)
                 .font(.title3.weight(.semibold).monospacedDigit())
@@ -96,7 +96,7 @@ struct StatTile: View {
             if let subtitle {
                 Text(subtitle)
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
                     .lineLimit(1)
             }
         }
@@ -192,7 +192,7 @@ struct DecimalField: View {
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
             if !unit.isEmpty {
-                Text(unit).foregroundStyle(.secondary)
+                Text(unit).foregroundStyle(Color.secondary)
             }
         }
     }
@@ -212,7 +212,7 @@ struct IntField: View {
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
             if !unit.isEmpty {
-                Text(unit).foregroundStyle(.secondary)
+                Text(unit).foregroundStyle(Color.secondary)
             }
         }
     }

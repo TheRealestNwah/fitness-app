@@ -53,10 +53,10 @@ struct VitalsView: View {
                             Button { editing = entry } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                                        .foregroundStyle(.primary)
+                                        .foregroundStyle(Color.primary)
                                     Text(summary(for: entry))
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -109,7 +109,7 @@ struct VitalRow: View {
                 Text(kind.label)
                 Text(entry.date.relativeDayLabel)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
@@ -118,7 +118,7 @@ struct VitalRow: View {
                 if let note = kind.assessment(entry: entry) {
                     Text(note)
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
             }
         }
@@ -356,7 +356,7 @@ struct AddVitalsSheet: View {
                     IntField(title: "Diastolic", value: $diastolic, unit: "mmHg")
                     if let s = systolic, let d = diastolic {
                         LabeledContent("Category", value: NutritionCalculator.bloodPressureCategory(systolic: s, diastolic: d).rawValue)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                     IntField(title: "Resting heart rate", value: $heartRate, unit: "bpm")
                 }

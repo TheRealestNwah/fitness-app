@@ -63,13 +63,13 @@ struct DayDiaryView: View {
                         Button { editing = entry } label: {
                             HStack {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text(entry.foodName).foregroundStyle(.primary)
-                                    Text(entry.servingsLabel).font(.caption).foregroundStyle(.secondary)
+                                    Text(entry.foodName).foregroundStyle(Color.primary)
+                                    Text(entry.servingsLabel).font(.caption).foregroundStyle(Color.secondary)
                                 }
                                 Spacer()
                                 Text("\(Int(entry.calories.rounded()))")
                                     .font(.body.monospacedDigit())
-                                    .foregroundStyle(.secondary)
+                                    .foregroundStyle(Color.secondary)
                             }
                         }
                     }
@@ -114,7 +114,7 @@ struct DayDiaryView: View {
                             .font(.headline.monospacedDigit())
                         Text("of \(target)")
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 .frame(width: 84, height: 84)
@@ -216,7 +216,7 @@ struct ServingsControl: View {
             if !description.isEmpty {
                 Text("1 serving = \(description)")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             HStack {
                 ForEach(presets, id: \.self) { preset in

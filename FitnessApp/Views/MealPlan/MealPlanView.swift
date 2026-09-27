@@ -258,7 +258,7 @@ struct PlanEntryRow: View {
                     }
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
             }
             Spacer()
             if entry.isLogged {
@@ -340,13 +340,13 @@ struct PlanItemPicker: View {
                             Button { add(recipe) } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(recipe.name).foregroundStyle(.primary)
+                                        Text(recipe.name).foregroundStyle(Color.primary)
                                         Text("\(recipe.mealType.label) · \(recipe.prepMinutes) min")
-                                            .font(.caption).foregroundStyle(.secondary)
+                                            .font(.caption).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
-                                        .font(.body.monospacedDigit()).foregroundStyle(.secondary)
+                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -357,12 +357,12 @@ struct PlanItemPicker: View {
                             Button { add(food) } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(food.displayName).foregroundStyle(.primary)
-                                        Text(food.servingDescription).font(.caption).foregroundStyle(.secondary)
+                                        Text(food.displayName).foregroundStyle(Color.primary)
+                                        Text(food.servingDescription).font(.caption).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(food.calories.rounded()))")
-                                        .font(.body.monospacedDigit()).foregroundStyle(.secondary)
+                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -483,10 +483,10 @@ struct GroceryListView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(item.name.capitalized)
                                         .strikethrough(isChecked)
-                                        .foregroundStyle(isChecked ? .secondary : .primary)
+                                        .foregroundStyle(isChecked ? Color.secondary : Color.primary)
                                     Text(item.amounts.joined(separator: ", "))
                                         .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.secondary)
                                     Text(item.usedIn.sorted().joined(separator: ", "))
                                         .font(.caption2)
                                         .foregroundStyle(.tertiary)
