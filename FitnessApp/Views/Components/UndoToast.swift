@@ -78,6 +78,8 @@ extension FoodLogEntry {
                                 protein: protein, carbs: carbs, fat: fat, foodItemID: foodItemID,
                                 fiber: fiber, sugar: sugar, sodium: sodium)
         copy.uuid = uuid
+        copy.photo = photo
+        copy.isEstimate = isEstimate
         return copy
     }
 }

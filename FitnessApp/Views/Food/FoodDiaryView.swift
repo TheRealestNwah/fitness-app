@@ -157,6 +157,7 @@ struct DayDiaryView: View {
     @State private var addingTo: MealType?
     @State private var editing: FoodLogEntry?
     @State private var savingFavourite: MealType?
+    @State private var photographing: MealType?
 
     init(date: Date) {
         self.date = date
@@ -241,9 +242,12 @@ struct DayDiaryView: View {
                     ForEach(items) { entry in
                         Button { editing = entry } label: {
                             HStack {
+                                if let photo = entry.photo { EntryThumbnail(data: photo) }
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(entry.foodName).foregroundStyle(Color.primary)
-                                    Text(entry.servingsLabel).font(.caption).foregroundStyle(Color.secondary)
+                                    Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
+                                        .font(.caption)
+                                        .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
                                 }
                                 Spacer()
                                 Text("\(Int(entry.calories.rounded()))")
@@ -255,11 +259,23 @@ struct DayDiaryView: View {
                     .onDelete { offsets in
                         context.deleteDiaryEntries(offsets.map { items[$0] }, undo: undoCenter)
                     }
-                    Button {
-                        addingTo = meal
-                    } label: {
-                        Label("Add food", systemImage: "plus.circle.fill")
-                            .font(.subheadline.weight(.medium))
+                    HStack {
+                        Button {
+                            addingTo = meal
+                        } label: {
+                            Label("Add food", systemImage: "plus.circle.fill")
+                                .font(.subheadline.weight(.medium))
+                        }
+                        .buttonStyle(.borderless)
+                        Spacer()
+                        Button {
+                            photographing = meal
+                        } label: {
+                            Label("Photo", systemImage: "camera")
+                                .font(.subheadline)
+                        }
+                        .buttonStyle(.borderless)
+                        .accessibilityLabel("Log \(meal.label.lowercased()) from a photo")
                     }
                     let fromYesterday = yesterday(for: meal)
                     if items.isEmpty, !fromYesterday.isEmpty {
@@ -323,7 +339,14 @@ struct DayDiaryView: View {
             FoodSearchView(date: date, mealType: meal)
         }
         .sheet(item: $editing) { entry in
-            EditLogEntrySheet(entry: entry)
+            if entry.photo != nil || entry.isEstimate {
+                PhotoMealDetailSheet(entry: entry)
+            } else {
+                EditLogEntrySheet(entry: entry)
+            }
+        }
+        .sheet(item: $photographing) { meal in
+            PhotoMealSheet(date: date, mealType: meal, dailyTarget: profile.calorieTarget(currentWeightKg: currentKg))
         }
         .sheet(item: $savingFavourite) { meal in
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
