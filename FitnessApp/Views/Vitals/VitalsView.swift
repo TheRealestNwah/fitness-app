@@ -244,7 +244,7 @@ struct VitalDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                if let latestEntry = entries.last(where: { kind.value(for: $0) != nil }) {
+                if let latestEntry = entries.last(where: { $0.value(for: kind) != nil }) {
                     HStack(spacing: 12) {
                         StatTile(title: "Latest", value: kind.display(entry: latestEntry, units: units), subtitle: latestEntry.date.relativeDayLabel, systemImage: kind.systemImage, tint: kind.tint)
                         if let change {
