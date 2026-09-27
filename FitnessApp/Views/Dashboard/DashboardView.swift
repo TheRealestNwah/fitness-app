@@ -21,6 +21,7 @@ struct DashboardView: View {
     @State private var showAddVitals = false
     @State private var showSettings = false
     @State private var showQuickAdd = false
+    @ScaledMetric(relativeTo: .title) private var ringSize: CGFloat = 130
     @State private var showLayoutEditor = false
     @AppStorage(TodayLayoutEditor.storageKey) private var layoutStorage = ""
 
@@ -186,20 +187,28 @@ struct DashboardView: View {
     private var calorieCard: some View {
         let remaining = Double(calorieTarget) - consumed
         return VStack(spacing: 16) {
-            HStack(spacing: 20) {
+            AdaptiveStack(spacing: 20) {
                 ZStack {
                     ProgressRing(progress: Double(calorieTarget) > 0 ? consumed / Double(calorieTarget) : 0, lineWidth: 14)
                     VStack(spacing: 2) {
                         Text("\(Int(abs(remaining).rounded()))")
                             .font(.title.bold().monospacedDigit())
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
                         Text(remaining >= 0 ? "left" : "over")
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
                     }
+                    .padding(14)
                 }
-                .frame(width: 130, height: 130)
+                .frame(width: ringSize, height: ringSize)
                 .contentShape(Circle())
                 .contextMenu { ringActions }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Calories today")
+                .accessibilityValue(remaining >= 0
+                    ? "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int(remaining.rounded())) left"
+                    : "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int((-remaining).rounded())) over")
                 .accessibilityHint("Touch and hold for quick actions")
 
                 VStack(alignment: .leading, spacing: 10) {
