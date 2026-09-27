@@ -2,7 +2,7 @@ import Foundation
 
 /// A card on the Today screen that can be reordered or hidden.
 enum TodayCard: String, CaseIterable, Identifiable {
-    case calories, quickActions, weight, progress, activity, weeklyReview, water, plan, vitals, tip
+    case calories, quickActions, weight, progress, activity, weeklyReview, water, fasting, plan, vitals, tip
 
     var id: String { rawValue }
 
@@ -15,6 +15,7 @@ enum TodayCard: String, CaseIterable, Identifiable {
         case .activity: "Activity"
         case .weeklyReview: "Last 7 days"
         case .water: "Water"
+        case .fasting: "Fasting"
         case .plan: "Today's plan"
         case .vitals: "Vitals"
         case .tip: "Tip of the day"
@@ -30,6 +31,7 @@ enum TodayCard: String, CaseIterable, Identifiable {
         case .activity: "figure.walk"
         case .weeklyReview: "calendar.badge.clock"
         case .water: "drop.fill"
+        case .fasting: "timer"
         case .plan: "calendar"
         case .vitals: "heart.text.square.fill"
         case .tip: "lightbulb.fill"

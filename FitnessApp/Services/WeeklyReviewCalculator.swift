@@ -12,8 +12,10 @@ struct WeeklyReview: Equatable {
     var plannedWeeklyLossKg: Double
     var headline: String
     var suggestion: String
+    /// Fasts that reached their target in the window.
+    var completedFasts: Int = 0
 
-    var hasContent: Bool { daysLogged > 0 || weightChangeKg != nil }
+    var hasContent: Bool { daysLogged > 0 || weightChangeKg != nil || completedFasts > 0 }
 
     /// Positive when intake exceeded the budget.
     var overBudget: Double? {
@@ -29,6 +31,7 @@ enum WeeklyReviewCalculator {
                        weights: [WeightDay],
                        budget: Int,
                        plannedWeeklyLossKg: Double,
+                       fasts: [FastingCalculator.Fast] = [],
                        today: Date = .now,
                        calendar: Calendar = .current) -> WeeklyReview {
         let todayStart = calendar.startOfDay(for: today)
@@ -66,7 +69,8 @@ enum WeeklyReviewCalculator {
                             weightChangeKg: weightChange,
                             plannedWeeklyLossKg: plannedWeeklyLossKg,
                             headline: headline,
-                            suggestion: suggestion)
+                            suggestion: suggestion,
+                            completedFasts: FastingCalculator.completed(fasts, from: windowStart, to: windowEnd))
     }
 
     /// One headline and one concrete next step, chosen by simple rules in priority order.
