@@ -99,11 +99,13 @@ struct FastingCard: View {
     private func begin(hours: Double) {
         context.insert(FastingSession(targetHours: hours))
         try? context.save()
+        FastingActivityManager.sync(context: context)
         showCustom = false
     }
 
     private func end(_ session: FastingSession) {
         session.end = .now
         try? context.save()
+        FastingActivityManager.sync(context: context)
     }
 }
