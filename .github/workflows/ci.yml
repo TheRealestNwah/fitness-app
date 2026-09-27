@@ -52,7 +52,7 @@ jobs:
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
-          grep -q "TEST SUCCEEDED" test.log
+          grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log
 
       - name: Upload logs on failure
         if: failure()
