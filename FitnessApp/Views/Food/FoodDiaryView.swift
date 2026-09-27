@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 struct FoodDiaryView: View {
     @State private var date = Date.now
@@ -65,7 +66,13 @@ struct DayDiaryView: View {
     }
 
     /// Re-logs yesterday's lines for this meal onto the current day.
+    /// Some meal is still empty today but was logged yesterday.
+    private var canCopyFromYesterday: Bool {
+        MealType.allCases.contains { entries(for: $0).isEmpty && !yesterday(for: $0).isEmpty }
+    }
+
     private func copyYesterday(_ meal: MealType) {
+        CopyYesterdayTip().invalidate(reason: .actionPerformed)
         let stamp = meal.logDate(on: date)
         for e in yesterday(for: meal) {
             context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
@@ -83,6 +90,9 @@ struct DayDiaryView: View {
         List {
             Section {
                 summary
+            }
+            if date.isToday, canCopyFromYesterday {
+                Section { TipView(CopyYesterdayTip()) }
             }
             if entries.isEmpty {
                 let meal = MealType.current()
