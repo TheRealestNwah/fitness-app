@@ -545,6 +545,7 @@ struct DashboardView: View {
                 Text("\(units.volumeString(ml: waterMl)) / \(units.volumeString(ml: goal))")
                     .font(.subheadline.monospacedDigit())
                     .foregroundStyle(Color.secondary)
+                    .accessibilityIdentifier("waterTotal")
             }
             HStack(spacing: 6) {
                 ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
@@ -565,6 +566,7 @@ struct DashboardView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.cyan)
+                .accessibilityIdentifier("addGlass")
             }
         }
         .card()

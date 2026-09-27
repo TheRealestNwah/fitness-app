@@ -55,6 +55,19 @@ jobs:
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log
 
+      - name: UI smoke tests
+        run: |
+          set -o pipefail
+          xcodebuild test-without-building \
+            -project FitnessApp.xcodeproj \
+            -scheme FitnessApp \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -derivedDataPath build \
+            -only-testing:FitnessAppUITests/SmokeTests \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee uitest.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
+          grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log
+
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -63,3 +76,4 @@ jobs:
           path: |
             build.log
             test.log
+            uitest.log
