@@ -207,6 +207,8 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Reminders")
+                } footer: {
+                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged.")
                 }
 
                 Section("Data") {
