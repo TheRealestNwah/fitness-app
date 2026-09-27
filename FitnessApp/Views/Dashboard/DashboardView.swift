@@ -106,13 +106,8 @@ struct DashboardView: View {
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
-            // Haptics follow the data rather than the buttons, so they fire however
-            // an entry was added. The system's own haptics setting still applies.
-            .sensoryFeedback(.success, trigger: todaysFood.count) { old, new in new > old }
-            .sensoryFeedback(.success, trigger: weights.count) { old, new in new > old }
-            .sensoryFeedback(.impact(weight: .light), trigger: waterMl) { old, new in new > old }
-            .sensoryFeedback(.success, trigger: waterMl >= profile.waterGoalMl) { old, new in !old && new }
-            .sensoryFeedback(.levelChange, trigger: streak) { old, new in new > old }
+            .modifier(TodayHaptics(foodCount: todaysFood.count, weighIns: weights.count,
+                                   waterMl: waterMl, waterGoalMl: profile.waterGoalMl, streak: streak))
         }
     }
 
@@ -472,5 +467,24 @@ extension MealType {
         case .dinner: return 2
         case .snack: return 3
         }
+    }
+}
+
+/// Haptics follow the data rather than the buttons, so they fire however an entry
+/// was added. The system's own haptics setting still applies.
+struct TodayHaptics: ViewModifier {
+    var foodCount: Int
+    var weighIns: Int
+    var waterMl: Double
+    var waterGoalMl: Double
+    var streak: Int
+
+    func body(content: Content) -> some View {
+        content
+            .sensoryFeedback(.success, trigger: foodCount) { old, new in new > old }
+            .sensoryFeedback(.success, trigger: weighIns) { old, new in new > old }
+            .sensoryFeedback(.impact(weight: .light), trigger: waterMl) { old, new in new > old }
+            .sensoryFeedback(.success, trigger: waterMl >= waterGoalMl) { old, new in !old && new }
+            .sensoryFeedback(.levelChange, trigger: streak) { old, new in new > old }
     }
 }
