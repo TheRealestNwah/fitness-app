@@ -41,7 +41,21 @@ struct DashboardView: View {
 
     private var units: Units { profile.units }
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var baseTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    private var dailyTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+
+    private var intakeByDay: [Date: Double] {
+        var totals: [Date: Double] = [:]
+        for entry in recentFood { totals[entry.date.startOfDay, default: 0] += entry.calories }
+        return totals
+    }
+
+    /// Today's share of the week when weekly budgeting is on (not during a break or maintenance).
+    private var baseTarget: Int {
+        guard profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining,
+              profile.customCalorieTarget == nil else { return dailyTarget }
+        return BudgetCalculator.weeklyAdjustedTarget(dailyTarget: dailyTarget, intakeByDay: intakeByDay,
+                                                     floor: NutritionCalculator.calorieFloor(for: profile.sex))
+    }
     private var activeCredit: Int { HealthKitManager.shared.activeEnergyCredit }
     private var calorieTarget: Int { baseTarget + activeCredit }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
@@ -205,6 +219,11 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
                     LabeledContent("Budget", value: activeCredit > 0 ? "\(baseTarget) + \(activeCredit)" : "\(calorieTarget)")
+                    if let note = budgetNote {
+                        Text(note)
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                    }
                     Divider()
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
@@ -229,6 +248,16 @@ struct DashboardView: View {
         .sheet(isPresented: $showQuickAdd) {
             QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
         }
+    }
+
+    private var budgetNote: String? {
+        if profile.isOnDietBreak, let end = profile.dietBreakEnd {
+            return "Diet break: eating at maintenance until \(end.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()))."
+        }
+        guard baseTarget != dailyTarget else { return nil }
+        let balance = BudgetCalculator.weekBalance(dailyTarget: dailyTarget, intakeByDay: intakeByDay)
+        return balance >= 0 ? "Weekly budget: \(balance) kcal banked this week."
+                            : "Weekly budget: \(-balance) kcal over so far this week."
     }
 
     // MARK: Ring quick actions
@@ -338,7 +367,9 @@ struct DashboardView: View {
         let remaining = max(currentKg - profile.goalWeightKg, 0)
         let total = max(profile.startWeightKg - profile.goalWeightKg, 0.001)
         let progress = min(max(lost / total, 0), 1)
-        let projected = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg)
+        let projected = BudgetCalculator.goalDate(
+            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
+            breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
         return VStack(alignment: .leading, spacing: 12) {
             ProgressView(value: progress)
                 .tint(.indigo)

@@ -19,6 +19,11 @@ final class UserProfile {
     /// Weight to hold and how far either side of it counts as on track.
     var maintenanceWeightKg: Double?
     var maintenanceBandKg: Double = 1.5
+    /// Budget the week as a whole: lighter days bank calories for later ones.
+    var weeklyBudgetEnabled: Bool = false
+    /// A planned stretch at maintenance; the end day is not included.
+    var dietBreakStart: Date?
+    var dietBreakEnd: Date?
     var proteinPercent: Double = 30
     var carbsPercent: Double = 40
     var fatPercent: Double = 30
@@ -94,6 +99,8 @@ final class UserProfile {
         customCalorieTarget = nil          // the maintenance target replaces any deficit override
     }
 
+    var isOnDietBreak: Bool { BudgetCalculator.isOnBreak(start: dietBreakStart, end: dietBreakEnd) }
+
     func endMaintenance() {
         maintenanceStartedAt = nil
         maintenanceWeightKg = nil
@@ -102,7 +109,7 @@ final class UserProfile {
     /// Daily calorie budget, honouring a manual override if the user set one.
     func calorieTarget(currentWeightKg: Double) -> Int {
         if let custom = customCalorieTarget, custom > 0 { return custom }
-        if isMaintaining {
+        if isMaintaining || isOnDietBreak {
             return MaintenanceCalculator.calorieTarget(tdee: tdee(currentWeightKg: currentWeightKg), sex: sex)
         }
         return NutritionCalculator.dailyCalorieTarget(tdee: tdee(currentWeightKg: currentWeightKg),
