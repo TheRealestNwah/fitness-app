@@ -20,6 +20,10 @@ final class FoodLogEntry {
     /// Milligrams.
     var sodium: Double = 0
     var foodItemID: UUID?
+    /// A photo of the meal, stored outside the database file.
+    @Attribute(.externalStorage) var photo: Data?
+    /// Logged from a photo with a rough estimate, to be filled in later.
+    var isEstimate: Bool = false
 
     init(date: Date,
          mealType: MealType,

@@ -45,7 +45,7 @@ struct ExerciseCard: View {
                                 .accessibilityLabel("From Apple Health")
                         }
                         Spacer()
-                        Text("\(Int(entry.minutes)) min · \(Int(entry.calories.rounded())) kcal")
+                        Text("\(Int(entry.minutes)) min · \(Energy.string(entry.calories))")
                             .foregroundStyle(Color.secondary)
                             .monospacedDigit()
                     }
@@ -58,7 +58,7 @@ struct ExerciseCard: View {
                     }
                 }
                 Text(earnBackPercent > 0
-                     ? "+\(ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent)) kcal added to today's budget (\(earnBackPercent)% of \(Int(total.rounded())))."
+                     ? "+\(Energy.string(ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent))) added to today's budget (\(earnBackPercent)% of \(Energy.string(total)))."
                      : "Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings.")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
@@ -102,7 +102,7 @@ struct LogExerciseSheet: View {
                 Section {
                     DecimalField(title: "Calories", value: $calories, unit: "kcal")
                 } footer: {
-                    Text("About \(Int(estimate.rounded())) kcal above resting for your weight. Enter your watch's number instead if you have one.")
+                    Text("About \(Energy.string(estimate)) above resting for your weight. Enter your watch's number instead if you have one.")
                 }
             }
             .navigationTitle("Log exercise")

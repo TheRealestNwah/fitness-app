@@ -66,14 +66,15 @@ struct SettingsView: View {
                     Picker("Units", selection: $profile.unitSystem) {
                         ForEach(UnitSystem.allCases) { Text($0.label).tag($0) }
                     }
+                    UnitPreferenceRows(profile: profile)
                     Picker("Appearance", selection: $appearanceRaw) {
                         ForEach(Appearance.allCases) { Text($0.label).tag($0.rawValue) }
                     }
                 }
 
                 Section {
-                    LabeledContent("Maintenance (TDEE)", value: "\(Int(profile.tdee(currentWeightKg: currentKg).rounded())) kcal")
-                    LabeledContent("Daily target", value: "\(profile.calorieTarget(currentWeightKg: currentKg)) kcal")
+                    LabeledContent("Maintenance (TDEE)", value: "\(Energy.string(profile.tdee(currentWeightKg: currentKg)))")
+                    LabeledContent("Daily target", value: "\(Energy.string(profile.calorieTarget(currentWeightKg: currentKg)))")
                     Toggle("Set target manually", isOn: Binding(
                         get: { profile.customCalorieTarget != nil },
                         set: { on in
@@ -83,7 +84,7 @@ struct SettingsView: View {
                         Stepper(value: Binding(get: { profile.customCalorieTarget ?? 0 },
                                                set: { profile.customCalorieTarget = $0 }),
                                 in: 1000...5000, step: 50) {
-                            Text("Custom target: \(profile.customCalorieTarget ?? 0) kcal")
+                            Text("Custom target: \(Energy.string(profile.customCalorieTarget ?? 0))")
                         }
                     }
                 } header: {
@@ -97,13 +98,13 @@ struct SettingsView: View {
                         TipView(AdaptiveTargetTip())
                         let suggested = estimate.suggestedTarget(weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
                         let formula = Int(profile.tdee(currentWeightKg: currentKg).rounded())
-                        LabeledContent("Measured maintenance", value: "\(estimate.maintenanceKcal) kcal")
-                        LabeledContent("Formula estimate", value: "\(formula) kcal")
-                        LabeledContent("Suggested target", value: "\(suggested) kcal")
+                        LabeledContent("Measured maintenance", value: "\(Energy.string(estimate.maintenanceKcal))")
+                        LabeledContent("Formula estimate", value: "\(Energy.string(formula))")
+                        LabeledContent("Suggested target", value: "\(Energy.string(suggested))")
                         HStack(alignment: .top, spacing: 8) {
                             Image(systemName: "chart.line.uptrend.xyaxis")
                                 .foregroundStyle(Color.secondary)
-                            Text("Based on \(estimate.daysLogged) logged days and \(estimate.weighIns) weigh-ins over the last \(estimate.windowDays) days: you averaged \(Int(estimate.meanIntakeKcal.rounded())) kcal and your weight moved \(units.weightString(kg: estimate.weeklyWeightChangeKg, decimals: 2, signed: true)) a week. Confidence: \(estimate.confidence.rawValue).")
+                            Text("Based on \(estimate.daysLogged) logged days and \(estimate.weighIns) weigh-ins over the last \(estimate.windowDays) days: you averaged \(Energy.string(estimate.meanIntakeKcal)) and your weight moved \(units.weightString(kg: estimate.weeklyWeightChangeKg, decimals: 2, signed: true)) a week. Confidence: \(estimate.confidence.rawValue).")
                                 .font(.footnote)
                                 .foregroundStyle(Color.secondary)
                         }
@@ -113,7 +114,7 @@ struct SettingsView: View {
                                 profile.customCalorieTarget = suggested
                                 try? context.save()
                             } label: {
-                                Label("Use \(suggested) kcal as my target", systemImage: "checkmark.circle")
+                                Label("Use \(Energy.string(suggested)) as my target", systemImage: "checkmark.circle")
                             }
                         } else {
                             Label("Your current target already matches", systemImage: "checkmark.circle.fill")

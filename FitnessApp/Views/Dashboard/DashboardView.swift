@@ -214,7 +214,7 @@ struct DashboardView: View {
                 ZStack {
                     ProgressRing(progress: Double(calorieTarget) > 0 ? consumed / Double(calorieTarget) : 0, lineWidth: 14)
                     VStack(spacing: 2) {
-                        Text("\(Int(abs(remaining).rounded()))")
+                        Text(Energy.number(abs(remaining)))
                             .font(.title.bold().monospacedDigit())
                             .minimumScaleFactor(0.5)
                             .lineLimit(1)
@@ -235,8 +235,8 @@ struct DashboardView: View {
                 .accessibilityHint("Touch and hold for quick actions")
 
                 VStack(alignment: .leading, spacing: 10) {
-                    LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
-                    LabeledContent("Budget", value: activeCredit > 0 ? "\(baseTarget) + \(activeCredit)" : "\(calorieTarget)")
+                    LabeledContent("Eaten", value: Energy.string(consumed))
+                    LabeledContent("Budget", value: activeCredit > 0 ? "\(Energy.number(baseTarget)) + \(Energy.string(activeCredit))" : Energy.string(calorieTarget))
                     if let note = budgetNote {
                         Text(note)
                             .font(.caption)
@@ -274,8 +274,8 @@ struct DashboardView: View {
         }
         guard baseTarget != dailyTarget else { return nil }
         let balance = BudgetCalculator.weekBalance(dailyTarget: dailyTarget, intakeByDay: intakeByDay)
-        return balance >= 0 ? "Weekly budget: \(balance) kcal banked this week."
-                            : "Weekly budget: \(-balance) kcal over so far this week."
+        return balance >= 0 ? "Weekly budget: \(Energy.string(balance)) banked this week."
+                            : "Weekly budget: \(Energy.string(-balance)) over so far this week."
     }
 
     // MARK: Ring quick actions
@@ -296,7 +296,7 @@ struct DashboardView: View {
         let kcal: Int = Int(yesterdays.reduce(0.0) { $0 + $1.calories }.rounded())
         let name: String = meal.label.lowercased()
         let copyTitle: String = yesterdays.isEmpty ? "No \(name) logged yesterday"
-            : "Copy yesterday's \(name) (\(kcal) kcal)"
+            : "Copy yesterday's \(name) (\(Energy.string(kcal)))"
         Button { showAddFood = true } label: {
             Label("Add food", systemImage: "plus.circle")
         }
@@ -435,8 +435,8 @@ struct DashboardView: View {
             }
             HStack(spacing: 12) {
                 StatTile(title: "Steps", value: health.todaySteps.formatted(), subtitle: "today", systemImage: "shoeprints.fill", tint: .green)
-                StatTile(title: "Active energy", value: "\(Int(health.todayActiveEnergyKcal.rounded())) kcal",
-                         subtitle: activeCredit > 0 ? "+\(activeCredit) kcal to budget" : "not added to budget",
+                StatTile(title: "Active energy", value: "\(Energy.string(health.todayActiveEnergyKcal))",
+                         subtitle: activeCredit > 0 ? "+\(Energy.string(activeCredit)) to budget" : "not added to budget",
                          systemImage: "flame.fill", tint: .orange)
             }
             if let error = health.lastError {
@@ -488,7 +488,7 @@ struct DashboardView: View {
 
     private var weeklyReviewCard: some View {
         let review = weeklyReview
-        let intakeValue = review.averageIntake.map { "\(Int($0.rounded())) kcal" } ?? "—"
+        let intakeValue = review.averageIntake.map { "\(Energy.string($0))" } ?? "—"
         let intakeSubtitle: String = {
             guard let over = review.overBudget else { return "budget \(review.budget)" }
             if abs(over) < 25 { return "on budget" }
@@ -580,7 +580,7 @@ struct DashboardView: View {
                     Label("Today's plan", systemImage: "calendar")
                         .font(.headline)
                     Spacer()
-                    Text("\(Int(planned.rounded())) kcal planned")
+                    Text("\(Energy.string(planned)) planned")
                         .font(.caption)
                         .foregroundStyle(Color.secondary)
                 }

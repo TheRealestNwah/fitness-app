@@ -107,7 +107,7 @@ struct RecipeRow: View {
                     }
                 }
                 HStack(spacing: 6) {
-                    Text("\(Int(recipe.caloriesPerServing.rounded())) kcal")
+                    Text("\(Energy.string(recipe.caloriesPerServing))")
                     Text("·")
                     Text("\(Int(recipe.proteinPerServing.rounded()))g protein")
                     Text("·")
@@ -327,7 +327,7 @@ struct RecipeEditorView: View {
                                 Text(ing.amount).font(.caption).foregroundStyle(Color.secondary)
                             }
                             Spacer()
-                            Text("\(Int(ing.calories.rounded())) kcal")
+                            Text("\(Energy.string(ing.calories))")
                                 .font(.caption.monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
@@ -340,7 +340,7 @@ struct RecipeEditorView: View {
                     Text("Ingredients")
                 } footer: {
                     if servings > 0, !ingredients.isEmpty {
-                        Text("\(Int(totalCalories.rounded())) kcal total · \(Int((totalCalories / Double(servings)).rounded())) kcal per serving")
+                        Text("\(Energy.string(totalCalories)) total · \(Energy.string(totalCalories / Double(servings))) per serving")
                     }
                 }
                 Section("Method") {
@@ -453,7 +453,7 @@ struct IngredientEditor: View {
                             HStack {
                                 Text(food.name).foregroundStyle(Color.primary)
                                 Spacer()
-                                Text("\(Int(food.calories.rounded())) kcal").foregroundStyle(Color.secondary)
+                                Text("\(Energy.string(food.calories))").foregroundStyle(Color.secondary)
                             }
                         }
                     }

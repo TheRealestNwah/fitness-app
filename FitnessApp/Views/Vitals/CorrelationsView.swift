@@ -49,7 +49,7 @@ struct CorrelationsView: View {
         let hours = split.medianX.formatted(.number.precision(.fractionLength(0...1)))
         let kcal = Int(abs(split.difference).rounded())
         if kcal < 50 { return "Your eating looks about the same whether you slept more or less than \(hours) h." }
-        return "After nights over \(hours) h you ate about \(kcal) kcal \(split.difference < 0 ? "less" : "more") than after shorter nights."
+        return "After nights over \(hours) h you ate about \(Energy.string(kcal)) \(split.difference < 0 ? "less" : "more") than after shorter nights."
     }
 
     private var sodiumSummary: String? {

@@ -42,7 +42,7 @@ struct WeeklySummaryImage: View {
             Grid(horizontalSpacing: 16, verticalSpacing: 16) {
                 GridRow {
                     tile("Days logged", "\(review.daysLogged)/7", "calendar")
-                    tile("Average intake", review.averageIntake.map { "\(Int($0.rounded())) kcal" } ?? "—", "fork.knife")
+                    tile("Average intake", review.averageIntake.map { "\(Energy.string($0))" } ?? "—", "fork.knife")
                 }
                 GridRow {
                     tile("Weight change", review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—", "scalemass")

@@ -56,6 +56,19 @@ struct ICloudSyncSection: View {
             Text("iCloud")
         } footer: {
             Text("Keeps your diary, weigh-ins, vitals and plans the same on every iPhone and iPad signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy.")
+
+/// Weight and energy units, beyond the metric/imperial switch.
+struct UnitPreferenceRows: View {
+    @Bindable var profile: UserProfile
+    @AppStorage(EnergyUnit.storageKey) private var energyUnit = EnergyUnit.kcal.rawValue
+
+    var body: some View {
+        Picker("Weight in", selection: $profile.weightUnitRaw) {
+            Text("Match units").tag("")
+            ForEach(WeightUnit.allCases) { Text($0.label).tag($0.rawValue) }
+        }
+        Picker("Energy in", selection: $energyUnit) {
+            ForEach(EnergyUnit.allCases) { Text($0.label).tag($0.rawValue) }
         }
     }
 }
