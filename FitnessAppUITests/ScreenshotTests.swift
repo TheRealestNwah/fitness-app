@@ -58,6 +58,12 @@ final class ScreenshotTests: XCTestCase {
         app.buttons["Add food"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 5))
         snap("13-food-search")
+
+        app.buttons["Scan a barcode"].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["Scan barcode"].waitForExistence(timeout: 5))
+        snap("13b-barcode-scanner")
+        app.buttons["Cancel"].firstMatch.tap()
+        XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 5))
         app.buttons["Done"].firstMatch.tap()
 
         tabs.buttons["Weight"].tap()
