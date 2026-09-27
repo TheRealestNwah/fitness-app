@@ -106,6 +106,13 @@ struct DashboardView: View {
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
+            // Haptics follow the data rather than the buttons, so they fire however
+            // an entry was added. The system's own haptics setting still applies.
+            .sensoryFeedback(.success, trigger: todaysFood.count) { old, new in new > old }
+            .sensoryFeedback(.success, trigger: weights.count) { old, new in new > old }
+            .sensoryFeedback(.impact(weight: .light), trigger: waterMl) { old, new in new > old }
+            .sensoryFeedback(.success, trigger: waterMl >= profile.waterGoalMl) { old, new in !old && new }
+            .sensoryFeedback(.levelChange, trigger: streak) { old, new in new > old }
         }
     }
 
