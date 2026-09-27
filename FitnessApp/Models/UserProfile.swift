@@ -27,6 +27,8 @@ final class UserProfile {
     var proteinPercent: Double = 30
     var carbsPercent: Double = 40
     var fatPercent: Double = 30
+    /// "kg", "lb" or "st"; empty follows the unit system.
+    var weightUnitRaw: String = ""
     /// Optional daily goals; nil means untracked. Fibre is a minimum, sugar and sodium are limits.
     var fiberTargetG: Double?
     var sugarLimitG: Double?
@@ -74,7 +76,7 @@ final class UserProfile {
         set { unitSystemRaw = newValue.rawValue }
     }
 
-    var units: Units { Units(system: unitSystem) }
+    var units: Units { Units(system: unitSystem, weight: WeightUnit(rawValue: weightUnitRaw)) }
 
     var age: Int { NutritionCalculator.age(birthDate: birthDate) }
 

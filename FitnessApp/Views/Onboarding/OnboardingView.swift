@@ -253,8 +253,8 @@ struct OnboardingView: View {
                 .card()
 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    StatTile(title: "Maintenance", value: "\(Int(tdee.rounded())) kcal", subtitle: "what you burn now", systemImage: "flame.fill", tint: .orange)
-                    StatTile(title: "Daily deficit", value: "\(max(Int(tdee.rounded()) - target, 0)) kcal", subtitle: units.weightString(kg: rate.rawValue, decimals: 2) + "/week", systemImage: "arrow.down.right", tint: .green)
+                    StatTile(title: "Maintenance", value: "\(Energy.string(tdee))", subtitle: "what you burn now", systemImage: "flame.fill", tint: .orange)
+                    StatTile(title: "Daily deficit", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: units.weightString(kg: rate.rawValue, decimals: 2) + "/week", systemImage: "arrow.down.right", tint: .green)
                     StatTile(title: "Protein", value: "\(Int(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
                     StatTile(title: "Carbs · Fat", value: "\(Int(macros.carbs)) · \(Int(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
                 }
@@ -274,7 +274,7 @@ struct OnboardingView: View {
                 }
 
                 if atFloor {
-                    Label("We've capped your target at \(target) kcal, the lowest we recommend without medical supervision. Your loss may be a little slower than chosen.", systemImage: "exclamationmark.triangle.fill")
+                    Label("We've capped your target at \(Energy.string(target)), the lowest we recommend without medical supervision. Your loss may be a little slower than chosen.", systemImage: "exclamationmark.triangle.fill")
                         .font(.footnote)
                         .foregroundStyle(.orange)
                         .frame(maxWidth: .infinity, alignment: .leading)

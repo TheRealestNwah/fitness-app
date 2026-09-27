@@ -78,6 +78,8 @@ extension FoodLogEntry {
                                 protein: protein, carbs: carbs, fat: fat, foodItemID: foodItemID,
                                 fiber: fiber, sugar: sugar, sodium: sodium)
         copy.uuid = uuid
+        copy.photo = photo
+        copy.isEstimate = isEstimate
         return copy
     }
 }
@@ -87,6 +89,7 @@ extension WeightEntry {
         let copy = WeightEntry(date: date, weightKg: weightKg, note: note)
         copy.uuid = uuid
         copy.sourceID = sourceID
+        copy.photo = photo
         return copy
     }
 }
