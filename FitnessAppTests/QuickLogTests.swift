@@ -4,11 +4,13 @@ import XCTest
 
 @MainActor
 final class QuickLogTests: XCTestCase {
+    // Held so the context stays valid: a ModelContext doesn't keep its container alive.
+    private var container: ModelContainer!
     private var context: ModelContext!
     private let noon = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: .now)!
 
     override func setUp() async throws {
-        let container = try ModelContainer(for: AppStore.schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
+        container = try ModelContainer(for: AppStore.schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
         context = container.mainContext
     }
 
