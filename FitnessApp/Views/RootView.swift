@@ -1,18 +1,25 @@
 import SwiftUI
 import SwiftData
+import UserNotifications
 
 struct RootView: View {
     @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
+    @State private var isResetting = false
 
     private var appearance: Appearance { Appearance(rawValue: appearanceRaw) ?? .system }
 
     var body: some View {
         Group {
-            if let profile = profiles.first {
+            if isResetting {
+                // Swapping the tabs out first means nothing on screen still reads the profile being deleted.
+                ResetProgressView()
+                    .task { await resetAllData() }
+            } else if let profile = profiles.first {
                 MainTabView()
                     .environment(profile)
+                    .environment(\.resetAllData, ResetAllDataAction { isResetting = true })
             } else {
                 OnboardingView()
             }
@@ -21,6 +28,49 @@ struct RootView: View {
         .task {
             SeedData.seedIfNeeded(context: context)
         }
+    }
+
+    private func resetAllData() async {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        // Let the Settings sheet finish dismissing and keep the progress visible long enough to read.
+        try? await Task.sleep(for: .milliseconds(600))
+        DemoData.wipe(context: context)
+        SeedData.seedIfNeeded(context: context)
+        try? context.save()
+        isResetting = false
+    }
+}
+
+struct ResetProgressView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+                .controlSize(.large)
+            Text("Deleting your data…")
+                .font(.headline)
+            Text("You'll be taken to setup when it's done.")
+                .font(.subheadline)
+                .foregroundStyle(Color.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Lets Settings ask the root view to wipe everything and return to onboarding.
+struct ResetAllDataAction {
+    var action: () -> Void = {}
+    func callAsFunction() { action() }
+}
+
+private struct ResetAllDataKey: EnvironmentKey {
+    static let defaultValue = ResetAllDataAction()
+}
+
+extension EnvironmentValues {
+    var resetAllData: ResetAllDataAction {
+        get { self[ResetAllDataKey.self] }
+        set { self[ResetAllDataKey.self] = newValue }
     }
 }
 
