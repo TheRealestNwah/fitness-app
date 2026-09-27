@@ -479,12 +479,19 @@ struct TodayHaptics: ViewModifier {
     var waterGoalMl: Double
     var streak: Int
 
+    private var waterGoalReached: Bool { waterMl >= waterGoalMl }
+
     func body(content: Content) -> some View {
+        // Named conditions with concrete types: inline closures here overwhelm the type checker.
         content
-            .sensoryFeedback(.success, trigger: foodCount) { old, new in new > old }
-            .sensoryFeedback(.success, trigger: weighIns) { old, new in new > old }
-            .sensoryFeedback(.impact(weight: .light), trigger: waterMl) { old, new in new > old }
-            .sensoryFeedback(.success, trigger: waterMl >= waterGoalMl) { old, new in !old && new }
-            .sensoryFeedback(.levelChange, trigger: streak) { old, new in new > old }
+            .sensoryFeedback(SensoryFeedback.success, trigger: foodCount, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.success, trigger: weighIns, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.impact(weight: .light), trigger: waterMl, condition: Self.rose)
+            .sensoryFeedback(SensoryFeedback.success, trigger: waterGoalReached, condition: Self.becameTrue)
+            .sensoryFeedback(SensoryFeedback.levelChange, trigger: streak, condition: Self.grew)
     }
+
+    private static func grew(_ old: Int, _ new: Int) -> Bool { new > old }
+    private static func rose(_ old: Double, _ new: Double) -> Bool { new > old }
+    private static func becameTrue(_ old: Bool, _ new: Bool) -> Bool { !old && new }
 }
