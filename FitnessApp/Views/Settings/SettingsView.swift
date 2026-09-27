@@ -29,6 +29,25 @@ struct SettingsView: View {
             weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) })
     }
 
+    private var macroSplit: [Double] {
+        [profile.proteinPercent, profile.carbsPercent, profile.fatPercent]
+    }
+
+    private func setMacroSplit(_ split: [Double]) {
+        guard split != macroSplit else { return }
+        profile.proteinPercent = split[0]
+        profile.carbsPercent = split[1]
+        profile.fatPercent = split[2]
+    }
+
+    private func macroBinding(_ index: Int) -> Binding<Double> {
+        Binding {
+            macroSplit[index]
+        } set: { newValue in
+            setMacroSplit(NutritionCalculator.rebalancedMacros(macroSplit, changing: index, to: newValue))
+        }
+    }
+
     var body: some View {
         @Bindable var profile = profile
         NavigationStack {
@@ -107,17 +126,17 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    MacroSlider(name: "Protein", value: $profile.proteinPercent, color: .blue)
-                    MacroSlider(name: "Carbs", value: $profile.carbsPercent, color: .orange)
-                    MacroSlider(name: "Fat", value: $profile.fatPercent, color: .pink)
+                    MacroSlider(name: "Protein", value: macroBinding(0), color: .blue)
+                    MacroSlider(name: "Carbs", value: macroBinding(1), color: .orange)
+                    MacroSlider(name: "Fat", value: macroBinding(2), color: .pink)
                     let m = profile.macroTargets(currentWeightKg: currentKg)
                     LabeledContent("Daily grams", value: "P \(Int(m.protein)) · C \(Int(m.carbs)) · F \(Int(m.fat))")
                 } header: {
                     Text("Macro split")
                 } footer: {
-                    let total = profile.proteinPercent + profile.carbsPercent + profile.fatPercent
-                    Text(total == 100 ? "Higher protein helps keep muscle while losing fat." : "Percentages add up to \(Int(total))%. They are scaled to 100%.")
+                    Text("Moving one slider rebalances the other two so the split stays at 100%. Higher protein helps keep muscle while losing fat.")
                 }
+                .onAppear { setMacroSplit(NutritionCalculator.normalizedMacros(macroSplit)) }
 
                 Section {
                     if !HealthKitManager.isAvailable {
@@ -312,7 +331,7 @@ struct MacroSlider: View {
                 Spacer()
                 Text("\(Int(value))%").monospacedDigit().foregroundStyle(Color.secondary)
             }
-            Slider(value: $value, in: 10...60, step: 5)
+            Slider(value: $value, in: NutritionCalculator.macroPercentRange, step: NutritionCalculator.macroPercentStep)
                 .tint(color)
         }
     }
