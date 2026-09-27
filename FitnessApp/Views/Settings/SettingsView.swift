@@ -145,6 +145,8 @@ struct SettingsView: View {
 
                 NutrientGoalsSection(profile: profile)
 
+                MaintenanceSection(profile: profile, currentKg: currentKg)
+
                 Section {
                     if !HealthKitManager.isAvailable {
                         Text("Apple Health isn't available on this device.")

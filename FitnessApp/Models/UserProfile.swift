@@ -14,6 +14,11 @@ final class UserProfile {
     var unitSystemRaw: String = UnitSystem.metric.rawValue
     var waterGoalMl: Double = 2500
     var customCalorieTarget: Int?
+    /// Set when the user switched from losing to holding weight; nil while losing.
+    var maintenanceStartedAt: Date?
+    /// Weight to hold and how far either side of it counts as on track.
+    var maintenanceWeightKg: Double?
+    var maintenanceBandKg: Double = 1.5
     var proteinPercent: Double = 30
     var carbsPercent: Double = 40
     var fatPercent: Double = 30
@@ -78,9 +83,28 @@ final class UserProfile {
         NutritionCalculator.tdee(bmr: bmr(currentWeightKg: currentWeightKg), activity: activityLevel)
     }
 
+    var isMaintaining: Bool { maintenanceStartedAt != nil }
+
+    /// The band's centre: the weight chosen when maintenance started, else the goal.
+    var maintenanceCenterKg: Double { maintenanceWeightKg ?? goalWeightKg }
+
+    func startMaintenance(atKg weightKg: Double) {
+        maintenanceStartedAt = .now
+        maintenanceWeightKg = weightKg
+        customCalorieTarget = nil          // the maintenance target replaces any deficit override
+    }
+
+    func endMaintenance() {
+        maintenanceStartedAt = nil
+        maintenanceWeightKg = nil
+    }
+
     /// Daily calorie budget, honouring a manual override if the user set one.
     func calorieTarget(currentWeightKg: Double) -> Int {
         if let custom = customCalorieTarget, custom > 0 { return custom }
+        if isMaintaining {
+            return MaintenanceCalculator.calorieTarget(tdee: tdee(currentWeightKg: currentWeightKg), sex: sex)
+        }
         return NutritionCalculator.dailyCalorieTarget(tdee: tdee(currentWeightKg: currentWeightKg),
                                                        weeklyLossKg: weeklyLossKg,
                                                        sex: sex)

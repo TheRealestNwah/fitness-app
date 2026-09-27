@@ -9,7 +9,7 @@ final class TodayLayoutTests: XCTestCase {
 
     func testStorageRoundTrips() {
         var layout = TodayLayout.default
-        layout.move(fromOffsets: IndexSet(integer: 9), toOffset: 0)      // tip first
+        layout.move(fromOffsets: IndexSet(integer: layout.order.firstIndex(of: .tip)!), toOffset: 0)
         layout.setVisible(.vitals, false)
         layout.setVisible(.water, false)
         let restored = TodayLayout(storage: layout.storage)

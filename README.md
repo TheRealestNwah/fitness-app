@@ -72,3 +72,7 @@ Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and loa
 `.github/workflows/ci.yml` builds the app and runs the unit tests on an iOS simulator (macOS runner, Xcode 16) for every pull request and push to `main`. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
 
 `.github/workflows/screenshots.yml` runs the `FitnessAppUITests` screenshot suite on a simulator and publishes the PNGs to the `screenshots` branch (and as a workflow artifact).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

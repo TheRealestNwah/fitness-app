@@ -306,7 +306,9 @@ struct LogFoodSheet: View {
                     Picker("Meal", selection: $meal) {
                         ForEach(MealType.allCases) { Text($0.label).tag($0) }
                     }
-                    ServingsControl(servings: $servings, description: food.servingDescription)
+                    ServingsControl(servings: $servings, description: food.servingDescription,
+                                    metric: ServingUnits.metricPerServing(food.servingDescription),
+                                    presets: food.servingPresets)
                 }
                 Section("This entry") {
                     LabeledContent("Calories", value: "\(Int((food.calories * servings).rounded())) kcal")
@@ -326,12 +328,16 @@ struct LogFoodSheet: View {
                     Button("Log") { log() }.disabled(servings <= 0)
                 }
             }
-            .onAppear { meal = mealType }
+            .onAppear {
+                meal = mealType
+                servings = food.lastServings ?? 1
+            }
         }
         .presentationDetents([.medium, .large])
     }
 
     private func log() {
+        food.lastServings = servings
         let entry = FoodLogEntry(date: meal.logDate(on: date),
                                  mealType: meal,
                                  foodName: food.displayName,
@@ -467,6 +473,8 @@ struct CreateFoodSheet: View {
     @State private var name = ""
     @State private var brand = ""
     @State private var serving = "1 serving"
+    @State private var measureName = ""
+    @State private var measureServings: Double?
     @State private var calories: Double?
     @State private var protein: Double?
     @State private var carbs: Double?
@@ -488,6 +496,14 @@ struct CreateFoodSheet: View {
                     if let barcode {
                         Text("Barcode \(barcode) wasn't in the database. Copy the numbers from the label and this food will be found instantly next time you scan it.")
                     }
+                }
+                Section {
+                    TextField("Name (e.g. 1 slice, 1 cup)", text: $measureName)
+                    DecimalField(title: "Servings in it", value: $measureServings)
+                } header: {
+                    Text("Household measure (optional)")
+                } footer: {
+                    Text("Offered as a quick pick when you log this food.")
                 }
                 Section("Nutrition per serving") {
                     DecimalField(title: "Calories", value: $calories, unit: "kcal")
@@ -513,6 +529,10 @@ struct CreateFoodSheet: View {
                                             sugar: sugar ?? 0, sodium: sodium ?? 0,
                                             isCustom: true)
                         item.barcode = barcode
+                        let label = measureName.trimmingCharacters(in: .whitespaces)
+                        if !label.isEmpty, let amount = measureServings, amount > 0 {
+                            item.servingPresets = [ServingPreset(label: label, servings: amount)]
+                        }
                         context.insert(item)
                         try? context.save()
                         dismiss()

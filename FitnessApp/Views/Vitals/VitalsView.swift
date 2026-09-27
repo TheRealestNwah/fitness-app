@@ -47,12 +47,19 @@ struct VitalsView: View {
                     }
                 }
 
-                if hasAny(.waist) || hasAny(.hips) || hasAny(.chest) || hasAny(.bodyFat) {
+                if !entries.isEmpty {
                     Section("Trends") {
+                        if hasAny(.waist) || hasAny(.hips) || hasAny(.chest) || hasAny(.bodyFat) {
+                            NavigationLink {
+                                BodyTrendsView()
+                            } label: {
+                                Label("Measurements and body fat", systemImage: "chart.xyaxis.line")
+                            }
+                        }
                         NavigationLink {
-                            BodyTrendsView()
+                            CorrelationsView()
                         } label: {
-                            Label("Measurements and body fat", systemImage: "chart.xyaxis.line")
+                            Label("Sleep, sodium and patterns", systemImage: "chart.dots.scatter")
                         }
                     }
                 }
