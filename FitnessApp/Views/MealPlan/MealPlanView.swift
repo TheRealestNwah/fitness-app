@@ -74,6 +74,12 @@ struct PlannerView: View {
 
     private var plannedCalories: Double { dayEntries.reduce(0) { $0 + $1.totalCalories } }
 
+    private var weekIsEmpty: Bool {
+        guard let start = weekDays.first else { return true }
+        let end = start.adding(days: 7)
+        return !allEntries.contains { $0.day >= start && $0.day < end }
+    }
+
     var body: some View {
         List {
             Section {
@@ -103,6 +109,18 @@ struct PlannerView: View {
                             .font(.subheadline)
                     }
                     .buttonStyle(.bordered)
+                }
+            }
+            if weekIsEmpty {
+                Section {
+                    ContentUnavailableView {
+                        Label("Nothing planned this week", systemImage: "calendar.badge.plus")
+                    } description: {
+                        Text("Auto-plan fills each meal with a recipe sized to your calorie target. You can swap anything afterwards.")
+                    } actions: {
+                        Button("Auto-plan \(selectedDay.relativeDayLabel)") { autoFill(replace: false) }
+                            .buttonStyle(.borderedProminent)
+                    }
                 }
             }
             ForEach(MealType.allCases) { meal in
