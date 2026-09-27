@@ -14,6 +14,7 @@ struct FoodSearchView: View {
     @Query(sort: \SavedMeal.name) private var savedMeals: [SavedMeal]
 
     @State private var search = ""
+    @AppStorage(RecentSearches.storageKey) private var recentSearches = ""
     @State private var loggedMealName: String?
     @State private var selected: FoodItem?
     @State private var selectedRecipe: Recipe?
@@ -124,6 +125,27 @@ struct FoodSearchView: View {
                         }
                     }
                 }
+                if query.isEmpty, !RecentSearches.list(recentSearches).isEmpty {
+                    Section {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(RecentSearches.list(recentSearches), id: \.self) { term in
+                                    Button(term) { search = term }
+                                        .buttonStyle(.bordered)
+                                        .controlSize(.small)
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text("Recent searches")
+                            Spacer()
+                            Button("Clear") { recentSearches = "" }
+                                .font(.caption)
+                                .textCase(nil)
+                        }
+                    }
+                }
                 if query.isEmpty {
                     Section {
                         TipView(BarcodeTip())
@@ -181,6 +203,7 @@ struct FoodSearchView: View {
                 }
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
+            .onSubmit(of: .search) { rememberSearch() }
             .navigationTitle("Log food")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -220,8 +243,12 @@ struct FoodSearchView: View {
         }
     }
 
+    private func rememberSearch() {
+        if !query.isEmpty { recentSearches = RecentSearches.adding(search, to: recentSearches) }
+    }
+
     private func foodRow(_ food: FoodItem) -> some View {
-        Button { selected = food } label: {
+        Button { rememberSearch(); selected = food } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
