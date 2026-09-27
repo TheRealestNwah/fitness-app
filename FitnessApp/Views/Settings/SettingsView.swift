@@ -217,7 +217,7 @@ struct SettingsView: View {
                     Button {
                         exportData()
                     } label: {
-                        Label("Export as CSV", systemImage: "square.and.arrow.up")
+                        Label("Export and share", systemImage: "square.and.arrow.up")
                     }
                     Button {
                         FeatureTips.resetOnNextLaunch()
@@ -314,6 +314,18 @@ struct SettingsView: View {
         if let u = try? DataExporter.exportWeights(weights) { urls.append(u) }
         if let u = try? DataExporter.exportFoodLog(foodLogs) { urls.append(u) }
         if let u = try? DataExporter.exportVitals(vitals) { urls.append(u) }
+        let review = WeeklyReviewCalculator.review(
+            foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+            weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
+            budget: profile.calorieTarget(currentWeightKg: currentKg),
+            plannedWeeklyLossKg: profile.weeklyLossKg)
+        let streak = NutritionCalculator.streak(logDates: foodLogs.map(\.date) + weights.map(\.date))
+        if let u = ReportRenderer.weeklySummaryImage(review: review, streak: streak, units: units) { urls.insert(u, at: 0) }
+        let report = HealthReport.make(
+            weights: weights.map { (date: $0.date, kg: $0.weightKg) },
+            vitals: vitals.map { .init(date: $0.date, systolic: $0.systolic, diastolic: $0.diastolic,
+                                       heartRate: $0.restingHeartRate, glucose: $0.bloodGlucose, waistCm: $0.waistCm) })
+        if let u = ReportRenderer.doctorReportPDF(report: report, profile: profile) { urls.insert(u, at: min(1, urls.count)) }
         exportURLs = urls
         showExport = true
     }
@@ -347,11 +359,11 @@ struct ExportSheet: View {
                 Section {
                     ForEach(urls, id: \.self) { url in
                         ShareLink(item: url) {
-                            Label(url.lastPathComponent, systemImage: "doc.text")
+                            Label(Self.title(for: url), systemImage: Self.icon(for: url))
                         }
                     }
                 } footer: {
-                    Text("Each file opens in any spreadsheet app. Share to Files, Mail or AirDrop.")
+                    Text("The summary image is for sharing your week. The health report is a one-page PDF of the last 90 days of weight and vitals to show a doctor. The CSV files open in any spreadsheet app.")
                 }
             }
             .navigationTitle("Export")
@@ -361,6 +373,22 @@ struct ExportSheet: View {
             }
         }
         .presentationDetents([.medium])
+    }
+
+    private static func title(for url: URL) -> String {
+        switch url.pathExtension {
+        case "png": return "Weekly summary image"
+        case "pdf": return "Health report for your doctor (PDF)"
+        default: return url.lastPathComponent
+        }
+    }
+
+    private static func icon(for url: URL) -> String {
+        switch url.pathExtension {
+        case "png": return "photo"
+        case "pdf": return "doc.richtext"
+        default: return "tablecells"
+        }
     }
 }
 
