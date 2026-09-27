@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FA00000000000000000000B2 /* StrideWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = FA0000000000000000000032 /* StrideWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		FA00000000000000000000A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FA000000000000000000000A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FA0000000000000000000031;
+			remoteInfo = StrideWidgets;
+		};
 		FA00000000000000000000A1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FA000000000000000000000A /* Project object */;
@@ -23,11 +34,37 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		FA00000000000000000000B1 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				FA00000000000000000000B2 /* StrideWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		FA0000000000000000000002 /* FitnessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitnessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000012 /* FitnessAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitnessAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000022 /* FitnessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitnessAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FA0000000000000000000032 /* StrideWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StrideWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FA00000000000000000000B3 /* Exceptions for "StrideWidgets" folder in "StrideWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				StrideWidgets.entitlements,
+			);
+			target = FA0000000000000000000031 /* StrideWidgets */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FA0000000000000000000003 /* FitnessApp */ = {
@@ -43,6 +80,14 @@
 		FA0000000000000000000023 /* FitnessAppUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = FitnessAppUITests;
+			sourceTree = "<group>";
+		};
+		FA0000000000000000000033 /* StrideWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FA00000000000000000000B3 /* Exceptions for "StrideWidgets" folder in "StrideWidgets" target */,
+			);
+			path = StrideWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,6 +114,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FA0000000000000000000034 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -78,6 +130,7 @@
 				FA0000000000000000000003 /* FitnessApp */,
 				FA0000000000000000000013 /* FitnessAppTests */,
 				FA0000000000000000000023 /* FitnessAppUITests */,
+				FA0000000000000000000033 /* StrideWidgets */,
 				FA0000000000000000000006 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -88,6 +141,7 @@
 				FA0000000000000000000002 /* FitnessApp.app */,
 				FA0000000000000000000012 /* FitnessAppTests.xctest */,
 				FA0000000000000000000022 /* FitnessAppUITests.xctest */,
+				FA0000000000000000000032 /* StrideWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -102,10 +156,12 @@
 				FA0000000000000000000008 /* Sources */,
 				FA0000000000000000000004 /* Frameworks */,
 				FA0000000000000000000009 /* Resources */,
+				FA00000000000000000000B1 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				FA00000000000000000000A6 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FA0000000000000000000003 /* FitnessApp */,
@@ -163,6 +219,28 @@
 			productReference = FA0000000000000000000022 /* FitnessAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		FA0000000000000000000031 /* StrideWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FA0000000000000000000037 /* Build configuration list for PBXNativeTarget "StrideWidgets" */;
+			buildPhases = (
+				FA0000000000000000000038 /* Sources */,
+				FA0000000000000000000034 /* Frameworks */,
+				FA0000000000000000000039 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FA0000000000000000000033 /* StrideWidgets */,
+			);
+			name = StrideWidgets;
+			packageProductDependencies = (
+			);
+			productName = StrideWidgets;
+			productReference = FA0000000000000000000032 /* StrideWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -184,6 +262,9 @@
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = FA0000000000000000000001;
 					};
+					FA0000000000000000000031 = {
+						CreatedOnToolsVersion = 16.0;
+					};
 				};
 			};
 			buildConfigurationList = FA000000000000000000000B /* Build configuration list for PBXProject "FitnessApp" */;
@@ -203,6 +284,7 @@
 				FA0000000000000000000001 /* FitnessApp */,
 				FA0000000000000000000011 /* FitnessAppTests */,
 				FA0000000000000000000021 /* FitnessAppUITests */,
+				FA0000000000000000000031 /* StrideWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -223,6 +305,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		FA0000000000000000000029 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FA0000000000000000000039 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -253,6 +342,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FA0000000000000000000038 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -265,6 +361,11 @@
 			isa = PBXTargetDependency;
 			target = FA0000000000000000000001 /* FitnessApp */;
 			targetProxy = FA00000000000000000000A3 /* PBXContainerItemProxy */;
+		};
+		FA00000000000000000000A6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FA0000000000000000000031 /* StrideWidgets */;
+			targetProxy = FA00000000000000000000A5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -527,6 +628,56 @@
 			};
 			name = Release;
 		};
+		FA000000000000000000003E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StrideWidgets/StrideWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StrideWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Stride;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stride.FitnessApp.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FA000000000000000000003F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StrideWidgets/StrideWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StrideWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Stride;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.stride.FitnessApp.Widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -562,6 +713,15 @@
 			buildConfigurations = (
 				FA000000000000000000002E /* Debug */,
 				FA000000000000000000002F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FA0000000000000000000037 /* Build configuration list for PBXNativeTarget "StrideWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FA000000000000000000003E /* Debug */,
+				FA000000000000000000003F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -124,6 +124,7 @@ struct MainTabView: View {
             if phase == .active {
                 refreshToday()
                 NotificationManager.sync(with: profile)
+                WidgetSnapshot.publish(profile: profile)
                 Task { await refreshHealth() }
             }
         }
@@ -136,7 +137,10 @@ struct MainTabView: View {
         }
         // Today's reminders depend on what's logged, so replan after every save.
         .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
-            Task { @MainActor in NotificationManager.sync(with: profile) }
+            Task { @MainActor in
+                NotificationManager.sync(with: profile)
+                WidgetSnapshot.publish(profile: profile)
+            }
         }
     }
 
