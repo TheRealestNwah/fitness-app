@@ -152,12 +152,15 @@ struct DayDiaryView: View {
     @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
     @Query private var yesterdayEntries: [FoodLogEntry]
+    @Query private var exercise: [ExerciseEntry]
+    @Query private var earlierThisWeek: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
     @State private var addingTo: MealType?
     @State private var editing: FoodLogEntry?
     @State private var savingFavourite: MealType?
     @State private var photographing: MealType?
+    @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 84
 
     init(date: Date) {
         self.date = date
@@ -168,12 +171,26 @@ struct DayDiaryView: View {
                          sort: \FoodLogEntry.date)
         _yesterdayEntries = Query(filter: #Predicate<FoodLogEntry> { $0.date >= yesterday && $0.date < start },
                                   sort: \FoodLogEntry.date)
+        _exercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
+        let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
+        _earlierThisWeek = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < start })
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
     private var target: Int {
-        let base = profile.calorieTarget(currentWeightKg: currentKg)
-        return date.isToday ? base + HealthKitManager.shared.activeEnergyCredit : base
+        let daily = profile.calorieTarget(currentWeightKg: currentKg)
+        guard date.isToday else { return daily }
+        var base = daily
+        if profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining, profile.customCalorieTarget == nil {
+            var byDay: [Date: Double] = [:]
+            for e in earlierThisWeek { byDay[e.date.startOfDay, default: 0] += e.calories }
+            base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: byDay,
+                                                         floor: NutritionCalculator.calorieFloor(for: profile.sex))
+        }
+        return base + ExerciseCatalog.combinedCredit(
+            health: HealthKitManager.shared.activeEnergyCredit,
+            exercise: ExerciseCatalog.earnBack(exerciseKcal: exercise.reduce(0) { $0 + $1.calories },
+                                               percent: ExerciseSettings.earnBackPercent))
     }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
@@ -356,18 +373,25 @@ struct DayDiaryView: View {
 
     private var summary: some View {
         VStack(spacing: 12) {
-            HStack(spacing: 16) {
+            AdaptiveStack(spacing: 16) {
                 ZStack {
                     ProgressRing(progress: target > 0 ? consumed / Double(target) : 0, lineWidth: 10)
                     VStack(spacing: 0) {
                         Text("\(Int(consumed.rounded()))")
                             .font(.headline.monospacedDigit())
+                            .minimumScaleFactor(0.5)
                         Text("of \(target)")
                             .font(.caption2)
                             .foregroundStyle(Color.secondary)
+                            .minimumScaleFactor(0.5)
                     }
+                    .lineLimit(1)
+                    .padding(10)
                 }
-                .frame(width: 84, height: 84)
+                .frame(width: ringSize, height: ringSize)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Calories")
+                .accessibilityValue("\(Int(consumed.rounded())) of \(target)")
                 VStack(spacing: 8) {
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)

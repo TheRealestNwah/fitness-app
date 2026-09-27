@@ -35,6 +35,23 @@ struct ProgressRing: View {
                 .rotationEffect(.degrees(-90))
                 .animation(.easeOut(duration: 0.6), value: progress)
         }
+        // Decorative: the view that shows a ring describes it in words.
+        .accessibilityHidden(true)
+    }
+}
+
+/// Side by side normally, stacked at accessibility text sizes so nothing gets squeezed.
+struct AdaptiveStack<Content: View>: View {
+    var spacing: CGFloat
+    @ViewBuilder var content: Content
+
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    var body: some View {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: spacing))
+            : AnyLayout(HStackLayout(spacing: spacing))
+        layout { content }
     }
 }
 
@@ -65,7 +82,13 @@ struct MacroBar: View {
                 }
             }
             .frame(height: 8)
+            .accessibilityHidden(true)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(name)
+        .accessibilityValue(target > 0
+            ? "\(Int(consumed.rounded())) of \(Int(target.rounded())) grams, \(Int((consumed / target * 100).rounded())) percent"
+            : "\(Int(consumed.rounded())) grams")
     }
 }
 

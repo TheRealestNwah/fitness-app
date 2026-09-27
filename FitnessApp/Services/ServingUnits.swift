@@ -17,4 +17,9 @@ enum ServingUnits {
     static func metric(forServings servings: Double, per serving: GroceryAggregator.Quantity) -> Double {
         servings * serving.value
     }
+
+    /// A per-100 g label value scaled to one serving of `servingGrams`.
+    static func perServing(fromPer100 value: Double, servingGrams: Double) -> Double {
+        value * servingGrams / 100
+    }
 }

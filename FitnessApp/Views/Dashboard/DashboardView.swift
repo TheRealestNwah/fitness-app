@@ -14,6 +14,7 @@ struct DashboardView: View {
     @Query private var recentFood: [FoodLogEntry]
     @Query private var recentWeights: [WeightEntry]
     @Query private var todaysPlan: [MealPlanEntry]
+    @Query private var todaysExercise: [ExerciseEntry]
     @Query(sort: \FastingSession.start, order: .reverse) private var fasts: [FastingSession]
 
     @State private var showAddWeight = false
@@ -21,6 +22,7 @@ struct DashboardView: View {
     @State private var showAddVitals = false
     @State private var showSettings = false
     @State private var showQuickAdd = false
+    @ScaledMetric(relativeTo: .title) private var ringSize: CGFloat = 130
     @State private var showLayoutEditor = false
     @AppStorage(TodayLayoutEditor.storageKey) private var layoutStorage = ""
 
@@ -35,14 +37,35 @@ struct DashboardView: View {
         _recentFood = Query(filter: #Predicate<FoodLogEntry> { $0.date >= sixtyDaysAgo })
         _recentWeights = Query(filter: #Predicate<WeightEntry> { $0.date >= sixtyDaysAgo })
         _todaysPlan = Query(filter: #Predicate<MealPlanEntry> { $0.day >= start && $0.day < end })
+        _todaysExercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
     }
 
     // MARK: Derived
 
     private var units: Units { profile.units }
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var baseTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
-    private var activeCredit: Int { HealthKitManager.shared.activeEnergyCredit }
+    private var dailyTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+
+    private var intakeByDay: [Date: Double] {
+        var totals: [Date: Double] = [:]
+        for entry in recentFood { totals[entry.date.startOfDay, default: 0] += entry.calories }
+        return totals
+    }
+
+    /// Today's share of the week when weekly budgeting is on (not during a break or maintenance).
+    private var baseTarget: Int {
+        guard profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining,
+              profile.customCalorieTarget == nil else { return dailyTarget }
+        return BudgetCalculator.weeklyAdjustedTarget(dailyTarget: dailyTarget, intakeByDay: intakeByDay,
+                                                     floor: NutritionCalculator.calorieFloor(for: profile.sex))
+    }
+    /// Calories added back from activity: Health active energy or logged exercise, whichever is larger.
+    private var activeCredit: Int {
+        ExerciseCatalog.combinedCredit(
+            health: HealthKitManager.shared.activeEnergyCredit,
+            exercise: ExerciseCatalog.earnBack(exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
+                                               percent: ExerciseSettings.earnBackPercent))
+    }
     private var calorieTarget: Int { baseTarget + activeCredit }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
@@ -149,6 +172,7 @@ struct DashboardView: View {
             if !todaysPlan.isEmpty { planCard }
         case .vitals: vitalsCard
         case .tip: tipCard
+        case .exercise: ExerciseCard(weightKg: currentKg)
         case .fasting: FastingCard()
         }
     }
@@ -186,25 +210,38 @@ struct DashboardView: View {
     private var calorieCard: some View {
         let remaining = Double(calorieTarget) - consumed
         return VStack(spacing: 16) {
-            HStack(spacing: 20) {
+            AdaptiveStack(spacing: 20) {
                 ZStack {
                     ProgressRing(progress: Double(calorieTarget) > 0 ? consumed / Double(calorieTarget) : 0, lineWidth: 14)
                     VStack(spacing: 2) {
                         Text("\(Int(abs(remaining).rounded()))")
                             .font(.title.bold().monospacedDigit())
+                            .minimumScaleFactor(0.5)
+                            .lineLimit(1)
                         Text(remaining >= 0 ? "left" : "over")
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
                     }
+                    .padding(14)
                 }
-                .frame(width: 130, height: 130)
+                .frame(width: ringSize, height: ringSize)
                 .contentShape(Circle())
                 .contextMenu { ringActions }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Calories today")
+                .accessibilityValue(remaining >= 0
+                    ? "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int(remaining.rounded())) left"
+                    : "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int((-remaining).rounded())) over")
                 .accessibilityHint("Touch and hold for quick actions")
 
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
                     LabeledContent("Budget", value: activeCredit > 0 ? "\(baseTarget) + \(activeCredit)" : "\(calorieTarget)")
+                    if let note = budgetNote {
+                        Text(note)
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                    }
                     Divider()
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
@@ -229,6 +266,16 @@ struct DashboardView: View {
         .sheet(isPresented: $showQuickAdd) {
             QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
         }
+    }
+
+    private var budgetNote: String? {
+        if profile.isOnDietBreak, let end = profile.dietBreakEnd {
+            return "Diet break: eating at maintenance until \(end.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()))."
+        }
+        guard baseTarget != dailyTarget else { return nil }
+        let balance = BudgetCalculator.weekBalance(dailyTarget: dailyTarget, intakeByDay: intakeByDay)
+        return balance >= 0 ? "Weekly budget: \(balance) kcal banked this week."
+                            : "Weekly budget: \(-balance) kcal over so far this week."
     }
 
     // MARK: Ring quick actions
@@ -338,7 +385,9 @@ struct DashboardView: View {
         let remaining = max(currentKg - profile.goalWeightKg, 0)
         let total = max(profile.startWeightKg - profile.goalWeightKg, 0.001)
         let progress = min(max(lost / total, 0), 1)
-        let projected = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg)
+        let projected = BudgetCalculator.goalDate(
+            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
+            breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
         return VStack(alignment: .leading, spacing: 12) {
             ProgressView(value: progress)
                 .tint(.indigo)
