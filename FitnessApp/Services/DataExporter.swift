@@ -30,10 +30,11 @@ enum DataExporter {
     }
 
     static func exportFoodLog(_ entries: [FoodLogEntry]) throws -> URL {
-        var lines = ["date,meal,food,servings,calories,protein_g,carbs_g,fat_g"]
+        var lines = ["date,meal,food,servings,calories,protein_g,carbs_g,fat_g,fiber_g,sugar_g,sodium_mg"]
         for e in entries.sorted(by: { $0.date < $1.date }) {
             lines.append([isoFormatter.string(from: e.date), e.mealType.rawValue, escape(e.foodName),
-                          String(e.servings), String(e.calories), String(e.protein), String(e.carbs), String(e.fat)]
+                          String(e.servings), String(e.calories), String(e.protein), String(e.carbs), String(e.fat),
+                          String(e.fiber), String(e.sugar), String(e.sodium)]
                 .joined(separator: ","))
         }
         return try write(lines.joined(separator: "\n"), name: "food-log.csv")

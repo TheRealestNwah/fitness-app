@@ -15,6 +15,10 @@ final class FoodLogEntry {
     var protein: Double = 0
     var carbs: Double = 0
     var fat: Double = 0
+    var fiber: Double = 0
+    var sugar: Double = 0
+    /// Milligrams.
+    var sodium: Double = 0
     var foodItemID: UUID?
 
     init(date: Date,
@@ -26,7 +30,10 @@ final class FoodLogEntry {
          protein: Double,
          carbs: Double,
          fat: Double,
-         foodItemID: UUID? = nil) {
+         foodItemID: UUID? = nil,
+         fiber: Double = 0,
+         sugar: Double = 0,
+         sodium: Double = 0) {
         self.uuid = UUID()
         self.date = date
         self.mealTypeRaw = mealType.rawValue
@@ -38,6 +45,9 @@ final class FoodLogEntry {
         self.carbs = carbs
         self.fat = fat
         self.foodItemID = foodItemID
+        self.fiber = fiber
+        self.sugar = sugar
+        self.sodium = sodium
     }
 
     var mealType: MealType {
