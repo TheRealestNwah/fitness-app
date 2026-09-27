@@ -29,6 +29,8 @@ struct LogGlassIntent: AppIntent {
             snapshot.waterMl += ml
             if let data = try? JSONEncoder().encode(snapshot) { defaults.set(data, forKey: Snapshot.key) }
         }
+        // Also run from the Control Center control, so the Home Screen widget needs telling.
+        WidgetCenter.shared.reloadTimelines(ofKind: "CaloriesWidget")
         return .result()
     }
 }
