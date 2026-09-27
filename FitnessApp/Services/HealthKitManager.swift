@@ -61,6 +61,26 @@ struct HealthImportSummary: Equatable {
 enum HealthImportRules {
     static let metadataKey = "StrideEntryID"
 
+    /// Nutrient types a diary entry is written to Health as.
+    static let dietaryTypes: [HKQuantityTypeIdentifier] = [.dietaryEnergyConsumed, .dietaryProtein, .dietaryCarbohydrates,
+                                                           .dietaryFatTotal, .dietaryFiber, .dietarySugar, .dietarySodium]
+
+    /// What a diary entry is written to Health as. Energy and macros are always written;
+    /// fibre, sugar and sodium only when recorded, since zero usually means unknown.
+    static func dietaryValues(calories: Double, protein: Double, carbs: Double, fat: Double,
+                              fiber: Double, sugar: Double, sodiumMg: Double) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
+        var values: [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] = [
+            (.dietaryEnergyConsumed, max(calories, 0), .kilocalorie()),
+            (.dietaryProtein, max(protein, 0), .gram()),
+            (.dietaryCarbohydrates, max(carbs, 0), .gram()),
+            (.dietaryFatTotal, max(fat, 0), .gram()),
+        ]
+        if fiber > 0 { values.append((.dietaryFiber, fiber, .gram())) }
+        if sugar > 0 { values.append((.dietarySugar, sugar, .gram())) }
+        if sodiumMg > 0 { values.append((.dietarySodium, sodiumMg, .gramUnit(with: .milli))) }
+        return values
+    }
+
     /// Samples worth importing: not written by this app, and not already imported.
     static func newSamples(_ samples: [HealthQuantitySample], existingIDs: Set<String>) -> [HealthQuantitySample] {
         samples.filter { !$0.fromThisApp && !existingIDs.contains($0.id.uuidString) }
@@ -146,8 +166,7 @@ final class HealthKitManager {
     }
 
     private var writeTypes: Set<HKSampleType> {
-        [HKQuantityType(.bodyMass), HKQuantityType(.dietaryEnergyConsumed), HKQuantityType(.dietaryProtein),
-         HKQuantityType(.dietaryCarbohydrates), HKQuantityType(.dietaryFatTotal)]
+        Set([HKQuantityType(.bodyMass), HKQuantityType(.dietaryWater)] + HealthImportRules.dietaryTypes.map { HKQuantityType($0) })
     }
 
     // MARK: Authorization
@@ -313,20 +332,16 @@ final class HealthKitManager {
     private func dietarySamples(for entry: FoodLogEntry) -> [HKQuantitySample] {
         let metadata: [String: Any] = [HealthImportRules.metadataKey: entry.uuid.uuidString,
                                        HKMetadataKeyFoodType: entry.foodName]
-        func sample(_ id: HKQuantityTypeIdentifier, _ value: Double, _ unit: HKUnit) -> HKQuantitySample {
-            HKQuantitySample(type: HKQuantityType(id), quantity: HKQuantity(unit: unit, doubleValue: max(value, 0)),
-                             start: entry.date, end: entry.date, metadata: metadata)
-        }
-        return [sample(.dietaryEnergyConsumed, entry.calories, .kilocalorie()),
-                sample(.dietaryProtein, entry.protein, .gram()),
-                sample(.dietaryCarbohydrates, entry.carbs, .gram()),
-                sample(.dietaryFatTotal, entry.fat, .gram())]
+        return HealthImportRules.dietaryValues(calories: entry.calories, protein: entry.protein, carbs: entry.carbs,
+                                               fat: entry.fat, fiber: entry.fiber, sugar: entry.sugar, sodiumMg: entry.sodium)
+            .map { HKQuantitySample(type: HKQuantityType($0.type), quantity: HKQuantity(unit: $0.unit, doubleValue: $0.value),
+                                    start: entry.date, end: entry.date, metadata: metadata) }
     }
 
     private func deleteDietarySamples(entryID: UUID) async throws {
         let predicate = HKQuery.predicateForObjects(withMetadataKey: HealthImportRules.metadataKey,
                                                     allowedValues: [entryID.uuidString])
-        for id in [HKQuantityTypeIdentifier.dietaryEnergyConsumed, .dietaryProtein, .dietaryCarbohydrates, .dietaryFatTotal] {
+        for id in HealthImportRules.dietaryTypes {
             _ = try await store.deleteObjects(of: HKQuantityType(id), predicate: predicate)
         }
     }
@@ -352,6 +367,28 @@ final class HealthKitManager {
             do { try await deleteDietarySamples(entryID: id) } catch { lastError = error.localizedDescription }
         }
     }
+
+    /// Fire-and-forget: mirrors a glass of water into Health when sync is on.
+    func recordWater(_ entry: WaterEntry) {
+        guard HealthSettings.isEnabled, Self.isAvailable, entry.amountMl > 0 else { return }
+        let sample = HKQuantitySample(type: HKQuantityType(.dietaryWater),
+                                      quantity: HKQuantity(unit: .literUnit(with: .milli), doubleValue: entry.amountMl),
+                                      start: entry.date, end: entry.date,
+                                      metadata: [HealthImportRules.metadataKey: entry.uuid.uuidString])
+        Task { @MainActor in
+            do { try await store.save(sample) } catch { lastError = error.localizedDescription }
+        }
+    }
+
+    func removeWater(id: UUID) {
+        guard HealthSettings.isEnabled, Self.isAvailable else { return }
+        let predicate = HKQuery.predicateForObjects(withMetadataKey: HealthImportRules.metadataKey,
+                                                    allowedValues: [id.uuidString])
+        Task { @MainActor in
+            do { _ = try await store.deleteObjects(of: HKQuantityType(.dietaryWater), predicate: predicate) }
+            catch { lastError = error.localizedDescription }
+        }
+    }
 }
 
 extension ModelContext {
@@ -368,5 +405,20 @@ extension ModelContext {
         let id = entry.uuid
         delete(entry)
         HealthKitManager.shared.removeDiaryEntry(id: id)
+    }
+
+    /// Inserts a glass of water and mirrors it to Apple Health when sync is enabled.
+    @MainActor
+    func insertWater(_ entry: WaterEntry) {
+        insert(entry)
+        HealthKitManager.shared.recordWater(entry)
+    }
+
+    /// Deletes a water entry and its Health sample.
+    @MainActor
+    func deleteWater(_ entry: WaterEntry) {
+        let id = entry.uuid
+        delete(entry)
+        HealthKitManager.shared.removeWater(id: id)
     }
 }
