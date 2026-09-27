@@ -7,6 +7,7 @@ struct WeightView: View {
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
     @Query(sort: \WeightEntry.date, order: .reverse) private var entries: [WeightEntry]
+    @Query private var foodLogs: [FoodLogEntry]
 
     @State private var showAdd = false
     @State private var editing: WeightEntry?
@@ -58,6 +59,28 @@ struct WeightView: View {
         let cutoff = Date.now.adding(days: -28)
         let recent = chronological.filter { $0.date >= cutoff }.map { (date: $0.date, weightKg: $0.weightKg) }
         return NutritionCalculator.weeklyRate(points: recent)
+    }
+
+    private var weightDays: [WeeklyReviewCalculator.WeightDay] {
+        entries.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
+    }
+
+    private var milestones: [Milestone] {
+        ProgressCalculator.milestones(startKg: profile.startWeightKg, weights: weightDays)
+    }
+
+    private var nextMilestone: (percent: Int, remainingKg: Double)? {
+        ProgressCalculator.nextMilestone(startKg: profile.startWeightKg, weights: weightDays)
+    }
+
+    private var plateau: Plateau? {
+        let estimate = AdaptiveTargetCalculator.estimate(
+            foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+            weights: weightDays)
+        return ProgressCalculator.plateau(weights: weightDays, goalKg: profile.goalWeightKg,
+                                          currentTarget: profile.calorieTarget(currentWeightKg: currentKg),
+                                          maintenance: estimate, weeklyLossKg: profile.weeklyLossKg,
+                                          sex: profile.sex)
     }
 
     private var projected: Date? {
@@ -172,6 +195,32 @@ struct WeightView: View {
                 Text("Keep logging for a couple of weeks and we'll show your real rate of loss here.")
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
+            }
+            if let latest = milestones.last {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "trophy.fill").foregroundStyle(.yellow)
+                    Text("\(latest.percent)% of your starting weight lost, reached \(latest.reachedOn.formatted(date: .abbreviated, time: .omitted)).")
+                }
+                .font(.subheadline)
+            }
+            if let next = nextMilestone, remaining > 0 {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "flag.checkered").foregroundStyle(.indigo)
+                    Text("\(units.weightString(kg: next.remainingKg)) on your 7-day average to reach \(next.percent)%.")
+                }
+                .font(.subheadline)
+            }
+            if let plateau {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "chart.line.flattrend.xyaxis").foregroundStyle(.orange)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Your average has held steady for \(plateau.days) days.")
+                        if let first = plateau.suggestions.first {
+                            Text(first).foregroundStyle(Color.secondary)
+                        }
+                    }
+                }
+                .font(.subheadline)
             }
             if let projected, remaining > 0 {
                 HStack(spacing: 10) {
