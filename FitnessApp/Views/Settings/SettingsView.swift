@@ -19,6 +19,12 @@ struct SettingsView: View {
     private var units: Units { profile.units }
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
 
+    private var maintenanceEstimate: MaintenanceEstimate? {
+        AdaptiveTargetCalculator.estimate(
+            foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+            weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) })
+    }
+
     var body: some View {
         @Bindable var profile = profile
         NavigationStack {
@@ -58,6 +64,42 @@ struct SettingsView: View {
                     Text("Calories")
                 } footer: {
                     Text("The target updates automatically as your weight changes, unless you set it manually.")
+                }
+
+                Section {
+                    if let estimate = maintenanceEstimate {
+                        let suggested = estimate.suggestedTarget(weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
+                        let formula = Int(profile.tdee(currentWeightKg: currentKg).rounded())
+                        LabeledContent("Measured maintenance", value: "\(estimate.maintenanceKcal) kcal")
+                        LabeledContent("Formula estimate", value: "\(formula) kcal")
+                        LabeledContent("Suggested target", value: "\(suggested) kcal")
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .foregroundStyle(Color.secondary)
+                            Text("Based on \(estimate.daysLogged) logged days and \(estimate.weighIns) weigh-ins over the last \(estimate.windowDays) days: you averaged \(Int(estimate.meanIntakeKcal.rounded())) kcal and your weight moved \(units.weightString(kg: estimate.weeklyWeightChangeKg, decimals: 2, signed: true)) a week. Confidence: \(estimate.confidence.rawValue).")
+                                .font(.footnote)
+                                .foregroundStyle(Color.secondary)
+                        }
+                        if suggested != profile.calorieTarget(currentWeightKg: currentKg) {
+                            Button {
+                                profile.customCalorieTarget = suggested
+                                try? context.save()
+                            } label: {
+                                Label("Use \(suggested) kcal as my target", systemImage: "checkmark.circle")
+                            }
+                        } else {
+                            Label("Your current target already matches", systemImage: "checkmark.circle.fill")
+                                .foregroundStyle(Color.green)
+                        }
+                    } else {
+                        Text("Needs at least \(AdaptiveTargetCalculator.minimumDaysLogged) logged days and \(AdaptiveTargetCalculator.minimumWeighIns) weigh-ins spread over two weeks or more, within the last \(AdaptiveTargetCalculator.windowDays) days.")
+                            .font(.footnote)
+                            .foregroundStyle(Color.secondary)
+                    }
+                } header: {
+                    Text("Adaptive target")
+                } footer: {
+                    Text("The formula is a starting guess. Measured maintenance uses what you actually ate and what the scale actually did.")
                 }
 
                 Section {

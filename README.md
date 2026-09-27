@@ -37,6 +37,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 **Personalised plan & settings**
 - Onboarding computes BMR (Mifflin-St Jeor), TDEE, calorie target with a safe floor, macro split, and goal date
 - Metric or imperial units, light / dark / system appearance, manual calorie override, macro sliders, water goal
+- Adaptive target: measured maintenance from four weeks of intake and weigh-ins, shown against the formula with one-tap apply
 - Reminders: morning weigh-in, meal logging, water
 - CSV export of weight, food and vitals; full reset
 

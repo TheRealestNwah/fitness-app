@@ -123,6 +123,49 @@ final class UnitsTests: XCTestCase {
     }
 }
 
+final class AdaptiveTargetTests: XCTestCase {
+    private let cal = Calendar.current
+    private var today: Date { cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000)) }
+    private func day(_ offset: Int, hour: Int = 12) -> Date {
+        cal.date(byAdding: .hour, value: hour, to: cal.date(byAdding: .day, value: offset, to: today)!)!
+    }
+
+    func testMaintenanceFromIntakeAndWeightChange() {
+        // 1500 kcal a day while losing 0.5 kg a week means maintenance is about 2050.
+        let logs = (-28...(-1)).map { WeeklyReviewCalculator.FoodDay(date: day($0), calories: 1500) }
+        let weights = (-28...(-1)).map { offset -> WeeklyReviewCalculator.WeightDay in
+            let daysFromStart = Double(offset + 28)
+            return .init(date: day(offset, hour: 7), weightKg: 84 - daysFromStart * (0.5 / 7))
+        }
+        let e = AdaptiveTargetCalculator.estimate(foodLogs: logs, weights: weights, today: today, calendar: cal)
+        XCTAssertNotNil(e)
+        XCTAssertEqual(e!.maintenanceKcal, 2050, accuracy: 2)
+        XCTAssertEqual(e!.confidence, .high)
+        XCTAssertEqual(e!.suggestedTarget(weeklyLossKg: 0.5, sex: .female), 1500, accuracy: 2)
+        XCTAssertEqual(e!.suggestedTarget(weeklyLossKg: 1.0, sex: .female), 1200) // floored
+    }
+
+    func testRequiresEnoughData() {
+        let fewLogs = (-10...(-1)).map { WeeklyReviewCalculator.FoodDay(date: day($0), calories: 1500) }
+        let weights = (-28...(-1)).map { WeeklyReviewCalculator.WeightDay(date: day($0, hour: 7), weightKg: 80) }
+        XCTAssertNil(AdaptiveTargetCalculator.estimate(foodLogs: fewLogs, weights: weights, today: today, calendar: cal))
+
+        let logs = (-28...(-1)).map { WeeklyReviewCalculator.FoodDay(date: day($0), calories: 1500) }
+        let clusteredWeighIns = (-4...(-1)).map { WeeklyReviewCalculator.WeightDay(date: day($0, hour: 7), weightKg: 80) }
+        XCTAssertNil(AdaptiveTargetCalculator.estimate(foodLogs: logs, weights: clusteredWeighIns, today: today, calendar: cal))
+    }
+
+    func testIgnoresDataOutsideWindow() {
+        var logs = (-28...(-1)).map { WeeklyReviewCalculator.FoodDay(date: day($0), calories: 1600) }
+        logs.append(.init(date: day(-40), calories: 9000))
+        logs.append(.init(date: day(0), calories: 9000))
+        let weights = (-28...(-1)).map { WeeklyReviewCalculator.WeightDay(date: day($0, hour: 7), weightKg: 80) }
+        let e = AdaptiveTargetCalculator.estimate(foodLogs: logs, weights: weights, today: today, calendar: cal)!
+        XCTAssertEqual(e.meanIntakeKcal, 1600, accuracy: 0.001)
+        XCTAssertEqual(e.maintenanceKcal, 1600)
+    }
+}
+
 final class WeeklyReviewTests: XCTestCase {
     private let cal = Calendar.current
     private var today: Date { cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000)) }
