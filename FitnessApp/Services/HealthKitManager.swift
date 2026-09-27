@@ -45,12 +45,14 @@ struct HealthImportSummary: Equatable {
     var weighIns = 0
     var restingHeartRateDays = 0
     var sleepNights = 0
+    var workouts = 0
 
     var description: String {
         var parts: [String] = []
         if weighIns > 0 { parts.append("\(weighIns) weigh-in\(weighIns == 1 ? "" : "s")") }
         if restingHeartRateDays > 0 { parts.append("\(restingHeartRateDays) resting heart rate\(restingHeartRateDays == 1 ? "" : "s")") }
         if sleepNights > 0 { parts.append("\(sleepNights) night\(sleepNights == 1 ? "" : "s") of sleep") }
+        if workouts > 0 { parts.append("\(workouts) workout\(workouts == 1 ? "" : "s")") }
         return parts.isEmpty ? "Nothing new to import" : "Imported " + parts.joined(separator: ", ")
     }
 }
@@ -90,6 +92,28 @@ enum HealthImportRules {
         return Int((activeKcal * Double(percent) / 100).rounded())
     }
 
+    /// A readable name for a HealthKit workout type's raw value.
+    static func workoutName(_ rawType: UInt) -> String {
+        switch HKWorkoutActivityType(rawValue: rawType) {
+        case .walking: return "Walking"
+        case .running: return "Running"
+        case .cycling: return "Cycling"
+        case .swimming: return "Swimming"
+        case .hiking: return "Hiking"
+        case .yoga: return "Yoga"
+        case .pilates: return "Pilates"
+        case .traditionalStrengthTraining, .functionalStrengthTraining: return "Strength training"
+        case .highIntensityIntervalTraining: return "HIIT"
+        case .rowing: return "Rowing"
+        case .elliptical: return "Elliptical"
+        case .dance, .cardioDance, .socialDance: return "Dancing"
+        case .stairClimbing, .stairs: return "Stair climbing"
+        case .tennis: return "Tennis"
+        case .soccer: return "Football"
+        default: return "Workout"
+        }
+    }
+
     static func vitalsSourceID(for day: Date, calendar: Calendar = .current) -> String {
         let c = calendar.dateComponents([.year, .month, .day], from: day)
         return String(format: "health:%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
@@ -118,7 +142,7 @@ final class HealthKitManager {
 
     private var readTypes: Set<HKObjectType> {
         [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
-         HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis)]
+         HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
     }
 
     private var writeTypes: Set<HKSampleType> {
@@ -237,6 +261,20 @@ final class HealthKitManager {
                 entry.sleepHours = rounded
                 summary.sleepNights += 1
             }
+        }
+
+        // Workouts become exercise entries (active energy only, like the app's own estimates).
+        let existingWorkouts = Set(try context.fetch(FetchDescriptor<ExerciseEntry>()).compactMap(\.sourceID))
+        let workoutPredicate = HKQuery.predicateForSamples(withStart: since, end: nil, options: .strictStartDate)
+        let workouts = try await HKSampleQueryDescriptor(predicates: [.workout(workoutPredicate)],
+                                                         sortDescriptors: [SortDescriptor(\.startDate)]).result(for: store)
+        for workout in workouts where !existingWorkouts.contains(workout.uuid.uuidString) {
+            let kcal = workout.statistics(for: HKQuantityType(.activeEnergyBurned))?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
+            let entry = ExerciseEntry(date: workout.startDate, activity: HealthImportRules.workoutName(workout.workoutActivityType.rawValue),
+                                      minutes: (workout.duration / 60).rounded(), calories: kcal.rounded())
+            entry.sourceID = workout.uuid.uuidString
+            context.insert(entry)
+            summary.workouts += 1
         }
 
         try context.save()
