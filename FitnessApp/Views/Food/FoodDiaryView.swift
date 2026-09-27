@@ -152,6 +152,7 @@ struct DayDiaryView: View {
     @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
     @Query private var yesterdayEntries: [FoodLogEntry]
+    @Query private var earlierThisWeek: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
     @State private var addingTo: MealType?
@@ -167,12 +168,22 @@ struct DayDiaryView: View {
                          sort: \FoodLogEntry.date)
         _yesterdayEntries = Query(filter: #Predicate<FoodLogEntry> { $0.date >= yesterday && $0.date < start },
                                   sort: \FoodLogEntry.date)
+        let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
+        _earlierThisWeek = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < start })
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
     private var target: Int {
-        let base = profile.calorieTarget(currentWeightKg: currentKg)
-        return date.isToday ? base + HealthKitManager.shared.activeEnergyCredit : base
+        let daily = profile.calorieTarget(currentWeightKg: currentKg)
+        guard date.isToday else { return daily }
+        var base = daily
+        if profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining, profile.customCalorieTarget == nil {
+            var byDay: [Date: Double] = [:]
+            for e in earlierThisWeek { byDay[e.date.startOfDay, default: 0] += e.calories }
+            base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: byDay,
+                                                         floor: NutritionCalculator.calorieFloor(for: profile.sex))
+        }
+        return base + HealthKitManager.shared.activeEnergyCredit
     }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
