@@ -40,6 +40,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 - Metric or imperial units, light / dark / system appearance, manual calorie override, macro sliders, water goal
 - Adaptive target: measured maintenance from four weeks of intake and weigh-ins, shown against the formula with one-tap apply
 - Reminders: morning weigh-in, meal logging, water
+- Apple Health sync: imports weigh-ins, resting heart rate and sleep; writes weigh-ins and logged calories/macros; optional active-energy credit (off / half / all) on the daily budget; steps and active energy on Today
 - CSV export of weight, food and vitals; full reset
 
 ## Project layout

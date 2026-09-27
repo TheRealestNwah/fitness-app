@@ -15,6 +15,8 @@ final class VitalsEntry {
     var sleepHours: Double?
     var bloodGlucose: Double?
     var note: String = ""
+    /// Set on entries maintained by the Apple Health import (one per day).
+    var sourceID: String?
 
     init(date: Date) {
         self.uuid = UUID()

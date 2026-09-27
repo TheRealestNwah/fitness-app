@@ -348,7 +348,7 @@ struct LogRecipeSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insert(FoodLogEntry(date: meal.logDate(on: date), mealType: meal, foodName: recipe.name,
+                        context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: date), mealType: meal, foodName: recipe.name,
                                                     servings: servings, servingDescription: "serving",
                                                     calories: recipe.caloriesPerServing * servings,
                                                     protein: recipe.proteinPerServing * servings,
@@ -403,7 +403,7 @@ struct QuickAddSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insert(FoodLogEntry(date: meal.logDate(on: date), mealType: meal,
+                        context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: date), mealType: meal,
                                                     foodName: name.isEmpty ? "Quick add" : name,
                                                     servings: 1, servingDescription: "",
                                                     calories: calories ?? 0, protein: protein ?? 0,

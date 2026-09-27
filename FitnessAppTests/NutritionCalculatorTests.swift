@@ -123,6 +123,47 @@ final class UnitsTests: XCTestCase {
     }
 }
 
+final class HealthImportRulesTests: XCTestCase {
+    func testNewSamplesSkipsOwnWritesAndKnownIDs() {
+        let known = UUID(), fresh = UUID(), mine = UUID()
+        let samples = [
+            HealthQuantitySample(id: known, date: .now, value: 80, fromThisApp: false),
+            HealthQuantitySample(id: fresh, date: .now, value: 81, fromThisApp: false),
+            HealthQuantitySample(id: mine, date: .now, value: 82, fromThisApp: true),
+        ]
+        let result = HealthImportRules.newSamples(samples, existingIDs: [known.uuidString])
+        XCTAssertEqual(result.map(\.id), [fresh])
+    }
+
+    func testSleepHoursAttributedToWakeDay() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000))
+        let bedtime = cal.date(byAdding: .hour, value: -1, to: today)!      // 23:00 yesterday
+        let wake = cal.date(byAdding: .hour, value: 6, to: today)!           // 06:00 today
+        let nap = cal.date(byAdding: .hour, value: 14, to: today)!
+        let intervals = [
+            HealthSleepInterval(start: bedtime, end: cal.date(byAdding: .hour, value: 2, to: today)!),
+            HealthSleepInterval(start: cal.date(byAdding: .hour, value: 2, to: today)!, end: wake),
+            HealthSleepInterval(start: nap, end: cal.date(byAdding: .minute, value: 30, to: nap)!),
+        ]
+        let hours = HealthImportRules.sleepHoursByNight(intervals, calendar: cal)
+        XCTAssertEqual(hours[today]!, 7.5, accuracy: 0.001)
+        XCTAssertEqual(hours.count, 1)
+    }
+
+    func testLatestPerDayAndCredit() {
+        let cal = Calendar.current
+        let day = cal.startOfDay(for: Date(timeIntervalSince1970: 1_800_000_000))
+        let early = HealthQuantitySample(id: UUID(), date: cal.date(byAdding: .hour, value: 7, to: day)!, value: 62, fromThisApp: false)
+        let late = HealthQuantitySample(id: UUID(), date: cal.date(byAdding: .hour, value: 9, to: day)!, value: 60, fromThisApp: false)
+        let latest = HealthImportRules.latestPerDay([late, early], calendar: cal)
+        XCTAssertEqual(latest[day]?.value, 60)
+        XCTAssertEqual(HealthImportRules.activeEnergyCredit(activeKcal: 420, percent: 50), 210)
+        XCTAssertEqual(HealthImportRules.activeEnergyCredit(activeKcal: 420, percent: 0), 0)
+        XCTAssertEqual(HealthImportRules.vitalsSourceID(for: day, calendar: cal).hasPrefix("health:"), true)
+    }
+}
+
 final class OpenFoodFactsParserTests: XCTestCase {
     func testNormaliseBarcode() {
         XCTAssertEqual(OpenFoodFactsClient.normalise(" 5000 159 484 695 "), "5000159484695")

@@ -67,6 +67,7 @@ final class SavedMeal {
     }
 
     /// Inserts a diary entry for each item and returns them.
+    @MainActor
     @discardableResult
     func log(on day: Date, as meal: MealType, context: ModelContext) -> [FoodLogEntry] {
         let stamp = meal.logDate(on: day)
@@ -75,7 +76,7 @@ final class SavedMeal {
                          servingDescription: item.servingDescription, calories: item.calories,
                          protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID)
         }
-        for e in entries { context.insert(e) }
+        for e in entries { context.insertDiaryEntry(e) }
         lastUsed = .now
         useCount += 1
         return entries

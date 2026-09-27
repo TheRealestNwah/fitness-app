@@ -37,7 +37,9 @@ struct DashboardView: View {
 
     private var units: Units { profile.units }
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var calorieTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    private var baseTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    private var activeCredit: Int { HealthKitManager.shared.activeEnergyCredit }
+    private var calorieTarget: Int { baseTarget + activeCredit }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
     private var consumed: Double { todaysFood.reduce(0) { $0 + $1.calories } }
@@ -82,6 +84,7 @@ struct DashboardView: View {
                     calorieCard
                     quickActions
                     weightCard
+                    if HealthSettings.isEnabled, HealthKitManager.isAvailable { activityCard }
                     if weeklyReview.hasContent { weeklyReviewCard }
                     waterCard
                     if !todaysPlan.isEmpty { planCard }
@@ -146,7 +149,7 @@ struct DashboardView: View {
 
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
-                    LabeledContent("Budget", value: "\(calorieTarget)")
+                    LabeledContent("Budget", value: activeCredit > 0 ? "\(baseTarget) + \(activeCredit)" : "\(calorieTarget)")
                     Divider()
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
@@ -225,6 +228,30 @@ struct DashboardView: View {
             }
         }
         .buttonStyle(.plain)
+        .card()
+    }
+
+    private var activityCard: some View {
+        let health = HealthKitManager.shared
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Activity", systemImage: "figure.walk")
+                    .font(.headline)
+                Spacer()
+                Text("Apple Health")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            }
+            HStack(spacing: 12) {
+                StatTile(title: "Steps", value: health.todaySteps.formatted(), subtitle: "today", systemImage: "shoeprints.fill", tint: .green)
+                StatTile(title: "Active energy", value: "\(Int(health.todayActiveEnergyKcal.rounded())) kcal",
+                         subtitle: activeCredit > 0 ? "+\(activeCredit) kcal to budget" : "not added to budget",
+                         systemImage: "flame.fill", tint: .orange)
+            }
+            if let error = health.lastError {
+                Text(error).font(.caption).foregroundStyle(.orange)
+            }
+        }
         .card()
     }
 
