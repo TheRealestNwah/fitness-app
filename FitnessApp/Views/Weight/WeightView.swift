@@ -74,6 +74,7 @@ struct WeightView: View {
     }
 
     private var plateau: Plateau? {
+        guard !profile.isMaintaining else { return nil }      // holding steady is the point
         let estimate = AdaptiveTargetCalculator.estimate(
             foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays)
@@ -122,7 +123,11 @@ struct WeightView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
             StatTile(title: "Current", value: units.weightString(kg: currentKg), subtitle: entries.first.map { $0.date.relativeDayLabel }, systemImage: "scalemass.fill", tint: .indigo)
             StatTile(title: "Lost so far", value: units.weightString(kg: lost), subtitle: "from \(units.weightString(kg: profile.startWeightKg))", systemImage: "arrow.down.right", tint: lost >= 0 ? .green : .orange)
-            StatTile(title: "To goal", value: units.weightString(kg: remaining), subtitle: "goal \(units.weightString(kg: profile.goalWeightKg))", systemImage: "flag.checkered", tint: .purple)
+            if profile.isMaintaining {
+                StatTile(title: "Holding", value: units.weightString(kg: profile.maintenanceCenterKg), subtitle: "± \(units.weightString(kg: profile.maintenanceBandKg))", systemImage: "equal.circle.fill", tint: .green)
+            } else {
+                StatTile(title: "To goal", value: units.weightString(kg: remaining), subtitle: "goal \(units.weightString(kg: profile.goalWeightKg))", systemImage: "flag.checkered", tint: .purple)
+            }
             StatTile(title: "BMI", value: String(format: "%.1f", bmi), subtitle: NutritionCalculator.bmiCategory(bmi), systemImage: "figure.stand", tint: .teal)
         }
     }
@@ -180,6 +185,11 @@ struct WeightView: View {
     private var insightsCard: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Insights").font(.headline)
+            if profile.isMaintaining {
+                MaintenanceBandView(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays) ?? currentKg,
+                                    centerKg: profile.maintenanceCenterKg, bandKg: profile.maintenanceBandKg,
+                                    units: units)
+            }
             if let rate = weeklyRate, entries.count >= 3 {
                 let losing = rate < 0
                 HStack(alignment: .top, spacing: 10) {
@@ -223,16 +233,23 @@ struct WeightView: View {
                 }
                 .font(.subheadline)
             }
-            if let projected, remaining > 0 {
+            if let projected, remaining > 0, !profile.isMaintaining {
                 HStack(spacing: 10) {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(.purple)
                     Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.formatted(date: .abbreviated, time: .omitted)).")
                 }
                 .font(.subheadline)
-            } else if remaining == 0 {
-                Label("You've reached your goal weight. Consider setting a maintenance target in Settings.", systemImage: "party.popper.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(.green)
+            } else if remaining == 0, !profile.isMaintaining {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label("You've reached your goal weight.", systemImage: "party.popper.fill")
+                        .foregroundStyle(.green)
+                    Button("Switch to maintenance") {
+                        profile.startMaintenance(atKg: profile.goalWeightKg)
+                        try? context.save()
+                    }
+                    .buttonStyle(.bordered)
+                }
+                .font(.subheadline)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

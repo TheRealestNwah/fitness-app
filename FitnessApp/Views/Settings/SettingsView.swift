@@ -143,6 +143,8 @@ struct SettingsView: View {
                 }
                 .onAppear { setMacroSplit(NutritionCalculator.normalizedMacros(macroSplit)) }
 
+                MaintenanceSection(profile: profile, currentKg: currentKg)
+
                 Section {
                     if !HealthKitManager.isAvailable {
                         Text("Apple Health isn't available on this device.")
