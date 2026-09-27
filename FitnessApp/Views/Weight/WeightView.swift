@@ -262,8 +262,21 @@ struct AddWeightSheet: View {
                             .font(.title2.monospacedDigit())
                         Text(units.weightUnit).foregroundStyle(Color.secondary)
                     }
-                    Stepper("Adjust", value: $weight, in: 20...400, step: 0.1)
-                        .labelsHidden()
+                    HStack(spacing: 8) {
+                        ForEach([-1.0, -0.1, 0.1, 1.0], id: \.self) { delta in
+                            Button(delta > 0 ? "+\(delta.cleanString)" : "−\((-delta).cleanString)") {
+                                nudge(by: delta)
+                            }
+                            .buttonStyle(.bordered)
+                            .frame(maxWidth: .infinity)
+                            .accessibilityLabel("\(delta > 0 ? "Increase" : "Decrease") by \(abs(delta).cleanString) \(units.weightUnit)")
+                        }
+                    }
+                    .font(.body.monospacedDigit())
+                } footer: {
+                    if entry == nil, let last = entries.first {
+                        Text("Last weigh-in \(units.weightString(kg: last.weightKg)), \(last.date.formatted(.relative(presentation: .named))).")
+                    }
                 }
                 Section {
                     DatePicker("Date", selection: $date, in: ...Date.now, displayedComponents: [.date, .hourAndMinute])
@@ -301,6 +314,11 @@ struct AddWeightSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    /// Steps in tenths without the drift repeated 0.1 additions pick up.
+    private func nudge(by delta: Double) {
+        weight = min(max(((weight + delta) * 10).rounded() / 10, 20), 400)
     }
 
     private func save() {
