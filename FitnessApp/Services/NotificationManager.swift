@@ -1,11 +1,15 @@
 import Foundation
+import SwiftData
 import UserNotifications
 
 /// Schedules the local reminders configured in Settings.
+///
+/// The weigh-in reminder repeats daily. Water and meal reminders are one-offs for the next
+/// few days (see `ReminderPlanner`), rebuilt whenever the app opens or saves data, so today's
+/// can react to what has been logged.
 enum NotificationManager {
     private static let weighInID = "reminder.weighin"
-    private static let waterPrefix = "reminder.water."
-    private static let mealPrefix = "reminder.meal."
+    private static let plannedPrefix = "reminder."
 
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
@@ -16,8 +20,9 @@ enum NotificationManager {
         }
     }
 
-    /// Rebuilds every reminder from the profile's current preferences.
-    static func sync(with profile: UserProfile) {
+    /// Rebuilds every reminder from the profile's preferences and today's log.
+    @MainActor
+    static func sync(with profile: UserProfile, now: Date = .now) {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
 
@@ -33,33 +38,30 @@ enum NotificationManager {
             center.add(UNNotificationRequest(identifier: weighInID, content: content, trigger: trigger))
         }
 
-        if profile.waterReminderEnabled {
-            for hour in stride(from: 9, through: 21, by: 2) {
-                let content = UNMutableNotificationContent()
-                content.title = "Time for a glass of water"
-                content.body = "A quick sip now keeps hunger and headaches away."
-                content.sound = .default
-                var comps = DateComponents()
-                comps.hour = hour
-                comps.minute = 0
-                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
-                center.add(UNNotificationRequest(identifier: waterPrefix + String(hour), content: content, trigger: trigger))
-            }
+        guard profile.waterReminderEnabled || profile.mealReminderEnabled else { return }
+        let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
+                                                waterGoalMl: profile.waterGoalMl,
+                                                mealsEnabled: profile.mealReminderEnabled)
+        for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile.modelContext, now: now), now: now) {
+            let content = UNMutableNotificationContent()
+            content.title = reminder.title
+            content.body = reminder.body
+            content.sound = .default
+            let comps = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: reminder.date)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: false)
+            center.add(UNNotificationRequest(identifier: plannedPrefix + reminder.id, content: content, trigger: trigger))
         }
+    }
 
-        if profile.mealReminderEnabled {
-            let slots: [(MealType, Int)] = [(.breakfast, 8), (.lunch, 13), (.dinner, 19)]
-            for (meal, hour) in slots {
-                let content = UNMutableNotificationContent()
-                content.title = "Log your \(meal.label.lowercased())"
-                content.body = "Logging right after you eat keeps your calorie count honest."
-                content.sound = .default
-                var comps = DateComponents()
-                comps.hour = hour
-                comps.minute = 30
-                let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
-                center.add(UNNotificationRequest(identifier: mealPrefix + meal.rawValue, content: content, trigger: trigger))
-            }
-        }
+    @MainActor
+    private static func todaysLog(_ context: ModelContext?, now: Date) -> ReminderPlanner.Today {
+        guard let context else { return .init(waterMl: 0, loggedMeals: []) }
+        let start = Calendar.current.startOfDay(for: now)
+        let end = start.adding(days: 1)
+        let water = (try? context.fetch(FetchDescriptor<WaterEntry>(
+            predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
+        let food = (try? context.fetch(FetchDescriptor<FoodLogEntry>(
+            predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
+        return .init(waterMl: water.reduce(0) { $0 + $1.amountMl }, loggedMeals: Set(food.map(\.mealType)))
     }
 }
