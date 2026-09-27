@@ -310,7 +310,16 @@ struct AddWeightSheet: View {
             entry.weightKg = kg
             entry.note = note
         } else {
-            context.insert(WeightEntry(date: date, weightKg: kg, note: note))
+            let entry = WeightEntry(date: date, weightKg: kg, note: note)
+            context.insert(entry)
+            if HealthSettings.isEnabled, HealthKitManager.isAvailable {
+                Task { @MainActor in
+                    if let id = try? await HealthKitManager.shared.saveWeight(kg: kg, date: date) {
+                        entry.sourceID = id.uuidString
+                        try? context.save()
+                    }
+                }
+            }
         }
         try? context.save()
         dismiss()

@@ -11,6 +11,10 @@ struct SettingsView: View {
     @Query private var vitals: [VitalsEntry]
 
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
+    @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
+    @AppStorage(HealthSettings.creditPercentKey) private var healthCreditPercent = 0
+    @State private var healthStatus: String?
+    @State private var healthBusy = false
     @State private var showResetConfirm = false
     @State private var exportURLs: [URL] = []
     @State private var showExport = false
@@ -115,6 +119,44 @@ struct SettingsView: View {
                     Text(total == 100 ? "Higher protein helps keep muscle while losing fat." : "Percentages add up to \(Int(total))%. They are scaled to 100%.")
                 }
 
+                Section {
+                    if !HealthKitManager.isAvailable {
+                        Text("Apple Health isn't available on this device.")
+                            .foregroundStyle(Color.secondary)
+                    } else {
+                        Toggle("Sync with Apple Health", isOn: $healthEnabled)
+                        if healthEnabled {
+                            Picker("Count active energy", selection: $healthCreditPercent) {
+                                Text("Off").tag(0)
+                                Text("Half").tag(50)
+                                Text("All").tag(100)
+                            }
+                            Button {
+                                runHealthImport(force: true)
+                            } label: {
+                                HStack {
+                                    Label("Import now", systemImage: "arrow.down.circle")
+                                    Spacer()
+                                    if healthBusy { ProgressView() }
+                                }
+                            }
+                            .disabled(healthBusy)
+                            if let last = HealthSettings.lastImport {
+                                LabeledContent("Last import", value: last.formatted(date: .abbreviated, time: .shortened))
+                            }
+                        }
+                        if let healthStatus {
+                            Text(healthStatus)
+                                .font(.footnote)
+                                .foregroundStyle(Color.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Apple Health")
+                } footer: {
+                    Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins and logged calories. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice.")
+                }
+
                 Section("Water") {
                     Stepper(value: $profile.waterGoalMl, in: 1000...5000, step: 250) {
                         LabeledContent("Daily goal", value: units.volumeString(ml: profile.waterGoalMl))
@@ -173,6 +215,9 @@ struct SettingsView: View {
             .sheet(isPresented: $showExport) {
                 ExportSheet(urls: exportURLs)
             }
+            .onChange(of: healthEnabled) { _, on in
+                if on { runHealthImport(force: true) } else { healthStatus = nil }
+            }
             .onChange(of: profile.weighInReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.weighInReminderHour) { _, _ in reminderChanged() }
             .onChange(of: profile.mealReminderEnabled) { _, _ in reminderChanged() }
@@ -186,6 +231,27 @@ struct SettingsView: View {
         comps.hour = hour
         let date = Calendar.current.date(from: comps) ?? .now
         return date.formatted(.dateTime.hour())
+    }
+
+    private func runHealthImport(force: Bool) {
+        healthBusy = true
+        healthStatus = "Connecting to Health…"
+        Task { @MainActor in
+            defer { healthBusy = false }
+            do {
+                try await HealthKitManager.shared.requestAuthorization()
+                await HealthKitManager.shared.refreshToday()
+                if let summary = await HealthKitManager.shared.importIfDue(into: context, force: force) {
+                    healthStatus = summary.description + "."
+                } else if let error = HealthKitManager.shared.lastError {
+                    healthStatus = error
+                } else {
+                    healthStatus = "Connected."
+                }
+            } catch {
+                healthStatus = error.localizedDescription
+            }
+        }
     }
 
     private func reminderChanged() {

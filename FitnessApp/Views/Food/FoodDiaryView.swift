@@ -44,7 +44,10 @@ struct DayDiaryView: View {
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var target: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    private var target: Int {
+        let base = profile.calorieTarget(currentWeightKg: currentKg)
+        return date.isToday ? base + HealthKitManager.shared.activeEnergyCredit : base
+    }
     private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
 
     private var consumed: Double { entries.reduce(0) { $0 + $1.calories } }
@@ -64,7 +67,7 @@ struct DayDiaryView: View {
     private func copyYesterday(_ meal: MealType) {
         let stamp = meal.logDate(on: date)
         for e in yesterday(for: meal) {
-            context.insert(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
+            context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
                                         servingDescription: e.servingDescription, calories: e.calories,
                                         protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
         }
@@ -72,7 +75,7 @@ struct DayDiaryView: View {
     }
 
     private func clear(_ meal: MealType) {
-        for e in entries(for: meal) { context.delete(e) }
+        for e in entries(for: meal) { context.deleteDiaryEntry(e) }
         try? context.save()
     }
 
@@ -99,7 +102,7 @@ struct DayDiaryView: View {
                         }
                     }
                     .onDelete { offsets in
-                        for i in offsets { context.delete(items[i]) }
+                        for i in offsets { context.deleteDiaryEntry(items[i]) }
                         try? context.save()
                     }
                     Button {
@@ -233,7 +236,7 @@ struct EditLogEntrySheet: View {
                 }
                 Section {
                     Button("Delete entry", role: .destructive) {
-                        context.delete(entry)
+                        context.deleteDiaryEntry(entry)
                         try? context.save()
                         dismiss()
                     }
@@ -253,6 +256,7 @@ struct EditLogEntrySheet: View {
                         entry.fat = p.f * servings
                         entry.mealType = meal
                         try? context.save()
+                        HealthKitManager.shared.recordDiaryEntry(entry)
                         dismiss()
                     }
                     .disabled(servings <= 0)

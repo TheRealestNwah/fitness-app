@@ -26,6 +26,8 @@ struct RootView: View {
 
 struct MainTabView: View {
     @Environment(UserProfile.self) private var profile
+    @Environment(\.modelContext) private var context
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selection: Tab = .today
 
     enum Tab: Hashable {
@@ -55,5 +57,15 @@ struct MainTabView: View {
                 .tag(Tab.plan)
         }
         .onAppear { NotificationManager.sync(with: profile) }
+        .task { await refreshHealth() }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { Task { await refreshHealth() } }
+        }
+    }
+
+    private func refreshHealth() async {
+        guard HealthSettings.isEnabled else { return }
+        await HealthKitManager.shared.refreshToday()
+        _ = await HealthKitManager.shared.importIfDue(into: context)
     }
 }

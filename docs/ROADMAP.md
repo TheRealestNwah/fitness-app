@@ -6,8 +6,7 @@ The items below are ordered by how much they help someone in the first weeks of 
 
 ## Tier 1 — highest impact, modest effort
 
-1. **HealthKit sync (weight, steps, active energy, sleep, heart rate).**
-   Read weigh-ins from a smart scale, steps and active energy from the watch, and write weight and dietary energy back. Done when: a HealthKit toggle in Settings imports the last 90 days, new samples appear without manual entry, and the calorie budget can optionally add a share of active energy.
+1. ~~**HealthKit sync (weight, steps, active energy, sleep, heart rate).**~~ Shipped: Settings toggle imports 90 days of weigh-ins, resting heart rate and sleep (and keeps importing on foreground), writes weigh-ins and diary calories/macros back, shows steps and active energy on Today, and can credit off / half / all of active energy to the budget.
 2. ~~**Barcode scanning + a bigger food database.**~~ Shipped: VisionKit scanner (typed-number fallback where the camera isn't available) with Open Food Facts lookup, cached as custom foods with the barcode, and a create-food path for unknown codes.
 3. ~~**Copy yesterday / repeat meal / favourite meals.**~~ Shipped: per-meal "copy from yesterday", save-as-favourite from the meal menu, favourite meals at the top of food search with one-tap logging.
 4. ~~**Weekly review card.**~~ Shipped: "Last 7 days" card on Today with average intake vs. budget, weight change vs. plan, days logged, and a rule-based headline and suggestion (`WeeklyReviewCalculator`, unit-tested).
