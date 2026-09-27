@@ -90,4 +90,31 @@ final class ScreenshotTests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
         snap("21-settings")
     }
+
+    /// "-appearance dark" lands in UserDefaults via the argument domain, which the
+    /// Appearance setting reads, so the app renders in dark mode regardless of the simulator.
+    func testC_DarkMode() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-demoData", "-appearance", "dark"]
+        app.launch()
+
+        let tabs = app.tabBars
+        XCTAssertTrue(tabs.buttons["Today"].waitForExistence(timeout: 15))
+        snap("30-dark-today")
+
+        tabs.buttons["Food"].tap()
+        snap("31-dark-food-diary")
+
+        tabs.buttons["Weight"].tap()
+        snap("32-dark-weight")
+
+        tabs.buttons["Vitals"].tap()
+        snap("33-dark-vitals")
+
+        tabs.buttons["Plan"].tap()
+        snap("34-dark-meal-planner")
+
+        app.buttons["Recipes"].firstMatch.tap()
+        snap("35-dark-recipes")
+    }
 }

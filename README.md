@@ -34,7 +34,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 
 **Personalised plan & settings**
 - Onboarding computes BMR (Mifflin-St Jeor), TDEE, calorie target with a safe floor, macro split, and goal date
-- Metric or imperial units, manual calorie override, macro sliders, water goal
+- Metric or imperial units, light / dark / system appearance, manual calorie override, macro sliders, water goal
 - Reminders: morning weigh-in, meal logging, water
 - CSV export of weight, food and vitals; full reset
 
@@ -60,7 +60,7 @@ Open `FitnessApp.xcodeproj`, pick a simulator, and run. Tests: ⌘U.
 
 ## Demo data
 
-Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and load a sample profile with six weeks of weigh-ins, today's diary, vitals and a meal plan. `-resetData` wipes everything and returns to onboarding.
+Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and load a sample profile with six weeks of weigh-ins, today's diary, vitals and a meal plan. `-resetData` wipes everything and returns to onboarding. `-appearance dark` (or `light`) forces a colour scheme.
 
 ## Continuous integration
 

@@ -4,6 +4,9 @@ import SwiftData
 struct RootView: View {
     @Environment(\.modelContext) private var context
     @Query private var profiles: [UserProfile]
+    @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
+
+    private var appearance: Appearance { Appearance(rawValue: appearanceRaw) ?? .system }
 
     var body: some View {
         Group {
@@ -14,6 +17,7 @@ struct RootView: View {
                 OnboardingView()
             }
         }
+        .preferredColorScheme(appearance.colorScheme)
         .task {
             SeedData.seedIfNeeded(context: context)
         }

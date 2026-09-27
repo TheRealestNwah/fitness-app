@@ -10,6 +10,7 @@ struct SettingsView: View {
     @Query private var foodLogs: [FoodLogEntry]
     @Query private var vitals: [VitalsEntry]
 
+    @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
     @State private var showResetConfirm = false
     @State private var exportURLs: [URL] = []
     @State private var showExport = false
@@ -32,6 +33,9 @@ struct SettingsView: View {
                     }
                     Picker("Units", selection: $profile.unitSystem) {
                         ForEach(UnitSystem.allCases) { Text($0.label).tag($0) }
+                    }
+                    Picker("Appearance", selection: $appearanceRaw) {
+                        ForEach(Appearance.allCases) { Text($0.label).tag($0.rawValue) }
                     }
                 }
 
