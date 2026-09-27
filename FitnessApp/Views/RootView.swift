@@ -79,6 +79,7 @@ struct MainTabView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @State private var selection: Tab = .today
+    @State private var undoCenter = UndoCenter()
     /// Start of the current day. Today's queries are built from it, so it's refreshed at
     /// midnight and whenever the app comes back to the foreground.
     @State private var today = Date.now.startOfDay
@@ -110,6 +111,13 @@ struct MainTabView: View {
                 .tabItem { Label("Plan", systemImage: "calendar") }
                 .tag(Tab.plan)
         }
+        .environment(undoCenter)
+        .overlay(alignment: .bottom) {
+            UndoToastView()
+                .environment(undoCenter)
+                .padding(.bottom, 58)          // clear of the tab bar
+        }
+        .animation(.snappy, value: undoCenter.toast)
         .onAppear { NotificationManager.sync(with: profile) }
         .task { await refreshHealth() }
         .onChange(of: scenePhase) { _, phase in
