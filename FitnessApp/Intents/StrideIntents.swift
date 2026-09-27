@@ -49,8 +49,13 @@ struct CaloriesLeftIntent: AppIntent {
     func perform() async throws -> some IntentResult & ReturnsValue<Int> & ProvidesDialog {
         let left = try QuickLog.caloriesLeft(context: AppStore.container.mainContext)
         let amount = Energy.string(abs(left))
-        return .result(value: Int(left.rounded()),
-                       dialog: left >= 0 ? "You have \(amount) left today." : "You're \(amount) over today.")
+        let dialog: IntentDialog
+        if left >= 0 {
+            dialog = "You have \(amount) left today."
+        } else {
+            dialog = "You're \(amount) over today."
+        }
+        return .result(value: Int(left.rounded()), dialog: dialog)
     }
 }
 
