@@ -75,7 +75,8 @@ extension FoodLogEntry {
     func restorableCopy() -> FoodLogEntry {
         let copy = FoodLogEntry(date: date, mealType: mealType, foodName: foodName, servings: servings,
                                 servingDescription: servingDescription, calories: calories,
-                                protein: protein, carbs: carbs, fat: fat, foodItemID: foodItemID)
+                                protein: protein, carbs: carbs, fat: fat, foodItemID: foodItemID,
+                                fiber: fiber, sugar: sugar, sodium: sodium)
         copy.uuid = uuid
         return copy
     }

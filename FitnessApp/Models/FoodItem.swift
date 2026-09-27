@@ -12,6 +12,9 @@ final class FoodItem {
     var carbs: Double = 0
     var fat: Double = 0
     var fiber: Double = 0
+    var sugar: Double = 0
+    /// Milligrams.
+    var sodium: Double = 0
     var isFavorite: Bool = false
     var isCustom: Bool = false
     var lastUsed: Date?
@@ -27,6 +30,8 @@ final class FoodItem {
          carbs: Double,
          fat: Double,
          fiber: Double = 0,
+         sugar: Double = 0,
+         sodium: Double = 0,
          isCustom: Bool = false) {
         self.uuid = UUID()
         self.name = name
@@ -37,6 +42,8 @@ final class FoodItem {
         self.carbs = carbs
         self.fat = fat
         self.fiber = fiber
+        self.sugar = sugar
+        self.sodium = sodium
         self.isCustom = isCustom
     }
 

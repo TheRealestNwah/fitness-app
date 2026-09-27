@@ -11,10 +11,14 @@ struct ScannedProduct: Equatable {
     var carbs: Double
     var fat: Double
     var fiber: Double
+    var sugar: Double = 0
+    /// Milligrams.
+    var sodium: Double = 0
 
     func makeFoodItem() -> FoodItem {
         let item = FoodItem(name: name, brand: brand, servingDescription: servingDescription,
-                            calories: calories, protein: protein, carbs: carbs, fat: fat, fiber: fiber, isCustom: true)
+                            calories: calories, protein: protein, carbs: carbs, fat: fat, fiber: fiber,
+                            sugar: sugar, sodium: sodium, isCustom: true)
         item.barcode = barcode
         return item
     }
@@ -88,6 +92,13 @@ enum OpenFoodFactsClient {
             return nil
         }
 
+        // Open Food Facts gives sodium and salt in grams; salt is 2.5 × sodium.
+        func sodiumMg(_ suffix: String) -> Double? {
+            if let g = number("sodium\(suffix)") { return g * 1000 }
+            if let salt = number("salt\(suffix)") { return salt / 2.5 * 1000 }
+            return nil
+        }
+
         let name = (product["product_name"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let brand = ((product["brands"] as? String) ?? "")
             .split(separator: ",").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? ""
@@ -106,7 +117,9 @@ enum OpenFoodFactsClient {
                                   protein: number("proteins_serving") ?? 0,
                                   carbs: number("carbohydrates_serving") ?? 0,
                                   fat: number("fat_serving") ?? 0,
-                                  fiber: number("fiber_serving") ?? 0)
+                                  fiber: number("fiber_serving") ?? 0,
+                                  sugar: number("sugars_serving") ?? 0,
+                                  sodium: sodiumMg("_serving") ?? 0)
         }
         guard let per100 = kcal("_100g") else { return nil }
         let factor: Double
@@ -123,6 +136,8 @@ enum OpenFoodFactsClient {
                               protein: (number("proteins_100g") ?? 0) * factor,
                               carbs: (number("carbohydrates_100g") ?? 0) * factor,
                               fat: (number("fat_100g") ?? 0) * factor,
-                              fiber: (number("fiber_100g") ?? 0) * factor)
+                              fiber: (number("fiber_100g") ?? 0) * factor,
+                              sugar: (number("sugars_100g") ?? 0) * factor,
+                              sodium: (sodiumMg("_100g") ?? 0) * factor)
     }
 }

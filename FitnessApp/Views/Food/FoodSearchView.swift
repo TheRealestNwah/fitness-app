@@ -307,7 +307,10 @@ struct LogFoodSheet: View {
                                  protein: food.protein * servings,
                                  carbs: food.carbs * servings,
                                  fat: food.fat * servings,
-                                 foodItemID: food.uuid)
+                                 foodItemID: food.uuid,
+                                 fiber: food.fiber * servings,
+                                 sugar: food.sugar * servings,
+                                 sodium: food.sodium * servings)
         context.insert(entry)
         food.lastUsed = .now
         food.useCount += 1
@@ -435,6 +438,8 @@ struct CreateFoodSheet: View {
     @State private var carbs: Double?
     @State private var fat: Double?
     @State private var fiber: Double?
+    @State private var sugar: Double?
+    @State private var sodium: Double?
 
     var body: some View {
         NavigationStack {
@@ -456,6 +461,8 @@ struct CreateFoodSheet: View {
                     DecimalField(title: "Carbs", value: $carbs, unit: "g")
                     DecimalField(title: "Fat", value: $fat, unit: "g")
                     DecimalField(title: "Fibre", value: $fiber, unit: "g")
+                    DecimalField(title: "Sugar", value: $sugar, unit: "g")
+                    DecimalField(title: "Sodium", value: $sodium, unit: "mg")
                 }
             }
             .navigationTitle("New food")
@@ -469,6 +476,7 @@ struct CreateFoodSheet: View {
                                             servingDescription: serving,
                                             calories: calories ?? 0, protein: protein ?? 0,
                                             carbs: carbs ?? 0, fat: fat ?? 0, fiber: fiber ?? 0,
+                                            sugar: sugar ?? 0, sodium: sodium ?? 0,
                                             isCustom: true)
                         item.barcode = barcode
                         context.insert(item)

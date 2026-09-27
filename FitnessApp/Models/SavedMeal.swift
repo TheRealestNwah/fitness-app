@@ -12,6 +12,10 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
     var carbs: Double
     var fat: Double
     var foodItemID: UUID?
+    // Optional so meals saved before these were tracked still decode.
+    var fiber: Double?
+    var sugar: Double?
+    var sodium: Double?
 
     init(foodName: String, servings: Double, servingDescription: String,
          calories: Double, protein: Double, carbs: Double, fat: Double, foodItemID: UUID? = nil) {
@@ -30,6 +34,9 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
         self.init(foodName: entry.foodName, servings: entry.servings, servingDescription: entry.servingDescription,
                   calories: entry.calories, protein: entry.protein, carbs: entry.carbs, fat: entry.fat,
                   foodItemID: entry.foodItemID)
+        fiber = entry.fiber
+        sugar = entry.sugar
+        sodium = entry.sodium
     }
 }
 
@@ -74,7 +81,8 @@ final class SavedMeal {
         let entries = items.map { item in
             FoodLogEntry(date: stamp, mealType: meal, foodName: item.foodName, servings: item.servings,
                          servingDescription: item.servingDescription, calories: item.calories,
-                         protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID)
+                         protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID,
+                         fiber: item.fiber ?? 0, sugar: item.sugar ?? 0, sodium: item.sodium ?? 0)
         }
         for e in entries { context.insertDiaryEntry(e) }
         lastUsed = .now

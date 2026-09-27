@@ -70,7 +70,8 @@ struct DayDiaryView: View {
         for e in yesterday(for: meal) {
             context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
                                         servingDescription: e.servingDescription, calories: e.calories,
-                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
+                                        fiber: e.fiber, sugar: e.sugar, sodium: e.sodium))
         }
         try? context.save()
     }
@@ -215,6 +216,10 @@ struct DayDiaryView: View {
                     MacroBar(name: "Fat", consumed: fat, target: macroTargets.fat, color: .pink)
                 }
             }
+            NutrientRow(fiber: entries.reduce(0) { $0 + $1.fiber },
+                        sugar: entries.reduce(0) { $0 + $1.sugar },
+                        sodium: entries.reduce(0) { $0 + $1.sodium },
+                        profile: profile)
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Int(remaining.rounded())) kcal remaining" : "\(Int((-remaining).rounded())) kcal over budget")
                 .font(.subheadline.weight(.medium))
@@ -264,6 +269,10 @@ struct EditLogEntrySheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         let p = perServing
+                        let ratio = servings / max(entry.servings, 0.01)
+                        entry.fiber *= ratio
+                        entry.sugar *= ratio
+                        entry.sodium *= ratio
                         entry.servings = servings
                         entry.calories = p.kcal * servings
                         entry.protein = p.p * servings

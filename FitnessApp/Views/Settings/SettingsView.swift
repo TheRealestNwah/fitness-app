@@ -139,6 +139,8 @@ struct SettingsView: View {
                 }
                 .onAppear { setMacroSplit(NutritionCalculator.normalizedMacros(macroSplit)) }
 
+                NutrientGoalsSection(profile: profile)
+
                 Section {
                     if !HealthKitManager.isAvailable {
                         Text("Apple Health isn't available on this device.")
