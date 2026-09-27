@@ -158,6 +158,7 @@ struct DayDiaryView: View {
     @State private var addingTo: MealType?
     @State private var editing: FoodLogEntry?
     @State private var savingFavourite: MealType?
+    @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 84
 
     init(date: Date) {
         self.date = date
@@ -344,18 +345,25 @@ struct DayDiaryView: View {
 
     private var summary: some View {
         VStack(spacing: 12) {
-            HStack(spacing: 16) {
+            AdaptiveStack(spacing: 16) {
                 ZStack {
                     ProgressRing(progress: target > 0 ? consumed / Double(target) : 0, lineWidth: 10)
                     VStack(spacing: 0) {
                         Text("\(Int(consumed.rounded()))")
                             .font(.headline.monospacedDigit())
+                            .minimumScaleFactor(0.5)
                         Text("of \(target)")
                             .font(.caption2)
                             .foregroundStyle(Color.secondary)
+                            .minimumScaleFactor(0.5)
                     }
+                    .lineLimit(1)
+                    .padding(10)
                 }
-                .frame(width: 84, height: 84)
+                .frame(width: ringSize, height: ringSize)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Calories")
+                .accessibilityValue("\(Int(consumed.rounded())) of \(target)")
                 VStack(spacing: 8) {
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)

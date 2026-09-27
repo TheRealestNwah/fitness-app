@@ -46,6 +46,9 @@ struct FastingCard: View {
                     }
                 }
                 .frame(width: 96, height: 96)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Fast progress")
+                .accessibilityValue("\(Int(elapsed)) hours \(Int((elapsed * 60).truncatingRemainder(dividingBy: 60))) minutes of \(session.targetHours.cleanString) hours")
                 VStack(alignment: .leading, spacing: 6) {
                     Text(progress >= 1 ? "Target reached" : "Ends \(FastingCalculator.targetEnd(fast).formatted(date: .omitted, time: .shortened))")
                         .font(.subheadline.weight(.semibold))

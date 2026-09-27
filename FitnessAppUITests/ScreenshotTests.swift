@@ -123,4 +123,31 @@ final class ScreenshotTests: XCTestCase {
         app.buttons["Recipes"].firstMatch.tap()
         snap("35-dark-recipes")
     }
+
+    /// The largest accessibility text size, set through the launch-argument domain so the
+    /// simulator's own setting doesn't matter.
+    func testD_LargestTextSize() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-demoData",
+                               "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
+        app.launch()
+
+        let tabs = app.tabBars
+        XCTAssertTrue(tabs.buttons["Today"].waitForExistence(timeout: 15))
+        snap("40-ax-today")
+        app.swipeUp()
+        snap("41-ax-today-scrolled")
+
+        tabs.buttons["Food"].tap()
+        snap("42-ax-food-diary")
+
+        tabs.buttons["Weight"].tap()
+        snap("43-ax-weight")
+
+        tabs.buttons["Vitals"].tap()
+        snap("44-ax-vitals")
+
+        tabs.buttons["Plan"].tap()
+        snap("45-ax-meal-planner")
+    }
 }
