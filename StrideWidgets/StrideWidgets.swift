@@ -5,6 +5,9 @@ import WidgetKit
 struct StrideWidgetBundle: WidgetBundle {
     var body: some Widget {
         CaloriesWidget()
+#if os(iOS)
+        FastingLiveActivity()
+#endif
     }
 }
 

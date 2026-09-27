@@ -123,7 +123,10 @@ struct MainTabView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 refreshToday()
-                if let context = profile.modelContext { WidgetWaterQueue.drain(into: context) }
+                if let context = profile.modelContext {
+                    WidgetWaterQueue.drain(into: context)
+                    FastingActivityManager.sync(context: context)
+                }
                 NotificationManager.sync(with: profile)
                 WidgetSnapshot.publish(profile: profile)
                 Task { await refreshHealth() }
