@@ -19,12 +19,7 @@ struct FitnessApp: App {
             FastingSession.self,
             ExerciseEntry.self,
         ])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        do {
-            container = try ModelContainer(for: schema, configurations: [config])
-        } catch {
-            fatalError("Could not create the data store: \(error)")
-        }
+        container = CloudSync.makeContainer(schema: schema)
         // "-resetData" / "-demoData" launch arguments (UI tests, demos).
         DemoData.applyLaunchArguments(context: container.mainContext)
         FeatureTips.configure()

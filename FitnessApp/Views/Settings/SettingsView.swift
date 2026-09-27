@@ -218,6 +218,8 @@ struct SettingsView: View {
                     Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged.")
                 }
 
+                ICloudSyncSection()
+
                 Section("Data") {
                     Button {
                         exportData()
