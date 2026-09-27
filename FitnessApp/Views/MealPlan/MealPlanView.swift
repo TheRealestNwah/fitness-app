@@ -429,7 +429,7 @@ struct GroceryListView: View {
 
     private var items: [Item] {
         let weekEntries = entries.filter { $0.day >= weekStart && $0.day < weekEnd }
-        var amounts: [String: [String]] = [:]
+        var amounts: [String: [(amount: String, multiplier: Double)]] = [:]
         var usedIn: [String: Set<String>] = [:]
         var order: [String] = []
         for entry in weekEntries {
@@ -438,18 +438,19 @@ struct GroceryListView: View {
                 for ing in recipe.ingredients {
                     let key = ing.name.lowercased()
                     if amounts[key] == nil { order.append(key) }
-                    let amount = multiplier == 1 ? ing.amount : "\(ing.amount) × \(String(format: "%.2g", multiplier))"
-                    amounts[key, default: []].append(amount)
+                    amounts[key, default: []].append((ing.amount, multiplier))
                     usedIn[key, default: []].insert(recipe.name)
                 }
             } else {
                 let key = entry.title.lowercased()
                 if amounts[key] == nil { order.append(key) }
-                amounts[key, default: []].append("\(entry.servings.cleanString) serving")
+                amounts[key, default: []].append(("\(entry.servings.cleanString) serving", 1))
                 usedIn[key, default: []].insert("Planned as a food")
             }
         }
-        return order.map { Item(name: $0, amounts: amounts[$0] ?? [], usedIn: usedIn[$0] ?? []) }
+        return order.map {
+            Item(name: $0, amounts: GroceryAggregator.combine(amounts[$0] ?? []), usedIn: usedIn[$0] ?? [])
+        }
     }
 
     var body: some View {
@@ -484,7 +485,7 @@ struct GroceryListView: View {
                                     Text(item.name.capitalized)
                                         .strikethrough(isChecked)
                                         .foregroundStyle(isChecked ? Color.secondary : Color.primary)
-                                    Text(item.amounts.joined(separator: ", "))
+                                    Text(item.amounts.joined(separator: " + "))
                                         .font(.caption)
                                         .foregroundStyle(Color.secondary)
                                     Text(item.usedIn.sorted().joined(separator: ", "))
