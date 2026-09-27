@@ -19,6 +19,7 @@ struct DashboardView: View {
     @State private var showAddFood = false
     @State private var showAddVitals = false
     @State private var showSettings = false
+    @State private var showQuickAdd = false
 
     init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void) {
         self.selectTab = selectTab
@@ -167,6 +168,9 @@ struct DashboardView: View {
                     }
                 }
                 .frame(width: 130, height: 130)
+                .contentShape(Circle())
+                .contextMenu { ringActions }
+                .accessibilityHint("Touch and hold for quick actions")
 
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
@@ -191,6 +195,51 @@ struct DashboardView: View {
             }
         }
         .card()
+        // Kept on the card rather than the body, which is near the type checker's limit.
+        .sheet(isPresented: $showQuickAdd) {
+            QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
+        }
+    }
+
+    // MARK: Ring quick actions
+
+    private var yesterdaysCurrentMeal: [FoodLogEntry] {
+        let meal = MealType.current()
+        let today = Date.now.startOfDay
+        let yesterday = today.adding(days: -1)
+        return recentFood
+            .filter { $0.mealType == meal && $0.date >= yesterday && $0.date < today }
+            .sorted { $0.date < $1.date }
+    }
+
+    @ViewBuilder
+    private var ringActions: some View {
+        let meal = MealType.current()
+        let yesterdays = yesterdaysCurrentMeal
+        let kcal: Int = Int(yesterdays.reduce(0.0) { $0 + $1.calories }.rounded())
+        let name: String = meal.label.lowercased()
+        let copyTitle: String = yesterdays.isEmpty ? "No \(name) logged yesterday"
+            : "Copy yesterday's \(name) (\(kcal) kcal)"
+        Button { showAddFood = true } label: {
+            Label("Add food", systemImage: "plus.circle")
+        }
+        Button { showQuickAdd = true } label: {
+            Label("Quick add calories", systemImage: "bolt")
+        }
+        Button { copyYesterday(yesterdays, as: meal) } label: {
+            Label(copyTitle, systemImage: "arrow.uturn.backward")
+        }
+        .disabled(yesterdays.isEmpty)
+    }
+
+    private func copyYesterday(_ entries: [FoodLogEntry], as meal: MealType) {
+        let stamp = meal.logDate(on: Date.now.startOfDay)
+        for e in entries {
+            context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
+                                                  servingDescription: e.servingDescription, calories: e.calories,
+                                                  protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+        }
+        try? context.save()
     }
 
     private var quickActions: some View {
