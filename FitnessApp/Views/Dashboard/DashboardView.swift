@@ -20,6 +20,8 @@ struct DashboardView: View {
     @State private var showAddVitals = false
     @State private var showSettings = false
     @State private var showQuickAdd = false
+    @State private var showLayoutEditor = false
+    @AppStorage(TodayLayoutEditor.storageKey) private var layoutStorage = ""
 
     init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void) {
         self.selectTab = selectTab
@@ -99,17 +101,10 @@ struct DashboardView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     header
-                    calorieCard
-                    quickActions
-                    weightCard
-                    if let milestone = recentMilestone { milestoneCard(milestone) }
-                    if let plateau { plateauCard(plateau) }
-                    if HealthSettings.isEnabled, HealthKitManager.isAvailable { activityCard }
-                    if weeklyReview.hasContent { weeklyReviewCard }
-                    waterCard
-                    if !todaysPlan.isEmpty { planCard }
-                    vitalsCard
-                    tipCard
+                    ForEach(TodayLayout(storage: layoutStorage).visible) { card in
+                        cardView(card)
+                    }
+                    customiseButton
                 }
                 .padding()
             }
@@ -132,6 +127,37 @@ struct DashboardView: View {
     }
 
     // MARK: Sections
+
+    @ViewBuilder
+    private func cardView(_ card: TodayCard) -> some View {
+        switch card {
+        case .calories: calorieCard
+        case .quickActions: quickActions
+        case .weight: weightCard
+        case .progress:
+            if let milestone = recentMilestone { milestoneCard(milestone) }
+            if let plateau { plateauCard(plateau) }
+        case .activity:
+            if HealthSettings.isEnabled, HealthKitManager.isAvailable { activityCard }
+        case .weeklyReview:
+            if weeklyReview.hasContent { weeklyReviewCard }
+        case .water: waterCard
+        case .plan:
+            if !todaysPlan.isEmpty { planCard }
+        case .vitals: vitalsCard
+        case .tip: tipCard
+        }
+    }
+
+    private var customiseButton: some View {
+        Button { showLayoutEditor = true } label: {
+            Label("Customise Today", systemImage: "slider.horizontal.3")
+                .font(.subheadline)
+        }
+        .buttonStyle(.bordered)
+        .padding(.top, 4)
+        .sheet(isPresented: $showLayoutEditor) { TodayLayoutEditor() }
+    }
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
