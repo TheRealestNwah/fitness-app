@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.resetAllData) private var resetAllData
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query private var foodLogs: [FoodLogEntry]
     @Query private var vitals: [VitalsEntry]
@@ -228,8 +229,14 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
-            .confirmationDialog("Delete every log, plan and setting? This cannot be undone.", isPresented: $showResetConfirm, titleVisibility: .visible) {
-                Button("Reset everything", role: .destructive) { resetAll() }
+            .alert("Reset all data?", isPresented: $showResetConfirm) {
+                Button("Delete everything", role: .destructive) {
+                    dismiss()
+                    resetAllData()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Every weigh-in, food log, vitals reading, meal plan, recipe and setting will be deleted from this device and you'll start setup again. This can't be undone.")
             }
             .sheet(isPresented: $showExport) {
                 ExportSheet(urls: exportURLs)
@@ -291,31 +298,6 @@ struct SettingsView: View {
         if let u = try? DataExporter.exportVitals(vitals) { urls.append(u) }
         exportURLs = urls
         showExport = true
-    }
-
-    private func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) {
-        guard let items = try? context.fetch(FetchDescriptor<T>()) else { return }
-        for item in items { context.delete(item) }
-    }
-
-    private func resetAll() {
-        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-        let context = self.context
-        dismiss()
-        // Let the sheet finish dismissing so nothing on screen still reads the profile being deleted.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            deleteAll(WeightEntry.self, in: context)
-            deleteAll(FoodLogEntry.self, in: context)
-            deleteAll(VitalsEntry.self, in: context)
-            deleteAll(WaterEntry.self, in: context)
-            deleteAll(MealPlanEntry.self, in: context)
-            deleteAll(SavedMeal.self, in: context)
-            deleteAll(FoodItem.self, in: context)
-            deleteAll(Recipe.self, in: context)
-            deleteAll(UserProfile.self, in: context)
-            try? context.save()
-            SeedData.seedIfNeeded(context: context)
-        }
     }
 }
 
