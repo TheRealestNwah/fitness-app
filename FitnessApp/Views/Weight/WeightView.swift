@@ -306,6 +306,7 @@ struct WeightView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("weighInRow")
                 .padding(.vertical, 6)
                 .contextMenu {
                     Button(role: .destructive) { delete(entry) } label: { Label("Delete", systemImage: "trash") }
