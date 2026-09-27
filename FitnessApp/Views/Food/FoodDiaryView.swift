@@ -302,34 +302,80 @@ struct EditLogEntrySheet: View {
 struct ServingsControl: View {
     @Binding var servings: Double
     var description: String
+    /// Grams or millilitres per serving, when known, to allow entering the weight directly.
+    var metric: GroceryAggregator.Quantity? = nil
+    /// Household measures for this food; replaces the generic multiples when present.
+    var presets: [ServingPreset] = []
 
-    private let presets: [Double] = [0.5, 1, 1.5, 2, 3]
+    @State private var byWeight = false
+
+    private let multiples: [Double] = [0.5, 1, 1.5, 2, 3]
+
+    private func weightBinding(_ metric: GroceryAggregator.Quantity) -> Binding<Double> {
+        Binding(get: { ServingUnits.metric(forServings: servings, per: metric) },
+                set: { servings = ServingUnits.servings(forMetric: $0, per: metric) })
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text("Servings")
-                Spacer()
-                TextField("Servings", value: $servings, format: .number.precision(.fractionLength(0...2)))
-                    .keyboardType(.decimalPad)
-                    .multilineTextAlignment(.trailing)
-                    .frame(maxWidth: 80)
-                Stepper("", value: $servings, in: 0.25...50, step: 0.25).labelsHidden()
+            if let metric {
+                Picker("Amount in", selection: $byWeight) {
+                    Text("Servings").tag(false)
+                    Text(metric.unit).tag(true)
+                }
+                .pickerStyle(.segmented)
             }
-            if !description.isEmpty {
-                Text("1 serving = \(description)")
+            if byWeight, let metric {
+                HStack {
+                    Text(metric.unit == "g" ? "Weight" : "Volume")
+                    Spacer()
+                    TextField(metric.unit, value: weightBinding(metric), format: .number.precision(.fractionLength(0)))
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 90)
+                    Text(metric.unit).foregroundStyle(Color.secondary)
+                }
+                Text("= \(servings.formatted(.number.precision(.fractionLength(0...2)))) servings")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
+            } else {
+                HStack {
+                    Text("Servings")
+                    Spacer()
+                    TextField("Servings", value: $servings, format: .number.precision(.fractionLength(0...2)))
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 80)
+                    Stepper("", value: $servings, in: 0.25...50, step: 0.25).labelsHidden()
+                }
+                if !description.isEmpty {
+                    Text("1 serving = \(description)")
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                }
             }
-            HStack {
-                ForEach(presets, id: \.self) { preset in
-                    Button(preset.cleanString) { servings = preset }
-                        .buttonStyle(.bordered)
-                        .tint(servings == preset ? Color.accentColor : Color.secondary)
-                        .controlSize(.small)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    if presets.isEmpty {
+                        ForEach(multiples, id: \.self) { value in
+                            chip(value.cleanString, value: value)
+                        }
+                    } else {
+                        chip("1 serving", value: 1)
+                        ForEach(presets) { preset in
+                            chip(preset.label, value: preset.servings)
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private func chip(_ label: String, value: Double) -> some View {
+        Button(label) { servings = value }
+            .buttonStyle(.bordered)
+            .tint(servings == value ? Color.accentColor : Color.secondary)
+            .controlSize(.small)
     }
 }
 

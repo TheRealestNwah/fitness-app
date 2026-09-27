@@ -1,6 +1,13 @@
 import Foundation
 import SwiftData
 
+/// A household measure for a food, e.g. "1 slice" = 0.5 servings.
+struct ServingPreset: Codable, Hashable, Identifiable {
+    var id: UUID = UUID()
+    var label: String
+    var servings: Double
+}
+
 @Model
 final class FoodItem {
     var uuid: UUID = UUID()
@@ -18,6 +25,10 @@ final class FoodItem {
     var useCount: Int = 0
     /// Product barcode when the food came from a scan, so the next scan is instant and offline.
     var barcode: String?
+    /// Household measures offered alongside servings and grams.
+    var servingPresets: [ServingPreset] = []
+    /// The amount last logged, used as the default next time.
+    var lastServings: Double?
 
     init(name: String,
          brand: String = "",
