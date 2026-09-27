@@ -18,6 +18,9 @@ struct FitnessApp: App {
             RootView()
         }
         .modelContainer(container)
+        .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
+            await BackgroundRefresh.run()
+        }
     }
 }
 
