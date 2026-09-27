@@ -10,8 +10,7 @@ The items below are ordered by how much they help someone in the first weeks of 
    Read weigh-ins from a smart scale, steps and active energy from the watch, and write weight and dietary energy back. Done when: a HealthKit toggle in Settings imports the last 90 days, new samples appear without manual entry, and the calorie budget can optionally add a share of active energy.
 2. **Barcode scanning + a bigger food database.**
    Camera scan (VisionKit) looking up Open Food Facts, with results cached as custom foods. Done when: scanning a packaged food logs it in two taps, and an offline fallback lets the user type in the label.
-3. **Copy yesterday / repeat meal / favourite meals.**
-   Most days look alike. Done when: each meal section has "copy from yesterday", a logged meal can be saved as a named favourite, and favourites appear at the top of food search.
+3. ~~**Copy yesterday / repeat meal / favourite meals.**~~ Shipped: per-meal "copy from yesterday", save-as-favourite from the meal menu, favourite meals at the top of food search with one-tap logging.
 4. **Weekly review card.**
    Every Monday (or on demand): average intake vs. budget, weight change vs. the trend, logging consistency, and one concrete suggestion. Done when: the card appears on Today, and its numbers match the unit-tested calculator.
 5. **Adaptive calorie target.**
@@ -37,7 +36,6 @@ The items below are ordered by how much they help someone in the first weeks of 
 
 ## Known rough edges to fix soon
 
-- Diary entries logged for a past day are stamped at midnight, so they sort before the day's real entries.
 - The macro sliders can total more or less than 100%; they are normalised, but the UI should keep them balanced.
 - Grocery list quantities are concatenated strings rather than summed amounts.
 - Reset from Settings deletes on a short delay after dismissal; a proper "are you sure" flow with progress would be clearer.

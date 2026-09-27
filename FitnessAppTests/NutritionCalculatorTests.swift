@@ -123,6 +123,39 @@ final class UnitsTests: XCTestCase {
     }
 }
 
+final class SavedMealTests: XCTestCase {
+    func testTotalsSumItems() {
+        let meal = SavedMeal(name: "Test", mealType: .lunch, items: [
+            SavedMealItem(foodName: "A", servings: 1, servingDescription: "x", calories: 300, protein: 20, carbs: 30, fat: 10),
+            SavedMealItem(foodName: "B", servings: 2, servingDescription: "y", calories: 100, protein: 5, carbs: 10, fat: 2),
+        ])
+        XCTAssertEqual(meal.totalCalories, 400, accuracy: 0.001)
+        XCTAssertEqual(meal.totalProtein, 25, accuracy: 0.001)
+        XCTAssertEqual(meal.totalCarbs, 40, accuracy: 0.001)
+        XCTAssertEqual(meal.totalFat, 12, accuracy: 0.001)
+        XCTAssertEqual(meal.summary, "A, B")
+    }
+
+    func testItemSnapshotsDiaryEntry() {
+        let entry = FoodLogEntry(date: .now, mealType: .dinner, foodName: "Salmon", servings: 1.5,
+                                 servingDescription: "100 g", calories: 309, protein: 33, carbs: 0, fat: 18)
+        let item = SavedMealItem(entry: entry)
+        XCTAssertEqual(item.foodName, "Salmon")
+        XCTAssertEqual(item.servings, 1.5)
+        XCTAssertEqual(item.calories, 309)
+    }
+
+    func testLogDateUsesNowForTodayAndTypicalHourOtherwise() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: .now)
+        XCTAssertLessThan(abs(MealType.lunch.logDate(on: today).timeIntervalSinceNow), 5)
+        let lastWeek = today.addingTimeInterval(-7 * 86_400)
+        let stamped = MealType.dinner.logDate(on: lastWeek)
+        XCTAssertTrue(cal.isDate(stamped, inSameDayAs: lastWeek))
+        XCTAssertEqual(cal.component(.hour, from: stamped), 19)
+    }
+}
+
 final class RecipeTests: XCTestCase {
     func testPerServingValuesDivideByServings() {
         let recipe = Recipe(name: "Test", mealType: .dinner, servings: 4, prepMinutes: 10,

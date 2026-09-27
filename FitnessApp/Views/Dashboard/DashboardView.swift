@@ -91,7 +91,7 @@ struct DashboardView: View {
                 }
             }
             .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
-            .sheet(isPresented: $showAddFood) { FoodSearchView(date: .now, mealType: MealType.current()) }
+            .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
         }

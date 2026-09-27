@@ -10,8 +10,10 @@ struct FoodSearchView: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
+    @Query(sort: \SavedMeal.name) private var savedMeals: [SavedMeal]
 
     @State private var search = ""
+    @State private var loggedMealName: String?
     @State private var selected: FoodItem?
     @State private var selectedRecipe: Recipe?
     @State private var showCreate = false
@@ -43,6 +45,26 @@ struct FoodSearchView: View {
 
     private var favorites: [FoodItem] { foods.filter(\.isFavorite) }
 
+    /// Favourite meals for this slot first, then the rest; filtered by name when searching.
+    private var matchingSavedMeals: [SavedMeal] {
+        let base = query.isEmpty ? savedMeals : savedMeals.filter {
+            $0.name.lowercased().contains(query) || $0.items.contains { $0.foodName.lowercased().contains(query) }
+        }
+        return base.sorted { a, b in
+            if (a.mealType == mealType) != (b.mealType == mealType) { return a.mealType == mealType }
+            return a.name < b.name
+        }
+    }
+
+    private func logSavedMeal(_ meal: SavedMeal) {
+        meal.log(on: date, as: mealType, context: context)
+        try? context.save()
+        withAnimation { loggedMealName = meal.name }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            dismiss()
+        }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -53,6 +75,46 @@ struct FoodSearchView: View {
                     .pickerStyle(.segmented)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
+                }
+                if let loggedMealName {
+                    Section {
+                        Label("Logged “\(loggedMealName)” to \(mealType.label.lowercased())", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(Color.green)
+                    }
+                }
+                if !matchingSavedMeals.isEmpty {
+                    Section("Favourite meals") {
+                        ForEach(matchingSavedMeals) { meal in
+                            Button { logSavedMeal(meal) } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        HStack(spacing: 6) {
+                                            Text(meal.name).foregroundStyle(Color.primary)
+                                            Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
+                                        }
+                                        Text(meal.summary)
+                                            .font(.caption)
+                                            .foregroundStyle(Color.secondary)
+                                            .lineLimit(1)
+                                    }
+                                    Spacer()
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text("\(Int(meal.totalCalories.rounded()))")
+                                            .font(.body.monospacedDigit())
+                                        Text("\(meal.items.count) item\(meal.items.count == 1 ? "" : "s")")
+                                            .font(.caption2)
+                                            .foregroundStyle(Color.secondary)
+                                    }
+                                }
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(meal)
+                                    try? context.save()
+                                } label: { Label("Delete", systemImage: "trash") }
+                            }
+                        }
+                    }
                 }
                 if query.isEmpty {
                     Section {
@@ -214,7 +276,7 @@ struct LogFoodSheet: View {
     }
 
     private func log() {
-        let entry = FoodLogEntry(date: date,
+        let entry = FoodLogEntry(date: meal.logDate(on: date),
                                  mealType: meal,
                                  foodName: food.displayName,
                                  servings: servings,
@@ -264,7 +326,7 @@ struct LogRecipeSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insert(FoodLogEntry(date: date, mealType: meal, foodName: recipe.name,
+                        context.insert(FoodLogEntry(date: meal.logDate(on: date), mealType: meal, foodName: recipe.name,
                                                     servings: servings, servingDescription: "serving",
                                                     calories: recipe.caloriesPerServing * servings,
                                                     protein: recipe.proteinPerServing * servings,
@@ -319,7 +381,7 @@ struct QuickAddSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insert(FoodLogEntry(date: date, mealType: meal,
+                        context.insert(FoodLogEntry(date: meal.logDate(on: date), mealType: meal,
                                                     foodName: name.isEmpty ? "Quick add" : name,
                                                     servings: 1, servingDescription: "",
                                                     calories: calories ?? 0, protein: protein ?? 0,

@@ -20,6 +20,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 - Built-in database of ~100 common foods with macros; search, recents, favourites
 - Custom foods, quick-add calories for meals you can't look up, log recipes as a meal
 - Adjustable servings; entries are snapshots so history never changes
+- Copy yesterday's meal in one tap, save any meal as a named favourite, and log a favourite meal from the top of search
 
 **Vitals**
 - Blood pressure (with category), resting heart rate, body-fat %, waist / hips / chest, sleep, fasting glucose
