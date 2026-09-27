@@ -111,7 +111,7 @@ struct SettingsView: View {
                 Section {
                     Text("Calorie and macro targets use the Mifflin-St Jeor equation and standard activity multipliers. They are estimates for healthy adults. Talk to a doctor before starting a diet if you are pregnant, under 18, or have a medical condition.")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 } header: {
                     Text("About")
                 }
@@ -197,7 +197,7 @@ struct MacroSlider: View {
             HStack {
                 Text(name)
                 Spacer()
-                Text("\(Int(value))%").monospacedDigit().foregroundStyle(.secondary)
+                Text("\(Int(value))%").monospacedDigit().foregroundStyle(Color.secondary)
             }
             Slider(value: $value, in: 10...60, step: 5)
                 .tint(color)
@@ -267,7 +267,7 @@ struct ProfileEditorView: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 100)
-                        Text("cm").foregroundStyle(.secondary)
+                        Text("cm").foregroundStyle(Color.secondary)
                     }
                 } else {
                     Picker("Height (ft)", selection: $heightFeet) {
@@ -289,7 +289,7 @@ struct ProfileEditorView: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
-                    Text(units.weightUnit).foregroundStyle(.secondary)
+                    Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
                 HStack {
                     Text("Goal weight")
@@ -298,7 +298,7 @@ struct ProfileEditorView: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
-                    Text(units.weightUnit).foregroundStyle(.secondary)
+                    Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
                 Picker("Weekly loss", selection: $weeklyLoss) {
                     ForEach(WeeklyGoalRate.allCases) { r in

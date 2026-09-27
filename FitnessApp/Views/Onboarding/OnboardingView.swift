@@ -99,7 +99,7 @@ struct OnboardingView: View {
                 .font(.largeTitle.bold())
             Text("Track your weight, calories, vitals and meals in one place. Answer a few questions and we'll build a plan that fits you.")
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.secondary)
                 .padding(.horizontal, 32)
             Spacer()
             Text("Your data stays on this device.")
@@ -131,7 +131,7 @@ struct OnboardingView: View {
                     HStack {
                         TextField("Height", value: $heightCm, format: .number)
                             .keyboardType(.decimalPad)
-                        Text("cm").foregroundStyle(.secondary)
+                        Text("cm").foregroundStyle(Color.secondary)
                     }
                 } else {
                     HStack {
@@ -160,7 +160,7 @@ struct OnboardingView: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
-                    Text(units.weightUnit).foregroundStyle(.secondary)
+                    Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
             }
             Section("Where you're going") {
@@ -171,7 +171,7 @@ struct OnboardingView: View {
                         .keyboardType(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
-                    Text(units.weightUnit).foregroundStyle(.secondary)
+                    Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
                 if goalKg >= currentKg && currentKg > 0 {
                     Text("Your goal should be below your current weight.")
@@ -200,8 +200,8 @@ struct OnboardingView: View {
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(level.label).foregroundStyle(.primary)
-                                Text(level.detail).font(.caption).foregroundStyle(.secondary)
+                                Text(level.label).foregroundStyle(Color.primary)
+                                Text(level.detail).font(.caption).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             if activity == level {
@@ -247,7 +247,7 @@ struct OnboardingView: View {
                     Text("\(target)")
                         .font(.system(size: 56, weight: .bold, design: .rounded).monospacedDigit())
                     Text("calories per day")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
                 .frame(maxWidth: .infinity)
                 .card()
@@ -267,7 +267,7 @@ struct OnboardingView: View {
                             .font(.title3.weight(.semibold))
                         Text("Losing \(units.weightString(kg: currentKg - goalKg)) at \(units.weightString(kg: rate.rawValue, decimals: 2)) a week.")
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .card()

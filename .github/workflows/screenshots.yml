@@ -1,0 +1,116 @@
+name: Screenshots
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Capture simulator screenshots
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pick an iPhone simulator
+        id: sim
+        run: |
+          DEVICE=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices[] | .[] | select(.name | startswith("iPhone"))][0].name')
+          echo "Using simulator: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+
+      - name: Run screenshot UI tests
+        id: uitest
+        run: |
+          set -o pipefail
+          rm -rf build/UITests.xcresult
+          xcodebuild test \
+            -project FitnessApp.xcodeproj \
+            -scheme FitnessApp \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -derivedDataPath build \
+            -resultBundlePath build/UITests.xcresult \
+            -only-testing:FitnessAppUITests \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" \
+            | tee uitest.log | grep -E "Test Case|Test case|error:|failed|passed|\*\*" || true
+          if grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log; then
+            echo "status=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Export screenshots from the result bundle
+        run: |
+          rm -rf shots && mkdir -p shots
+          xcrun xcresulttool export attachments \
+            --path build/UITests.xcresult \
+            --output-path shots
+          ls -la shots
+          python3 - <<'PY'
+          import json, os, shutil, glob
+          d = "shots"
+          out = "screenshots"
+          os.makedirs(out, exist_ok=True)
+          manifest = os.path.join(d, "manifest.json")
+          renamed = 0
+          if os.path.exists(manifest):
+              data = json.load(open(manifest))
+              groups = data if isinstance(data, list) else data.get("attachments", [data])
+              for g in groups:
+                  atts = g.get("attachments", [g]) if isinstance(g, dict) else []
+                  for a in atts:
+                      src = a.get("exportedFileName") or a.get("fileName")
+                      name = a.get("suggestedHumanReadableName") or a.get("name") or src
+                      if not src:
+                          continue
+                      base = os.path.splitext(name)[0]
+                      ext = os.path.splitext(src)[1] or ".png"
+                      shutil.copy(os.path.join(d, src), os.path.join(out, base + ext))
+                      renamed += 1
+          if renamed == 0:
+              for f in glob.glob(os.path.join(d, "*.png")):
+                  shutil.copy(f, out)
+          print("exported", len(os.listdir(out)), "files")
+          PY
+          ls -la screenshots
+
+      - name: Upload screenshots artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: screenshots
+
+      - name: Upload UI test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uitest-log
+          path: uitest.log
+
+      - name: Publish to the screenshots branch
+        run: |
+          set -e
+          cd screenshots
+          git init -q -b screenshots
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Screenshots from ${GITHUB_SHA} (${GITHUB_REF_NAME}, tests ${{ steps.uitest.outputs.status }})"
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" screenshots
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail if the UI tests failed
+        if: steps.uitest.outputs.status != 'passed'
+        run: |
+          echo "UI tests reported failures; see uitest.log"
+          exit 1

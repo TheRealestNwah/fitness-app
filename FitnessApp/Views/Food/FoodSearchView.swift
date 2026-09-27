@@ -80,13 +80,13 @@ struct FoodSearchView: View {
                             Button { selectedRecipe = recipe } label: {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(recipe.name).foregroundStyle(.primary)
-                                        Text("1 serving").font(.caption).foregroundStyle(.secondary)
+                                        Text(recipe.name).foregroundStyle(Color.primary)
+                                        Text("1 serving").font(.caption).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
                                         .font(.body.monospacedDigit())
-                                        .foregroundStyle(.secondary)
+                                        .foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -96,7 +96,7 @@ struct FoodSearchView: View {
                     if filtered.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("No match for “\(search)”.")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(Color.secondary)
                             Button("Create “\(search)” as a custom food") { showCreate = true }
                         }
                     }
@@ -134,12 +134,12 @@ struct FoodSearchView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
-                        Text(food.displayName).foregroundStyle(.primary)
+                        Text(food.displayName).foregroundStyle(Color.primary)
                         if food.isFavorite {
                             Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
                         }
                     }
-                    Text(food.servingDescription).font(.caption).foregroundStyle(.secondary)
+                    Text(food.servingDescription).font(.caption).foregroundStyle(Color.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
@@ -147,7 +147,7 @@ struct FoodSearchView: View {
                         .font(.body.monospacedDigit())
                     Text("P\(Int(food.protein)) C\(Int(food.carbs)) F\(Int(food.fat))")
                         .font(.caption2.monospacedDigit())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.secondary)
                 }
             }
         }

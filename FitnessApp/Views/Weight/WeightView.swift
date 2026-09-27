@@ -163,14 +163,14 @@ struct WeightView: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Averaging \(units.weightString(kg: abs(rate), decimals: 2)) per week \(losing ? "lost" : "gained") over the last 4 weeks.")
                         Text("Your plan aims for \(units.weightString(kg: profile.weeklyLossKg, decimals: 2)) per week.")
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 .font(.subheadline)
             } else {
                 Text("Keep logging for a couple of weeks and we'll show your real rate of loss here.")
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.secondary)
             }
             if let projected, remaining > 0 {
                 HStack(spacing: 10) {
@@ -192,7 +192,7 @@ struct WeightView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("History").font(.headline)
             if entries.isEmpty {
-                Text("No weigh-ins yet.").foregroundStyle(.secondary)
+                Text("No weigh-ins yet.").foregroundStyle(Color.secondary)
             }
             ForEach(Array(entries.enumerated()), id: \.element.uuid) { index, entry in
                 let previous = index + 1 < entries.count ? entries[index + 1].weightKg : nil
@@ -201,7 +201,7 @@ struct WeightView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.date.formatted(date: .abbreviated, time: .omitted))
                             if !entry.note.isEmpty {
-                                Text(entry.note).font(.caption).foregroundStyle(.secondary)
+                                Text(entry.note).font(.caption).foregroundStyle(Color.secondary)
                             }
                         }
                         Spacer()
@@ -260,7 +260,7 @@ struct AddWeightSheet: View {
                             .keyboardType(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .font(.title2.monospacedDigit())
-                        Text(units.weightUnit).foregroundStyle(.secondary)
+                        Text(units.weightUnit).foregroundStyle(Color.secondary)
                     }
                     Stepper("Adjust", value: $weight, in: 20...400, step: 0.1)
                         .labelsHidden()
