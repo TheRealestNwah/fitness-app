@@ -28,17 +28,17 @@ struct FoodSearchView: View {
 
     private var query: String { search.trimmingCharacters(in: .whitespaces).lowercased() }
 
+    /// Best match first; favourites and recently used foods outrank generic ones.
     private var filtered: [FoodItem] {
         guard !query.isEmpty else { return foods }
-        return foods.filter {
-            $0.name.lowercased().contains(query) || $0.brand.lowercased().contains(query)
-                || ($0.barcode?.contains(query) ?? false)
+        return FoodSearchRanking.rank(foods, query: query) {
+            .init(name: $0.name, other: [$0.brand, $0.barcode ?? ""], isFavorite: $0.isFavorite, lastUsed: $0.lastUsed)
         }
     }
 
     private var filteredRecipes: [Recipe] {
         guard !query.isEmpty else { return [] }
-        return recipes.filter { $0.name.lowercased().contains(query) }
+        return FoodSearchRanking.rank(recipes, query: query) { .init(name: $0.name, isFavorite: $0.isFavorite) }
     }
 
     private var recent: [FoodItem] {
@@ -50,14 +50,16 @@ struct FoodSearchView: View {
 
     private var favorites: [FoodItem] { foods.filter(\.isFavorite) }
 
-    /// Favourite meals for this slot first, then the rest; filtered by name when searching.
+    /// Favourite meals for this slot first, then the rest. When searching, ranked by name, then by
+    /// slot ("lunch") or the foods in them.
     private var matchingSavedMeals: [SavedMeal] {
-        let base = query.isEmpty ? savedMeals : savedMeals.filter {
-            $0.name.lowercased().contains(query) || $0.items.contains { $0.foodName.lowercased().contains(query) }
-        }
-        return base.sorted { a, b in
+        let bySlot = savedMeals.sorted { a, b in
             if (a.mealType == mealType) != (b.mealType == mealType) { return a.mealType == mealType }
             return a.name < b.name
+        }
+        guard !query.isEmpty else { return bySlot }
+        return FoodSearchRanking.rank(bySlot, query: query) {
+            .init(name: $0.name, other: [$0.mealType.label] + $0.items.map(\.foodName), isFavorite: true)
         }
     }
 
