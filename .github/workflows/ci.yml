@@ -50,6 +50,7 @@ jobs:
             -scheme FitnessApp \
             -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
+            -skip-testing:FitnessAppUITests \
             CODE_SIGNING_ALLOWED=NO \
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log

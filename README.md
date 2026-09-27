@@ -58,6 +58,12 @@ FitnessAppTests/            XCTest coverage for the calculation engine, units, r
 
 Open `FitnessApp.xcodeproj`, pick a simulator, and run. Tests: ⌘U.
 
+## Demo data
+
+Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and load a sample profile with six weeks of weigh-ins, today's diary, vitals and a meal plan. `-resetData` wipes everything and returns to onboarding.
+
 ## Continuous integration
 
 `.github/workflows/ci.yml` builds the app and runs the unit tests on an iOS simulator (macOS runner, Xcode 16) for every pull request and push to `main`. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
+
+`.github/workflows/screenshots.yml` runs the `FitnessAppUITests` screenshot suite on a simulator and publishes the PNGs to the `screenshots` branch (and as a workflow artifact).

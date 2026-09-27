@@ -22,6 +22,8 @@ struct FitnessApp: App {
         } catch {
             fatalError("Could not create the data store: \(error)")
         }
+        // "-resetData" / "-demoData" launch arguments (UI tests, demos).
+        DemoData.applyLaunchArguments(context: container.mainContext)
     }
 
     var body: some Scene {
