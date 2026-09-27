@@ -20,4 +20,9 @@ final class ServingUnitsTests: XCTestCase {
         XCTAssertEqual(ServingUnits.servings(forMetric: 100, per: slice), 2.5, accuracy: 0.001)
         XCTAssertEqual(ServingUnits.metric(forServings: 1.5, per: slice), 60, accuracy: 0.001)
     }
+
+    func testScalesPer100gLabelsToAServing() {
+        XCTAssertEqual(ServingUnits.perServing(fromPer100: 450, servingGrams: 30), 135, accuracy: 0.001)
+        XCTAssertEqual(ServingUnits.perServing(fromPer100: 12, servingGrams: 250), 30, accuracy: 0.001)
+    }
 }

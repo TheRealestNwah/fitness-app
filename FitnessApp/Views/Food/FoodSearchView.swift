@@ -14,6 +14,7 @@ struct FoodSearchView: View {
     @Query(sort: \SavedMeal.name) private var savedMeals: [SavedMeal]
 
     @State private var search = ""
+    @AppStorage(RecentSearches.storageKey) private var recentSearches = ""
     @State private var loggedMealName: String?
     @State private var selected: FoodItem?
     @State private var selectedRecipe: Recipe?
@@ -124,6 +125,27 @@ struct FoodSearchView: View {
                         }
                     }
                 }
+                if query.isEmpty, !RecentSearches.list(recentSearches).isEmpty {
+                    Section {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(RecentSearches.list(recentSearches), id: \.self) { term in
+                                    Button(term) { search = term }
+                                        .buttonStyle(.bordered)
+                                        .controlSize(.small)
+                                }
+                            }
+                        }
+                    } header: {
+                        HStack {
+                            Text("Recent searches")
+                            Spacer()
+                            Button("Clear") { recentSearches = "" }
+                                .font(.caption)
+                                .textCase(nil)
+                        }
+                    }
+                }
                 if query.isEmpty {
                     Section {
                         TipView(BarcodeTip())
@@ -181,6 +203,7 @@ struct FoodSearchView: View {
                 }
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
+            .onSubmit(of: .search) { rememberSearch() }
             .navigationTitle("Log food")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -220,8 +243,12 @@ struct FoodSearchView: View {
         }
     }
 
+    private func rememberSearch() {
+        if !query.isEmpty { recentSearches = RecentSearches.adding(search, to: recentSearches) }
+    }
+
     private func foodRow(_ food: FoodItem) -> some View {
-        Button { selected = food } label: {
+        Button { rememberSearch(); selected = food } label: {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 4) {
@@ -455,6 +482,8 @@ struct CreateFoodSheet: View {
     @State private var fiber: Double?
     @State private var sugar: Double?
     @State private var sodium: Double?
+    @State private var per100g = false
+    @State private var servingGrams: Double?
 
     var body: some View {
         NavigationStack {
@@ -478,7 +507,17 @@ struct CreateFoodSheet: View {
                 } footer: {
                     Text("Offered as a quick pick when you log this food.")
                 }
-                Section("Nutrition per serving") {
+                Section {
+                    Toggle("Label gives values per 100 g", isOn: $per100g)
+                    if per100g {
+                        DecimalField(title: "One serving weighs", value: $servingGrams, unit: "g")
+                    }
+                } footer: {
+                    if per100g {
+                        Text("Enter the label's per-100 g numbers below; they're scaled to one serving when you save.")
+                    }
+                }
+                Section(per100g ? "Nutrition per 100 g" : "Nutrition per serving") {
                     DecimalField(title: "Calories", value: $calories, unit: "kcal")
                     DecimalField(title: "Protein", value: $protein, unit: "g")
                     DecimalField(title: "Carbs", value: $carbs, unit: "g")
@@ -494,12 +533,18 @@ struct CreateFoodSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
+                        let grams = servingGrams ?? 0
+                        func n(_ value: Double?) -> Double {
+                            per100g ? ServingUnits.perServing(fromPer100: value ?? 0, servingGrams: grams) : value ?? 0
+                        }
+                        let description = per100g && ServingUnits.metricPerServing(serving) == nil
+                            ? "\(grams.cleanString) g" : serving
                         let item = FoodItem(name: name.trimmingCharacters(in: .whitespaces),
                                             brand: brand.trimmingCharacters(in: .whitespaces),
-                                            servingDescription: serving,
-                                            calories: calories ?? 0, protein: protein ?? 0,
-                                            carbs: carbs ?? 0, fat: fat ?? 0, fiber: fiber ?? 0,
-                                            sugar: sugar ?? 0, sodium: sodium ?? 0,
+                                            servingDescription: description,
+                                            calories: n(calories), protein: n(protein),
+                                            carbs: n(carbs), fat: n(fat), fiber: n(fiber),
+                                            sugar: n(sugar), sodium: n(sodium),
                                             isCustom: true)
                         item.barcode = barcode
                         let label = measureName.trimmingCharacters(in: .whitespaces)
@@ -511,10 +556,14 @@ struct CreateFoodSheet: View {
                         dismiss()
                         onCreate?(item)
                     }
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || (calories ?? 0) <= 0)
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || (calories ?? 0) <= 0
+                              || (per100g && (servingGrams ?? 0) <= 0))
                 }
             }
             .onAppear { if name.isEmpty { name = initialName } }
+            .onChange(of: per100g) { _, on in
+                if on, servingGrams == nil { servingGrams = ServingUnits.metricPerServing(serving)?.value }
+            }
         }
     }
 }

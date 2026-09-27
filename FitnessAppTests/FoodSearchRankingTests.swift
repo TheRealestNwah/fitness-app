@@ -41,8 +41,41 @@ final class FoodSearchRankingTests: XCTestCase {
         XCTAssertEqual(result, ["Tuna salad"])
     }
 
+    func testTyposStillMatchButRankBelowRealMatches() {
+        XCTAssertEqual(ranked([C(name: "Chicken breast"), C(name: "Beef mince")], "chiken"), ["Chicken breast"])
+        XCTAssertEqual(ranked([C(name: "Banana")], "banan"), ["Banana"])
+        XCTAssertEqual(ranked([C(name: "Greek yogurt")], "yoghurt"), ["Greek yogurt"])
+        XCTAssertEqual(ranked([C(name: "Chickpeas"), C(name: "Chicken")], "chicken"), ["Chicken"])   // not a near miss
+    }
+
+    func testShortQueriesAreNotFuzzy() {
+        XCTAssertEqual(ranked([C(name: "Tea")], "pea"), [])
+    }
+
+    func testEditDistance() {
+        XCTAssertEqual(FoodSearchRanking.editDistance("kitten", "sitting", limit: 5), 3)
+        XCTAssertEqual(FoodSearchRanking.editDistance("oats", "oats", limit: 1), 0)
+        XCTAssertGreaterThan(FoodSearchRanking.editDistance("apple", "zzzzz", limit: 1), 1)
+    }
+
     func testNoMatchIsDropped() {
         XCTAssertNil(FoodSearchRanking.score(C(name: "Banana"), query: "kiwi"))
         XCTAssertEqual(ranked([C(name: "Banana")], "kiwi"), [])
+    }
+}
+
+final class RecentSearchesTests: XCTestCase {
+    func testNewestFirstWithoutDuplicates() {
+        var storage = ""
+        for term in ["oats", "banana", "Oats", " "] { storage = RecentSearches.adding(term, to: storage) }
+        XCTAssertEqual(RecentSearches.list(storage), ["Oats", "banana"])
+    }
+
+    func testKeepsOnlyTheLatest() {
+        var storage = ""
+        for n in 1...12 { storage = RecentSearches.adding("food \(n)", to: storage) }
+        let list = RecentSearches.list(storage)
+        XCTAssertEqual(list.count, RecentSearches.limit)
+        XCTAssertEqual(list.first, "food 12")
     }
 }
