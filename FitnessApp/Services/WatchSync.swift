@@ -71,7 +71,7 @@ final class WatchSync: NSObject, WCSessionDelegate {
         guard existing == 0 else { return }
         let entry = WaterEntry(date: log.date, amountMl: log.amountMl)
         entry.uuid = log.id
-        context.insert(entry)
+        context.insertWater(entry)
         try? context.save()
         if let profile = try? context.fetch(FetchDescriptor<UserProfile>()).first {
             WidgetSnapshot.publish(profile: profile)

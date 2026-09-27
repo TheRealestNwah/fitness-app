@@ -187,7 +187,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Apple Health")
                 } footer: {
-                    Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins and logged calories. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice.")
+                    Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice.")
                 }
 
                 Section("Water") {

@@ -658,13 +658,13 @@ struct DashboardView: View {
     // MARK: Actions
 
     private func addWater() {
-        context.insert(WaterEntry(date: .now, amountMl: units.glassMl))
+        context.insertWater(WaterEntry(date: .now, amountMl: units.glassMl))
         try? context.save()
     }
 
     private func removeWater() {
         guard let last = todaysWater.sorted(by: { $0.date < $1.date }).last else { return }
-        context.delete(last)
+        context.deleteWater(last)
         try? context.save()
     }
 }
