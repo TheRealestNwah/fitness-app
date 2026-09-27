@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 /// Searchable list of foods that logs a chosen item to a given meal on a given date.
 struct FoodSearchView: View {
@@ -123,7 +124,11 @@ struct FoodSearchView: View {
                 }
                 if query.isEmpty {
                     Section {
-                        Button { showScanner = true } label: {
+                        TipView(BarcodeTip())
+                        Button {
+                            BarcodeTip().invalidate(reason: .actionPerformed)
+                            showScanner = true
+                        } label: {
                             Label("Scan a barcode", systemImage: "barcode.viewfinder")
                         }
                         Button { showQuickAdd = true } label: {

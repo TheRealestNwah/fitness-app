@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 import UserNotifications
 
 struct SettingsView: View {
@@ -20,6 +21,7 @@ struct SettingsView: View {
     @State private var exportURLs: [URL] = []
     @State private var showExport = false
     @State private var notificationsDenied = false
+    @State private var tipsWillReset = UserDefaults.standard.bool(forKey: FeatureTips.resetOnLaunchKey)
 
     private var units: Units { profile.units }
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
@@ -92,6 +94,7 @@ struct SettingsView: View {
 
                 Section {
                     if let estimate = maintenanceEstimate {
+                        TipView(AdaptiveTargetTip())
                         let suggested = estimate.suggestedTarget(weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
                         let formula = Int(profile.tdee(currentWeightKg: currentKg).rounded())
                         LabeledContent("Measured maintenance", value: "\(estimate.maintenanceKcal) kcal")
@@ -106,6 +109,7 @@ struct SettingsView: View {
                         }
                         if suggested != profile.calorieTarget(currentWeightKg: currentKg) {
                             Button {
+                                AdaptiveTargetTip().invalidate(reason: .actionPerformed)
                                 profile.customCalorieTarget = suggested
                                 try? context.save()
                             } label: {
@@ -209,6 +213,14 @@ struct SettingsView: View {
                     } label: {
                         Label("Export as CSV", systemImage: "square.and.arrow.up")
                     }
+                    Button {
+                        FeatureTips.resetOnNextLaunch()
+                        tipsWillReset = true
+                    } label: {
+                        Label(tipsWillReset ? "Tips will show next time you open the app" : "Show feature tips again",
+                              systemImage: "lightbulb")
+                    }
+                    .disabled(tipsWillReset)
                     Button(role: .destructive) {
                         showResetConfirm = true
                     } label: {
