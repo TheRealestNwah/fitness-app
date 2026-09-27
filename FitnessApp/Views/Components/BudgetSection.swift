@@ -35,3 +35,27 @@ struct BudgetSection: View {
         }
     }
 }
+
+/// Turn iCloud sync on or off; applies the next time the app starts.
+struct ICloudSyncSection: View {
+    @AppStorage(CloudSync.enabledKey) private var requested = false
+
+    private var status: String {
+        if CloudSync.isActive { return "Syncing with iCloud." }
+        if let problem = CloudSync.problem { return problem }
+        return requested ? "Starts the next time you open Stride." : "Data stays on this device."
+    }
+
+    var body: some View {
+        Section {
+            Toggle("Sync with iCloud", isOn: $requested)
+            Text(status)
+                .font(.footnote)
+                .foregroundStyle(CloudSync.problem == nil ? Color.secondary : Color.orange)
+        } header: {
+            Text("iCloud")
+        } footer: {
+            Text("Keeps your diary, weigh-ins, vitals and plans the same on every iPhone and iPad signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy.")
+        }
+    }
+}
