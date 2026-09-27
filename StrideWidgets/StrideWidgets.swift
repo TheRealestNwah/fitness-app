@@ -118,6 +118,14 @@ struct CaloriesWidgetView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     row("Water", "\(Int(s.waterMl)) of \(Int(s.waterGoalMl)) ml", "drop.fill")
                     ProgressView(value: min(s.waterProgress, 1)).tint(.cyan)
+#if os(iOS)
+                    Button(intent: LogGlassIntent()) {
+                        Label("Glass", systemImage: "plus")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .tint(.cyan)
+                    .accessibilityLabel("Log a glass of water")
+#endif
                 }
                 if let weight = s.weightText { row("Weight", weight, "scalemass.fill") }
             }

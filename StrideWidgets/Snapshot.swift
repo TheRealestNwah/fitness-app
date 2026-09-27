@@ -10,6 +10,7 @@ struct Snapshot: Codable {
     var weightText: String?
     var streak: Int
     var energyUnit: String
+    var glassMl: Double? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"

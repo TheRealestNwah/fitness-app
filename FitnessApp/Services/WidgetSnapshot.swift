@@ -13,6 +13,8 @@ struct WidgetSnapshot: Codable, Equatable {
     var weightText: String?
     var streak: Int
     var energyUnit: String
+    /// One glass in millilitres, for the widget's water button.
+    var glassMl: Double? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"
@@ -34,7 +36,8 @@ struct WidgetSnapshot: Codable, Equatable {
             waterGoalMl: profile.waterGoalMl,
             weightText: latestWeightKg.map { profile.units.weightString(kg: $0) },
             streak: NutritionCalculator.streak(logDates: logDates, today: now, calendar: calendar),
-            energyUnit: EnergyUnit.current.rawValue)
+            energyUnit: EnergyUnit.current.rawValue,
+            glassMl: profile.units.glassMl)
     }
 
     /// Recomputes today's snapshot from the store, saves it for the widgets and asks them to reload.
