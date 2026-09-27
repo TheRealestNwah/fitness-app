@@ -56,6 +56,9 @@ struct ICloudSyncSection: View {
             Text("iCloud")
         } footer: {
             Text("Keeps your diary, weigh-ins, vitals and plans the same on every iPhone and iPad signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy.")
+        }
+    }
+}
 
 /// Weight and energy units, beyond the metric/imperial switch.
 struct UnitPreferenceRows: View {
