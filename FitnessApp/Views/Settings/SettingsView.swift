@@ -1,0 +1,346 @@
+import SwiftUI
+import SwiftData
+import UserNotifications
+
+struct SettingsView: View {
+    @Environment(UserProfile.self) private var profile
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
+    @Query private var foodLogs: [FoodLogEntry]
+    @Query private var vitals: [VitalsEntry]
+
+    @State private var showResetConfirm = false
+    @State private var exportURLs: [URL] = []
+    @State private var showExport = false
+    @State private var notificationsDenied = false
+
+    private var units: Units { profile.units }
+    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
+
+    var body: some View {
+        @Bindable var profile = profile
+        NavigationStack {
+            Form {
+                Section("Profile") {
+                    NavigationLink {
+                        ProfileEditorView()
+                    } label: {
+                        LabeledContent("Body & goals") {
+                            Text("\(units.weightString(kg: currentKg)) → \(units.weightString(kg: profile.goalWeightKg))")
+                        }
+                    }
+                    Picker("Units", selection: $profile.unitSystem) {
+                        ForEach(UnitSystem.allCases) { Text($0.label).tag($0) }
+                    }
+                }
+
+                Section {
+                    LabeledContent("Maintenance (TDEE)", value: "\(Int(profile.tdee(currentWeightKg: currentKg).rounded())) kcal")
+                    LabeledContent("Daily target", value: "\(profile.calorieTarget(currentWeightKg: currentKg)) kcal")
+                    Toggle("Set target manually", isOn: Binding(
+                        get: { profile.customCalorieTarget != nil },
+                        set: { on in
+                            profile.customCalorieTarget = on ? profile.calorieTarget(currentWeightKg: currentKg) : nil
+                        }))
+                    if profile.customCalorieTarget != nil {
+                        Stepper(value: Binding(get: { profile.customCalorieTarget ?? 0 },
+                                               set: { profile.customCalorieTarget = $0 }),
+                                in: 1000...5000, step: 50) {
+                            Text("Custom target: \(profile.customCalorieTarget ?? 0) kcal")
+                        }
+                    }
+                } header: {
+                    Text("Calories")
+                } footer: {
+                    Text("The target updates automatically as your weight changes, unless you set it manually.")
+                }
+
+                Section {
+                    MacroSlider(name: "Protein", value: $profile.proteinPercent, color: .blue)
+                    MacroSlider(name: "Carbs", value: $profile.carbsPercent, color: .orange)
+                    MacroSlider(name: "Fat", value: $profile.fatPercent, color: .pink)
+                    let m = profile.macroTargets(currentWeightKg: currentKg)
+                    LabeledContent("Daily grams", value: "P \(Int(m.protein)) · C \(Int(m.carbs)) · F \(Int(m.fat))")
+                } header: {
+                    Text("Macro split")
+                } footer: {
+                    let total = profile.proteinPercent + profile.carbsPercent + profile.fatPercent
+                    Text(total == 100 ? "Higher protein helps keep muscle while losing fat." : "Percentages add up to \(Int(total))%. They are scaled to 100%.")
+                }
+
+                Section("Water") {
+                    Stepper(value: $profile.waterGoalMl, in: 1000...5000, step: 250) {
+                        LabeledContent("Daily goal", value: units.volumeString(ml: profile.waterGoalMl))
+                    }
+                }
+
+                Section {
+                    Toggle("Morning weigh-in", isOn: $profile.weighInReminderEnabled)
+                    if profile.weighInReminderEnabled {
+                        Picker("Time", selection: $profile.weighInReminderHour) {
+                            ForEach(5..<12, id: \.self) { hour in
+                                Text(hourLabel(hour)).tag(hour)
+                            }
+                        }
+                    }
+                    Toggle("Meal logging reminders", isOn: $profile.mealReminderEnabled)
+                    Toggle("Water reminders", isOn: $profile.waterReminderEnabled)
+                    if notificationsDenied {
+                        Text("Notifications are turned off for this app. Enable them in iOS Settings to receive reminders.")
+                            .font(.footnote)
+                            .foregroundStyle(.orange)
+                    }
+                } header: {
+                    Text("Reminders")
+                }
+
+                Section("Data") {
+                    Button {
+                        exportData()
+                    } label: {
+                        Label("Export as CSV", systemImage: "square.and.arrow.up")
+                    }
+                    Button(role: .destructive) {
+                        showResetConfirm = true
+                    } label: {
+                        Label("Reset all data", systemImage: "trash")
+                    }
+                }
+
+                Section {
+                    Text("Calorie and macro targets use the Mifflin-St Jeor equation and standard activity multipliers. They are estimates for healthy adults. Talk to a doctor before starting a diet if you are pregnant, under 18, or have a medical condition.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("About")
+                }
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+            }
+            .confirmationDialog("Delete every log, plan and setting? This cannot be undone.", isPresented: $showResetConfirm, titleVisibility: .visible) {
+                Button("Reset everything", role: .destructive) { resetAll() }
+            }
+            .sheet(isPresented: $showExport) {
+                ExportSheet(urls: exportURLs)
+            }
+            .onChange(of: profile.weighInReminderEnabled) { _, _ in reminderChanged() }
+            .onChange(of: profile.weighInReminderHour) { _, _ in reminderChanged() }
+            .onChange(of: profile.mealReminderEnabled) { _, _ in reminderChanged() }
+            .onChange(of: profile.waterReminderEnabled) { _, _ in reminderChanged() }
+            .onDisappear { try? context.save() }
+        }
+    }
+
+    private func hourLabel(_ hour: Int) -> String {
+        var comps = DateComponents()
+        comps.hour = hour
+        let date = Calendar.current.date(from: comps) ?? .now
+        return date.formatted(.dateTime.hour())
+    }
+
+    private func reminderChanged() {
+        let anyOn = profile.weighInReminderEnabled || profile.mealReminderEnabled || profile.waterReminderEnabled
+        Task { @MainActor in
+            if anyOn {
+                let granted = await NotificationManager.requestAuthorization()
+                notificationsDenied = !granted
+            }
+            NotificationManager.sync(with: profile)
+        }
+    }
+
+    private func exportData() {
+        var urls: [URL] = []
+        if let u = try? DataExporter.exportWeights(weights) { urls.append(u) }
+        if let u = try? DataExporter.exportFoodLog(foodLogs) { urls.append(u) }
+        if let u = try? DataExporter.exportVitals(vitals) { urls.append(u) }
+        exportURLs = urls
+        showExport = true
+    }
+
+    private func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) {
+        guard let items = try? context.fetch(FetchDescriptor<T>()) else { return }
+        for item in items { context.delete(item) }
+    }
+
+    private func resetAll() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        let context = self.context
+        dismiss()
+        // Let the sheet finish dismissing so nothing on screen still reads the profile being deleted.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            deleteAll(WeightEntry.self, in: context)
+            deleteAll(FoodLogEntry.self, in: context)
+            deleteAll(VitalsEntry.self, in: context)
+            deleteAll(WaterEntry.self, in: context)
+            deleteAll(MealPlanEntry.self, in: context)
+            deleteAll(FoodItem.self, in: context)
+            deleteAll(Recipe.self, in: context)
+            deleteAll(UserProfile.self, in: context)
+            try? context.save()
+            SeedData.seedIfNeeded(context: context)
+        }
+    }
+}
+
+struct MacroSlider: View {
+    var name: String
+    @Binding var value: Double
+    var color: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(name)
+                Spacer()
+                Text("\(Int(value))%").monospacedDigit().foregroundStyle(.secondary)
+            }
+            Slider(value: $value, in: 10...60, step: 5)
+                .tint(color)
+        }
+    }
+}
+
+struct ExportSheet: View {
+    let urls: [URL]
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(urls, id: \.self) { url in
+                        ShareLink(item: url) {
+                            Label(url.lastPathComponent, systemImage: "doc.text")
+                        }
+                    }
+                } footer: {
+                    Text("Each file opens in any spreadsheet app. Share to Files, Mail or AirDrop.")
+                }
+            }
+            .navigationTitle("Export")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+}
+
+struct ProfileEditorView: View {
+    @Environment(UserProfile.self) private var profile
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var name = ""
+    @State private var sex: BiologicalSex = .female
+    @State private var birthDate = Date.now
+    @State private var height: Double = 0
+    @State private var heightFeet = 5
+    @State private var heightInches = 7
+    @State private var startWeight: Double = 0
+    @State private var goalWeight: Double = 0
+    @State private var activity: ActivityLevel = .light
+    @State private var weeklyLoss: Double = 0.5
+    @State private var loaded = false
+
+    private var units: Units { profile.units }
+
+    var body: some View {
+        Form {
+            Section("About you") {
+                TextField("Name", text: $name)
+                Picker("Sex", selection: $sex) {
+                    ForEach(BiologicalSex.allCases) { Text($0.label).tag($0) }
+                }
+                DatePicker("Date of birth", selection: $birthDate, in: ...Date.now, displayedComponents: .date)
+                if profile.unitSystem == .metric {
+                    HStack {
+                        Text("Height")
+                        Spacer()
+                        TextField("Height", value: $height, format: .number)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: 100)
+                        Text("cm").foregroundStyle(.secondary)
+                    }
+                } else {
+                    Picker("Height (ft)", selection: $heightFeet) {
+                        ForEach(3..<8, id: \.self) { Text("\($0) ft").tag($0) }
+                    }
+                    Picker("Height (in)", selection: $heightInches) {
+                        ForEach(0..<12, id: \.self) { Text("\($0) in").tag($0) }
+                    }
+                }
+                Picker("Activity", selection: $activity) {
+                    ForEach(ActivityLevel.allCases) { Text($0.label).tag($0) }
+                }
+            }
+            Section("Goals") {
+                HStack {
+                    Text("Starting weight")
+                    Spacer()
+                    TextField("Start", value: $startWeight, format: .number.precision(.fractionLength(0...1)))
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 100)
+                    Text(units.weightUnit).foregroundStyle(.secondary)
+                }
+                HStack {
+                    Text("Goal weight")
+                    Spacer()
+                    TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: 100)
+                    Text(units.weightUnit).foregroundStyle(.secondary)
+                }
+                Picker("Weekly loss", selection: $weeklyLoss) {
+                    ForEach(WeeklyGoalRate.allCases) { r in
+                        Text("\(r.label) · \(units.weightString(kg: r.rawValue, decimals: 2))").tag(r.rawValue)
+                    }
+                }
+            }
+        }
+        .navigationTitle("Body & goals")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Save") { save() }
+            }
+        }
+        .onAppear {
+            guard !loaded else { return }
+            loaded = true
+            name = profile.name
+            sex = profile.sex
+            birthDate = profile.birthDate
+            height = profile.heightCm.rounded()
+            let inches = profile.heightCm * Units.inchPerCm
+            heightFeet = Int(inches / 12)
+            heightInches = Int((inches - Double(heightFeet) * 12).rounded())
+            startWeight = (units.weightValue(kg: profile.startWeightKg) * 10).rounded() / 10
+            goalWeight = (units.weightValue(kg: profile.goalWeightKg) * 10).rounded() / 10
+            activity = profile.activityLevel
+            weeklyLoss = profile.weeklyLossKg
+        }
+    }
+
+    private func save() {
+        profile.name = name.trimmingCharacters(in: .whitespaces)
+        profile.sex = sex
+        profile.birthDate = birthDate
+        profile.heightCm = profile.unitSystem == .metric ? height : Units.cm(feet: heightFeet, inches: heightInches)
+        profile.startWeightKg = units.kg(fromDisplayWeight: startWeight)
+        profile.goalWeightKg = units.kg(fromDisplayWeight: goalWeight)
+        profile.activityLevel = activity
+        profile.weeklyLossKg = weeklyLoss
+        try? context.save()
+        dismiss()
+    }
+}

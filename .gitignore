@@ -5,3 +5,12 @@ DerivedData/
 .build/
 *.xcodeproj/xcuserdata/
 *.xcworkspace/xcuserdata/
+
+# Xcode
+*.xcuserdatad
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
