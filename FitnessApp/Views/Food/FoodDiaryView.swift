@@ -1,14 +1,19 @@
 import SwiftUI
 import SwiftData
 import TipKit
+import UIKit
 
 struct FoodDiaryView: View {
     @State private var date = Date.now
+    @State private var showCalendar = false
 
     var body: some View {
         NavigationStack {
             DayDiaryView(date: date.startOfDay)
                 .id(date.startOfDay)
+                .transition(.opacity)
+                // Rows keep their own swipe-to-delete; a horizontal swipe elsewhere changes day.
+                .gesture(DragGesture(minimumDistance: 40).onEnded(swiped))
                 .safeAreaInset(edge: .top) {
                     DayStepper(date: $date)
                         .padding(.vertical, 8)
@@ -16,6 +21,125 @@ struct FoodDiaryView: View {
                 }
                 .navigationTitle("Food")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button { showCalendar = true } label: {
+                            Image(systemName: "calendar")
+                        }
+                        .accessibilityLabel("Choose a day")
+                    }
+                }
+                .sheet(isPresented: $showCalendar) {
+                    DiaryCalendarSheet(date: $date)
+                }
+        }
+    }
+
+    private func swiped(_ value: DragGesture.Value) {
+        let dx = value.translation.width
+        guard abs(dx) > 80, abs(dx) > abs(value.translation.height) * 2 else { return }
+        if dx > 0 {
+            withAnimation { date = date.adding(days: -1) }
+        } else if !date.isToday {
+            withAnimation { date = date.adding(days: 1) }
+        }
+    }
+}
+
+/// A month calendar that marks days with diary entries.
+struct DiaryCalendarSheet: View {
+    @Binding var date: Date
+    @Environment(\.dismiss) private var dismiss
+    @Query private var entries: [FoodLogEntry]
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 12) {
+                LoggedDaysCalendar(selection: $date,
+                                   loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
+                                   onSelect: { dismiss() })
+                Label("Days with food logged", systemImage: "circle.fill")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+                    .labelStyle(DotLabelStyle())
+                    .padding(.horizontal)
+                Spacer()
+            }
+            .navigationTitle("Choose a day")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Today") { date = .now; dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
+    }
+}
+
+private struct DotLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 6) {
+            Circle().fill(Color.accentColor).frame(width: 6, height: 6)
+            configuration.title
+        }
+    }
+}
+
+/// UICalendarView, because SwiftUI's DatePicker can't decorate individual days.
+struct LoggedDaysCalendar: UIViewRepresentable {
+    @Binding var selection: Date
+    var loggedDays: Set<Date>
+    var onSelect: () -> Void
+
+    func makeUIView(context: Context) -> UICalendarView {
+        let view = UICalendarView()
+        view.calendar = .current
+        view.availableDateRange = DateInterval(start: .distantPast, end: .now)
+        view.delegate = context.coordinator
+        let single = UICalendarSelectionSingleDate(delegate: context.coordinator)
+        single.selectedDate = Calendar.current.dateComponents([.year, .month, .day], from: selection)
+        view.selectionBehavior = single
+        view.visibleDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: selection)
+        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return view
+    }
+
+    func updateUIView(_ view: UICalendarView, context: Context) {
+        let changed = context.coordinator.loggedDays != loggedDays
+        context.coordinator.parent = self
+        context.coordinator.loggedDays = loggedDays
+        if changed {
+            let visible = Calendar.current.dateComponents([.year, .month], from: selection)
+            let days = loggedDays.map { Calendar.current.dateComponents([.year, .month, .day], from: $0) }
+                .filter { $0.year == visible.year && $0.month == visible.month }
+            view.reloadDecorations(forDateComponents: days, animated: false)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(parent: self) }
+
+    final class Coordinator: NSObject, UICalendarViewDelegate, UICalendarSelectionSingleDateDelegate {
+        var parent: LoggedDaysCalendar
+        var loggedDays: Set<Date>
+
+        init(parent: LoggedDaysCalendar) {
+            self.parent = parent
+            self.loggedDays = parent.loggedDays
+        }
+
+        func calendarView(_ calendarView: UICalendarView,
+                          decorationFor dateComponents: DateComponents) -> UICalendarView.Decoration? {
+            guard let date = Calendar.current.date(from: dateComponents),
+                  loggedDays.contains(Calendar.current.startOfDay(for: date)) else { return nil }
+            return .default(color: .tintColor, size: .small)
+        }
+
+        func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+            guard let components = dateComponents, let date = Calendar.current.date(from: components) else { return }
+            parent.selection = date
+            parent.onSelect()
         }
     }
 }
@@ -77,7 +201,8 @@ struct DayDiaryView: View {
         for e in yesterday(for: meal) {
             context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
                                         servingDescription: e.servingDescription, calories: e.calories,
-                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
+                                        fiber: e.fiber, sugar: e.sugar, sodium: e.sodium))
         }
         try? context.save()
     }
@@ -226,6 +351,10 @@ struct DayDiaryView: View {
                     MacroBar(name: "Fat", consumed: fat, target: macroTargets.fat, color: .pink)
                 }
             }
+            NutrientRow(fiber: entries.reduce(0) { $0 + $1.fiber },
+                        sugar: entries.reduce(0) { $0 + $1.sugar },
+                        sodium: entries.reduce(0) { $0 + $1.sodium },
+                        profile: profile)
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Int(remaining.rounded())) kcal remaining" : "\(Int((-remaining).rounded())) kcal over budget")
                 .font(.subheadline.weight(.medium))
@@ -275,6 +404,10 @@ struct EditLogEntrySheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         let p = perServing
+                        let ratio = servings / max(entry.servings, 0.01)
+                        entry.fiber *= ratio
+                        entry.sugar *= ratio
+                        entry.sodium *= ratio
                         entry.servings = servings
                         entry.calories = p.kcal * servings
                         entry.protein = p.p * servings

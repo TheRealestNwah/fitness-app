@@ -123,12 +123,20 @@ struct MainTabView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
                 refreshToday()
+                NotificationManager.sync(with: profile)
                 Task { await refreshHealth() }
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
             // Posted on a background thread.
-            Task { @MainActor in refreshToday() }
+            Task { @MainActor in
+                refreshToday()
+                NotificationManager.sync(with: profile)
+            }
+        }
+        // Today's reminders depend on what's logged, so replan after every save.
+        .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
+            Task { @MainActor in NotificationManager.sync(with: profile) }
         }
     }
 

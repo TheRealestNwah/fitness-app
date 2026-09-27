@@ -143,6 +143,8 @@ struct SettingsView: View {
                 }
                 .onAppear { setMacroSplit(NutritionCalculator.normalizedMacros(macroSplit)) }
 
+                NutrientGoalsSection(profile: profile)
+
                 MaintenanceSection(profile: profile, currentKg: currentKg)
 
                 Section {
@@ -207,6 +209,8 @@ struct SettingsView: View {
                     }
                 } header: {
                     Text("Reminders")
+                } footer: {
+                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged.")
                 }
 
                 Section("Data") {

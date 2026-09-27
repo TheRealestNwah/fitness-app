@@ -22,6 +22,10 @@ final class UserProfile {
     var proteinPercent: Double = 30
     var carbsPercent: Double = 40
     var fatPercent: Double = 30
+    /// Optional daily goals; nil means untracked. Fibre is a minimum, sugar and sodium are limits.
+    var fiberTargetG: Double?
+    var sugarLimitG: Double?
+    var sodiumLimitMg: Double?
     var startDate: Date = Date()
     var weighInReminderEnabled: Bool = false
     var weighInReminderHour: Int = 7

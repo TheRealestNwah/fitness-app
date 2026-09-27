@@ -47,6 +47,16 @@ struct VitalsView: View {
                     }
                 }
 
+                if hasAny(.waist) || hasAny(.hips) || hasAny(.chest) || hasAny(.bodyFat) {
+                    Section("Trends") {
+                        NavigationLink {
+                            BodyTrendsView()
+                        } label: {
+                            Label("Measurements and body fat", systemImage: "chart.xyaxis.line")
+                        }
+                    }
+                }
+
                 if !entries.isEmpty {
                     Section("All entries") {
                         ForEach(entries) { entry in

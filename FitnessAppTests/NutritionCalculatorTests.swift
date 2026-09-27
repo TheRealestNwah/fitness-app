@@ -202,7 +202,8 @@ final class OpenFoodFactsParserTests: XCTestCase {
         {"status":1,"code":"5000159484695","product":{"product_name":"Test Bar","brands":"Acme, Other",
          "serving_size":"45 g","serving_quantity":45,
          "nutriments":{"energy-kcal_100g":450,"energy-kcal_serving":202.5,"proteins_serving":9,
-                       "carbohydrates_serving":"25.5","fat_serving":7,"fiber_serving":3}}}
+                       "carbohydrates_serving":"25.5","fat_serving":7,"fiber_serving":3,
+                       "sugars_serving":12.5,"sodium_serving":0.18}}}
         """
         let p = try XCTUnwrap(try OpenFoodFactsClient.parse(Data(json.utf8), barcode: "5000159484695"))
         XCTAssertEqual(p.name, "Test Bar")
@@ -210,6 +211,21 @@ final class OpenFoodFactsParserTests: XCTestCase {
         XCTAssertEqual(p.servingDescription, "45 g")
         XCTAssertEqual(p.calories, 202.5, accuracy: 0.001)
         XCTAssertEqual(p.carbs, 25.5, accuracy: 0.001)
+        XCTAssertEqual(p.fiber, 3, accuracy: 0.001)
+        XCTAssertEqual(p.sugar, 12.5, accuracy: 0.001)
+        XCTAssertEqual(p.sodium, 180, accuracy: 0.001)       // grams to mg
+    }
+
+    func testDerivesSodiumFromSaltAndScalesPer100g() throws {
+        let json = """
+        {"status":1,"product":{"product_name":"Crackers","serving_size":"30 g","serving_quantity":30,
+         "nutriments":{"energy-kcal_100g":450,"sugars_100g":5,"salt_100g":1.5,"fiber_100g":4}}}
+        """
+        let p = try XCTUnwrap(try OpenFoodFactsClient.parse(Data(json.utf8), barcode: "1234567"))
+        XCTAssertEqual(p.sugar, 1.5, accuracy: 0.001)         // 5 g/100 g × 0.3
+        XCTAssertEqual(p.sodium, 180, accuracy: 0.001)        // 1.5 g salt / 2.5 × 0.3 × 1000
+        XCTAssertEqual(p.fiber, 1.2, accuracy: 0.001)
+        XCTAssertEqual(p.makeFoodItem().sodium, 180, accuracy: 0.001)
     }
 
     func testScalesPer100gByServingQuantity() throws {
