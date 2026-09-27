@@ -19,6 +19,7 @@ struct DashboardView: View {
     @State private var showAddFood = false
     @State private var showAddVitals = false
     @State private var showSettings = false
+    @State private var showQuickAdd = false
 
     init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void) {
         self.selectTab = selectTab
@@ -125,6 +126,8 @@ struct DashboardView: View {
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
+            .modifier(TodayHaptics(foodCount: todaysFood.count, weighIns: weights.count,
+                                   waterMl: waterMl, waterGoalMl: profile.waterGoalMl, streak: streak))
         }
     }
 
@@ -165,6 +168,9 @@ struct DashboardView: View {
                     }
                 }
                 .frame(width: 130, height: 130)
+                .contentShape(Circle())
+                .contextMenu { ringActions }
+                .accessibilityHint("Touch and hold for quick actions")
 
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: "\(Int(consumed.rounded()))")
@@ -189,6 +195,51 @@ struct DashboardView: View {
             }
         }
         .card()
+        // Kept on the card rather than the body, which is near the type checker's limit.
+        .sheet(isPresented: $showQuickAdd) {
+            QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
+        }
+    }
+
+    // MARK: Ring quick actions
+
+    private var yesterdaysCurrentMeal: [FoodLogEntry] {
+        let meal = MealType.current()
+        let today = Date.now.startOfDay
+        let yesterday = today.adding(days: -1)
+        return recentFood
+            .filter { $0.mealType == meal && $0.date >= yesterday && $0.date < today }
+            .sorted { $0.date < $1.date }
+    }
+
+    @ViewBuilder
+    private var ringActions: some View {
+        let meal = MealType.current()
+        let yesterdays = yesterdaysCurrentMeal
+        let kcal: Int = Int(yesterdays.reduce(0.0) { $0 + $1.calories }.rounded())
+        let name: String = meal.label.lowercased()
+        let copyTitle: String = yesterdays.isEmpty ? "No \(name) logged yesterday"
+            : "Copy yesterday's \(name) (\(kcal) kcal)"
+        Button { showAddFood = true } label: {
+            Label("Add food", systemImage: "plus.circle")
+        }
+        Button { showQuickAdd = true } label: {
+            Label("Quick add calories", systemImage: "bolt")
+        }
+        Button { copyYesterday(yesterdays, as: meal) } label: {
+            Label(copyTitle, systemImage: "arrow.uturn.backward")
+        }
+        .disabled(yesterdays.isEmpty)
+    }
+
+    private func copyYesterday(_ entries: [FoodLogEntry], as meal: MealType) {
+        let stamp = meal.logDate(on: Date.now.startOfDay)
+        for e in entries {
+            context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
+                                                  servingDescription: e.servingDescription, calories: e.calories,
+                                                  protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID))
+        }
+        try? context.save()
     }
 
     private var quickActions: some View {
@@ -525,4 +576,30 @@ extension MealType {
         case .snack: return 3
         }
     }
+}
+
+/// Haptics follow the data rather than the buttons, so they fire however an entry
+/// was added. The system's own haptics setting still applies.
+struct TodayHaptics: ViewModifier {
+    var foodCount: Int
+    var weighIns: Int
+    var waterMl: Double
+    var waterGoalMl: Double
+    var streak: Int
+
+    private var waterGoalReached: Bool { waterMl >= waterGoalMl }
+
+    func body(content: Content) -> some View {
+        // Named conditions with concrete types: inline closures here overwhelm the type checker.
+        content
+            .sensoryFeedback(SensoryFeedback.success, trigger: foodCount, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.success, trigger: weighIns, condition: Self.grew)
+            .sensoryFeedback(SensoryFeedback.impact(weight: .light), trigger: waterMl, condition: Self.rose)
+            .sensoryFeedback(SensoryFeedback.success, trigger: waterGoalReached, condition: Self.becameTrue)
+            .sensoryFeedback(SensoryFeedback.levelChange, trigger: streak, condition: Self.grew)
+    }
+
+    private static func grew(_ old: Int, _ new: Int) -> Bool { new > old }
+    private static func rose(_ old: Double, _ new: Double) -> Bool { new > old }
+    private static func becameTrue(_ old: Bool, _ new: Bool) -> Bool { !old && new }
 }
