@@ -84,6 +84,22 @@ struct DayDiaryView: View {
             Section {
                 summary
             }
+            if entries.isEmpty {
+                let meal = MealType.current()
+                let cal = Calendar.current
+                let when = cal.isDateInToday(date) || cal.isDateInYesterday(date)
+                    ? date.relativeDayLabel.lowercased() : "on \(date.relativeDayLabel)"
+                Section {
+                    ContentUnavailableView {
+                        Label("Nothing logged \(when)", systemImage: "fork.knife")
+                    } description: {
+                        Text("Log what you eat to see calories and macros against your target.")
+                    } actions: {
+                        Button("Log \(meal.label.lowercased())") { addingTo = meal }
+                            .buttonStyle(.borderedProminent)
+                    }
+                }
+            }
             ForEach(MealType.allCases) { meal in
                 let items = entries(for: meal)
                 Section {
