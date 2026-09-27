@@ -260,7 +260,18 @@ struct WeightView: View {
 
     private var historyList: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("History").font(.headline)
+            HStack {
+                Text("History").font(.headline)
+                Spacer()
+                if entries.filter({ $0.photo != nil }).count >= 2 {
+                    NavigationLink {
+                        ProgressPhotoCompareView()
+                    } label: {
+                        Label("Compare photos", systemImage: "rectangle.split.2x1")
+                            .font(.subheadline)
+                    }
+                }
+            }
             if entries.isEmpty {
                 Text("No weigh-ins yet.").foregroundStyle(Color.secondary)
             }
@@ -269,7 +280,15 @@ struct WeightView: View {
                 Button { editing = entry } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(entry.date.formatted(date: .abbreviated, time: .omitted))
+                            HStack(spacing: 4) {
+                                Text(entry.date.formatted(date: .abbreviated, time: .omitted))
+                                if entry.photo != nil {
+                                    Image(systemName: "camera.fill")
+                                        .font(.caption2)
+                                        .foregroundStyle(Color.secondary)
+                                        .accessibilityLabel("Has progress photo")
+                                }
+                            }
                             if !entry.note.isEmpty {
                                 Text(entry.note).font(.caption).foregroundStyle(Color.secondary)
                             }
@@ -315,6 +334,7 @@ struct AddWeightSheet: View {
     @State private var date = Date.now
     @State private var weight: Double = 0
     @State private var note = ""
+    @State private var photo: Data?
     @State private var loaded = false
 
     private var units: Units { profile.units }
@@ -352,6 +372,9 @@ struct AddWeightSheet: View {
                     DatePicker("Date", selection: $date, in: ...Date.now, displayedComponents: [.date, .hourAndMinute])
                     TextField("Note (optional)", text: $note)
                 }
+                Section("Progress photo (optional)") {
+                    ProgressPhotoPicker(photo: $photo)
+                }
                 if entry != nil {
                     Section {
                         Button("Delete weigh-in", role: .destructive) {
@@ -376,6 +399,7 @@ struct AddWeightSheet: View {
                     date = entry.date
                     weight = (units.weightValue(kg: entry.weightKg) * 10).rounded() / 10
                     note = entry.note
+                    photo = entry.photo
                 } else {
                     let latest = entries.first?.weightKg ?? profile.startWeightKg
                     weight = (units.weightValue(kg: latest) * 10).rounded() / 10
@@ -398,8 +422,10 @@ struct AddWeightSheet: View {
             entry.date = date
             entry.weightKg = kg
             entry.note = note
+            entry.photo = photo
         } else {
             let entry = WeightEntry(date: date, weightKg: kg, note: note)
+            entry.photo = photo
             context.insert(entry)
             if HealthSettings.isEnabled, HealthKitManager.isAvailable {
                 Task { @MainActor in

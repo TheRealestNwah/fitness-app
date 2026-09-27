@@ -399,7 +399,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stride;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and photograph meals.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and to take meal and progress photos.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads weight, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Stride writes your weigh-ins and logged calories to Health so other apps can see them.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -433,7 +433,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stride;
-				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and photograph meals.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and to take meal and progress photos.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads weight, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Stride writes your weigh-ins and logged calories to Health so other apps can see them.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
