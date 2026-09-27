@@ -24,7 +24,10 @@ struct FitnessApp: App {
 /// The one data store, shared by the app and the App Intents that Siri and Shortcuts run
 /// (which can launch the app in the background without a scene).
 enum AppStore {
-    static let schema = Schema([
+    /// A new instance each time: a Schema shouldn't be shared between containers (tests make their own).
+    static var schema: Schema { Schema(models) }
+
+    static let models: [any PersistentModel.Type] = [
         UserProfile.self,
         WeightEntry.self,
         FoodItem.self,
@@ -36,7 +39,7 @@ enum AppStore {
         SavedMeal.self,
         FastingSession.self,
         ExerciseEntry.self,
-    ])
+    ]
 
     @MainActor static let container: ModelContainer = CloudSync.makeContainer(schema: schema)
 }
