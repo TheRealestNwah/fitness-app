@@ -1455,6 +1455,710 @@
         }
       }
     },
+    "1 bagel (105 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 bagel (105 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Bagel (105 g)"
+          }
+        }
+      }
+    },
+    "1 bar (60 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 barrita (60 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Riegel (60 g)"
+          }
+        }
+      }
+    },
+    "1 bottle (325 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 botella (325 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Flasche (325 ml)"
+          }
+        }
+      }
+    },
+    "1 burger (150 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 hamburguesa (150 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Burger (150 g)"
+          }
+        }
+      }
+    },
+    "1 cake (9 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 tortita (9 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Waffel (9 g)"
+          }
+        }
+      }
+    },
+    "1 can (120 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 lata (120 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Dose (120 g)"
+          }
+        }
+      }
+    },
+    "1 can (400 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 lata (400 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Dose (400 g)"
+          }
+        }
+      }
+    },
+    "1 cookie (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 galleta (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Keks (30 g)"
+          }
+        }
+      }
+    },
+    "1 cup (123 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (123 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (123 g)"
+          }
+        }
+      }
+    },
+    "1 cup (124 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (124 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (124 g)"
+          }
+        }
+      }
+    },
+    "1 cup (125 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (125 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (125 g)"
+          }
+        }
+      }
+    },
+    "1 cup (140 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (140 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (140 g)"
+          }
+        }
+      }
+    },
+    "1 cup (148 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (148 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (148 g)"
+          }
+        }
+      }
+    },
+    "1 cup (149 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (149 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (149 g)"
+          }
+        }
+      }
+    },
+    "1 cup (151 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (151 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (151 g)"
+          }
+        }
+      }
+    },
+    "1 cup (152 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (152 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (152 g)"
+          }
+        }
+      }
+    },
+    "1 cup (156 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (156 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (156 g)"
+          }
+        }
+      }
+    },
+    "1 cup (158 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (158 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (158 g)"
+          }
+        }
+      }
+    },
+    "1 cup (165 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (165 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (165 g)"
+          }
+        }
+      }
+    },
+    "1 cup (185 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (185 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (185 g)"
+          }
+        }
+      }
+    },
+    "1 cup (190 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (190 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (190 g)"
+          }
+        }
+      }
+    },
+    "1 cup (195 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (195 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (195 g)"
+          }
+        }
+      }
+    },
+    "1 cup (240 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (240 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (240 ml)"
+          }
+        }
+      }
+    },
+    "1 cup (244 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (244 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (244 ml)"
+          }
+        }
+      }
+    },
+    "1 cup (248 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (248 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (248 ml)"
+          }
+        }
+      }
+    },
+    "1 cup (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (30 g)"
+          }
+        }
+      }
+    },
+    "1 cup (70 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (70 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (70 g)"
+          }
+        }
+      }
+    },
+    "1 cup (90 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza (90 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse (90 g)"
+          }
+        }
+      }
+    },
+    "1 cup sliced (104 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 taza en rodajas (104 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tasse in Scheiben (104 g)"
+          }
+        }
+      }
+    },
+    "1 egg (50 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 huevo (50 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Ei (50 g)"
+          }
+        }
+      }
+    },
+    "1 medium (110 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (110 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (110 g)"
+          }
+        }
+      }
+    },
+    "1 medium (118 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (118 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (118 g)"
+          }
+        }
+      }
+    },
+    "1 medium (119 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (119 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (119 g)"
+          }
+        }
+      }
+    },
+    "1 medium (123 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (123 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (123 g)"
+          }
+        }
+      }
+    },
+    "1 medium (131 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (131 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (131 g)"
+          }
+        }
+      }
+    },
+    "1 medium (150 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (150 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (150 g)"
+          }
+        }
+      }
+    },
+    "1 medium (173 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (173 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (173 g)"
+          }
+        }
+      }
+    },
+    "1 medium (178 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (178 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (178 g)"
+          }
+        }
+      }
+    },
+    "1 medium (182 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (182 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (182 g)"
+          }
+        }
+      }
+    },
+    "1 medium (196 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (196 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (196 g)"
+          }
+        }
+      }
+    },
+    "1 medium (61 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mediano (61 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 mittelgroß (61 g)"
+          }
+        }
+      }
+    },
+    "1 oz (28 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 oz (28 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 oz (28 g)"
+          }
+        }
+      }
+    },
+    "1 oz (28 g, ~23 nuts)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 oz (28 g, ~23 unidades)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 oz (28 g, ~23 Stück)"
+          }
+        }
+      }
+    },
+    "1 scoop (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cacito (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Messlöffel (30 g)"
+          }
+        }
+      }
+    },
     "1 serving" : {
       "localizations" : {
         "es" : {
@@ -1483,6 +2187,1051 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 Portion = %@"
+          }
+        }
+      }
+    },
+    "1 slice (107 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 rebanada (107 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Scheibe (107 g)"
+          }
+        }
+      }
+    },
+    "1 slice (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 rebanada (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Scheibe (30 g)"
+          }
+        }
+      }
+    },
+    "1 slice (43 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 rebanada (43 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Scheibe (43 g)"
+          }
+        }
+      }
+    },
+    "1 small (100 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 pequeño (100 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 klein (100 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL"
+          }
+        }
+      }
+    },
+    "1 tbsp (12 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (12 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (12 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (14 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (14 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (14 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (15 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (15 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (15 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (16 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (16 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (16 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (17 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (17 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (17 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (21 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (21 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (21 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (5 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (5 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (5 g)"
+          }
+        }
+      }
+    },
+    "1 tbsp (7 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cda (7 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 EL (7 g)"
+          }
+        }
+      }
+    },
+    "1 tortilla (26 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 tortilla (26 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tortilla (26 g)"
+          }
+        }
+      }
+    },
+    "1 tortilla (49 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 tortilla (49 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tortilla (49 g)"
+          }
+        }
+      }
+    },
+    "1 tsp (5 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cdta (5 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 TL (5 g)"
+          }
+        }
+      }
+    },
+    "1 tsp (7 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 cdta (7 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 TL (7 g)"
+          }
+        }
+      }
+    },
+    "1 white (33 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 clara (33 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Eiweiß (33 g)"
+          }
+        }
+      }
+    },
+    "1.5 cups (237 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1,5 tazas (237 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1,5 Tassen (237 g)"
+          }
+        }
+      }
+    },
+    "1/2 avocado (68 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 aguacate (68 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Avocado (68 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (113 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (113 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (113 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (120 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (120 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (120 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (120 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (120 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (120 ml)"
+          }
+        }
+      }
+    },
+    "1/2 cup (40 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (40 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (40 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (52 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (52 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (52 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (62 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (62 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (62 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (66 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (66 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (66 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (74 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (74 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (74 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (75 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (75 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (75 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (76 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (76 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (76 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (78 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (78 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (78 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (82 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (82 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (82 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (86 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (86 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (86 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (90 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (90 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (90 g)"
+          }
+        }
+      }
+    },
+    "1/2 cup (99 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 taza (99 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 Tasse (99 g)"
+          }
+        }
+      }
+    },
+    "1/2 medium (55 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 mediano (55 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 mittelgroß (55 g)"
+          }
+        }
+      }
+    },
+    "1/2 medium (62 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 mediano (62 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/2 mittelgroß (62 g)"
+          }
+        }
+      }
+    },
+    "1/4 avocado (34 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/4 aguacate (34 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/4 Avocado (34 g)"
+          }
+        }
+      }
+    },
+    "1/4 cup (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/4 taza (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1/4 Tasse (30 g)"
+          }
+        }
+      }
+    },
+    "100 g" : {
+      "shouldTranslate" : false
+    },
+    "12 fl oz (355 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 fl oz (355 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12 fl oz (355 ml)"
+          }
+        }
+      }
+    },
+    "12 fl oz can (355 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "lata de 12 fl oz (355 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "12-fl-oz-Dose (355 ml)"
+          }
+        }
+      }
+    },
+    "120 g" : {
+      "shouldTranslate" : false
+    },
+    "140 g" : {
+      "shouldTranslate" : false
+    },
+    "150 g" : {
+      "shouldTranslate" : false
+    },
+    "170 g" : {
+      "shouldTranslate" : false
+    },
+    "2 cloves" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 dientes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Zehen"
+          }
+        }
+      }
+    },
+    "2 cups (180 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (180 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (180 g)"
+          }
+        }
+      }
+    },
+    "2 cups (200 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (200 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (200 g)"
+          }
+        }
+      }
+    },
+    "2 cups (390 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (390 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (390 g)"
+          }
+        }
+      }
+    },
+    "2 cups (40 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (40 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (40 g)"
+          }
+        }
+      }
+    },
+    "2 cups (60 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (60 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (60 g)"
+          }
+        }
+      }
+    },
+    "2 cups (85 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tazas (85 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Tassen (85 g)"
+          }
+        }
+      }
+    },
+    "2 large" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 grandes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 große"
+          }
+        }
+      }
+    },
+    "2 medium (122 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 medianos (122 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 mittelgroß (122 g)"
+          }
+        }
+      }
+    },
+    "2 medium (238 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 medianos (238 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 mittelgroß (238 g)"
+          }
+        }
+      }
+    },
+    "2 medium (392 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 medianos (392 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 mittelgroß (392 g)"
+          }
+        }
+      }
+    },
+    "2 stalks (80 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 tallos (80 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Stangen (80 g)"
+          }
+        }
+      }
+    },
+    "2 tbsp" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 cdas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 EL"
+          }
+        }
+      }
+    },
+    "2 tbsp (20 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 cdas (20 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 EL (20 g)"
+          }
+        }
+      }
+    },
+    "2 tbsp (30 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 cdas (30 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 EL (30 g)"
+          }
+        }
+      }
+    },
+    "2 tbsp (32 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 cdas (32 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 EL (32 g)"
+          }
+        }
+      }
+    },
+    "2 tsp (9 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 cdtas (9 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 TL (9 g)"
+          }
+        }
+      }
+    },
+    "3 cups (24 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 tazas (24 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Tassen (24 g)"
+          }
+        }
+      }
+    },
+    "3 tbsp (45 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 cdas (45 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 EL (45 g)"
+          }
+        }
+      }
+    },
+    "300 g" : {
+      "shouldTranslate" : false
+    },
+    "4 cups (1 L)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 tazas (1 L)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "4 Tassen (1 L)"
+          }
+        }
+      }
+    },
+    "5 fl oz (148 ml)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 fl oz (148 ml)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 fl oz (148 ml)"
+          }
+        }
+      }
+    },
+    "500 g" : {
+      "shouldTranslate" : false
+    },
+    "6 pieces (170 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 piezas (170 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 Stück (170 g)"
+          }
+        }
+      }
+    },
+    "6 spears (90 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 tallos (90 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "6 Stangen (90 g)"
           }
         }
       }
@@ -1518,6 +3267,9 @@
           }
         }
       }
+    },
+    "85 g" : {
+      "shouldTranslate" : false
     },
     "= %@ servings" : {
       "localizations" : {
@@ -1983,6 +3735,54 @@
         }
       }
     },
+    "Almond butter" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crema de almendras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandelmus"
+          }
+        }
+      }
+    },
+    "Almond milk, unsweetened" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bebida de almendras, sin azúcar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandeldrink, ungesüßt"
+          }
+        }
+      }
+    },
+    "Almonds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Almendras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mandeln"
+          }
+        }
+      }
+    },
     "Amount" : {
       "localizations" : {
         "es" : {
@@ -2047,6 +3847,22 @@
         }
       }
     },
+    "Apple" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manzana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apfel"
+          }
+        }
+      }
+    },
     "Apple Health" : {
       "localizations" : {
         "es" : {
@@ -2079,6 +3895,22 @@
         }
       }
     },
+    "Apple with peanut butter" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Manzana con crema de cacahuete"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apfel mit Erdnussbutter"
+          }
+        }
+      }
+    },
     "Asks for %@ or your passcode when Stride opens, and hides it in the app switcher." : {
       "localizations" : {
         "es" : {
@@ -2091,6 +3923,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fragt beim Öffnen von Stride nach %@ oder deinem Code und verbirgt die App im App-Umschalter."
+          }
+        }
+      }
+    },
+    "Asparagus" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espárragos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spargel"
           }
         }
       }
@@ -2303,6 +4151,22 @@
         }
       }
     },
+    "Avocado" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aguacate"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avocado"
+          }
+        }
+      }
+    },
     "BMI is a rough guide only. A healthy range is 18.5–24.9." : {
       "localizations" : {
         "es" : {
@@ -2363,6 +4227,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zurück zu heute"
+          }
+        }
+      }
+    },
+    "Bagel, plain" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagel, natural"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bagel, natur"
+          }
+        }
+      }
+    },
+    "Banana" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plátano"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Banane"
+          }
+        }
+      }
+    },
+    "Banana protein smoothie" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batido de plátano y proteína"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bananen-Protein-Smoothie"
           }
         }
       }
@@ -2431,6 +4343,86 @@
         }
       }
     },
+    "Batch cook" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para cocinar en cantidad"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Vorkochen"
+          }
+        }
+      }
+    },
+    "Beer, regular" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerveza, normal"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bier, normal"
+          }
+        }
+      }
+    },
+    "Bell pepper" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pimiento"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paprika"
+          }
+        }
+      }
+    },
+    "Black beans, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alubias negras, cocidas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwarze Bohnen, gekocht"
+          }
+        }
+      }
+    },
+    "Blend everything until smooth. Add more milk to thin." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tritura todo hasta que quede fino. Añade más leche para aligerarlo."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alles fein pürieren. Für eine dünnere Konsistenz mehr Milch zugeben."
+          }
+        }
+      }
+    },
     "Blood glucose" : {
       "localizations" : {
         "es" : {
@@ -2475,6 +4467,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Blutdruck, Ruhepuls, Körpermaße und Schlaf reagieren alle auf Gewichtsverlust. Erfasse sie wöchentlich, um die Veränderung zu sehen."
+          }
+        }
+      }
+    },
+    "Blueberries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arándanos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heidelbeeren"
           }
         }
       }
@@ -2623,6 +4631,70 @@
         }
       }
     },
+    "Broccoli" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brócoli"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brokkoli"
+          }
+        }
+      }
+    },
+    "Broccoli, steamed" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brócoli, al vapor"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brokkoli, gedämpft"
+          }
+        }
+      }
+    },
+    "Brown rice, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arroz integral, cocido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naturreis, gekocht"
+          }
+        }
+      }
+    },
+    "Brown turkey with onion and pepper in oil. Add spices, tomatoes and beans. Simmer 25 minutes. Freezes well." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dora el pavo con la cebolla y el pimiento en aceite. Añade las especias, los tomates y las alubias. Cuece a fuego lento 25 minutos. Se congela bien."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pute mit Zwiebel und Paprika in Öl anbraten. Gewürze, Tomaten und Bohnen zugeben. 25 Minuten köcheln lassen. Lässt sich gut einfrieren."
+          }
+        }
+      }
+    },
     "Budget" : {
       "localizations" : {
         "es" : {
@@ -2667,6 +4739,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Beim Wochenbudget sparen leichtere Tage Kalorien für spätere; Tage ohne Einträge zählen als im Ziel. Eine Diätpause setzt dein Ziel für ein bis drei Wochen auf Erhaltung und verschiebt dein Zieldatum entsprechend, damit es nicht als Rückstand zählt."
+          }
+        }
+      }
+    },
+    "Butter" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantequilla"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Butter"
           }
         }
       }
@@ -2815,6 +4903,38 @@
         }
       }
     },
+    "Canned tomatoes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomate en lata"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosentomaten"
+          }
+        }
+      }
+    },
+    "Cannellini beans" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alubias blancas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cannellini-Bohnen"
+          }
+        }
+      }
+    },
     "Carbs" : {
       "localizations" : {
         "es" : {
@@ -2827,6 +4947,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kohlenhydrate"
+          }
+        }
+      }
+    },
+    "Carrot" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zanahoria"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karotte"
           }
         }
       }
@@ -2847,6 +4983,70 @@
         }
       }
     },
+    "Cauliflower" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coliflor"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blumenkohl"
+          }
+        }
+      }
+    },
+    "Cauliflower, roasted" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coliflor, asada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blumenkohl, geröstet"
+          }
+        }
+      }
+    },
+    "Celery" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apio"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Staudensellerie"
+          }
+        }
+      }
+    },
+    "Cereal, bran flakes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cereales, copos de salvado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kleieflocken"
+          }
+        }
+      }
+    },
     "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan." : {
       "localizations" : {
         "es" : {
@@ -2863,6 +5063,54 @@
         }
       }
     },
+    "Cheddar cheese" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queso cheddar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheddar"
+          }
+        }
+      }
+    },
+    "Cheeseburger, fast food" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hamburguesa con queso, comida rápida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cheeseburger, Fast Food"
+          }
+        }
+      }
+    },
+    "Cherry tomatoes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomates cherry"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kirschtomaten"
+          }
+        }
+      }
+    },
     "Chest" : {
       "localizations" : {
         "es" : {
@@ -2875,6 +5123,134 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Brust"
+          }
+        }
+      }
+    },
+    "Chia seeds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semillas de chía"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chiasamen"
+          }
+        }
+      }
+    },
+    "Chicken breast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pechuga de pollo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchenbrust"
+          }
+        }
+      }
+    },
+    "Chicken breast, grilled" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pechuga de pollo, a la plancha"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchenbrust, gegrillt"
+          }
+        }
+      }
+    },
+    "Chicken stir-fry with rice" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salteado de pollo con arroz"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchen-Pfanne mit Reis"
+          }
+        }
+      }
+    },
+    "Chicken thigh, roasted" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muslo de pollo, asado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchenschenkel, gebraten"
+          }
+        }
+      }
+    },
+    "Chickpeas, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garbanzos, cocidos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kichererbsen, gekocht"
+          }
+        }
+      }
+    },
+    "Chili spices" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Especias para chili"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chili-Gewürze"
+          }
+        }
+      }
+    },
+    "Chocolate chip cookie" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Galleta con pepitas de chocolate"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schokoladenkeks"
           }
         }
       }
@@ -3007,6 +5383,70 @@
         }
       }
     },
+    "Cod, baked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bacalao, al horno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kabeljau, gebacken"
+          }
+        }
+      }
+    },
+    "Coffee, black" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Café solo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaffee, schwarz"
+          }
+        }
+      }
+    },
+    "Cola" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refresco de cola"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cola"
+          }
+        }
+      }
+    },
+    "Combine and eat." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mézclalo y cómelo."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mischen und genießen."
+          }
+        }
+      }
+    },
     "Compare photos" : {
       "localizations" : {
         "es" : {
@@ -3119,6 +5559,54 @@
         }
       }
     },
+    "Corn tortilla" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tortilla de maíz"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maistortilla"
+          }
+        }
+      }
+    },
+    "Cottage cheese and berries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesón con frutos rojos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hüttenkäse mit Beeren"
+          }
+        }
+      }
+    },
+    "Cottage cheese, low fat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesón, bajo en grasa"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hüttenkäse, fettarm"
+          }
+        }
+      }
+    },
     "Couldn't confirm it's you. Set a passcode on this device to use the lock." : {
       "localizations" : {
         "es" : {
@@ -3199,6 +5687,22 @@
         }
       }
     },
+    "Cucumber" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pepino"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gurke"
+          }
+        }
+      }
+    },
     "Current BMI" : {
       "localizations" : {
         "es" : {
@@ -3227,6 +5731,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktuelles Gewicht"
+          }
+        }
+      }
+    },
+    "Curry paste" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasta de curry"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Currypaste"
           }
         }
       }
@@ -3275,6 +5795,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Heute anpassen"
+          }
+        }
+      }
+    },
+    "Cut vegetables into sticks and dip." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corta las verduras en bastones y mójalas."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemüse in Sticks schneiden und dippen."
           }
         }
       }
@@ -3387,6 +5923,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dunkel"
+          }
+        }
+      }
+    },
+    "Dark chocolate, 70%" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chocolate negro, 70 %"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zartbitterschokolade, 70 %"
           }
         }
       }
@@ -3855,6 +6407,22 @@
         }
       }
     },
+    "Edamame, shelled" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edamame, sin vaina"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edamame, geschält"
+          }
+        }
+      }
+    },
     "Edit entry" : {
       "localizations" : {
         "es" : {
@@ -3915,6 +6483,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wägung bearbeiten"
+          }
+        }
+      }
+    },
+    "Egg white" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clara de huevo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eiweiß"
+          }
+        }
+      }
+    },
+    "Egg, large" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huevo, grande"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ei, groß"
+          }
+        }
+      }
+    },
+    "Eggs" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Huevos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eier"
           }
         }
       }
@@ -4354,6 +6970,22 @@
         }
       }
     },
+    "Feta cheese" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Queso feta"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feta"
+          }
+        }
+      }
+    },
     "Fibre" : {
       "localizations" : {
         "es" : {
@@ -4498,6 +7130,38 @@
         }
       }
     },
+    "Flake tuna, toss with beans, onion, oil and lemon. Serve over greens." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desmenuza el atún y mézclalo con las alubias, la cebolla, el aceite y el limón. Sírvelo sobre la ensalada."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thunfisch zerpflücken, mit Bohnen, Zwiebel, Öl und Zitrone vermengen. Auf Salat servieren."
+          }
+        }
+      }
+    },
+    "Flaxseed, ground" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linaza, molida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leinsamen, gemahlen"
+          }
+        }
+      }
+    },
     "Flexible budget" : {
       "localizations" : {
         "es" : {
@@ -4510,6 +7174,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Flexibles Budget"
+          }
+        }
+      }
+    },
+    "Flour tortilla" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tortilla de trigo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weizentortilla"
           }
         }
       }
@@ -4636,6 +7316,22 @@
         }
       }
     },
+    "French fries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patatas fritas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pommes frites"
+          }
+        }
+      }
+    },
     "From Apple Health" : {
       "localizations" : {
         "es" : {
@@ -4652,6 +7348,22 @@
         }
       }
     },
+    "Fry curry paste, add coconut milk and vegetables, simmer 8 minutes. Add cubed tofu and warm through. Serve with rice." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sofríe la pasta de curry, añade la leche de coco y las verduras y cuece a fuego lento 8 minutos. Añade el tofu en dados y caliéntalo. Sírvelo con arroz."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Currypaste anbraten, Kokosmilch und Gemüse zugeben, 8 Minuten köcheln lassen. Tofuwürfel zugeben und erwärmen. Mit Reis servieren."
+          }
+        }
+      }
+    },
     "Gardening" : {
       "localizations" : {
         "es" : {
@@ -4664,6 +7376,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gartenarbeit"
+          }
+        }
+      }
+    },
+    "Garlic" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knoblauch"
+          }
+        }
+      }
+    },
+    "Garlic and ginger" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajo y jengibre"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knoblauch und Ingwer"
           }
         }
       }
@@ -4796,6 +7540,102 @@
         }
       }
     },
+    "Granola" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Granola"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Granola"
+          }
+        }
+      }
+    },
+    "Grapes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uvas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weintrauben"
+          }
+        }
+      }
+    },
+    "Greek yogurt parfait" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parfait de yogur griego"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Griechischer-Joghurt-Parfait"
+          }
+        }
+      }
+    },
+    "Greek yogurt, plain nonfat" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yogur griego, natural 0 %"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Griechischer Joghurt, natur, 0 %"
+          }
+        }
+      }
+    },
+    "Green beans" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Judías verdes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grüne Bohnen"
+          }
+        }
+      }
+    },
+    "Grilled chicken salad" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensalada de pollo a la plancha"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salat mit gegrilltem Hähnchen"
+          }
+        }
+      }
+    },
     "Groceries" : {
       "localizations" : {
         "es" : {
@@ -4908,6 +7748,22 @@
         }
       }
     },
+    "Heat oil in a nonstick pan. Wilt spinach and tomatoes for a minute, add beaten eggs and scramble gently. Serve on toast." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calienta el aceite en una sartén antiadherente. Rehoga las espinacas y los tomates un minuto, añade los huevos batidos y revuelve suavemente. Sírvelo sobre la tostada."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öl in einer beschichteten Pfanne erhitzen. Spinat und Tomaten eine Minute andünsten, verquirlte Eier zugeben und sanft stocken lassen. Auf Toast servieren."
+          }
+        }
+      }
+    },
     "Height" : {
       "localizations" : {
         "es" : {
@@ -4988,6 +7844,38 @@
         }
       }
     },
+    "High fibre" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rico en fibra"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ballaststoffreich"
+          }
+        }
+      }
+    },
+    "High protein" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rico en proteína"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eiweißreich"
+          }
+        }
+      }
+    },
     "Hiking" : {
       "localizations" : {
         "es" : {
@@ -5048,6 +7936,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hältst %@"
+          }
+        }
+      }
+    },
+    "Honey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miel"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Honig"
           }
         }
       }
@@ -5132,6 +8036,22 @@
         }
       }
     },
+    "Hummus" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hummus"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hummus"
+          }
+        }
+      }
+    },
     "Hypertensive crisis" : {
       "localizations" : {
         "es" : {
@@ -5144,6 +8064,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hypertensive Krise"
+          }
+        }
+      }
+    },
+    "Ice" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hielo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eis"
+          }
+        }
+      }
+    },
+    "Ice cream, vanilla" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helado de vainilla"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vanilleeis"
           }
         }
       }
@@ -5436,6 +8388,22 @@
         }
       }
     },
+    "Kale, raw" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kale, crudo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grünkohl, roh"
+          }
+        }
+      }
+    },
     "Keep doing what you are doing. Plan next week's dinners now while motivation is high." : {
       "localizations" : {
         "es" : {
@@ -5496,6 +8464,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hält Tagebuch, Wägungen, Vitalwerte und Pläne auf allen iPhones und iPads mit deiner Apple-ID gleich. Änderungen wirken beim nächsten Start von Stride. Beim Ausschalten bleibt die Kopie auf diesem Gerät erhalten."
+          }
+        }
+      }
+    },
+    "Ketchup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kétchup"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ketchup"
+          }
+        }
+      }
+    },
+    "Kidney beans, canned" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alubias rojas, en conserva"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kidneybohnen, aus der Dose"
           }
         }
       }
@@ -5628,6 +8628,134 @@
         }
       }
     },
+    "Latte, 2% milk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Café con leche, leche semidesnatada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latte, fettarme Milch"
+          }
+        }
+      }
+    },
+    "Layer yogurt, granola and berries in a glass." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alterna capas de yogur, granola y frutos rojos en un vaso."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Joghurt, Granola und Beeren im Glas schichten."
+          }
+        }
+      }
+    },
+    "Lean ground beef (93/7), cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carne picada de ternera magra (93/7), cocinada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mageres Rinderhack (93/7), gegart"
+          }
+        }
+      }
+    },
+    "Lean ground turkey" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carne picada de pavo magra"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mageres Putenhack"
+          }
+        }
+      }
+    },
+    "Lemon juice" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zumo de limón"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zitronensaft"
+          }
+        }
+      }
+    },
+    "Lentil and vegetable soup" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sopa de lentejas y verduras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linsen-Gemüse-Suppe"
+          }
+        }
+      }
+    },
+    "Lentils, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lentejas, cocidas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linsen, gekocht"
+          }
+        }
+      }
+    },
+    "Lentils, dry" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lentejas, secas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linsen, getrocknet"
+          }
+        }
+      }
+    },
     "Less" : {
       "localizations" : {
         "es" : {
@@ -5656,6 +8784,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hell"
+          }
+        }
+      }
+    },
+    "Light coconut milk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leche de coco ligera"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kokosmilch, fettreduziert"
           }
         }
       }
@@ -6332,6 +9476,22 @@
         }
       }
     },
+    "Low carb" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bajo en hidratos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kohlenhydratarm"
+          }
+        }
+      }
+    },
     "Lunch" : {
       "localizations" : {
         "es" : {
@@ -6444,6 +9604,22 @@
         }
       }
     },
+    "Make ahead" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se prepara con antelación"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Vorbereiten"
+          }
+        }
+      }
+    },
     "Male" : {
       "localizations" : {
         "es" : {
@@ -6456,6 +9632,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Männlich"
+          }
+        }
+      }
+    },
+    "Mango" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mango"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mango"
           }
         }
       }
@@ -6488,6 +9680,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wie Einheiten"
+          }
+        }
+      }
+    },
+    "Mayonnaise" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mayonesa"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mayonnaise"
           }
         }
       }
@@ -6684,6 +9892,54 @@
         }
       }
     },
+    "Milk, 2%" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leche semidesnatada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Milch, fettarm"
+          }
+        }
+      }
+    },
+    "Milk, skim" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leche desnatada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magermilch"
+          }
+        }
+      }
+    },
+    "Mixed salad greens" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mezcla de lechugas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemischter Blattsalat"
+          }
+        }
+      }
+    },
     "Mode" : {
       "localizations" : {
         "es" : {
@@ -6792,6 +10048,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bewegst du einen Regler, gleichen sich die anderen beiden aus, sodass die Summe 100% bleibt. Mehr Eiweiß hilft, beim Fettabbau Muskeln zu erhalten."
+          }
+        }
+      }
+    },
+    "Mozzarella, part skim" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mozzarella, semidesnatada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mozzarella, fettreduziert"
+          }
+        }
+      }
+    },
+    "Mushrooms" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champiñones"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Champignons"
           }
         }
       }
@@ -6920,6 +10208,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Neues Rezept"
+          }
+        }
+      }
+    },
+    "No cook" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin cocinar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Kochen"
           }
         }
       }
@@ -7308,6 +10612,22 @@
         }
       }
     },
+    "Oats, rolled (dry)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copos de avena (secos)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haferflocken (trocken)"
+          }
+        }
+      }
+    },
     "Off" : {
       "localizations" : {
         "es" : {
@@ -7336,6 +10656,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wird beim Erfassen dieses Lebensmittels als Schnellauswahl angeboten."
+          }
+        }
+      }
+    },
+    "Olive oil" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceite de oliva"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Olivenöl"
           }
         }
       }
@@ -7384,6 +10720,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hast du dein Ziel erreicht, wechsle zur Erhaltung, um dein Gewicht in einer Spanne zu halten, statt weiter herunterzuzählen."
+          }
+        }
+      }
+    },
+    "One tray" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En una bandeja"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Blech"
+          }
+        }
+      }
+    },
+    "Onion" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cebolla"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zwiebel"
           }
         }
       }
@@ -7471,6 +10839,38 @@
         }
       }
     },
+    "Orange" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naranja"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orange"
+          }
+        }
+      }
+    },
+    "Orange juice" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zumo de naranja"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orangensaft"
+          }
+        }
+      }
+    },
     "Other" : {
       "localizations" : {
         "es" : {
@@ -7503,6 +10903,22 @@
         }
       }
     },
+    "Overnight oats with berries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avena remojada con frutos rojos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Overnight Oats mit Beeren"
+          }
+        }
+      }
+    },
     "P%lld C%lld F%lld" : {
       "localizations" : {
         "es" : {
@@ -7515,6 +10931,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "E%lld K%lld F%lld"
+          }
+        }
+      }
+    },
+    "Packable" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para llevar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Mitnehmen"
+          }
+        }
+      }
+    },
+    "Parmesan" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parmesano"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parmesan"
           }
         }
       }
@@ -7535,6 +10983,22 @@
         }
       }
     },
+    "Pasta, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasta, cocida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nudeln, gekocht"
+          }
+        }
+      }
+    },
     "Patterns" : {
       "localizations" : {
         "es" : {
@@ -7547,6 +11011,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muster"
+          }
+        }
+      }
+    },
+    "Peanut butter" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crema de cacahuete"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erdnussbutter"
+          }
+        }
+      }
+    },
+    "Pear" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pera"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Birne"
           }
         }
       }
@@ -7627,6 +11123,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pilates"
+          }
+        }
+      }
+    },
+    "Pizza, cheese" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pizza de queso"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käsepizza"
           }
         }
       }
@@ -7727,6 +11239,22 @@
         }
       }
     },
+    "Popcorn, air-popped" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palomitas, sin aceite"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Popcorn, ohne Öl"
+          }
+        }
+      }
+    },
     "Portion" : {
       "localizations" : {
         "es" : {
@@ -7739,6 +11267,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Portion"
+          }
+        }
+      }
+    },
+    "Potato, baked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Patata asada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ofenkartoffel"
           }
         }
       }
@@ -7871,6 +11415,22 @@
         }
       }
     },
+    "Protein bar" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barrita de proteína"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proteinriegel"
+          }
+        }
+      }
+    },
     "Protein keeps you full longer. Aim to include a palm-sized portion in every meal." : {
       "localizations" : {
         "es" : {
@@ -7883,6 +11443,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eiweiß hält länger satt. Versuch, in jede Mahlzeit eine handtellergroße Portion einzubauen."
+          }
+        }
+      }
+    },
+    "Protein shake, ready to drink" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batido de proteína, listo para beber"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proteinshake, trinkfertig"
+          }
+        }
+      }
+    },
+    "Quick" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rápido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnell"
           }
         }
       }
@@ -7935,6 +11527,38 @@
         }
       }
     },
+    "Quinoa, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quinoa, cocida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quinoa, gekocht"
+          }
+        }
+      }
+    },
+    "Ranch dressing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salsa ranch"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ranch-Dressing"
+          }
+        }
+      }
+    },
     "Range" : {
       "localizations" : {
         "es" : {
@@ -7947,6 +11571,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zeitraum"
+          }
+        }
+      }
+    },
+    "Raspberries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frambuesas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Himbeeren"
           }
         }
       }
@@ -8075,6 +11715,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rezepte"
+          }
+        }
+      }
+    },
+    "Red onion" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cebolla morada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rote Zwiebel"
           }
         }
       }
@@ -8287,6 +11943,38 @@
         }
       }
     },
+    "Rice cakes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tortitas de arroz"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reiswaffeln"
+          }
+        }
+      }
+    },
+    "Rolled oats" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copos de avena"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haferflocken"
+          }
+        }
+      }
+    },
     "Rough estimate" : {
       "localizations" : {
         "es" : {
@@ -8367,6 +12055,70 @@
         }
       }
     },
+    "Salmon fillet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filete de salmón"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lachsfilet"
+          }
+        }
+      }
+    },
+    "Salmon with roasted vegetables" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salmón con verduras asadas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lachs mit Ofengemüse"
+          }
+        }
+      }
+    },
+    "Salmon, baked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salmón, al horno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lachs, gebacken"
+          }
+        }
+      }
+    },
+    "Salsa" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salsa"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salsa"
+          }
+        }
+      }
+    },
     "Same as yesterday?" : {
       "localizations" : {
         "es" : {
@@ -8395,6 +12147,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gleicher Ort, gleiches Licht und gleiche Tageszeit machen die Veränderung am besten sichtbar."
+          }
+        }
+      }
+    },
+    "Sauté garlic in oil, add tomatoes until they burst. Toss in shrimp and zucchini noodles for 2 minutes. Finish with parmesan." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltea el ajo en aceite y añade los tomates hasta que revienten. Incorpora las gambas y los espaguetis de calabacín 2 minutos. Termina con parmesano."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Knoblauch in Öl anschwitzen, Tomaten zugeben, bis sie aufplatzen. Garnelen und Zucchininudeln 2 Minuten mitschwenken. Mit Parmesan vollenden."
           }
         }
       }
@@ -8649,6 +12417,22 @@
         }
       }
     },
+    "Season and grill chicken 5–6 minutes a side. Slice over greens, tomatoes and cucumber. Crumble feta, dress with oil and lemon." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sazona el pollo y hazlo a la plancha 5–6 minutos por lado. Córtalo sobre la lechuga, los tomates y el pepino. Desmenuza el feta y aliña con aceite y limón."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchen würzen und 5–6 Minuten pro Seite grillen. In Scheiben auf Salat, Tomaten und Gurke legen. Feta darüberbröseln, mit Öl und Zitrone anmachen."
+          }
+        }
+      }
+    },
     "Sedentary" : {
       "localizations" : {
         "es" : {
@@ -8761,6 +12545,22 @@
         }
       }
     },
+    "Sesame oil" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aceite de sésamo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sesamöl"
+          }
+        }
+      }
+    },
     "Set target manually" : {
       "localizations" : {
         "es" : {
@@ -8841,6 +12641,38 @@
         }
       }
     },
+    "Shrimp and zucchini noodles" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gambas con espaguetis de calabacín"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garnelen mit Zucchininudeln"
+          }
+        }
+      }
+    },
+    "Shrimp, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gambas, cocidas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Garnelen, gegart"
+          }
+        }
+      }
+    },
     "Sleep" : {
       "localizations" : {
         "es" : {
@@ -8885,6 +12717,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schlaf, Natrium und Muster"
+          }
+        }
+      }
+    },
+    "Slice the apple and dip." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corta la manzana en rodajas y mójala."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apfel in Spalten schneiden und dippen."
           }
         }
       }
@@ -8949,6 +12797,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quelle"
+          }
+        }
+      }
+    },
+    "Soy sauce" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Salsa de soja"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sojasoße"
+          }
+        }
+      }
+    },
+    "Spinach" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espinacas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spinat"
+          }
+        }
+      }
+    },
+    "Spinach, raw" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espinacas, crudas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spinat, roh"
+          }
+        }
+      }
+    },
+    "Spread hummus on the tortilla, layer turkey, avocado, spinach and tomato. Roll tightly and halve." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unta el hummus en la tortilla y coloca el pavo, el aguacate, las espinacas y el tomate. Enrolla bien y corta por la mitad."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hummus auf die Tortilla streichen, Pute, Avocado, Spinat und Tomate darauflegen. Fest aufrollen und halbieren."
           }
         }
       }
@@ -9097,6 +13009,38 @@
         }
       }
     },
+    "Stir oats, yogurt, milk, chia and honey in a jar. Refrigerate overnight. Top with blueberries before eating." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mezcla la avena, el yogur, la leche, la chía y la miel en un tarro. Déjalo en la nevera toda la noche. Añade los arándanos antes de comer."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haferflocken, Joghurt, Milch, Chia und Honig in einem Glas verrühren. Über Nacht kühlen. Vor dem Essen mit Heidelbeeren toppen."
+          }
+        }
+      }
+    },
+    "Stir-fry sliced chicken in oil until golden. Add vegetables, garlic and ginger, cook 4 minutes. Splash in soy sauce. Serve over rice." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saltea el pollo en tiras en aceite hasta que se dore. Añade las verduras, el ajo y el jengibre y cocina 4 minutos. Echa un chorrito de salsa de soja. Sírvelo sobre arroz."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hähnchenstreifen in Öl goldbraun anbraten. Gemüse, Knoblauch und Ingwer zugeben, 4 Minuten garen. Mit Sojasoße ablöschen. Auf Reis servieren."
+          }
+        }
+      }
+    },
     "Stones and pounds" : {
       "localizations" : {
         "es" : {
@@ -9109,6 +13053,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Stone und Pfund"
+          }
+        }
+      }
+    },
+    "Strawberries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fresas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erdbeeren"
           }
         }
       }
@@ -9160,6 +13120,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorgeschlagenes Ziel"
+          }
+        }
+      }
+    },
+    "Sushi roll, California" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sushi, rollo California"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sushi, California Roll"
+          }
+        }
+      }
+    },
+    "Sweat onion, carrot and celery in oil. Add lentils, tomatoes and stock. Simmer 25 minutes until lentils are tender. Season well." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pocha la cebolla, la zanahoria y el apio en aceite. Añade las lentejas, los tomates y el caldo. Cuece a fuego lento 25 minutos, hasta que las lentejas estén tiernas. Sazona bien."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zwiebel, Karotte und Sellerie in Öl andünsten. Linsen, Tomaten und Brühe zugeben. 25 Minuten köcheln lassen, bis die Linsen weich sind. Gut abschmecken."
+          }
+        }
+      }
+    },
+    "Sweet potato" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boniato"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süßkartoffel"
+          }
+        }
+      }
+    },
+    "Sweet potato, baked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Boniato, asado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Süßkartoffel, gebacken"
           }
         }
       }
@@ -9356,6 +13380,22 @@
         }
       }
     },
+    "Tempeh" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tempeh"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tempeh"
+          }
+        }
+      }
+    },
     "Tennis" : {
       "localizations" : {
         "es" : {
@@ -9548,6 +13588,54 @@
         }
       }
     },
+    "Tofu veggie curry with rice" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Curry de tofu y verduras con arroz"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tofu-Gemüse-Curry mit Reis"
+          }
+        }
+      }
+    },
+    "Tofu, firm" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tofu, firme"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tofu, fest"
+          }
+        }
+      }
+    },
+    "Tomato" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomate"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomate"
+          }
+        }
+      }
+    },
     "Tomorrow" : {
       "localizations" : {
         "es" : {
@@ -9560,6 +13648,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Morgen"
+          }
+        }
+      }
+    },
+    "Tortilla chips" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totopos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tortillachips"
+          }
+        }
+      }
+    },
+    "Toss vegetables with oil, roast at 200°C for 15 minutes. Add salmon to the tray and roast 10–12 minutes more." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mezcla las verduras con aceite y ásalas a 200 °C durante 15 minutos. Añade el salmón a la bandeja y ásalo 10–12 minutos más."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemüse mit Öl vermengen und bei 200 °C 15 Minuten rösten. Lachs aufs Blech legen und weitere 10–12 Minuten garen."
           }
         }
       }
@@ -9643,6 +13763,86 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trends"
+          }
+        }
+      }
+    },
+    "Tuna and white bean salad" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ensalada de atún y alubias blancas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thunfisch-Bohnen-Salat"
+          }
+        }
+      }
+    },
+    "Tuna, canned in water" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atún en lata, al natural"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thunfisch, im eigenen Saft"
+          }
+        }
+      }
+    },
+    "Turkey and avocado wrap" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrap de pavo y aguacate"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wrap mit Pute und Avocado"
+          }
+        }
+      }
+    },
+    "Turkey breast, sliced" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pechuga de pavo, en lonchas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Putenbrust, in Scheiben"
+          }
+        }
+      }
+    },
+    "Turkey chili" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chili de pavo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puten-Chili"
           }
         }
       }
@@ -9775,6 +13975,70 @@
         }
       }
     },
+    "Vegan" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vegano"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vegan"
+          }
+        }
+      }
+    },
+    "Vegetable stock" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caldo de verduras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemüsebrühe"
+          }
+        }
+      }
+    },
+    "Veggie egg scramble on toast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revuelto de huevo y verduras sobre tostada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rührei mit Gemüse auf Toast"
+          }
+        }
+      }
+    },
+    "Veggies and hummus" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verduras con hummus"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemüse mit Hummus"
+          }
+        }
+      }
+    },
     "Very active" : {
       "localizations" : {
         "es" : {
@@ -9903,6 +14167,22 @@
         }
       }
     },
+    "Walnuts" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nueces"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Walnüsse"
+          }
+        }
+      }
+    },
     "Water" : {
       "localizations" : {
         "es" : {
@@ -9979,6 +14259,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wassereinlagerungen durch Stress, Schlaf oder neues Training können Fettverlust ein, zwei Wochen verdecken."
+          }
+        }
+      }
+    },
+    "Watermelon" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sandía"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wassermelone"
           }
         }
       }
@@ -10409,6 +14705,102 @@
         }
       }
     },
+    "Whey protein powder" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proteína de suero en polvo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whey-Proteinpulver"
+          }
+        }
+      }
+    },
+    "White bread" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pan blanco"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weißbrot"
+          }
+        }
+      }
+    },
+    "White rice, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arroz blanco, cocido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weißer Reis, gekocht"
+          }
+        }
+      }
+    },
+    "Whole wheat bread" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pan integral"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vollkornbrot"
+          }
+        }
+      }
+    },
+    "Whole wheat pasta, cooked" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasta integral, cocida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vollkornnudeln, gekocht"
+          }
+        }
+      }
+    },
+    "Wine, red" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vino tinto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rotwein"
+          }
+        }
+      }
+    },
     "Works with most recipe sites. Ingredients come in without nutrition unless the page lists it; edit them in the recipe to add it from your food list." : {
       "localizations" : {
         "es" : {
@@ -10787,6 +15179,38 @@
         }
       }
     },
+    "Zucchini" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calabacín"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zucchini"
+          }
+        }
+      }
+    },
+    "Zucchini, spiralised" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calabacín, en espiral"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zucchini, spiralisiert"
+          }
+        }
+      }
+    },
     "breakfast" : {
       "localizations" : {
         "es" : {
@@ -10850,6 +15274,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "für %lld"
+          }
+        }
+      }
+    },
+    "handful" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "puñado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handvoll"
           }
         }
       }
@@ -10940,6 +15380,22 @@
         }
       }
     },
+    "medium (117 g)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mediano (117 g)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mittelgroß (117 g)"
+          }
+        }
+      }
+    },
     "of %@" : {
       "localizations" : {
         "es" : {
@@ -10984,6 +15440,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "zu viel"
+          }
+        }
+      }
+    },
+    "serving" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ración"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Portion"
           }
         }
       }
