@@ -11,6 +11,8 @@ extension UTType {
 struct FoodReference: Codable, Hashable, Transferable {
     enum Kind: String, Codable {
         case food, recipe
+        /// A diary line being moved to another meal.
+        case entry
     }
 
     var kind: Kind
@@ -24,6 +26,11 @@ struct FoodReference: Codable, Hashable, Transferable {
     init(recipe: Recipe) {
         kind = .recipe
         id = recipe.uuid
+    }
+
+    init(entry: FoodLogEntry) {
+        kind = .entry
+        id = entry.uuid
     }
 
     static var transferRepresentation: some TransferRepresentation {
@@ -43,6 +50,8 @@ struct FoodReference: Codable, Hashable, Transferable {
             guard let food = try? context.fetch(FetchDescriptor<FoodItem>(predicate: #Predicate { $0.uuid == id })).first
             else { return false }
             context.insert(MealPlanEntry(food: food, day: day, mealType: meal ?? MealType.current()))
+        case .entry:
+            return false
         }
         try? context.save()
         return true
@@ -50,10 +59,16 @@ struct FoodReference: Codable, Hashable, Transferable {
 
     /// Logs one serving (a food's last amount) to a diary meal. False when it no longer exists.
     @MainActor
-    func log(on day: Date, as meal: MealType, context: ModelContext) -> Bool {
+    func log(on day: Date, as meal: MealType, context: ModelContext, undo center: UndoCenter? = nil) -> Bool {
         let id = id
         let entry: FoodLogEntry
         switch kind {
+        case .entry:
+            // Dropping a diary line on another meal moves it there.
+            guard let existing = try? context.fetch(FetchDescriptor<FoodLogEntry>(predicate: #Predicate { $0.uuid == id })).first
+            else { return false }
+            context.moveDiaryEntry(existing, to: meal, on: day, undo: center)
+            return true
         case .recipe:
             guard let recipe = try? context.fetch(FetchDescriptor<Recipe>(predicate: #Predicate { $0.uuid == id })).first
             else { return false }
