@@ -140,7 +140,7 @@ struct MainTabView: View {
 
     /// Sheets opened from a Home Screen quick action.
     enum QuickSheet: Identifiable {
-        case food, weight
+        case food, weight, settings
         var id: Self { self }
     }
 
@@ -205,8 +205,10 @@ struct MainTabView: View {
             switch sheet {
             case .food: FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current())
             case .weight: AddWeightSheet()
+            case .settings: SettingsView()
             }
         }
+        .focusedSceneValue(\.sceneActions, sceneActions)
         .onChange(of: quickActions.pending, initial: true) { performQuickAction() }
         .onChange(of: isAppLocked) { performQuickAction() }
         .onAppear {
@@ -243,6 +245,18 @@ struct MainTabView: View {
                 HomeQuickActionCenter.publish(context: context)
             }
         }
+    }
+
+    /// For the menu bar and keyboard shortcuts.
+    private var sceneActions: SceneActions {
+        SceneActions(select: select,
+                     logFood: { quickSheet = .food },
+                     logWeight: { quickSheet = .weight },
+                     logWater: { _ = try? QuickLog.water(ml: nil, context: context) },
+                     openSettings: {
+                         if sizeClass == .regular { showsSettings = true } else { quickSheet = .settings }
+                     },
+                     undoDelete: undoCenter.toast == nil ? nil : { undoCenter.undo() })
     }
 
     private func select(_ tab: Tab) {
