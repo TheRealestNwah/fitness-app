@@ -48,13 +48,46 @@ jobs:
             echo "status=failed" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Export screenshots from the result bundle
+      - name: Pick an iPad simulator
+        id: ipad
         run: |
-          rm -rf shots && mkdir -p shots
+          DEVICE=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices[] | .[] | select(.name | startswith("iPad"))][0].name')
+          echo "Using simulator: $DEVICE"
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+
+      - name: Run iPad screenshot UI tests
+        id: ipadtest
+        run: |
+          set -o pipefail
+          rm -rf build/iPadTests.xcresult
+          xcodebuild test \
+            -project FitnessApp.xcodeproj \
+            -scheme FitnessApp \
+            -destination "platform=iOS Simulator,name=${{ steps.ipad.outputs.device }}" \
+            -derivedDataPath build \
+            -resultBundlePath build/iPadTests.xcresult \
+            -only-testing:FitnessAppUITests/IPadScreenshotTests \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" \
+            | tee ipadtest.log | grep -E "Test Case|Test case|error:|failed|passed|\*\*" || true
+          if grep -qE "TEST (EXECUTE )?SUCCEEDED" ipadtest.log; then
+            echo "status=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Export screenshots from the result bundles
+        run: |
+          rm -rf shots && mkdir -p shots/iphone shots/ipad
           xcrun xcresulttool export attachments \
             --path build/UITests.xcresult \
-            --output-path shots
-          ls -la shots
+            --output-path shots/iphone
+          if [ -d build/iPadTests.xcresult ]; then
+            xcrun xcresulttool export attachments \
+              --path build/iPadTests.xcresult \
+              --output-path shots/ipad
+          fi
+          ls -laR shots
           python3 - <<'PY'
           import json, os, re, shutil, glob
           IMAGES = (".png", ".jpg", ".jpeg", ".heic")
@@ -62,30 +95,30 @@ jobs:
               # Drop XCTest's "_0_<UUID>" suffix, and anything upload-artifact won't accept.
               name = re.sub(r"_\d+_[0-9A-Fa-f-]{36}$", "", name)
               return re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip("-")
-          d = "shots"
           out = "screenshots"
           os.makedirs(out, exist_ok=True)
-          manifest = os.path.join(d, "manifest.json")
-          renamed = 0
-          if os.path.exists(manifest):
-              data = json.load(open(manifest))
-              groups = data if isinstance(data, list) else data.get("attachments", [data])
-              for g in groups:
-                  atts = g.get("attachments", [g]) if isinstance(g, dict) else []
-                  for a in atts:
-                      src = a.get("exportedFileName") or a.get("fileName")
-                      name = a.get("suggestedHumanReadableName") or a.get("name") or src
-                      if not src:
-                          continue
-                      ext = os.path.splitext(src)[1].lower() or ".png"
-                      if ext not in IMAGES:
-                          continue  # debug descriptions and other text attachments
-                      base = clean(os.path.splitext(name)[0])
-                      shutil.copy(os.path.join(d, src), os.path.join(out, base + ext))
-                      renamed += 1
-          if renamed == 0:
-              for f in glob.glob(os.path.join(d, "*.png")):
-                  shutil.copy(f, os.path.join(out, clean(os.path.splitext(os.path.basename(f))[0]) + ".png"))
+          for d in ["shots/iphone", "shots/ipad"]:
+              manifest = os.path.join(d, "manifest.json")
+              renamed = 0
+              if os.path.exists(manifest):
+                  data = json.load(open(manifest))
+                  groups = data if isinstance(data, list) else data.get("attachments", [data])
+                  for g in groups:
+                      atts = g.get("attachments", [g]) if isinstance(g, dict) else []
+                      for a in atts:
+                          src = a.get("exportedFileName") or a.get("fileName")
+                          name = a.get("suggestedHumanReadableName") or a.get("name") or src
+                          if not src:
+                              continue
+                          ext = os.path.splitext(src)[1].lower() or ".png"
+                          if ext not in IMAGES:
+                              continue  # debug descriptions and other text attachments
+                          base = clean(os.path.splitext(name)[0])
+                          shutil.copy(os.path.join(d, src), os.path.join(out, base + ext))
+                          renamed += 1
+              if renamed == 0:
+                  for f in glob.glob(os.path.join(d, "*.png")):
+                      shutil.copy(f, os.path.join(out, clean(os.path.splitext(os.path.basename(f))[0]) + ".png"))
           print("exported", len(os.listdir(out)), "files")
           PY
           ls -la screenshots
@@ -101,7 +134,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: uitest-log
-          path: uitest.log
+          path: |
+            uitest.log
+            ipadtest.log
 
       - name: Publish to the screenshots branch
         run: |
@@ -111,13 +146,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -q -m "Screenshots from ${GITHUB_SHA} (${GITHUB_REF_NAME}, tests ${{ steps.uitest.outputs.status }})"
+          git commit -q -m "Screenshots from ${GITHUB_SHA} (${GITHUB_REF_NAME}, iPhone tests ${{ steps.uitest.outputs.status }}, iPad tests ${{ steps.ipadtest.outputs.status }})"
           git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" screenshots
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fail if the UI tests failed
-        if: steps.uitest.outputs.status != 'passed'
+        if: steps.uitest.outputs.status != 'passed' || steps.ipadtest.outputs.status != 'passed'
         run: |
-          echo "UI tests reported failures; see uitest.log"
+          echo "UI tests reported failures; see uitest.log and ipadtest.log"
           exit 1

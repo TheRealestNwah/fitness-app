@@ -78,44 +78,79 @@ struct MainTabView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selection: Tab = .today
     @State private var undoCenter = UndoCenter()
+    @State private var columns: NavigationSplitViewVisibility = .all
     /// Start of the current day. Today's queries are built from it, so it's refreshed at
     /// midnight and whenever the app comes back to the foreground.
     @State private var today = Date.now.startOfDay
 
-    enum Tab: Hashable {
+    enum Tab: Hashable, CaseIterable {
         case today, food, weight, vitals, plan
+
+        var title: String {
+            switch self {
+            case .today: "Today"
+            case .food: "Food"
+            case .weight: "Weight"
+            case .vitals: "Vitals"
+            case .plan: "Plan"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .today: "sun.horizon.fill"
+            case .food: "fork.knife"
+            case .weight: "scalemass.fill"
+            case .vitals: "heart.text.square.fill"
+            case .plan: "calendar"
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func screen(_ tab: Tab) -> some View {
+        switch tab {
+        case .today: DashboardView(day: today, selectTab: { selection = $0 }).id(today)
+        case .food: FoodDiaryView()
+        case .weight: WeightView()
+        case .vitals: VitalsView()
+        case .plan: MealPlanView()
+        }
     }
 
     var body: some View {
-        TabView(selection: $selection) {
-            DashboardView(day: today, selectTab: { selection = $0 })
-                .id(today)
-                .tabItem { Label("Today", systemImage: "sun.horizon.fill") }
-                .tag(Tab.today)
-
-            FoodDiaryView()
-                .tabItem { Label("Food", systemImage: "fork.knife") }
-                .tag(Tab.food)
-
-            WeightView()
-                .tabItem { Label("Weight", systemImage: "scalemass.fill") }
-                .tag(Tab.weight)
-
-            VitalsView()
-                .tabItem { Label("Vitals", systemImage: "heart.text.square.fill") }
-                .tag(Tab.vitals)
-
-            MealPlanView()
-                .tabItem { Label("Plan", systemImage: "calendar") }
-                .tag(Tab.plan)
+        Group {
+            if sizeClass == .regular {
+                // iPad and wide windows: a sidebar instead of the tab bar.
+                NavigationSplitView(columnVisibility: $columns) {
+                    List(Tab.allCases, id: \.self, selection: Binding<Tab?>(get: { selection },
+                                                                           set: { if let tab = $0 { selection = tab } })) { tab in
+                        Label(tab.title, systemImage: tab.systemImage)
+                            .accessibilityIdentifier("sidebar-\(tab.title)")
+                    }
+                    .navigationTitle("Stride")
+                } detail: {
+                    screen(selection)
+                }
+                .navigationSplitViewStyle(.balanced)
+            } else {
+                TabView(selection: $selection) {
+                    ForEach(Tab.allCases, id: \.self) { tab in
+                        screen(tab)
+                            .tabItem { Label(tab.title, systemImage: tab.systemImage) }
+                            .tag(tab)
+                    }
+                }
+            }
         }
         .environment(undoCenter)
         .overlay(alignment: .bottom) {
             UndoToastView()
                 .environment(undoCenter)
-                .padding(.bottom, 58)          // clear of the tab bar
+                .padding(.bottom, sizeClass == .regular ? 16 : 58)   // clear of the tab bar
         }
         .animation(.snappy, value: undoCenter.toast)
         .onAppear { NotificationManager.sync(with: profile) }
