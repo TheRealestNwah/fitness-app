@@ -6,6 +6,7 @@ struct DashboardView: View {
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query(sort: \VitalsEntry.date, order: .reverse) private var vitals: [VitalsEntry]
@@ -127,9 +128,7 @@ struct DashboardView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     header
-                    ForEach(TodayLayout(storage: layoutStorage).visible) { card in
-                        cardView(card)
-                    }
+                    cards
                     customiseButton
                 }
                 .padding()
@@ -153,6 +152,21 @@ struct DashboardView: View {
     }
 
     // MARK: Sections
+
+    /// One column on iPhone; two side by side on iPad and other wide windows.
+    @ViewBuilder
+    private var cards: some View {
+        let visible = TodayLayout(storage: layoutStorage).visible
+        if sizeClass == .regular {
+            let split = TodayLayout.columns(visible)
+            HStack(alignment: .top, spacing: 16) {
+                VStack(spacing: 16) { ForEach(split.left) { cardView($0) } }
+                VStack(spacing: 16) { ForEach(split.right) { cardView($0) } }
+            }
+        } else {
+            ForEach(visible) { cardView($0) }
+        }
+    }
 
     @ViewBuilder
     private func cardView(_ card: TodayCard) -> some View {
