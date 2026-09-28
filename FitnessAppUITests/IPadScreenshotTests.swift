@@ -39,8 +39,8 @@ final class IPadScreenshotTests: XCTestCase {
         open("Plan", in: app)
         snap("ipad-14-meal-planner")
 
-        XCUIDevice.shared.orientation = .portrait
         open("Today", in: app)
+        XCUIDevice.shared.orientation = .portrait
         snap("ipad-15-today-portrait")
     }
 }
