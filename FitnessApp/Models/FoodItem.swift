@@ -64,7 +64,8 @@ final class FoodItem {
 }
 
 extension FoodItem {
-    /// Adds this food to the diary and remembers the amount for next time.
+    /// Adds this food to the diary (and Health) and remembers the amount for next time.
+    @MainActor
     @discardableResult
     func log(servings: Double, meal: MealType, on date: Date, context: ModelContext) -> FoodLogEntry {
         lastServings = servings
@@ -81,7 +82,7 @@ extension FoodItem {
                                  fiber: fiber * servings,
                                  sugar: sugar * servings,
                                  sodium: sodium * servings)
-        context.insert(entry)
+        context.insertDiaryEntry(entry)
         lastUsed = .now
         useCount += 1
         return entry
