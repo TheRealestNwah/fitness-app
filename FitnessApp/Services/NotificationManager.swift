@@ -38,10 +38,12 @@ enum NotificationManager {
             center.add(UNNotificationRequest(identifier: weighInID, content: content, trigger: trigger))
         }
 
-        guard profile.waterReminderEnabled || profile.mealReminderEnabled else { return }
+        guard profile.waterReminderEnabled || profile.mealReminderEnabled || profile.dayCloseReminderHour != nil
+        else { return }
         let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
                                                 waterGoalMl: profile.waterGoalMl,
-                                                mealsEnabled: profile.mealReminderEnabled)
+                                                mealsEnabled: profile.mealReminderEnabled,
+                                                dayCloseHour: profile.dayCloseReminderHour)
         for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile.modelContext, now: now), now: now) {
             let content = UNMutableNotificationContent()
             content.title = reminder.title
