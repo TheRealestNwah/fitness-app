@@ -53,6 +53,13 @@ struct TodayLayout: Equatable {
 
     var isDefault: Bool { self == .default }
 
+    /// Two columns for wide layouts, alternating so each keeps the chosen order top to bottom.
+    static func columns(_ cards: [TodayCard]) -> (left: [TodayCard], right: [TodayCard]) {
+        let indexed = cards.enumerated()
+        return (indexed.filter { $0.offset.isMultiple(of: 2) }.map(\.element),
+                indexed.filter { !$0.offset.isMultiple(of: 2) }.map(\.element))
+    }
+
     // MARK: Storage
 
     /// "order|hidden", each a comma-separated list of raw values.

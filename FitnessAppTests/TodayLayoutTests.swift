@@ -45,4 +45,11 @@ final class TodayLayoutTests: XCTestCase {
         let layout = TodayLayout(storage: "tip,tip,calories|")
         XCTAssertEqual(layout.order.filter { $0 == .tip }.count, 1)
     }
+
+    func testColumnsAlternateAndKeepOrder() {
+        let split = TodayLayout.columns([.calories, .quickActions, .weight, .water, .tip])
+        XCTAssertEqual(split.left, [.calories, .weight, .tip])
+        XCTAssertEqual(split.right, [.quickActions, .water])
+        XCTAssertTrue(TodayLayout.columns([]).left.isEmpty)
+    }
 }
