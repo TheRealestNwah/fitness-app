@@ -1005,22 +1005,6 @@
         }
       }
     },
-    "%lld of %lld glasses" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld de %lld vasos"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld von %lld Gläsern"
-          }
-        }
-      }
-    },
     "%lld of %lld grams, %lld percent" : {
       "localizations" : {
         "es" : {
@@ -11715,6 +11699,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rezept"
+          }
+        }
+      }
+    },
+    "Recipe, %@ per serving" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receta, %@ por ración"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rezept, %@ pro Portion"
           }
         }
       }

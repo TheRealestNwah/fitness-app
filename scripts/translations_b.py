@@ -305,6 +305,7 @@ T = [
     ("of %@h", "de %@ h", "von %@ Std."),
     ("over", "de más", "zu viel"),
     ("target ~%@", "objetivo ~%@", "Ziel ~%@"),
+    ("Recipe, %@ per serving", "Receta, %@ por ración", "Rezept, %@ pro Portion"),
 ]
 
 # Not translated: units, brand names and URL prefixes.
