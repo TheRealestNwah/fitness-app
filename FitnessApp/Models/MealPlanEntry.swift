@@ -16,6 +16,8 @@ final class MealPlanEntry {
     var fatPerServing: Double = 0
     var recipeID: UUID?
     var foodItemID: UUID?
+    /// Set when the slot is a portion from a meal-prep batch; logging it counts the batch down.
+    var batchID: UUID?
     var isLogged: Bool = false
 
     init(day: Date,
@@ -71,5 +73,16 @@ extension MealPlanEntry {
                   carbsPerServing: food.carbs,
                   fatPerServing: food.fat,
                   foodItemID: food.uuid)
+    }
+
+    /// One portion from a meal-prep batch in a plan slot.
+    convenience init(batch: MealPrepBatch, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: batch.name,
+                  caloriesPerServing: batch.caloriesPerPortion,
+                  proteinPerServing: batch.proteinPerPortion,
+                  carbsPerServing: batch.carbsPerPortion,
+                  fatPerServing: batch.fatPerPortion,
+                  recipeID: batch.recipeID)
+        batchID = batch.uuid
     }
 }

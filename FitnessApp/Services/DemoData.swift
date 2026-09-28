@@ -31,6 +31,7 @@ enum DemoData {
         deleteAll(WaterEntry.self, in: context)
         deleteAll(MealPlanEntry.self, in: context)
         deleteAll(SavedMeal.self, in: context)
+        deleteAll(MealPrepBatch.self, in: context)
         deleteAll(FastingSession.self, in: context)
         deleteAll(ExerciseEntry.self, in: context)
         deleteAll(FoodItem.self, in: context)
