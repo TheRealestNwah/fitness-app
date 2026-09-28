@@ -173,6 +173,11 @@ struct DashboardView: View {
         switch card {
         case .calories: calorieCard
         case .quickActions: quickActions
+        case .suggestions:
+            SuggestionsCard(remaining: .init(kcal: Double(calorieTarget) - consumed, protein: macroTargets.protein - protein,
+                                             carbs: macroTargets.carbs - carbs, fat: macroTargets.fat - fat),
+                            target: .init(kcal: Double(calorieTarget), protein: macroTargets.protein,
+                                          carbs: macroTargets.carbs, fat: macroTargets.fat))
         case .weight: weightCard
         case .progress:
             if let milestone = recentMilestone { milestoneCard(milestone) }

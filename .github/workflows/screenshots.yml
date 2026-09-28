@@ -56,7 +56,12 @@ jobs:
             --output-path shots
           ls -la shots
           python3 - <<'PY'
-          import json, os, shutil, glob
+          import json, os, re, shutil, glob
+          IMAGES = (".png", ".jpg", ".jpeg", ".heic")
+          def clean(name):
+              # Drop XCTest's "_0_<UUID>" suffix, and anything upload-artifact won't accept.
+              name = re.sub(r"_\d+_[0-9A-Fa-f-]{36}$", "", name)
+              return re.sub(r"[^A-Za-z0-9._-]+", "-", name).strip("-")
           d = "shots"
           out = "screenshots"
           os.makedirs(out, exist_ok=True)
@@ -72,13 +77,15 @@ jobs:
                       name = a.get("suggestedHumanReadableName") or a.get("name") or src
                       if not src:
                           continue
-                      base = os.path.splitext(name)[0]
-                      ext = os.path.splitext(src)[1] or ".png"
+                      ext = os.path.splitext(src)[1].lower() or ".png"
+                      if ext not in IMAGES:
+                          continue  # debug descriptions and other text attachments
+                      base = clean(os.path.splitext(name)[0])
                       shutil.copy(os.path.join(d, src), os.path.join(out, base + ext))
                       renamed += 1
           if renamed == 0:
               for f in glob.glob(os.path.join(d, "*.png")):
-                  shutil.copy(f, out)
+                  shutil.copy(f, os.path.join(out, clean(os.path.splitext(os.path.basename(f))[0]) + ".png"))
           print("exported", len(os.listdir(out)), "files")
           PY
           ls -la screenshots
