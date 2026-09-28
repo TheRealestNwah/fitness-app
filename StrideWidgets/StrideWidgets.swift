@@ -7,6 +7,9 @@ struct StrideWidgetBundle: WidgetBundle {
         CaloriesWidget()
 #if os(iOS)
         FastingLiveActivity()
+        if #available(iOS 18.0, *) {
+            LogWaterControl()
+        }
 #endif
     }
 }

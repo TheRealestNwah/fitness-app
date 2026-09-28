@@ -16,8 +16,12 @@ struct FitnessApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .appLockGate()
         }
         .modelContainer(container)
+        .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
+            await BackgroundRefresh.run()
+        }
     }
 }
 
