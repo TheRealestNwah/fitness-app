@@ -9,6 +9,14 @@ struct MealPlanView: View {
         case recipes = "Recipes"
         case grocery = "Groceries"
         var id: String { rawValue }
+
+        var label: String {
+            switch self {
+            case .planner: String(localized: "Planner")
+            case .recipes: String(localized: "Recipes")
+            case .grocery: String(localized: "Groceries")
+            }
+        }
     }
 
     var body: some View {
@@ -321,6 +329,10 @@ struct PlanItemPicker: View {
         case recipes = "Recipes"
         case foods = "Foods"
         var id: String { rawValue }
+
+        var label: String {
+            self == .recipes ? String(localized: "Recipes") : String(localized: "Foods")
+        }
     }
 
     private var query: String { search.trimmingCharacters(in: .whitespaces).lowercased() }
