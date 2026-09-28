@@ -20,6 +20,7 @@ T = [
      "Erfasse das Körperfett an zwei oder mehr Tagen unter Vitalwerte, um es mit deinem Gewichtstrend zu vergleichen."),
     ("Log exercise", "Registrar ejercicio", "Training erfassen"),
     ("Log food", "Registrar comida", "Essen erfassen"),
+    ("%lld of %lld glasses", "%lld de %lld vasos", "%lld von %lld Gläsern"),
     ("Log now", "Registrar ahora", "Jetzt erfassen"),
     ("Log recipe", "Registrar receta", "Rezept erfassen"),
     ("Log this food", "Registrar este alimento", "Dieses Lebensmittel erfassen"),
