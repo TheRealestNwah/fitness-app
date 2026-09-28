@@ -46,13 +46,13 @@ struct WeeklySummaryImage: View {
                 }
                 GridRow {
                     tile("Weight change", review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—", "scalemass")
-                    tile("Logging streak", "\(streak) day\(streak == 1 ? "" : "s")", "flame")
+                    tile("Logging streak", "\(streak) days", "flame")
                 }
             }
             Text(review.headline)
                 .font(.headline)
             if review.completedFasts > 0 {
-                Label("\(review.completedFasts) fast\(review.completedFasts == 1 ? "" : "s") completed", systemImage: "timer")
+                Label("\(review.completedFasts) fasts completed", systemImage: "timer")
                     .font(.subheadline)
             }
             Spacer(minLength: 0)

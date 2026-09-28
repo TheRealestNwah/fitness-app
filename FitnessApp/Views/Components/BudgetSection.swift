@@ -21,7 +21,7 @@ struct BudgetSection: View {
             } else {
                 DatePicker("Diet break from", selection: $breakStart, in: Date.now.startOfDay..., displayedComponents: .date)
                 Stepper(value: $breakDays, in: 7...21, step: 7) {
-                    Text("For \(breakDays / 7) week\(breakDays == 7 ? "" : "s")")
+                    Text("For \(breakDays / 7) weeks")
                 }
                 Button("Schedule diet break") {
                     profile.dietBreakStart = breakStart.startOfDay

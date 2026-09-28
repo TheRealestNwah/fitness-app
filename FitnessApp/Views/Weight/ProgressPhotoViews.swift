@@ -72,7 +72,7 @@ struct ProgressPhotoCompareView: View {
                     if let before, let after {
                         let change = after.weightKg - before.weightKg
                         let days = Calendar.current.dateComponents([.day], from: before.date, to: after.date).day ?? 0
-                        Text("\(units.weightString(kg: change, signed: true)) over \(days) day\(days == 1 ? "" : "s")")
+                        Text("\(units.weightString(kg: change, signed: true)) over \(days) days")
                             .font(.headline)
                             .foregroundStyle(change <= 0 ? .green : .orange)
                     }

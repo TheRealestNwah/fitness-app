@@ -140,7 +140,7 @@ struct RecipeDetailView: View {
                     StatTile(title: "Protein", value: "\(Int(recipe.proteinPerServing.rounded())) g", subtitle: "carbs \(Int(recipe.carbsPerServing.rounded())) · fat \(Int(recipe.fatPerServing.rounded()))", systemImage: "p.circle.fill", tint: .blue)
                 }
                 HStack {
-                    Label("\(recipe.servings) serving\(recipe.servings == 1 ? "" : "s")", systemImage: "person.2")
+                    Label("\(recipe.servings) servings", systemImage: "person.2")
                     Spacer()
                     Label("\(recipe.prepMinutes) min", systemImage: "clock")
                     Spacer()
@@ -196,7 +196,7 @@ struct RecipeDetailView: View {
                         .font(.subheadline)
                     }
                     if servingsShown != recipe.servings {
-                        Text("Scaled from \(recipe.servings) serving\(recipe.servings == 1 ? "" : "s"). Nutrition per serving is unchanged.")
+                        Text("Scaled from \(recipe.servings) servings. Nutrition per serving is unchanged.")
                             .font(.caption)
                             .foregroundStyle(Color.secondary)
                     }

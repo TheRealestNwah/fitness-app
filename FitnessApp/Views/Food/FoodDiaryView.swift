@@ -304,7 +304,7 @@ struct DayDiaryView: View {
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text("Copy yesterday's \(meal.label.lowercased())")
                                         .font(.subheadline.weight(.medium))
-                                    Text("\(fromYesterday.count) item\(fromYesterday.count == 1 ? "" : "s") · \(Energy.string(kcal))")
+                                    Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
                                         .font(.caption)
                                         .foregroundStyle(Color.secondary)
                                 }
@@ -578,7 +578,7 @@ struct SaveFavouriteMealSheet: View {
                 } footer: {
                     Text("Favourite meals appear at the top of food search and log every line with one tap.")
                 }
-                Section("\(entries.count) item\(entries.count == 1 ? "" : "s") · \(Energy.string(totalCalories))") {
+                Section("\(entries.count) items · \(Energy.string(totalCalories))") {
                     ForEach(entries) { e in
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {

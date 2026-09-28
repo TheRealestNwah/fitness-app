@@ -111,7 +111,7 @@ struct FoodSearchView: View {
                                     VStack(alignment: .trailing, spacing: 2) {
                                         Text("\(Int(meal.totalCalories.rounded()))")
                                             .font(.body.monospacedDigit())
-                                        Text("\(meal.items.count) item\(meal.items.count == 1 ? "" : "s")")
+                                        Text("\(meal.items.count) items")
                                             .font(.caption2)
                                             .foregroundStyle(Color.secondary)
                                     }

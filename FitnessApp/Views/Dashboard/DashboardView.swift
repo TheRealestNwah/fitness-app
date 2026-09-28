@@ -216,7 +216,7 @@ struct DashboardView: View {
             }
             Spacer()
             if streak > 0 {
-                Label("\(streak) day\(streak == 1 ? "" : "s")", systemImage: "flame.fill")
+                Label("\(streak) days", systemImage: "flame.fill")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.orange)
                     .padding(.horizontal, 10)
@@ -272,7 +272,7 @@ struct DashboardView: View {
                 selectTab(.food)
             } label: {
                 HStack {
-                    Text(todaysFood.isEmpty ? "Nothing logged yet" : "\(todaysFood.count) item\(todaysFood.count == 1 ? "" : "s") logged")
+                    Text(todaysFood.isEmpty ? "Nothing logged yet" : "\(todaysFood.count) items logged")
                     Spacer()
                     Text("Open diary")
                     Image(systemName: "chevron.right")
@@ -544,7 +544,7 @@ struct DashboardView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             if review.completedFasts > 0 {
-                Label("\(review.completedFasts) fast\(review.completedFasts == 1 ? "" : "s") completed", systemImage: "timer")
+                Label("\(review.completedFasts) fasts completed", systemImage: "timer")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
             }
