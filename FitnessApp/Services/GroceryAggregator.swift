@@ -68,12 +68,16 @@ enum GroceryAggregator {
         return lower.count > 3 && lower.hasSuffix("s") ? String(lower.dropLast()) : lower
     }
 
-    private static let unpluralized: Set<String> = ["g", "ml", "oz", "lb", "tsp", "tbsp", "large", "medium", "small", "whole"]
+    /// English count nouns that take a plain "s". Anything else, including units in other
+    /// languages (seeded recipes are localised), is shown as written.
+    private static let pluralizable: Set<String> = [
+        "bag", "bagel", "bar", "bottle", "bunch", "can", "clove", "cookie", "cup", "egg", "fillet", "handful",
+        "head", "jar", "piece", "pinch", "scoop", "slice", "spear", "sprig", "stalk", "stick", "tortilla",
+    ]
 
     private static func plural(_ unit: String) -> String {
         let last = unit.split(separator: " ").last.map(String.init) ?? unit
-        guard !unpluralized.contains(last.lowercased()), !last.hasSuffix("s"),
-              last.allSatisfy(\.isLetter) else { return unit }
+        guard pluralizable.contains(last.lowercased()) else { return unit }
         return unit + "s"
     }
 
