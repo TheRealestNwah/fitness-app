@@ -30,6 +30,7 @@ struct ProgressPhotoPicker: View {
         PhotosPicker(selection: $libraryItem, matching: .images) {
             Label(photo == nil ? "Choose from library" : "Choose another", systemImage: "photo.on.rectangle")
         }
+        .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image, maxDimension: 1600) }
         .onChange(of: libraryItem) { _, item in
             Task {
                 if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
