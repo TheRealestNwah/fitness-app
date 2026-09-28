@@ -13,6 +13,8 @@ struct FoodSearchView: View {
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
     @Query(sort: \SavedMeal.name) private var savedMeals: [SavedMeal]
+    @Query(filter: #Predicate<MealPrepBatch> { $0.portionsLeft > 0 }, sort: \MealPrepBatch.cookedAt, order: .reverse)
+    private var batches: [MealPrepBatch]
 
     @State private var search = ""
     @AppStorage(RecentSearches.storageKey) private var recentSearches = ""
@@ -21,6 +23,7 @@ struct FoodSearchView: View {
     @State private var selectedRecipe: Recipe?
     @State private var showCreate = false
     @State private var showQuickAdd = false
+    @State private var showSentence = false
     @State private var showScanner = false
     @State private var unknownBarcode: UnknownBarcode?
 
@@ -66,6 +69,19 @@ struct FoodSearchView: View {
         }
     }
 
+    private var matchingBatches: [MealPrepBatch] {
+        query.isEmpty ? batches : batches.filter { $0.name.lowercased().contains(query) }
+    }
+
+    private func logPortion(_ batch: MealPrepBatch) {
+        guard batch.logPortion(on: date, as: mealType, context: context) != nil else { return }
+        try? context.save()
+        withAnimation { loggedMealName = batch.name }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            dismiss()
+        }
+    }
+
     private func logSavedMeal(_ meal: SavedMeal) {
         meal.log(on: date, as: mealType, context: context)
         try? context.save()
@@ -90,6 +106,31 @@ struct FoodSearchView: View {
                     Section {
                         Label("Logged “\(loggedMealName)” to \(mealType.inSentence)", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(Color.green)
+                    }
+                }
+                if !matchingBatches.isEmpty {
+                    Section("Meal prep") {
+                        ForEach(matchingBatches) { batch in
+                            Button { logPortion(batch) } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(batch.name).foregroundStyle(Color.primary)
+                                        Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
+                                            .font(.caption)
+                                            .foregroundStyle(Color.secondary)
+                                    }
+                                    Spacer()
+                                    Text("\(Int(batch.caloriesPerPortion.rounded()))")
+                                        .font(.body.monospacedDigit())
+                                }
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    batch.portionsLeft = 0
+                                    try? context.save()
+                                } label: { Label("Finished", systemImage: "checkmark") }
+                            }
+                        }
                     }
                 }
                 if !matchingSavedMeals.isEmpty {
@@ -156,6 +197,10 @@ struct FoodSearchView: View {
                         } label: {
                             Label("Scan a barcode", systemImage: "barcode.viewfinder")
                         }
+                        Button { showSentence = true } label: {
+                            Label("Describe what you ate", systemImage: "text.bubble")
+                        }
+                        .accessibilityIdentifier("describeMeal")
                         Button { showQuickAdd = true } label: {
                             Label("Quick add calories", systemImage: "bolt.fill")
                         }
@@ -241,6 +286,12 @@ struct FoodSearchView: View {
             .sheet(isPresented: $showQuickAdd) {
                 QuickAddSheet(date: date, mealType: mealType)
             }
+            .sheet(isPresented: $showSentence) {
+                SentenceLogSheet(date: date, mealType: mealType) {
+                    // Everything's logged: close search too once the sheet has gone.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { dismiss() }
+                }
+            }
         }
     }
 
@@ -287,6 +338,7 @@ struct FoodSearchView: View {
                 } label: { Label("Delete", systemImage: "trash") }
             }
         }
+        .draggable(FoodReference(food: food))
     }
 }
 
@@ -338,23 +390,7 @@ struct LogFoodSheet: View {
     }
 
     private func log() {
-        food.lastServings = servings
-        let entry = FoodLogEntry(date: meal.logDate(on: date),
-                                 mealType: meal,
-                                 foodName: food.displayName,
-                                 servings: servings,
-                                 servingDescription: food.servingDescription,
-                                 calories: food.calories * servings,
-                                 protein: food.protein * servings,
-                                 carbs: food.carbs * servings,
-                                 fat: food.fat * servings,
-                                 foodItemID: food.uuid,
-                                 fiber: food.fiber * servings,
-                                 sugar: food.sugar * servings,
-                                 sodium: food.sodium * servings)
-        context.insertDiaryEntry(entry)
-        food.lastUsed = .now
-        food.useCount += 1
+        food.log(servings: servings, meal: meal, on: date, context: context)
         try? context.save()
         dismiss()
     }

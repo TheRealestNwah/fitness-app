@@ -394,4 +394,40 @@ final class RecipeTests: XCTestCase {
         }
         XCTAssertGreaterThan(SeedData.foods.count, 80)
     }
+
+    func testGraceDayForgivesASingleMissedDay() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: .now)
+        func day(_ offset: Int) -> Date { cal.date(byAdding: .day, value: -offset, to: today)! }
+        // Logged today, 1, 3, 4; missed 2.
+        let dates = [day(0), day(1), day(3), day(4)]
+        XCTAssertEqual(NutritionCalculator.streakDetail(logDates: dates, today: today, calendar: cal).days, 2)
+        let graced = NutritionCalculator.streakDetail(logDates: dates, today: today, calendar: cal, graceDay: true)
+        XCTAssertEqual(graced.days, 5)
+        XCTAssertEqual(graced.forgiven, [day(2)])
+    }
+
+    func testGraceDayNeverCoversTwoDaysInARowOrToday() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: .now)
+        func day(_ offset: Int) -> Date { cal.date(byAdding: .day, value: -offset, to: today)! }
+        XCTAssertEqual(NutritionCalculator.streakDetail(logDates: [day(0), day(3)], today: today, calendar: cal,
+                                                        graceDay: true).days, 1)
+        XCTAssertEqual(NutritionCalculator.streakDetail(logDates: [day(1), day(2)], today: today, calendar: cal,
+                                                        graceDay: true).days, 0)
+    }
+
+    func testGraceDayAtMostOncePerWeek() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: .now)
+        func day(_ offset: Int) -> Date { cal.date(byAdding: .day, value: -offset, to: today)! }
+        // Misses on days 2 and 5 are three days apart: only the newer is forgiven.
+        let close = [0, 1, 3, 4, 6, 7].map(day)
+        XCTAssertEqual(NutritionCalculator.streakDetail(logDates: close, today: today, calendar: cal, graceDay: true).days, 5)
+        // Misses on days 2 and 9 are a week apart: both are forgiven.
+        let apart = [0, 1, 3, 4, 5, 6, 7, 8, 10].map(day)
+        let streak = NutritionCalculator.streakDetail(logDates: apart, today: today, calendar: cal, graceDay: true)
+        XCTAssertEqual(streak.days, 11)
+        XCTAssertEqual(streak.forgiven, [day(2), day(9)])
+    }
 }

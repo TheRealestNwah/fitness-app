@@ -16,6 +16,8 @@ final class MealPlanEntry {
     var fatPerServing: Double = 0
     var recipeID: UUID?
     var foodItemID: UUID?
+    /// Set when the slot is a portion from a meal-prep batch; logging it counts the batch down.
+    var batchID: UUID?
     var isLogged: Bool = false
 
     init(day: Date,
@@ -50,4 +52,37 @@ final class MealPlanEntry {
     var totalProtein: Double { proteinPerServing * servings }
     var totalCarbs: Double { carbsPerServing * servings }
     var totalFat: Double { fatPerServing * servings }
+}
+
+extension MealPlanEntry {
+    /// One serving of a recipe in a plan slot.
+    convenience init(recipe: Recipe, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: recipe.name,
+                  caloriesPerServing: recipe.caloriesPerServing,
+                  proteinPerServing: recipe.proteinPerServing,
+                  carbsPerServing: recipe.carbsPerServing,
+                  fatPerServing: recipe.fatPerServing,
+                  recipeID: recipe.uuid)
+    }
+
+    /// One serving of a saved food in a plan slot.
+    convenience init(food: FoodItem, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: food.displayName,
+                  caloriesPerServing: food.calories,
+                  proteinPerServing: food.protein,
+                  carbsPerServing: food.carbs,
+                  fatPerServing: food.fat,
+                  foodItemID: food.uuid)
+    }
+
+    /// One portion from a meal-prep batch in a plan slot.
+    convenience init(batch: MealPrepBatch, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: batch.name,
+                  caloriesPerServing: batch.caloriesPerPortion,
+                  proteinPerServing: batch.proteinPerPortion,
+                  carbsPerServing: batch.carbsPerPortion,
+                  fatPerServing: batch.fatPerPortion,
+                  recipeID: batch.recipeID)
+        batchID = batch.uuid
+    }
 }

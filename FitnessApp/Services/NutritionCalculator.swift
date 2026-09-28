@@ -146,15 +146,47 @@ enum NutritionCalculator {
     }
 
     /// Number of consecutive days, ending today, that contain at least one log.
-    static func streak(logDates: [Date], today: Date = .now, calendar: Calendar = .current) -> Int {
+    /// With `graceDay`, see `streakDetail`.
+    static func streak(logDates: [Date], today: Date = .now, calendar: Calendar = .current,
+                       graceDay: Bool = StreakSettings.graceDayEnabled) -> Int {
+        streakDetail(logDates: logDates, today: today, calendar: calendar, graceDay: graceDay).days
+    }
+
+    struct Streak: Equatable {
+        var days: Int
+        /// Missed days the grace day covered, newest first.
+        var forgiven: [Date] = []
+    }
+
+    /// The logging streak ending today. With `graceDay` on, a single missed day between two logged
+    /// days doesn't end it (at most one per seven days, never two in a row); the forgiven day
+    /// still counts towards the length. Today itself is never forgiven: it has to be logged.
+    static func streakDetail(logDates: [Date], today: Date = .now, calendar: Calendar = .current,
+                             graceDay: Bool = false) -> Streak {
         let days = Set(logDates.map { calendar.startOfDay(for: $0) })
-        var streak = 0
-        var cursor = calendar.startOfDay(for: today)
-        while days.contains(cursor) {
-            streak += 1
+        let start = calendar.startOfDay(for: today)
+        var streak = Streak(days: 0)
+        var cursor = start
+        while true {
             guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            if days.contains(cursor) {
+                streak.days += 1
+            } else if graceDay, cursor != start, days.contains(previous),
+                      streak.forgiven.last.map({ (calendar.dateComponents([.day], from: cursor, to: $0).day ?? 0) >= 7 }) ?? true {
+                streak.days += 1
+                streak.forgiven.append(cursor)
+            } else {
+                break
+            }
             cursor = previous
         }
         return streak
     }
+}
+
+/// Streak preferences, read wherever the streak is computed (Today, widgets, reports).
+enum StreakSettings {
+    static let graceDayKey = "streakGraceDay"
+
+    static var graceDayEnabled: Bool { UserDefaults.standard.bool(forKey: graceDayKey) }
 }
