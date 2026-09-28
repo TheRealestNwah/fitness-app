@@ -97,10 +97,10 @@ enum WeeklyReviewCalculator {
         let over = avg - Double(budget)
         if avg < Double(budget) * 0.6 {
             return (String(localized: "Logged intake looks incomplete"),
-                    String(localized: "Averaging \(Int(avg.rounded())) kcal a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something."))
+                    String(localized: "Averaging \(Energy.string(avg)) a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something."))
         }
         if over > Double(budget) * 0.10 {
-            return (String(localized: "Averaging \(Int(over.rounded())) kcal over budget"),
+            return (String(localized: "Averaging \(Energy.string(over)) over budget"),
                     String(localized: "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan."))
         }
 

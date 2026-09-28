@@ -2191,6 +2191,22 @@
         }
       }
     },
+    "Averaging %@ a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una media de %@ al día está muy por debajo de cualquier presupuesto seguro, así que probablemente faltan comidas. Registra todo, bebidas incluidas, para que el resumen sea útil."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Schnitt %@ pro Tag liegt weit unter jedem sicheren Budget, es fehlen also wohl Mahlzeiten. Erfasse alles, auch Getränke, damit der Rückblick etwas aussagt."
+          }
+        }
+      }
+    },
     "Averaging %@ gained per week over the last 4 weeks." : {
       "localizations" : {
         "es" : {
@@ -2223,34 +2239,18 @@
         }
       }
     },
-    "Averaging %lld kcal a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something." : {
+    "Averaging %@ over budget" : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una media de %lld kcal al día está muy por debajo de cualquier presupuesto seguro, así que probablemente faltan comidas. Registra todo, bebidas incluidas, para que el resumen sea útil."
+            "value" : "Media de %@ por encima del presupuesto"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Im Schnitt %lld kcal pro Tag liegt weit unter jedem sicheren Budget, es fehlen also wohl Mahlzeiten. Erfasse alles, auch Getränke, damit der Rückblick etwas aussagt."
-          }
-        }
-      }
-    },
-    "Averaging %lld kcal over budget" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Media de %lld kcal por encima del presupuesto"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Im Schnitt %lld kcal über dem Budget"
+            "value" : "Im Schnitt %@ über dem Budget"
           }
         }
       }
@@ -10707,18 +10707,18 @@
         }
       }
     },
-    "Your measured maintenance is about %lld kcal. A target of %lld kcal matches your planned rate; you can apply it in Settings." : {
+    "Your measured maintenance is about %@. A target of %@ matches your planned rate; you can apply it in Settings." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu mantenimiento medido es de unas %lld kcal. Un objetivo de %lld kcal se ajusta al ritmo previsto; puedes aplicarlo en Ajustes."
+            "value" : "Tu mantenimiento medido es de unas %@. Un objetivo de %@ se ajusta al ritmo previsto; puedes aplicarlo en Ajustes."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine gemessene Erhaltung liegt bei etwa %lld kcal. Ein Ziel von %lld kcal passt zu deinem geplanten Tempo; du kannst es in den Einstellungen übernehmen."
+            "value" : "Deine gemessene Erhaltung liegt bei etwa %@. Ein Ziel von %@ passt zu deinem geplanten Tempo; du kannst es in den Einstellungen übernehmen."
           }
         }
       }
@@ -10771,18 +10771,18 @@
         }
       }
     },
-    "Your target already sits below your measured maintenance of about %lld kcal, so the gap is more likely in logging than in the plan." : {
+    "Your target already sits below your measured maintenance of about %@, so the gap is more likely in logging than in the plan." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu objetivo ya está por debajo de tu mantenimiento medido de unas %lld kcal, así que la diferencia está más bien en el registro que en el plan."
+            "value" : "Tu objetivo ya está por debajo de tu mantenimiento medido de unas %@, así que la diferencia está más bien en el registro que en el plan."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dein Ziel liegt schon unter deiner gemessenen Erhaltung von etwa %lld kcal, die Lücke liegt also eher beim Erfassen als beim Plan."
+            "value" : "Dein Ziel liegt schon unter deiner gemessenen Erhaltung von etwa %@, die Lücke liegt also eher beim Erfassen als beim Plan."
           }
         }
       }

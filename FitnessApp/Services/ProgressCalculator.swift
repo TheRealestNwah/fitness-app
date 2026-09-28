@@ -104,9 +104,9 @@ enum ProgressCalculator {
         if let maintenance {
             let suggested = maintenance.suggestedTarget(weeklyLossKg: weeklyLossKg, sex: sex)
             if suggested < currentTarget {
-                suggestions.append(String(localized: "Your measured maintenance is about \(maintenance.maintenanceKcal) kcal. A target of \(suggested) kcal matches your planned rate; you can apply it in Settings."))
+                suggestions.append(String(localized: "Your measured maintenance is about \(Energy.string(maintenance.maintenanceKcal)). A target of \(Energy.string(suggested)) matches your planned rate; you can apply it in Settings."))
             } else {
-                suggestions.append(String(localized: "Your target already sits below your measured maintenance of about \(maintenance.maintenanceKcal) kcal, so the gap is more likely in logging than in the plan."))
+                suggestions.append(String(localized: "Your target already sits below your measured maintenance of about \(Energy.string(maintenance.maintenanceKcal)), so the gap is more likely in logging than in the plan."))
             }
         } else {
             suggestions.append(String(localized: "Log food on most days for two more weeks so the adaptive target can measure your real maintenance."))
