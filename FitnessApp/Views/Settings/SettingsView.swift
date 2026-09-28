@@ -19,6 +19,7 @@ struct SettingsView: View {
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
     @AppStorage(HealthSettings.creditPercentKey) private var healthCreditPercent = 0
     @AppStorage(CycleCalculator.enabledKey) private var cycleAware = false
+    @AppStorage(StreakSettings.graceDayKey) private var streakGraceDay = false
     @State private var healthStatus: String?
     @State private var healthBusy = false
     @State private var showResetConfirm = false
@@ -199,6 +200,14 @@ struct SettingsView: View {
                     Stepper(value: $profile.waterGoalMl, in: 1000...5000, step: 250) {
                         LabeledContent("Daily goal", value: units.volumeString(ml: profile.waterGoalMl))
                     }
+                }
+
+                Section {
+                    Toggle("Streak grace day", isOn: $streakGraceDay)
+                } header: {
+                    Text("Streak")
+                } footer: {
+                    Text("A single missed day won't break your logging streak, once a week. Two missed days in a row still start it over.")
                 }
 
                 Section {
