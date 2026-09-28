@@ -13,6 +13,7 @@ struct WeightView: View {
     @Query private var foodLogs: [FoodLogEntry]
 
     @State private var showAdd = false
+    @State private var showMonthly = false
     @State private var editing: WeightEntry?
     @State private var range: ChartRange = .month
 
@@ -143,10 +144,15 @@ struct WeightView: View {
             .navigationTitle("Weight")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
+                    Button { showMonthly = true } label: { Image(systemName: "calendar.badge.checkmark") }
+                        .accessibilityLabel("Monthly report")
+                }
+                ToolbarItem(placement: .topBarTrailing) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                 }
             }
             .sheet(isPresented: $showAdd) { AddWeightSheet() }
+            .sheet(isPresented: $showMonthly) { MonthlyReportView() }
             .sheet(item: $editing) { AddWeightSheet(entry: $0) }
             .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
         }
