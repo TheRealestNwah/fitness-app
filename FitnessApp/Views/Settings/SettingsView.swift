@@ -219,6 +219,7 @@ struct SettingsView: View {
                     }
                     Toggle("Meal logging reminders", isOn: $profile.mealReminderEnabled)
                     Toggle("Water reminders", isOn: $profile.waterReminderEnabled)
+                    Toggle("Protein check", isOn: $profile.proteinReminderEnabled)
                     Toggle("Evening check-in", isOn: Binding(
                         get: { profile.dayCloseReminderHour != nil },
                         set: { profile.dayCloseReminderHour = $0 ? 20 : nil }))
@@ -237,7 +238,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Reminders")
                 } footer: {
-                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The evening check-in only comes if dinner isn't logged.")
+                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The protein check comes at 5 pm when you're at least 15 g short, and the evening check-in only if dinner isn't logged.")
                 }
 
                 AppLockSection()
@@ -302,6 +303,7 @@ struct SettingsView: View {
             .onChange(of: profile.mealReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.waterReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.dayCloseReminderHour) { _, _ in reminderChanged() }
+            .onChange(of: profile.proteinReminderEnabled) { _, _ in reminderChanged() }
             .onDisappear { try? context.save() }
         }
     }

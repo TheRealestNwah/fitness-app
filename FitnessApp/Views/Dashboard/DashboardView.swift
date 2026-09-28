@@ -287,6 +287,11 @@ struct DashboardView: View {
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
                     MacroBar(name: "Fat", consumed: fat, target: macroTargets.fat, color: .pink)
+                    if proteinStreak >= 2 {
+                        Label("Protein goal hit \(proteinStreak) days running", systemImage: "bolt.heart.fill")
+                            .font(.caption)
+                            .foregroundStyle(.blue)
+                    }
                 }
                 .font(.subheadline.monospacedDigit())
             }
@@ -307,6 +312,12 @@ struct DashboardView: View {
         .sheet(isPresented: $showQuickAdd) {
             QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
         }
+    }
+
+    private var proteinStreak: Int {
+        var byDay: [Date: Double] = [:]
+        for entry in recentFood { byDay[entry.date.startOfDay, default: 0] += entry.protein }
+        return NutritionCalculator.proteinStreak(proteinByDay: byDay, target: macroTargets.protein)
     }
 
     private var budgetNote: String? {
