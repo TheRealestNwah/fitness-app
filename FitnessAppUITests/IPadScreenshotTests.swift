@@ -18,7 +18,8 @@ final class IPadScreenshotTests: XCTestCase {
     private func open(_ tab: String, in app: XCUIApplication) {
         let row = app.descendants(matching: .any)["sidebar-\(tab)"].firstMatch
         XCTAssertTrue(row.waitForExistence(timeout: 10), "No sidebar row for \(tab)")
-        row.tap()
+        // The identifier lands on the row's icon, which XCUITest reports as not hittable; tap its centre instead.
+        row.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 
     func testSidebarScreens() {
