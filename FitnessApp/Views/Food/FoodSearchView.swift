@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 import SwiftData
 import TipKit
@@ -484,10 +485,29 @@ struct CreateFoodSheet: View {
     @State private var sodium: Double?
     @State private var per100g = false
     @State private var servingGrams: Double?
+    @State private var showCamera = false
+    @State private var labelPhoto: PhotosPickerItem?
+    @State private var scanning = false
+    @State private var scanNote: String?
 
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button { showCamera = true } label: {
+                            Label("Photograph the nutrition label", systemImage: "text.viewfinder")
+                        }
+                    }
+                    PhotosPicker(selection: $labelPhoto, matching: .images) {
+                        Label("Choose a label photo", systemImage: "photo.on.rectangle")
+                    }
+                    if scanning { ProgressView("Reading the label…") }
+                } header: {
+                    Text("Fill from the label")
+                } footer: {
+                    Text(scanNote ?? "Read on your iPhone; the photo isn't kept.")
+                }
                 Section {
                     TextField("Name", text: $name)
                     TextField("Brand (optional)", text: $brand)
@@ -529,6 +549,18 @@ struct CreateFoodSheet: View {
             }
             .navigationTitle("New food")
             .navigationBarTitleDisplayMode(.inline)
+            .fullScreenCover(isPresented: $showCamera) {
+                CameraPicker { image in readLabel(image) }.ignoresSafeArea()
+            }
+            .onChange(of: labelPhoto) { _, item in
+                guard let item else { return }
+                Task {
+                    if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        readLabel(image)
+                    }
+                    labelPhoto = nil
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -564,6 +596,29 @@ struct CreateFoodSheet: View {
             .onChange(of: per100g) { _, on in
                 if on, servingGrams == nil { servingGrams = ServingUnits.metricPerServing(serving)?.value }
             }
+        }
+    }
+
+    private func readLabel(_ image: UIImage) {
+        scanning = true
+        Task { @MainActor in
+            let label = NutritionLabelParser.parse(await LabelTextRecognizer.lines(in: image))
+            scanning = false
+            guard !label.isEmpty else {
+                scanNote = "Couldn't read that label. Try a straight-on photo in good light, or type the numbers."
+                return
+            }
+            per100g = label.per100g
+            if let grams = label.servingGrams { servingGrams = grams }
+            if let description = label.servingDescription, serving == "1 serving" { serving = description }
+            calories = label.calories ?? calories
+            protein = label.protein ?? protein
+            carbs = label.carbs ?? carbs
+            fat = label.fat ?? fat
+            fiber = label.fiber ?? fiber
+            sugar = label.sugar ?? sugar
+            sodium = label.sodiumMg ?? sodium
+            scanNote = "Filled from the label. Check the numbers before saving."
         }
     }
 }
