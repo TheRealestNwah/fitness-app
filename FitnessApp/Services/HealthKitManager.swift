@@ -29,6 +29,25 @@ enum HealthSettings {
     }
 }
 
+/// What onboarding can fill in from Apple Health; each part is nil when Health has nothing.
+struct HealthProfileDetails: Equatable {
+    var birthDate: Date?
+    var sex: BiologicalSex?
+    var heightCm: Double?
+    var weightKg: Double?
+
+    var isEmpty: Bool { birthDate == nil && sex == nil && heightCm == nil && weightKg == nil }
+
+    /// Health's sex, when it's one the calorie formula uses.
+    static func sex(_ value: HKBiologicalSex) -> BiologicalSex? {
+        switch value {
+        case .female: .female
+        case .male: .male
+        default: nil
+        }
+    }
+}
+
 struct HealthQuantitySample: Equatable {
     var id: UUID
     var date: Date
@@ -164,6 +183,13 @@ final class HealthKitManager {
     private var readTypes: Set<HKObjectType> {
         [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
          HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
+            .union(profileTypes)
+    }
+
+    /// Read during setup to fill in the profile.
+    private var profileTypes: Set<HKObjectType> {
+        [HKCharacteristicType(.dateOfBirth), HKCharacteristicType(.biologicalSex),
+         HKQuantityType(.height), HKQuantityType(.bodyMass)]
     }
 
     private var writeTypes: Set<HKSampleType> {
@@ -178,6 +204,30 @@ final class HealthKitManager {
     }
 
     // MARK: Reads
+
+    /// Asks for read access to the profile basics and returns whatever Health has.
+    /// Denied or missing items come back nil (Health doesn't say which were denied).
+    func profileDetails() async throws -> HealthProfileDetails {
+        guard Self.isAvailable else { throw HealthKitError.unavailable }
+        try await store.requestAuthorization(toShare: [], read: profileTypes)
+        var details = HealthProfileDetails()
+        if let components = try? store.dateOfBirthComponents() {
+            details.birthDate = Calendar.current.date(from: components)
+        }
+        if let sex = try? store.biologicalSex().biologicalSex {
+            details.sex = HealthProfileDetails.sex(sex)
+        }
+        details.heightCm = try? await latestValue(.height, unit: .meterUnit(with: .centi))
+        details.weightKg = try? await latestValue(.bodyMass, unit: .gramUnit(with: .kilo))
+        return details
+    }
+
+    private func latestValue(_ identifier: HKQuantityTypeIdentifier, unit: HKUnit) async throws -> Double? {
+        let descriptor = HKSampleQueryDescriptor(predicates: [.quantitySample(type: HKQuantityType(identifier))],
+                                                 sortDescriptors: [SortDescriptor(\.endDate, order: .reverse)],
+                                                 limit: 1)
+        return try await descriptor.result(for: store).first?.quantity.doubleValue(for: unit)
+    }
 
     private func quantitySamples(_ identifier: HKQuantityTypeIdentifier, unit: HKUnit, since: Date) async throws -> [HealthQuantitySample] {
         let type = HKQuantityType(identifier)

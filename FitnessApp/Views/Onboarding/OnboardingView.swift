@@ -16,6 +16,8 @@ struct OnboardingView: View {
     @State private var goalWeight: Double = 70
     @State private var activity: ActivityLevel = .light
     @State private var rate: WeeklyGoalRate = .steady
+    @State private var healthStatus: String?
+    @State private var readingHealth = false
 
     private let totalSteps = 5
 
@@ -111,6 +113,25 @@ struct OnboardingView: View {
 
     private var aboutYou: some View {
         Form {
+            if HealthKitManager.isAvailable {
+                Section {
+                    Button {
+                        Task { await fillFromHealth() }
+                    } label: {
+                        HStack {
+                            Label("Fill in from Apple Health", systemImage: "heart.text.square")
+                            if readingHealth {
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(readingHealth)
+                    .accessibilityIdentifier("fillFromHealth")
+                } footer: {
+                    Text(healthStatus ?? String(localized: "Uses your height, date of birth, sex and latest weight. You can change anything afterwards."))
+                }
+            }
             Section("About you") {
                 TextField("Name (optional)", text: $name)
                 Picker("Sex", selection: $sex) {
@@ -286,6 +307,38 @@ struct OnboardingView: View {
                     .foregroundStyle(.tertiary)
             }
             .padding()
+        }
+    }
+
+    private func fillFromHealth() async {
+        readingHealth = true
+        defer { readingHealth = false }
+        do {
+            let details = try await HealthKitManager.shared.profileDetails()
+            apply(details)
+            healthStatus = details.isEmpty
+                ? String(localized: "Nothing found in Apple Health. Fill in the details below.")
+                : String(localized: "Filled in from Apple Health. Check the details below and the weights on the next step.")
+        } catch {
+            healthStatus = error.localizedDescription
+        }
+    }
+
+    private func apply(_ details: HealthProfileDetails) {
+        if let birthDate = details.birthDate, birthDate < .now { self.birthDate = birthDate }
+        if let sex = details.sex { self.sex = sex }
+        if let cm = details.heightCm, (100...250).contains(cm) {
+            heightCm = cm.rounded()
+            let inches = cm * Units.inchPerCm
+            heightFeet = Int(inches / 12)
+            heightInches = min(Int((inches - Double(heightFeet) * 12).rounded()), 11)
+        }
+        if let kg = details.weightKg, (30...400).contains(kg) {
+            currentWeight = (units.weightValue(kg: kg) * 10).rounded() / 10
+            if goalKg >= kg {
+                // A starting suggestion of 10% less; the weights step lets them change it.
+                goalWeight = (units.weightValue(kg: kg * 0.9) * 10).rounded() / 10
+            }
         }
     }
 
