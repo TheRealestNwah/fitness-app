@@ -101,6 +101,7 @@ struct RecipeLibraryView: View {
             }
             .buttonStyle(.plain)
             .listRowBackground(selected == recipe ? Color.accentColor.opacity(0.15) : nil)
+            .accessibilityIdentifier("recipeRow")
         } else {
             NavigationLink(value: recipe) {
                 RecipeRow(recipe: recipe)

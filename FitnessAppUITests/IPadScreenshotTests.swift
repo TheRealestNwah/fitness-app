@@ -45,7 +45,7 @@ final class IPadScreenshotTests: XCTestCase {
         snap("ipad-14-meal-planner")
         app.buttons["Recipes"].firstMatch.tap()
         snap("ipad-14b-recipes")
-        let recipe = app.cells.firstMatch
+        let recipe = app.buttons.matching(identifier: "recipeRow").firstMatch
         if recipe.waitForExistence(timeout: 5) {
             recipe.tap()
             snap("ipad-14c-recipe-detail")
