@@ -2911,6 +2911,22 @@
         }
       }
     },
+    "Choose a recipe" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige una receta"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rezept auswählen"
+          }
+        }
+      }
+    },
     "Choose another" : {
       "localizations" : {
         "es" : {
@@ -5400,6 +5416,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Es wird gesichert, zählt im Wochenrückblick aber nicht als geschafft."
+          }
+        }
+      }
+    },
+    "Its ingredients, method and nutrition show here." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí se muestran sus ingredientes, preparación y nutrición."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier erscheinen Zutaten, Zubereitung und Nährwerte."
           }
         }
       }

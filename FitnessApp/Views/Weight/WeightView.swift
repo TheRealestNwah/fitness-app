@@ -6,6 +6,9 @@ struct WeightView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    /// iPad: the weigh-in shown beside the history.
+    @State private var selectedEntry: WeightEntry?
     @Query(sort: \WeightEntry.date, order: .reverse) private var entries: [WeightEntry]
     @Query private var foodLogs: [FoodLogEntry]
 
@@ -99,14 +102,42 @@ struct WeightView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    statsGrid
-                    chartCard
-                    insightsCard
-                    historyList
+            Group {
+                if sizeClass == .regular {
+                    // iPad: trends on the left, history and the chosen weigh-in on the right.
+                    HStack(alignment: .top, spacing: 0) {
+                        ScrollView {
+                            VStack(spacing: 16) {
+                                statsGrid
+                                chartCard
+                                insightsCard
+                            }
+                            .padding()
+                        }
+                        ScrollView {
+                            VStack(spacing: 16) {
+                                if let entry = selectedEntry, entries.contains(entry) {
+                                    WeighInDetailCard(entry: entry, units: units,
+                                                      edit: { editing = entry },
+                                                      delete: { selectedEntry = nil; delete(entry) })
+                                }
+                                historyList
+                            }
+                            .padding()
+                        }
+                        .frame(width: 400)
+                    }
+                } else {
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            statsGrid
+                            chartCard
+                            insightsCard
+                            historyList
+                        }
+                        .padding()
+                    }
                 }
-                .padding()
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Weight")
@@ -279,7 +310,9 @@ struct WeightView: View {
             }
             ForEach(Array(entries.enumerated()), id: \.element.uuid) { index, entry in
                 let previous = index + 1 < entries.count ? entries[index + 1].weightKg : nil
-                Button { editing = entry } label: {
+                Button {
+                    if sizeClass == .regular { selectedEntry = entry } else { editing = entry }
+                } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 4) {
@@ -322,6 +355,42 @@ struct WeightView: View {
 
     private func delete(_ entry: WeightEntry) {
         context.deleteWeightEntries([entry], undo: undoCenter)
+    }
+}
+
+/// One weigh-in in full, shown beside the history on iPad.
+struct WeighInDetailCard: View {
+    let entry: WeightEntry
+    let units: Units
+    var edit: () -> Void
+    var delete: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(entry.date.formatted(date: .complete, time: .shortened))
+                .font(.subheadline)
+                .foregroundStyle(Color.secondary)
+            Text(units.weightString(kg: entry.weightKg))
+                .font(.largeTitle.bold().monospacedDigit())
+            if !entry.note.isEmpty {
+                Text(entry.note)
+            }
+            if let data = entry.photo, let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .accessibilityLabel("Progress photo")
+            }
+            HStack {
+                Button("Edit weigh-in", action: edit)
+                    .buttonStyle(.borderedProminent)
+                Button("Delete", role: .destructive, action: delete)
+                    .buttonStyle(.bordered)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card()
     }
 }
 
