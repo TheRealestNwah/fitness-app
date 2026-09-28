@@ -42,6 +42,17 @@ jobs:
             | tee build.log | grep -E "error:|warning: unre|BUILD|Compiling|\*\*" || true
           grep -q "BUILD SUCCEEDED" build.log
 
+      - name: Check translations
+        run: python3 scripts/check_localizations.py build --dump missing-strings.json
+
+      - name: Upload missing translations
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: missing-strings
+          path: missing-strings.json
+          if-no-files-found: ignore
+
       - name: Test
         run: |
           set -o pipefail
