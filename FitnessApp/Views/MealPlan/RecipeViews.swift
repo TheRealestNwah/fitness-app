@@ -3,7 +3,10 @@ import SwiftData
 
 struct RecipeLibraryView: View {
     @Environment(\.modelContext) private var context
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
+    /// iPad: the recipe shown beside the list.
+    @State private var selected: Recipe?
 
     @State private var search = ""
     @State private var filter: MealType?
@@ -19,6 +22,25 @@ struct RecipeLibraryView: View {
     }
 
     var body: some View {
+        if sizeClass == .regular {
+            HStack(spacing: 0) {
+                list.frame(width: 380)
+                Divider()
+                if let selected {
+                    RecipeDetailView(recipe: selected)
+                        .id(selected.persistentModelID)
+                } else {
+                    ContentUnavailableView("Choose a recipe", systemImage: "book",
+                                           description: Text("Its ingredients, method and nutrition show here."))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+        } else {
+            list
+        }
+    }
+
+    private var list: some View {
         List {
             Section {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -34,9 +56,7 @@ struct RecipeLibraryView: View {
             }
             Section {
                 ForEach(filtered) { recipe in
-                    NavigationLink(value: recipe) {
-                        RecipeRow(recipe: recipe)
-                    }
+                    row(recipe)
                     .swipeActions(edge: .leading) {
                         Button {
                             recipe.isFavorite.toggle()
@@ -46,6 +66,7 @@ struct RecipeLibraryView: View {
                     }
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
+                            if selected == recipe { selected = nil }
                             context.delete(recipe)
                             try? context.save()
                         } label: { Label("Delete", systemImage: "trash") }
@@ -69,6 +90,22 @@ struct RecipeLibraryView: View {
         .searchable(text: $search, prompt: "Search recipes or tags")
         .sheet(isPresented: $showEditor) { RecipeEditorView() }
         .sheet(isPresented: $showImport) { ImportRecipeSheet() }
+    }
+
+    /// Pushes the recipe on iPhone; selects it for the side-by-side detail on iPad.
+    @ViewBuilder
+    private func row(_ recipe: Recipe) -> some View {
+        if sizeClass == .regular {
+            Button { selected = recipe } label: {
+                RecipeRow(recipe: recipe).contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .listRowBackground(selected == recipe ? Color.accentColor.opacity(0.15) : nil)
+        } else {
+            NavigationLink(value: recipe) {
+                RecipeRow(recipe: recipe)
+            }
+        }
     }
 }
 

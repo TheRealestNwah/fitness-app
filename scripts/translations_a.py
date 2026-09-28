@@ -140,6 +140,7 @@ T = [
     ("Category", "Categoría", "Kategorie"),
     ("Choose a day", "Elige un día", "Tag auswählen"),
     ("Choose a label photo", "Elegir una foto de la etiqueta", "Etikettfoto auswählen"),
+    ("Choose a recipe", "Elige una receta", "Rezept auswählen"),
     ("Choose another", "Elegir otra", "Andere auswählen"),
     ("Choose from library", "Elegir de la fototeca", "Aus Mediathek wählen"),
     ("Clear", "Borrar", "Leeren"),

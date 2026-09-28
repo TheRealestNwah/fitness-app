@@ -4,24 +4,29 @@ import TipKit
 import UIKit
 
 struct FoodDiaryView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var date = Date.now
     @State private var showCalendar = false
 
     var body: some View {
         NavigationStack {
-            DayDiaryView(date: date.startOfDay)
-                .id(date.startOfDay)
-                .transition(.opacity)
-                // Rows keep their own swipe-to-delete; a horizontal swipe elsewhere changes day.
-                .gesture(DragGesture(minimumDistance: 40).onEnded(swiped))
-                .safeAreaInset(edge: .top) {
-                    DayStepper(date: $date)
-                        .padding(.vertical, 8)
-                        .background(.bar)
+            Group {
+                if sizeClass == .regular {
+                    // iPad: the month calendar stays beside the selected day.
+                    HStack(spacing: 0) {
+                        DiaryCalendarPane(date: $date)
+                            .frame(width: 360)
+                        Divider()
+                        day
+                    }
+                } else {
+                    day
                 }
-                .navigationTitle("Food")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
+            }
+            .navigationTitle("Food")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                if sizeClass != .regular {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button { showCalendar = true } label: {
                             Image(systemName: "calendar")
@@ -29,10 +34,24 @@ struct FoodDiaryView: View {
                         .accessibilityLabel("Choose a day")
                     }
                 }
-                .sheet(isPresented: $showCalendar) {
-                    DiaryCalendarSheet(date: $date)
-                }
+            }
+            .sheet(isPresented: $showCalendar) {
+                DiaryCalendarSheet(date: $date)
+            }
         }
+    }
+
+    private var day: some View {
+        DayDiaryView(date: date.startOfDay)
+            .id(date.startOfDay)
+            .transition(.opacity)
+            // Rows keep their own swipe-to-delete; a horizontal swipe elsewhere changes day.
+            .gesture(DragGesture(minimumDistance: 40).onEnded(swiped))
+            .safeAreaInset(edge: .top) {
+                DayStepper(date: $date)
+                    .padding(.vertical, 8)
+                    .background(.bar)
+            }
     }
 
     private func swiped(_ value: DragGesture.Value) {
@@ -43,6 +62,32 @@ struct FoodDiaryView: View {
         } else if !date.isToday {
             withAnimation { date = date.adding(days: 1) }
         }
+    }
+}
+
+/// The month calendar shown beside the diary on iPad.
+struct DiaryCalendarPane: View {
+    @Binding var date: Date
+    @Query private var entries: [FoodLogEntry]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            LoggedDaysCalendar(selection: $date,
+                               loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
+                               onSelect: {})
+            Label("Days with food logged", systemImage: "circle.fill")
+                .font(.caption)
+                .foregroundStyle(Color.secondary)
+                .labelStyle(DotLabelStyle())
+                .padding(.horizontal)
+            if !date.isToday {
+                Button("Back to today") { date = .now }
+                    .padding(.horizontal)
+            }
+            Spacer()
+        }
+        .padding(.top, 8)
+        .background(Color(.systemGroupedBackground))
     }
 }
 
@@ -110,6 +155,14 @@ struct LoggedDaysCalendar: UIViewRepresentable {
         let changed = context.coordinator.loggedDays != loggedDays
         context.coordinator.parent = self
         context.coordinator.loggedDays = loggedDays
+        // Follow a selection changed elsewhere (the day stepper beside it on iPad).
+        let wanted = Calendar.current.dateComponents([.year, .month, .day], from: selection)
+        if let single = view.selectionBehavior as? UICalendarSelectionSingleDate,
+           single.selectedDate?.year != wanted.year || single.selectedDate?.month != wanted.month
+            || single.selectedDate?.day != wanted.day {
+            single.setSelected(wanted, animated: true)
+            view.setVisibleDateComponents(wanted, animated: true)
+        }
         if changed {
             let visible = Calendar.current.dateComponents([.year, .month], from: selection)
             let days = loggedDays.map { Calendar.current.dateComponents([.year, .month, .day], from: $0) }

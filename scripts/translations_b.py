@@ -2,6 +2,7 @@
 
 T = [
     ("Increase by %@ %@", "Aumentar en %@ %@", "Um %@ %@ erhöhen"),
+    ("Its ingredients, method and nutrition show here.", "Aquí se muestran sus ingredientes, preparación y nutrición.", "Hier erscheinen Zutaten, Zubereitung und Nährwerte."),
     ("Log", "Registrar", "Erfassen"),
     ("Log ${amount} of water", "Registrar ${amount} de agua", "${amount} Wasser erfassen"),
     ("Log %@", "Registrar %@", "%@ erfassen"),
