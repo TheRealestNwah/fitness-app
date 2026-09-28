@@ -69,7 +69,7 @@ struct OnboardingView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .readableWidth()
         .onChange(of: unitSystem) { _, newValue in
             // Convert the numbers in the fields so the user does not have to retype them.
             let other = Units(system: newValue == .metric ? .imperial : .metric)
