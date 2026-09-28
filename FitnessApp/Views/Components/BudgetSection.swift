@@ -13,7 +13,7 @@ struct BudgetSection: View {
                 .disabled(profile.isMaintaining)
             if let start = profile.dietBreakStart, let end = profile.dietBreakEnd, end > .now {
                 LabeledContent("Diet break",
-                               value: "\(start.formatted(.dateTime.month(.abbreviated).day())) – \(end.addingTimeInterval(-1).formatted(.dateTime.month(.abbreviated).day()))")
+                               value: "\(start.shortDateLabel()) – \(end.addingTimeInterval(-1).shortDateLabel())")
                 Button("Cancel diet break", role: .destructive) {
                     profile.dietBreakStart = nil
                     profile.dietBreakEnd = nil

@@ -488,7 +488,7 @@ struct GroceryListView: View {
                 HStack {
                     Button { weekStart = weekStart.adding(days: -7) } label: { Image(systemName: "chevron.left") }
                     Spacer()
-                    Text("\(weekStart.formatted(.dateTime.month(.abbreviated).day())) – \(weekEnd.adding(days: -1).formatted(.dateTime.month(.abbreviated).day()))")
+                    Text("\(weekStart.shortDateLabel()) – \(weekEnd.adding(days: -1).shortDateLabel())")
                         .font(.headline)
                     Spacer()
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
