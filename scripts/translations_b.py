@@ -306,7 +306,7 @@ T = [
 ]
 
 # Not translated: units, brand names and URL prefixes.
-KEEP = ["cm", "https://", "iCloud"]
+KEEP = ["cm", "https://", "iCloud", "Stride"]
 
 # Keys whose count needs plural forms: key -> {lang: (one, other)}.
 PLURALS = {
