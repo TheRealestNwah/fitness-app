@@ -4,6 +4,8 @@ import SwiftData
 struct RecipeLibraryView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
     /// iPad: the recipe shown beside the list.
     @State private var selected: Recipe?
@@ -102,9 +104,20 @@ struct RecipeLibraryView: View {
             .buttonStyle(.plain)
             .listRowBackground(selected == recipe ? Color.accentColor.opacity(0.15) : nil)
             .accessibilityIdentifier("recipeRow")
+            .contextMenu { newWindowButton(recipe) }
         } else {
             NavigationLink(value: recipe) {
                 RecipeRow(recipe: recipe)
+            }
+            .contextMenu { newWindowButton(recipe) }
+        }
+    }
+
+    @ViewBuilder
+    private func newWindowButton(_ recipe: Recipe) -> some View {
+        if supportsMultipleWindows {
+            Button { openWindow(id: RecipeWindow.id, value: recipe.uuid) } label: {
+                Label("Open in New Window", systemImage: "macwindow.badge.plus")
             }
         }
     }
@@ -651,6 +664,30 @@ struct ImportRecipeSheet: View {
                 imported = try await RecipeImporter.fetch(address)
             } catch {
                 self.error = error.localizedDescription
+            }
+        }
+    }
+}
+
+/// A recipe in a window of its own.
+struct RecipeWindow: View {
+    static let id = "recipe"
+
+    let recipeID: UUID?
+
+    @Query private var recipes: [Recipe]
+    @Query private var profiles: [UserProfile]
+
+    private var recipe: Recipe? { recipes.first { $0.uuid == recipeID } }
+
+    var body: some View {
+        NavigationStack {
+            if let recipe, let profile = profiles.first {
+                RecipeDetailView(recipe: recipe)
+                    .environment(profile)
+            } else {
+                ContentUnavailableView("Recipe not found", systemImage: "book.closed",
+                                       description: Text("It may have been deleted."))
             }
         }
     }

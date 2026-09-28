@@ -81,12 +81,13 @@ struct MainTabView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) private var sizeClass
-    @State private var selection: Tab = .today
+    /// Per window, and restored when the app relaunches.
+    @SceneStorage("section") private var selection: Tab = .today
     @State private var undoCenter = UndoCenter()
     @Environment(\.undoManager) private var undoManager
     @State private var columns: NavigationSplitViewVisibility = .all
     /// Settings is showing in the detail column (sidebar layout only).
-    @State private var showsSettings = false
+    @SceneStorage("showsSettings") private var showsSettings = false
     @State private var quickActions = HomeQuickActionCenter.shared
     @State private var quickSheet: QuickSheet?
     @Environment(\.isAppLocked) private var isAppLocked
@@ -94,7 +95,7 @@ struct MainTabView: View {
     /// midnight and whenever the app comes back to the foreground.
     @State private var today = Date.now.startOfDay
 
-    enum Tab: Hashable, CaseIterable {
+    enum Tab: String, Hashable, CaseIterable {
         case today, food, weight, vitals, plan
 
         var title: String {
