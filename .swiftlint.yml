@@ -1,0 +1,22 @@
+# Lint config tuned to the existing codebase: size and naming metrics are
+# off (short math names like `kg`, `x` and long SwiftUI bodies are normal
+# here), as are rules that fight the house style (`}` / `else` on separate
+# lines, explicit `= nil` defaults). The remaining default rules run with
+# --strict in CI.
+excluded:
+  - build
+  - DerivedData
+
+disabled_rules:
+  - line_length
+  - identifier_name
+  - type_name
+  - trailing_comma
+  - large_tuple
+  - file_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+  - function_parameter_count
+  - statement_position
+  - implicit_optional_initialization
