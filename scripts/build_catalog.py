@@ -13,11 +13,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 import translations_a  # noqa: E402
 import translations_b  # noqa: E402
 import translations_c  # noqa: E402
+import translations_seed  # noqa: E402
 import translations_widgets  # noqa: E402
 
 # Catalog -> translation tables. Each table module has T and optionally KEEP, PLURALS, SUBSTITUTIONS.
 CATALOGS = {
-    "FitnessApp/Localizable.xcstrings": [translations_a, translations_b, translations_c],
+    "FitnessApp/Localizable.xcstrings": [translations_a, translations_b, translations_c, translations_seed],
     "StrideWidgets/Localizable.xcstrings": [translations_widgets],
 }
 SPEC = re.compile(r"%(?:\d+\$)?(?:lld|ld|d|@|lf|f|%)|\$\{\w+\}")
