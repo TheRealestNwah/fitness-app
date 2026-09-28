@@ -91,11 +91,11 @@ struct MainTabView: View {
 
         var title: String {
             switch self {
-            case .today: "Today"
-            case .food: "Food"
-            case .weight: "Weight"
-            case .vitals: "Vitals"
-            case .plan: "Plan"
+            case .today: String(localized: "Today")
+            case .food: String(localized: "Food")
+            case .weight: String(localized: "Weight")
+            case .vitals: String(localized: "Vitals")
+            case .plan: String(localized: "Plan")
             }
         }
 

@@ -46,7 +46,7 @@ struct WeeklySummaryImage: View {
                 }
                 GridRow {
                     tile("Weight change", review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—", "scalemass")
-                    tile("Logging streak", "\(streak) days", "flame")
+                    tile("Logging streak", String(localized: "\(streak) days"), "flame")
                 }
             }
             Text(review.headline)
@@ -68,7 +68,7 @@ struct WeeklySummaryImage: View {
         .environment(\.colorScheme, .light)
     }
 
-    private func tile(_ title: String, _ value: String, _ icon: String) -> some View {
+    private func tile(_ title: LocalizedStringKey, _ value: String, _ icon: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Label(title, systemImage: icon).font(.caption).foregroundStyle(.secondary)
             Text(value).font(.title3.bold().monospacedDigit())
@@ -111,8 +111,8 @@ struct DoctorReportPage: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Weight and vitals summary").font(.system(size: 18, weight: .bold))
             Text([profile.name.isEmpty ? nil : profile.name,
-                  "\(profile.age) y", profile.sex.rawValue.capitalized,
-                  "height \(units.heightString(cm: profile.heightCm))"].compactMap { $0 }.joined(separator: " · "))
+                  "\(profile.age) y", profile.sex.label,
+                  String(localized: "height \(units.heightString(cm: profile.heightCm))")].compactMap { $0 }.joined(separator: " · "))
                 .font(.system(size: 11))
             Text("\(report.start.formatted(date: .abbreviated, time: .omitted)) – \(report.end.addingTimeInterval(-1).formatted(date: .abbreviated, time: .omitted)) · generated \(Date.now.formatted(date: .abbreviated, time: .omitted))")
                 .font(.system(size: 10))
@@ -123,17 +123,17 @@ struct DoctorReportPage: View {
     private var summary: some View {
         HStack(alignment: .top, spacing: 24) {
             fact("Weight", report.weights.last.map { units.weightString(kg: $0.kg) } ?? "—",
-                 report.weightChangeKg.map { "\(units.weightString(kg: $0, signed: true)) over period" })
+                 report.weightChangeKg.map { String(localized: "\(units.weightString(kg: $0, signed: true)) over period") })
             fact("Avg blood pressure", report.averageBloodPressure.map { "\($0.systolic)/\($0.diastolic) mmHg" } ?? "—",
                  report.averageBloodPressure.map {
-                     NutritionCalculator.bloodPressureCategory(systolic: $0.systolic, diastolic: $0.diastolic).rawValue
+                     NutritionCalculator.bloodPressureCategory(systolic: $0.systolic, diastolic: $0.diastolic).label
                  })
             fact("Avg resting HR", report.averageHeartRate.map { "\($0) bpm" } ?? "—", nil)
             fact("Avg glucose", report.averageGlucose.map { "\(Int($0.rounded())) mg/dL" } ?? "—", nil)
         }
     }
 
-    private func fact(_ title: String, _ value: String, _ note: String?) -> some View {
+    private func fact(_ title: LocalizedStringKey, _ value: String, _ note: String?) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(.system(size: 9)).foregroundStyle(.secondary)
             Text(value).font(.system(size: 13, weight: .semibold))
@@ -159,7 +159,7 @@ struct DoctorReportPage: View {
             if !rows.isEmpty {
                 Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 3) {
                     GridRow {
-                        ForEach(["Date", "BP (mmHg)", "HR (bpm)", "Glucose", "Waist"], id: \.self) {
+                        ForEach([String(localized: "Date"), String(localized: "BP (mmHg)"), String(localized: "HR (bpm)"), String(localized: "Glucose"), String(localized: "Waist")], id: \.self) {
                             Text($0).font(.system(size: 9, weight: .semibold))
                         }
                     }

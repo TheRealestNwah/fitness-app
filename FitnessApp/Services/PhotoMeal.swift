@@ -7,6 +7,23 @@ enum PhotoMeal {
 
         var id: String { rawValue }
 
+        var label: String {
+            switch self {
+            case .small: String(localized: "Small")
+            case .medium: String(localized: "Medium")
+            case .large: String(localized: "Large")
+            }
+        }
+
+        /// Inside a sentence ("a medium portion").
+        var inSentence: String {
+            switch self {
+            case .small: String(localized: "small", comment: "Portion size inside a sentence")
+            case .medium: String(localized: "medium", comment: "Portion size inside a sentence")
+            case .large: String(localized: "large", comment: "Portion size inside a sentence")
+            }
+        }
+
         /// Share of a typical meal for this slot.
         var factor: Double {
             switch self {

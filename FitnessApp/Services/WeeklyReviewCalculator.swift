@@ -81,47 +81,50 @@ enum WeeklyReviewCalculator {
                        planned: Double) -> (headline: String, suggestion: String) {
         guard daysLogged > 0, let avg = averageIntake else {
             if let change = weightChange {
-                let dir = change <= 0 ? "down" : "up"
-                return ("Weight \(dir) \(String(format: "%.1f", abs(change))) kg, no meals logged",
-                        "Log at least one meal a day. Even rough entries show which days push you over.")
+                let amount = String(format: "%.1f", abs(change))
+                return (change <= 0 ? String(localized: "Weight down \(amount) kg, no meals logged") : String(localized: "Weight up \(amount) kg, no meals logged"),
+                        String(localized: "Log at least one meal a day. Even rough entries show which days push you over."))
             }
-            return ("Nothing logged in the last 7 days",
-                    "Start with one meal a day. Favourite meals and copy-yesterday make it a two-tap habit.")
+            return (String(localized: "Nothing logged in the last 7 days"),
+                    String(localized: "Start with one meal a day. Favourite meals and copy-yesterday make it a two-tap habit."))
         }
 
         if daysLogged < 4 {
-            return ("Only \(daysLogged) of 7 days logged",
-                    "Consistency beats precision. Aim for 5 logged days next week, using favourite meals for the usual ones.")
+            return (String(localized: "Only \(daysLogged) of 7 days logged"),
+                    String(localized: "Consistency beats precision. Aim for 5 logged days next week, using favourite meals for the usual ones."))
         }
 
         let over = avg - Double(budget)
         if avg < Double(budget) * 0.6 {
-            return ("Logged intake looks incomplete",
-                    "Averaging \(Int(avg.rounded())) kcal a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something.")
+            return (String(localized: "Logged intake looks incomplete"),
+                    String(localized: "Averaging \(Int(avg.rounded())) kcal a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something."))
         }
         if over > Double(budget) * 0.10 {
-            return ("Averaging \(Int(over.rounded())) kcal over budget",
-                    "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan.")
+            return (String(localized: "Averaging \(Int(over.rounded())) kcal over budget"),
+                    String(localized: "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan."))
         }
 
         guard let change = weightChange else {
-            return ("Intake on budget",
-                    "Weigh in a few mornings a week so next week's review can compare the scale with your intake.")
+            return (String(localized: "Intake on budget"),
+                    String(localized: "Weigh in a few mornings a week so next week's review can compare the scale with your intake."))
         }
 
         if planned > 0, change <= -(planned * 1.5) {
-            return ("Losing faster than planned (\(String(format: "%.1f", abs(change))) kg)",
-                    "Faster is not always better. Keep protein high and do not skip meals; a slightly higher target is fine.")
+            let amount = String(format: "%.1f", abs(change))
+            return (String(localized: "Losing faster than planned (\(amount) kg)"),
+                    String(localized: "Faster is not always better. Keep protein high and do not skip meals; a slightly higher target is fine."))
         }
         if change > 0.3 {
-            return ("Weight up \(String(format: "%.1f", change)) kg with intake on budget",
-                    "Water and salt swing the scale by a kilo or two. Judge by the trend line and give it another week.")
+            let amount = String(format: "%.1f", change)
+            return (String(localized: "Weight up \(amount) kg with intake on budget"),
+                    String(localized: "Water and salt swing the scale by a kilo or two. Judge by the trend line and give it another week."))
         }
         if change <= -(planned * 0.5) {
-            return ("On track: down \(String(format: "%.1f", abs(change))) kg this week",
-                    "Keep doing what you are doing. Plan next week's dinners now while motivation is high.")
+            let amount = String(format: "%.1f", abs(change))
+            return (String(localized: "On track: down \(amount) kg this week"),
+                    String(localized: "Keep doing what you are doing. Plan next week's dinners now while motivation is high."))
         }
-        return ("Intake on budget, scale moving slowly",
-                "Normal in weeks two to four. If it stays flat next week, trim 100 to 150 kcal or add a daily walk.")
+        return (String(localized: "Intake on budget, scale moving slowly"),
+                String(localized: "Normal in weeks two to four. If it stays flat next week, trim 100 to 150 kcal or add a daily walk."))
     }
 }

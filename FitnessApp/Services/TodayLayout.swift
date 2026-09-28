@@ -8,19 +8,19 @@ enum TodayCard: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .calories: "Calories"
-        case .quickActions: "Quick actions"
-        case .suggestions: "Fits what's left"
-        case .weight: "Weight"
-        case .progress: "Milestones and plateaus"
-        case .activity: "Activity"
-        case .exercise: "Exercise"
-        case .weeklyReview: "Last 7 days"
-        case .water: "Water"
-        case .fasting: "Fasting"
-        case .plan: "Today's plan"
-        case .vitals: "Vitals"
-        case .tip: "Tip of the day"
+        case .calories: String(localized: "Calories")
+        case .quickActions: String(localized: "Quick actions")
+        case .suggestions: String(localized: "Fits what's left")
+        case .weight: String(localized: "Weight")
+        case .progress: String(localized: "Milestones and plateaus")
+        case .activity: String(localized: "Activity")
+        case .exercise: String(localized: "Exercise")
+        case .weeklyReview: String(localized: "Last 7 days")
+        case .water: String(localized: "Water")
+        case .fasting: String(localized: "Fasting")
+        case .plan: String(localized: "Today's plan")
+        case .vitals: String(localized: "Vitals")
+        case .tip: String(localized: "Tip of the day")
         }
     }
 

@@ -22,7 +22,7 @@ struct MealPlanView: View {
             }
             .safeAreaInset(edge: .top) {
                 Picker("Mode", selection: $mode) {
-                    ForEach(Mode.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(Mode.allCases) { Text($0.label).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
@@ -134,7 +134,7 @@ struct PlannerView: View {
                         context.deletePlanEntries(offsets.map { items[$0] }, undo: undoCenter)
                     }
                     Button { pickingFor = meal } label: {
-                        Label("Add to \(meal.label.lowercased())", systemImage: "plus.circle.fill")
+                        Label("Add to \(meal.inSentence)", systemImage: "plus.circle.fill")
                             .font(.subheadline.weight(.medium))
                     }
                 } header: {
@@ -344,7 +344,7 @@ struct PlanItemPicker: View {
             List {
                 Section {
                     Picker("Source", selection: $source) {
-                        ForEach(Source.allCases) { Text($0.rawValue).tag($0) }
+                        ForEach(Source.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .listRowBackground(Color.clear)
@@ -387,7 +387,7 @@ struct PlanItemPicker: View {
                 }
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always))
-            .navigationTitle("Plan \(mealType.label.lowercased())")
+            .navigationTitle("Plan \(mealType.inSentence)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }

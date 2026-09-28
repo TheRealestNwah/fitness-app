@@ -10,14 +10,21 @@ import json
 import os
 import sys
 
-CATALOG = "FitnessApp/Localizable.xcstrings"
 LANGUAGES = ["es", "de"]
+# Each catalog and the targets whose strings it holds. The widget folder is built into the
+# iOS widgets, the watch complications and the watch app, so they share its catalog.
+CATALOGS = {
+    "FitnessApp/Localizable.xcstrings": ["FitnessApp.build"],
+    "StrideWidgets/Localizable.xcstrings": ["StrideWidgets.build", "StrideWatch.build", "StrideWatchWidgets.build"],
+}
 
 
-def extracted_keys(build_dir):
+def extracted_keys(build_dir, targets):
     keys = {}
-    pattern = os.path.join(build_dir, "**", "FitnessApp.build", "**", "*.stringsdata")
-    for path in glob.glob(pattern, recursive=True):
+    paths = []
+    for target in targets:
+        paths += glob.glob(os.path.join(build_dir, "**", target, "**", "*.stringsdata"), recursive=True)
+    for path in paths:
         if "Tests" in path:
             continue
         with open(path, encoding="utf-8") as f:
@@ -40,11 +47,27 @@ def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return 2
-    keys = extracted_keys(sys.argv[1])
-    if not keys:
-        print("No extracted strings found; was the app built with SWIFT_EMIT_LOC_STRINGS?")
-        return 1
-    with open(CATALOG, encoding="utf-8") as f:
+    report, failed = {}, False
+    for catalog_path, targets in CATALOGS.items():
+        keys = extracted_keys(sys.argv[1], targets)
+        if not keys:
+            print(f"{catalog_path}: no extracted strings found; was it built with SWIFT_EMIT_LOC_STRINGS?")
+            failed = True
+            continue
+        missing = check(catalog_path, keys)
+        print(f"{catalog_path}: {len(keys)} strings extracted, {len(missing)} missing a translation")
+        for key, langs in list(missing.items())[:50]:
+            print(f"  {key!r}: {', '.join(langs)}")
+        report[catalog_path] = {k: {"comment": keys[k], "missing": v} for k, v in missing.items()}
+        failed = failed or bool(missing)
+    if "--dump" in sys.argv:
+        with open(sys.argv[sys.argv.index("--dump") + 1], "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=1, ensure_ascii=False)
+    return 1 if failed else 0
+
+
+def check(catalog_path, keys):
+    with open(catalog_path, encoding="utf-8") as f:
         catalog = json.load(f).get("strings", {})
     missing = {}
     for key in sorted(keys):
@@ -60,13 +83,7 @@ def main():
             langs = [lang for lang in LANGUAGES if not translated(entry, lang)]
             if langs:
                 missing[key] = langs
-    print(f"{len(keys)} strings extracted, {len(missing)} missing a translation")
-    for key, langs in list(missing.items())[:50]:
-        print(f"  {key!r}: {', '.join(langs)}")
-    if "--dump" in sys.argv:
-        with open(sys.argv[sys.argv.index("--dump") + 1], "w", encoding="utf-8") as f:
-            json.dump({k: {"comment": keys[k], "missing": v} for k, v in missing.items()}, f, indent=1, ensure_ascii=False)
-    return 1 if missing else 0
+    return missing
 
 
 if __name__ == "__main__":

@@ -204,7 +204,7 @@ extension VitalKind {
         switch self {
         case .bloodPressure:
             guard let s = entry.systolic, let d = entry.diastolic else { return nil }
-            return NutritionCalculator.bloodPressureCategory(systolic: s, diastolic: d).rawValue
+            return NutritionCalculator.bloodPressureCategory(systolic: s, diastolic: d).label
         case .restingHeartRate:
             guard let hr = entry.restingHeartRate else { return nil }
             switch hr {
@@ -372,7 +372,7 @@ struct AddVitalsSheet: View {
                     IntField(title: "Systolic", value: $systolic, unit: "mmHg")
                     IntField(title: "Diastolic", value: $diastolic, unit: "mmHg")
                     if let s = systolic, let d = diastolic {
-                        LabeledContent("Category", value: NutritionCalculator.bloodPressureCategory(systolic: s, diastolic: d).rawValue)
+                        LabeledContent("Category", value: NutritionCalculator.bloodPressureCategory(systolic: s, diastolic: d).label)
                             .foregroundStyle(Color.secondary)
                     }
                     IntField(title: "Resting heart rate", value: $heartRate, unit: "bpm")

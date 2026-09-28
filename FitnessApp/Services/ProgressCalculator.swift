@@ -104,18 +104,16 @@ enum ProgressCalculator {
         if let maintenance {
             let suggested = maintenance.suggestedTarget(weeklyLossKg: weeklyLossKg, sex: sex)
             if suggested < currentTarget {
-                suggestions.append("Your measured maintenance is about \(maintenance.maintenanceKcal) kcal. "
-                                   + "A target of \(suggested) kcal matches your planned rate; you can apply it in Settings.")
+                suggestions.append(String(localized: "Your measured maintenance is about \(maintenance.maintenanceKcal) kcal. A target of \(suggested) kcal matches your planned rate; you can apply it in Settings."))
             } else {
-                suggestions.append("Your target already sits below your measured maintenance of about "
-                                   + "\(maintenance.maintenanceKcal) kcal, so the gap is more likely in logging than in the plan.")
+                suggestions.append(String(localized: "Your target already sits below your measured maintenance of about \(maintenance.maintenanceKcal) kcal, so the gap is more likely in logging than in the plan."))
             }
         } else {
-            suggestions.append("Log food on most days for two more weeks so the adaptive target can measure your real maintenance.")
+            suggestions.append(String(localized: "Log food on most days for two more weeks so the adaptive target can measure your real maintenance."))
         }
-        suggestions.append("Weigh portions for a week. Oils, sauces and drinks are the usual under-counts.")
-        suggestions.append("Water retention from stress, sleep or new training can hide fat loss for a week or two.")
-        suggestions.append("If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier.")
+        suggestions.append(String(localized: "Weigh portions for a week. Oils, sauces and drinks are the usual under-counts."))
+        suggestions.append(String(localized: "Water retention from stress, sleep or new training can hide fat loss for a week or two."))
+        suggestions.append(String(localized: "If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier."))
         return Plateau(days: days, trendKg: now, suggestions: suggestions)
     }
 }
