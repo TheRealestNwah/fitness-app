@@ -567,11 +567,24 @@ struct DashboardView: View {
                     .accessibilityIdentifier("waterTotal")
             }
             HStack(spacing: 6) {
-                ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
-                    Image(systemName: i < glasses ? "drop.fill" : "drop")
-                        .foregroundStyle(i < glasses ? Color.cyan : Color.secondary.opacity(0.4))
+                // A weight-based goal can mean 15+ glasses; one drop each would push the card
+                // (and the whole dashboard) wider than the screen, so fall back to a bar.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 6) {
+                        ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
+                            Image(systemName: i < glasses ? "drop.fill" : "drop")
+                                .foregroundStyle(i < glasses ? Color.cyan : Color.secondary.opacity(0.4))
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(glasses) of \(max(goalGlasses, 1)) glasses")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                        ProgressView(value: Double(min(glasses, goalGlasses)), total: Double(max(goalGlasses, 1)))
+                            .tint(.cyan)
+                    }
                 }
-                Spacer()
+                Spacer(minLength: 8)
                 Button {
                     removeWater()
                 } label: {
