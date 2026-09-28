@@ -59,6 +59,30 @@ enum QuickLog {
         return entry
     }
 
+    /// The fast that's running, if any.
+    static func activeFast(context: ModelContext) -> FastingSession? {
+        try? context.fetch(FetchDescriptor<FastingSession>(predicate: #Predicate { $0.end == nil },
+                                                           sortBy: [SortDescriptor(\.start, order: .reverse)])).first
+    }
+
+    /// Ends the running fast, or starts one with the same target as the last fast (16 hours the first time).
+    /// Returns the session that was started or ended.
+    @discardableResult
+    static func toggleFast(context: ModelContext, now: Date = .now) throws -> FastingSession {
+        let session: FastingSession
+        if let running = activeFast(context: context) {
+            running.end = now
+            session = running
+        } else {
+            let last = try context.fetch(FetchDescriptor<FastingSession>(sortBy: [SortDescriptor(\.start, order: .reverse)])).first
+            session = FastingSession(start: now, targetHours: last?.targetHours ?? 16)
+            context.insert(session)
+        }
+        try context.save()
+        FastingActivityManager.sync(context: context)
+        return session
+    }
+
     /// Calories left today (negative when over).
     static func caloriesLeft(context: ModelContext, now: Date = .now) throws -> Double {
         guard let profile = profile(in: context),
