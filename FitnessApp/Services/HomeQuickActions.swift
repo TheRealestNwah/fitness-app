@@ -19,7 +19,8 @@ enum HomeQuickAction: String, CaseIterable {
         case .logFood: String(localized: "Log food")
         case .logWeight: String(localized: "Weigh in")
         case .logWater: String(localized: "Log water")
-        case .toggleFast: fastRunning ? String(localized: "End fast") : String(localized: "Start fast")
+        case .toggleFast:
+            if fastRunning { String(localized: "End fast") } else { String(localized: "Start fast") }
         }
     }
 
