@@ -71,12 +71,12 @@ enum DemoData {
 
         // Today's diary.
         let meals: [(MealType, String, Double, Double, Double, Double, Double, String)] = [
-            (.breakfast, "Overnight oats with berries", 1, 383, 23.5, 58, 7.5, "serving"),
-            (.breakfast, "Coffee, black", 1, 2, 0.3, 0, 0, "1 cup (240 ml)"),
-            (.lunch, "Grilled chicken salad", 1, 438, 43.5, 9.5, 24.4, "serving"),
-            (.lunch, "Apple", 1, 95, 0.5, 25, 0.3, "1 medium (182 g)"),
-            (.snack, "Greek yogurt, plain nonfat", 1, 100, 17, 6, 0.7, "170 g"),
-            (.snack, "Almonds", 1, 164, 6, 6, 14, "1 oz (28 g, ~23 nuts)"),
+            (.breakfast, String(localized: "Overnight oats with berries"), 1, 383, 23.5, 58, 7.5, String(localized: "serving")),
+            (.breakfast, String(localized: "Coffee, black"), 1, 2, 0.3, 0, 0, String(localized: "1 cup (240 ml)")),
+            (.lunch, String(localized: "Grilled chicken salad"), 1, 438, 43.5, 9.5, 24.4, String(localized: "serving")),
+            (.lunch, String(localized: "Apple"), 1, 95, 0.5, 25, 0.3, String(localized: "1 medium (182 g)")),
+            (.snack, String(localized: "Greek yogurt, plain nonfat"), 1, 100, 17, 6, 0.7, String(localized: "170 g")),
+            (.snack, String(localized: "Almonds"), 1, 164, 6, 6, 14, String(localized: "1 oz (28 g, ~23 nuts)")),
         ]
         for (meal, name, servings, kcal, p, c, f, serving) in meals {
             let hour: Int
@@ -91,10 +91,10 @@ enum DemoData {
         }
         // Previous days with realistic full logs so the streak and weekly review have something to show.
         let dailyPattern: [(MealType, Int, String, Double, Double, Double, Double)] = [
-            (.breakfast, 8, "Veggie egg scramble on toast", 315, 19.5, 24, 15.9),
-            (.lunch, 13, "Turkey and avocado wrap", 344, 21, 38, 13),
-            (.snack, 16, "Apple with peanut butter", 189, 4.5, 28.5, 8.3),
-            (.dinner, 19, "Chicken stir-fry with rice", 580, 56, 60, 12),
+            (.breakfast, 8, String(localized: "Veggie egg scramble on toast"), 315, 19.5, 24, 15.9),
+            (.lunch, 13, String(localized: "Turkey and avocado wrap"), 344, 21, 38, 13),
+            (.snack, 16, String(localized: "Apple with peanut butter"), 189, 4.5, 28.5, 8.3),
+            (.dinner, 19, String(localized: "Chicken stir-fry with rice"), 580, 56, 60, 12),
         ]
         for offset in -6...(-1) {
             for (meal, hour, name, kcal, p, c, f) in dailyPattern {
@@ -136,14 +136,14 @@ enum DemoData {
         let recipes = (try? context.fetch(FetchDescriptor<Recipe>())) ?? []
         func recipe(_ name: String) -> Recipe? { recipes.first { $0.name == name } }
         let plan: [(Int, MealType, String, Bool)] = [
-            (0, .breakfast, "Overnight oats with berries", true),
-            (0, .lunch, "Grilled chicken salad", true),
-            (0, .dinner, "Salmon with roasted vegetables", false),
-            (0, .snack, "Cottage cheese and berries", false),
-            (1, .breakfast, "Veggie egg scramble on toast", false),
-            (1, .lunch, "Lentil and vegetable soup", false),
-            (1, .dinner, "Chicken stir-fry with rice", false),
-            (1, .snack, "Apple with peanut butter", false),
+            (0, .breakfast, String(localized: "Overnight oats with berries"), true),
+            (0, .lunch, String(localized: "Grilled chicken salad"), true),
+            (0, .dinner, String(localized: "Salmon with roasted vegetables"), false),
+            (0, .snack, String(localized: "Cottage cheese and berries"), false),
+            (1, .breakfast, String(localized: "Veggie egg scramble on toast"), false),
+            (1, .lunch, String(localized: "Lentil and vegetable soup"), false),
+            (1, .dinner, String(localized: "Chicken stir-fry with rice"), false),
+            (1, .snack, String(localized: "Apple with peanut butter"), false),
         ]
         for (offset, meal, name, logged) in plan {
             guard let r = recipe(name) else { continue }
