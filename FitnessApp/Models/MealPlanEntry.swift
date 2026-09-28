@@ -51,3 +51,25 @@ final class MealPlanEntry {
     var totalCarbs: Double { carbsPerServing * servings }
     var totalFat: Double { fatPerServing * servings }
 }
+
+extension MealPlanEntry {
+    /// One serving of a recipe in a plan slot.
+    convenience init(recipe: Recipe, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: recipe.name,
+                  caloriesPerServing: recipe.caloriesPerServing,
+                  proteinPerServing: recipe.proteinPerServing,
+                  carbsPerServing: recipe.carbsPerServing,
+                  fatPerServing: recipe.fatPerServing,
+                  recipeID: recipe.uuid)
+    }
+
+    /// One serving of a saved food in a plan slot.
+    convenience init(food: FoodItem, day: Date, mealType: MealType) {
+        self.init(day: day, mealType: mealType, title: food.displayName,
+                  caloriesPerServing: food.calories,
+                  proteinPerServing: food.protein,
+                  carbsPerServing: food.carbs,
+                  fatPerServing: food.fat,
+                  foodItemID: food.uuid)
+    }
+}

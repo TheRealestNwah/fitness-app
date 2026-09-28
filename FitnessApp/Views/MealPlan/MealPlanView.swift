@@ -145,6 +145,9 @@ struct PlannerView: View {
                         Label("Add to \(meal.inSentence)", systemImage: "plus.circle.fill")
                             .font(.subheadline.weight(.medium))
                     }
+                    .foodDropDestination { references in
+                        references.map { $0.plan(on: selectedDay, as: meal, context: context) }.contains(true)
+                    }
                 } header: {
                     HStack {
                         Label(meal.label, systemImage: meal.systemImage)
@@ -191,6 +194,11 @@ struct PlannerView: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .hoverEffect(.highlight)
+                // A recipe dropped on a day goes into its own meal slot.
+                .foodDropDestination { references in
+                    references.map { $0.plan(on: day, as: nil, context: context) }.contains(true)
+                }
             }
             Button { selectedDay = selectedDay.adding(days: 7) } label: {
                 Image(systemName: "chevron.right").frame(width: 24, height: 44)
@@ -408,23 +416,13 @@ struct PlanItemPicker: View {
     }
 
     private func add(_ recipe: Recipe) {
-        context.insert(MealPlanEntry(day: day, mealType: mealType, title: recipe.name,
-                                     caloriesPerServing: recipe.caloriesPerServing,
-                                     proteinPerServing: recipe.proteinPerServing,
-                                     carbsPerServing: recipe.carbsPerServing,
-                                     fatPerServing: recipe.fatPerServing,
-                                     recipeID: recipe.uuid))
+        context.insert(MealPlanEntry(recipe: recipe, day: day, mealType: mealType))
         try? context.save()
         dismiss()
     }
 
     private func add(_ food: FoodItem) {
-        context.insert(MealPlanEntry(day: day, mealType: mealType, title: food.displayName,
-                                     caloriesPerServing: food.calories,
-                                     proteinPerServing: food.protein,
-                                     carbsPerServing: food.carbs,
-                                     fatPerServing: food.fat,
-                                     foodItemID: food.uuid))
+        context.insert(MealPlanEntry(food: food, day: day, mealType: mealType))
         try? context.save()
         dismiss()
     }
@@ -438,6 +436,8 @@ struct GroceryListView: View {
     @AppStorage("groceryChecked") private var checkedData: Data = Data()
 
     @State private var weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: .now)?.start ?? Date.now.startOfDay
+    @State private var sending = false
+    @State private var sendResult: String?
 
     private var weekEnd: Date { weekStart.adding(days: 7) }
 
@@ -494,6 +494,20 @@ struct GroceryListView: View {
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
                 }
                 .buttonStyle(.bordered)
+                if !items.isEmpty {
+                    Button {
+                        Task { await sendToReminders() }
+                    } label: {
+                        HStack {
+                            Label("Send to Reminders", systemImage: "checklist")
+                            if sending {
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(sending)
+                }
             }
             if items.isEmpty {
                 ContentUnavailableView("Nothing planned this week", systemImage: "cart",
@@ -535,5 +549,25 @@ struct GroceryListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .alert("Reminders", isPresented: Binding(get: { sendResult != nil }, set: { if !$0 { sendResult = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(sendResult ?? "")
+        }
+    }
+
+    /// Items not yet ticked off, as reminder titles with their amounts in the notes.
+    private func sendToReminders() async {
+        sending = true
+        defer { sending = false }
+        let lines = items.filter { !checked.contains($0.name) }.map {
+            GroceryReminders.Line(title: $0.name.capitalized, notes: $0.amounts.joined(separator: " + "))
+        }
+        do {
+            let count = try await GroceryReminders.send(lines)
+            sendResult = String(localized: "\(count) items are on the “\(GroceryReminders.listTitle)” list in Reminders.")
+        } catch {
+            sendResult = error.localizedDescription
+        }
     }
 }

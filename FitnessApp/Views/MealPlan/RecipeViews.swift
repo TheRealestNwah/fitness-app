@@ -155,6 +155,7 @@ struct RecipeRow: View {
                 .foregroundStyle(Color.secondary)
             }
         }
+        .draggable(FoodReference(recipe: recipe))
     }
 }
 
