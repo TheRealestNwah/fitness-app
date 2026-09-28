@@ -52,6 +52,11 @@ final class IPadScreenshotTests: XCTestCase {
             snap("ipad-14c-recipe-detail")
         }
 
+        open("Settings", in: app)
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5), "Settings should open in the detail column")
+        XCTAssertFalse(app.buttons["Done"].exists, "Settings in the sidebar isn't a sheet")
+        snap("ipad-16-settings")
+
         open("Today", in: app)
         XCUIDevice.shared.orientation = .portrait
         snap("ipad-15-today-portrait")
