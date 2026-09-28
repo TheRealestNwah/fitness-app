@@ -181,9 +181,9 @@ final class HealthKitManager {
     }
 
     private var readTypes: Set<HKObjectType> {
-        [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
-         HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
-            .union(profileTypes)
+        let sync: Set<HKObjectType> = [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
+                                       HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
+        return sync.union(profileTypes)
     }
 
     /// Read during setup to fill in the profile.
