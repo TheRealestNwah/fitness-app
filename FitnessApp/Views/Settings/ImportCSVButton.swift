@@ -19,6 +19,22 @@ struct ImportCSVButton: View {
         .fileImporter(isPresented: $picking, allowedContentTypes: [.commaSeparatedText, .plainText]) { result in
             load(result)
         }
+        // A CSV dragged in from Files or another app.
+        .onDrop(of: [.commaSeparatedText, .plainText], isTargeted: nil) { providers in
+            guard let provider = providers.first else { return false }
+            let type: UTType = provider.hasItemConformingToTypeIdentifier(UTType.commaSeparatedText.identifier)
+                ? .commaSeparatedText : .plainText
+            _ = provider.loadDataRepresentation(for: type) { data, error in
+                DispatchQueue.main.async {
+                    if let data, let text = String(data: data, encoding: .utf8) {
+                        read(text)
+                    } else {
+                        failure = error?.localizedDescription ?? String(localized: "No rows could be read from this file.")
+                    }
+                }
+            }
+            return true
+        }
         .sheet(isPresented: Binding(get: { preview != nil }, set: { if !$0 { preview = nil } })) {
             if let preview {
                 ImportPreviewSheet(preview: preview) {
@@ -39,7 +55,14 @@ struct ImportCSVButton: View {
             let url = try result.get()
             let scoped = url.startAccessingSecurityScopedResource()
             defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-            let text = try String(contentsOf: url, encoding: .utf8)
+            read(try String(contentsOf: url, encoding: .utf8))
+        } catch {
+            failure = error.localizedDescription
+        }
+    }
+
+    private func read(_ text: String) {
+        do {
             // A bare "weight" column is read in the user's unit (stones count as pounds, as exports use).
             let parsed = try DataImporter.preview(csv: text, plainWeightUnit: profile.units.weight)
             if parsed.isEmpty {

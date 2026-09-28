@@ -145,6 +145,9 @@ struct PlannerView: View {
                         Label("Add to \(meal.inSentence)", systemImage: "plus.circle.fill")
                             .font(.subheadline.weight(.medium))
                     }
+                    .foodDropDestination { references in
+                        references.map { $0.plan(on: selectedDay, as: meal, context: context) }.contains(true)
+                    }
                 } header: {
                     HStack {
                         Label(meal.label, systemImage: meal.systemImage)
@@ -191,6 +194,11 @@ struct PlannerView: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .hoverEffect(.highlight)
+                // A recipe dropped on a day goes into its own meal slot.
+                .foodDropDestination { references in
+                    references.map { $0.plan(on: day, as: nil, context: context) }.contains(true)
+                }
             }
             Button { selectedDay = selectedDay.adding(days: 7) } label: {
                 Image(systemName: "chevron.right").frame(width: 24, height: 44)
@@ -408,23 +416,13 @@ struct PlanItemPicker: View {
     }
 
     private func add(_ recipe: Recipe) {
-        context.insert(MealPlanEntry(day: day, mealType: mealType, title: recipe.name,
-                                     caloriesPerServing: recipe.caloriesPerServing,
-                                     proteinPerServing: recipe.proteinPerServing,
-                                     carbsPerServing: recipe.carbsPerServing,
-                                     fatPerServing: recipe.fatPerServing,
-                                     recipeID: recipe.uuid))
+        context.insert(MealPlanEntry(recipe: recipe, day: day, mealType: mealType))
         try? context.save()
         dismiss()
     }
 
     private func add(_ food: FoodItem) {
-        context.insert(MealPlanEntry(day: day, mealType: mealType, title: food.displayName,
-                                     caloriesPerServing: food.calories,
-                                     proteinPerServing: food.protein,
-                                     carbsPerServing: food.carbs,
-                                     fatPerServing: food.fat,
-                                     foodItemID: food.uuid))
+        context.insert(MealPlanEntry(food: food, day: day, mealType: mealType))
         try? context.save()
         dismiss()
     }

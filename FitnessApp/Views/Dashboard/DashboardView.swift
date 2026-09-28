@@ -376,6 +376,7 @@ struct DashboardView: View {
                 }
             }
             .buttonStyle(.plain)
+            .hoverEffect(.highlight)
             if MaintenanceCalculator.shouldOffer(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays),
                                                  goalKg: profile.goalWeightKg,
                                                  isMaintaining: profile.isMaintaining) {
@@ -643,7 +644,7 @@ struct DashboardView: View {
             }
         }
         .buttonStyle(.plain)
-        .card()
+        .tappableCard()
     }
 
     private var vitalsCard: some View {
@@ -679,7 +680,7 @@ struct DashboardView: View {
             .font(.subheadline)
         }
         .buttonStyle(.plain)
-        .card()
+        .tappableCard()
     }
 
     private var tipCard: some View {
@@ -727,8 +728,10 @@ struct QuickActionButton: View {
                     .foregroundStyle(Color.primary)
             }
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+        .hoverEffect(.highlight)
     }
 }
 

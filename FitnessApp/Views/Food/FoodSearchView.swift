@@ -287,6 +287,7 @@ struct FoodSearchView: View {
                 } label: { Label("Delete", systemImage: "trash") }
             }
         }
+        .draggable(FoodReference(food: food))
     }
 }
 
