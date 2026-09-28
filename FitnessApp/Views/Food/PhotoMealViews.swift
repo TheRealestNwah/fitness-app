@@ -44,14 +44,14 @@ struct PhotoMealSheet: View {
                 Section {
                     TextField("What was it? (optional)", text: $name)
                     Picker("Portion", selection: $portion) {
-                        ForEach(PhotoMeal.Portion.allCases) { Text($0.rawValue).tag($0) }
+                        ForEach(PhotoMeal.Portion.allCases) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     DecimalField(title: "Calories", value: $calories, unit: "kcal")
                 } header: {
                     Text("Rough estimate")
                 } footer: {
-                    Text("About \(estimate) kcal for a \(portion.rawValue.lowercased()) \(mealType.label.lowercased()). Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details.")
+                    Text("About \(estimate) kcal for a \(portion.inSentence) \(mealType.inSentence). Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details.")
                 }
             }
             .navigationTitle("Photo meal")
@@ -82,7 +82,7 @@ struct PhotoMealSheet: View {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let entry = FoodLogEntry(date: mealType.logDate(on: date), mealType: mealType,
                                  foodName: trimmed.isEmpty ? "Photo meal" : trimmed, servings: 1,
-                                 servingDescription: "\(portion.rawValue.lowercased()) portion, estimated",
+                                 servingDescription: String(localized: "\(portion.inSentence) portion, estimated"),
                                  calories: calories ?? Double(estimate), protein: 0, carbs: 0, fat: 0)
         entry.photo = photo
         entry.isEstimate = true

@@ -124,9 +124,9 @@ extension Date {
 
     /// "Today", "Yesterday", or a short weekday/date.
     var relativeDayLabel: String {
-        if Calendar.current.isDateInToday(self) { return "Today" }
-        if Calendar.current.isDateInYesterday(self) { return "Yesterday" }
-        if Calendar.current.isDateInTomorrow(self) { return "Tomorrow" }
+        if Calendar.current.isDateInToday(self) { return String(localized: "Today") }
+        if Calendar.current.isDateInYesterday(self) { return String(localized: "Yesterday") }
+        if Calendar.current.isDateInTomorrow(self) { return String(localized: "Tomorrow") }
         return formatted(.dateTime.weekday(.wide).month(.abbreviated).day())
     }
 }
@@ -137,9 +137,9 @@ enum WeightUnit: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var label: String {
         switch self {
-        case .kg: return "Kilograms"
-        case .lb: return "Pounds"
-        case .st: return "Stones and pounds"
+        case .kg: return String(localized: "Kilograms")
+        case .lb: return String(localized: "Pounds")
+        case .st: return String(localized: "Stones and pounds")
         }
     }
 }
@@ -152,7 +152,7 @@ enum EnergyUnit: String, CaseIterable, Identifiable {
     static let kJPerKcal = 4.184
 
     var id: String { rawValue }
-    var label: String { self == .kcal ? "Calories (kcal)" : "Kilojoules (kJ)" }
+    var label: String { self == .kcal ? String(localized: "Calories (kcal)") : String(localized: "Kilojoules (kJ)") }
 
     static var current: EnergyUnit {
         EnergyUnit(rawValue: UserDefaults.standard.string(forKey: storageKey) ?? "") ?? .kcal

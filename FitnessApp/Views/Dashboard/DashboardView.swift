@@ -313,7 +313,7 @@ struct DashboardView: View {
         let meal = MealType.current()
         let yesterdays = yesterdaysCurrentMeal
         let kcal: Int = Int(yesterdays.reduce(0.0) { $0 + $1.calories }.rounded())
-        let name: String = meal.label.lowercased()
+        let name: String = meal.inSentence
         let copyTitle: String = yesterdays.isEmpty ? "No \(name) logged yesterday"
             : "Copy yesterday's \(name) (\(Energy.string(kcal)))"
         Button { showAddFood = true } label: {
@@ -641,7 +641,7 @@ struct DashboardView: View {
                 }
                 if let bp = vitals.first(where: { $0.systolic != nil && $0.diastolic != nil }),
                    let sys = bp.systolic, let dia = bp.diastolic {
-                    LabeledContent("Blood pressure", value: "\(sys)/\(dia) · \(NutritionCalculator.bloodPressureCategory(systolic: sys, diastolic: dia).rawValue)")
+                    LabeledContent("Blood pressure", value: "\(sys)/\(dia) · \(NutritionCalculator.bloodPressureCategory(systolic: sys, diastolic: dia).label)")
                 }
                 if let hr = vitals.first(where: { $0.restingHeartRate != nil })?.restingHeartRate {
                     LabeledContent("Resting heart rate", value: "\(hr) bpm")

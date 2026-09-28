@@ -88,7 +88,7 @@ struct FoodSearchView: View {
                 }
                 if let loggedMealName {
                     Section {
-                        Label("Logged “\(loggedMealName)” to \(mealType.label.lowercased())", systemImage: "checkmark.circle.fill")
+                        Label("Logged “\(loggedMealName)” to \(mealType.inSentence)", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(Color.green)
                     }
                 }
@@ -321,7 +321,7 @@ struct LogFoodSheet: View {
                     }
                 }
             }
-            .navigationTitle("Add to \(meal.label.lowercased())")
+            .navigationTitle("Add to \(meal.inSentence)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }

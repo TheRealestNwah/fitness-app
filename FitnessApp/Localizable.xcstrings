@@ -217,6 +217,22 @@
         }
       }
     },
+    "%@ over period" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ en el periodo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ im Zeitraum"
+          }
+        }
+      }
+    },
     "%@ photo" : {
       "localizations" : {
         "es" : {
@@ -245,6 +261,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ geplant"
+          }
+        }
+      }
+    },
+    "%@ portion, estimated" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "porción %@, estimada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Portion %@, geschätzt"
           }
         }
       }
@@ -899,6 +931,64 @@
         }
       }
     },
+    "%lld nights of sleep" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld night of sleep"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld nights of sleep"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld noche de sueño"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld noches de sueño"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Nacht Schlaf"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Nächte Schlaf"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld of %lld" : {
       "localizations" : {
         "es" : {
@@ -1005,6 +1095,64 @@
         }
       }
     },
+    "%lld resting heart rates" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld resting heart rate"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld resting heart rates"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld frecuencia en reposo"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld frecuencias en reposo"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Ruhepuls"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Ruhepulswerte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld servings" : {
       "localizations" : {
         "en" : {
@@ -1056,6 +1204,122 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld Portionen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld weigh-ins" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weigh-in"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weigh-ins"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pesaje"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld pesajes"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Wägung"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Wägungen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld workouts" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld workout"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld workouts"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld entrenamiento"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld entrenamientos"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Training"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Trainings"
                 }
               }
             }
@@ -1267,6 +1531,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "= %@ Portionen"
+          }
+        }
+      }
+    },
+    "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un déficit de 500 kcal al día equivale a medio kilo de grasa por semana, aproximadamente."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein tägliches Defizit von 500 kcal ergibt etwa ein halbes Kilo Fett pro Woche."
+          }
+        }
+      }
+    },
+    "A quick log of breakfast and lunch keeps today's numbers useful." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar rápido el desayuno y la comida mantiene útiles los datos de hoy."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein kurzer Eintrag für Frühstück und Mittagessen hält die heutigen Werte aussagekräftig."
+          }
+        }
+      }
+    },
+    "A quick sip now keeps hunger and headaches away." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un sorbo ahora aleja el hambre y el dolor de cabeza."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Schluck jetzt hält Hunger und Kopfschmerzen fern."
           }
         }
       }
@@ -1575,6 +1887,54 @@
         }
       }
     },
+    "After 1 minute" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tras 1 minuto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach 1 Minute"
+          }
+        }
+      }
+    },
+    "After 5 minutes" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tras 5 minutos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach 5 Minuten"
+          }
+        }
+      }
+    },
+    "Aggressive" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intenso"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ehrgeizig"
+          }
+        }
+      }
+    },
     "All" : {
       "localizations" : {
         "es" : {
@@ -1735,6 +2095,22 @@
         }
       }
     },
+    "Athlete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deportista"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sportlich"
+          }
+        }
+      }
+    },
     "Attach a photo when you weigh in. Once there are two, you can compare them here." : {
       "localizations" : {
         "es" : {
@@ -1799,6 +2175,38 @@
         }
       }
     },
+    "Average intake" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingesta media"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durchschnittliche Aufnahme"
+          }
+        }
+      }
+    },
+    "Averaging %@ a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una media de %@ al día está muy por debajo de cualquier presupuesto seguro, así que probablemente faltan comidas. Registra todo, bebidas incluidas, para que el resumen sea útil."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Schnitt %@ pro Tag liegt weit unter jedem sicheren Budget, es fehlen also wohl Mahlzeiten. Erfasse alles, auch Getränke, damit der Rückblick etwas aussagt."
+          }
+        }
+      }
+    },
     "Averaging %@ gained per week over the last 4 weeks." : {
       "localizations" : {
         "es" : {
@@ -1831,6 +2239,70 @@
         }
       }
     },
+    "Averaging %@ over budget" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Media de %@ por encima del presupuesto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Schnitt %@ über dem Budget"
+          }
+        }
+      }
+    },
+    "Avg blood pressure" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Presión arterial media"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ø Blutdruck"
+          }
+        }
+      }
+    },
+    "Avg glucose" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glucosa media"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ø Blutzucker"
+          }
+        }
+      }
+    },
+    "Avg resting HR" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FC en reposo media"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ø Ruhepuls"
+          }
+        }
+      }
+    },
     "BMI is a rough guide only. A healthy range is 18.5–24.9." : {
       "localizations" : {
         "es" : {
@@ -1843,6 +2315,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Der BMI ist nur ein grober Richtwert. Der gesunde Bereich liegt bei 18,5–24,9."
+          }
+        }
+      }
+    },
+    "BP (mmHg)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PA (mmHg)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RR (mmHg)"
           }
         }
       }
@@ -1939,6 +2427,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Basierend auf %lld erfassten Tagen und %lld Wägungen in den letzten %lld Tagen: Du lagst im Schnitt bei %@ und dein Gewicht änderte sich um %@ pro Woche. Verlässlichkeit: %@."
+          }
+        }
+      }
+    },
+    "Blood glucose" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glucosa en sangre"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blutzucker"
           }
         }
       }
@@ -2087,6 +2591,38 @@
         }
       }
     },
+    "Breakfast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desayuno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frühstück"
+          }
+        }
+      }
+    },
+    "Brisk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rápido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zügig"
+          }
+        }
+      }
+    },
     "Budget" : {
       "localizations" : {
         "es" : {
@@ -2163,6 +2699,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kalorien"
+          }
+        }
+      }
+    },
+    "Calories (kcal)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calorías (kcal)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kalorien (kcal)"
           }
         }
       }
@@ -2291,6 +2843,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kategorie"
+          }
+        }
+      }
+    },
+    "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisa primero bebidas, salsas y picoteo nocturno. Recortar unas 200 kcal al día te devuelve al plan."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prüf zuerst Getränke, Soßen und Snacks am Abend. Etwa 200 kcal weniger pro Tag bringen dich zurück auf Kurs."
+          }
+        }
+      }
+    },
+    "Chest" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pecho"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brust"
           }
         }
       }
@@ -2439,6 +3023,22 @@
         }
       }
     },
+    "Consistency beats precision. Aim for 5 logged days next week, using favourite meals for the usual ones." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La constancia importa más que la precisión. Intenta registrar 5 días la próxima semana, con comidas favoritas para lo habitual."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regelmäßigkeit schlägt Genauigkeit. Ziel: 5 erfasste Tage nächste Woche, mit Lieblingsmahlzeiten für das Übliche."
+          }
+        }
+      }
+    },
     "Continue" : {
       "localizations" : {
         "es" : {
@@ -2451,6 +3051,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weiter"
+          }
+        }
+      }
+    },
+    "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cocina una vez, come dos. Cocinar por tandas elimina la mayor tentación entre semana."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einmal kochen, zweimal essen. Vorkochen nimmt die größte Versuchung unter der Woche."
           }
         }
       }
@@ -2663,6 +3279,38 @@
         }
       }
     },
+    "Cycling, leisurely" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclismo, suave"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radfahren, gemütlich"
+          }
+        }
+      }
+    },
+    "Cycling, moderate" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ciclismo, moderado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radfahren, moderat"
+          }
+        }
+      }
+    },
     "Daily goal" : {
       "localizations" : {
         "es" : {
@@ -2707,6 +3355,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tagesziel"
+          }
+        }
+      }
+    },
+    "Dancing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baile"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tanzen"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oscuro"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dunkel"
           }
         }
       }
@@ -2787,6 +3467,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tag"
+          }
+        }
+      }
+    },
+    "Days logged" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días registrados"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasste Tage"
           }
         }
       }
@@ -2919,6 +3615,22 @@
         }
       }
     },
+    "Desk job, little or no exercise" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trabajo sentado, poco o ningún ejercicio"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bürojob, wenig oder kein Sport"
+          }
+        }
+      }
+    },
     "Details" : {
       "localizations" : {
         "es" : {
@@ -2999,6 +3711,22 @@
         }
       }
     },
+    "Dinner" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cena"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abendessen"
+          }
+        }
+      }
+    },
     "Done" : {
       "localizations" : {
         "es" : {
@@ -3027,6 +3755,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zum Neuordnen ziehen. Manche Karten blenden sich aus, wenn es nichts zu zeigen gibt, etwa Aktivität ohne Apple Health."
+          }
+        }
+      }
+    },
+    "Drink a glass of water before meals. Thirst is often mistaken for hunger." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bebe un vaso de agua antes de comer. A menudo se confunde la sed con el hambre."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trink vor dem Essen ein Glas Wasser. Durst wird oft mit Hunger verwechselt."
           }
         }
       }
@@ -3171,6 +3915,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wägung bearbeiten"
+          }
+        }
+      }
+    },
+    "Elevated" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elevada"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erhöht"
+          }
+        }
+      }
+    },
+    "Elliptical" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elíptica"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crosstrainer"
           }
         }
       }
@@ -3399,6 +4175,9 @@
         }
       }
     },
+    "Face ID" : {
+      "shouldTranslate" : false
+    },
     "Fast" : {
       "localizations" : {
         "es" : {
@@ -3427,6 +4206,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fastenfortschritt"
+          }
+        }
+      }
+    },
+    "Faster is not always better. Keep protein high and do not skip meals; a slightly higher target is fine." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más rápido no siempre es mejor. Mantén alta la proteína y no te saltes comidas; un objetivo algo más alto está bien."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schneller ist nicht immer besser. Halte das Eiweiß hoch und lass keine Mahlzeiten aus; ein etwas höheres Ziel ist in Ordnung."
           }
         }
       }
@@ -3543,6 +4338,22 @@
         }
       }
     },
+    "Female" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mujer"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiblich"
+          }
+        }
+      }
+    },
     "Fibre" : {
       "localizations" : {
         "es" : {
@@ -3555,6 +4366,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ballaststoffe"
+          }
+        }
+      }
+    },
+    "Fibre-rich vegetables add volume to meals for very few calories." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las verduras ricas en fibra dan volumen a las comidas con muy pocas calorías."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ballaststoffreiches Gemüse bringt Volumen in Mahlzeiten, bei sehr wenigen Kalorien."
           }
         }
       }
@@ -3703,6 +4530,38 @@
         }
       }
     },
+    "Foods" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alimentos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lebensmittel"
+          }
+        }
+      }
+    },
+    "Football" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fútbol"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fußball"
+          }
+        }
+      }
+    },
     "For %lld weeks" : {
       "localizations" : {
         "en" : {
@@ -3793,6 +4652,38 @@
         }
       }
     },
+    "Gardening" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jardinería"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gartenarbeit"
+          }
+        }
+      }
+    },
+    "Gentle" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suave"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sanft"
+          }
+        }
+      }
+    },
     "Glass" : {
       "localizations" : {
         "es" : {
@@ -3805,6 +4696,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Glas"
+          }
+        }
+      }
+    },
+    "Glucose" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glucosa"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blutzucker"
           }
         }
       }
@@ -3889,6 +4796,54 @@
         }
       }
     },
+    "Groceries" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compra"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einkauf"
+          }
+        }
+      }
+    },
+    "HIIT" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HIIT"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HIIT"
+          }
+        }
+      }
+    },
+    "HR (bpm)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FC (lpm)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puls (bpm)"
+          }
+        }
+      }
+    },
     "Half" : {
       "localizations" : {
         "es" : {
@@ -3901,6 +4856,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hälfte"
+          }
+        }
+      }
+    },
+    "Hard exercise 6–7 days a week" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejercicio intenso 6–7 días a la semana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intensiver Sport an 6–7 Tagen pro Woche"
           }
         }
       }
@@ -3985,6 +4956,70 @@
         }
       }
     },
+    "High (stage 1)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alta (grado 1)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoch (Grad 1)"
+          }
+        }
+      }
+    },
+    "High (stage 2)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alta (grado 2)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoch (Grad 2)"
+          }
+        }
+      }
+    },
+    "Hiking" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Senderismo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wandern"
+          }
+        }
+      }
+    },
+    "Hips" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cadera"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hüfte"
+          }
+        }
+      }
+    },
     "History" : {
       "localizations" : {
         "es" : {
@@ -4033,6 +5068,22 @@
         }
       }
     },
+    "Housework" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tareas domésticas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hausarbeit"
+          }
+        }
+      }
+    },
     "How fast?" : {
       "localizations" : {
         "es" : {
@@ -4077,6 +5128,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wie viel %@"
+          }
+        }
+      }
+    },
+    "Hypertensive crisis" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crisis hipertensiva"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hypertensive Krise"
+          }
+        }
+      }
+    },
+    "If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si llevas meses a dieta, un descanso de 1–2 semanas en mantenimiento puede facilitar la siguiente etapa."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn du seit Monaten Diät hältst, kann eine Pause von 1–2 Wochen auf Erhaltung die nächste Etappe leichter machen."
+          }
+        }
+      }
+    },
+    "Immediately" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inmediatamente"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sofort"
+          }
+        }
+      }
+    },
+    "Imperial (lb, ft/in)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imperial (lb, ft/in)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imperial (lb, ft/in)"
           }
         }
       }
@@ -4161,6 +5276,22 @@
         }
       }
     },
+    "Imported %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importado: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importiert: %@"
+          }
+        }
+      }
+    },
     "Inches" : {
       "localizations" : {
         "es" : {
@@ -4241,6 +5372,38 @@
         }
       }
     },
+    "Intake on budget" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingesta dentro del presupuesto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufnahme im Budget"
+          }
+        }
+      }
+    },
+    "Intake on budget, scale moving slowly" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingesta dentro del presupuesto, la báscula baja despacio"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufnahme im Budget, Waage bewegt sich langsam"
+          }
+        }
+      }
+    },
     "It will be saved, but won't count as completed in your weekly review." : {
       "localizations" : {
         "es" : {
@@ -4269,6 +5432,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hier erscheinen Zutaten, Zubereitung und Nährwerte."
+          }
+        }
+      }
+    },
+    "Keep doing what you are doing. Plan next week's dinners now while motivation is high." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sigue así. Planifica ahora las cenas de la próxima semana, mientras tienes la motivación alta."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mach weiter so. Plane die Abendessen der nächsten Woche jetzt, solange die Motivation hoch ist."
+          }
+        }
+      }
+    },
+    "Keep easy high-protein snacks around so hunger never catches you unprepared." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten a mano tentempiés fáciles y ricos en proteína para que el hambre no te pille desprevenido."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte einfache eiweißreiche Snacks bereit, damit dich der Hunger nie unvorbereitet trifft."
           }
         }
       }
@@ -4305,6 +5500,38 @@
         }
       }
     },
+    "Kilograms" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kilogramos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kilogramm"
+          }
+        }
+      }
+    },
+    "Kilojoules (kJ)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kilojulios (kJ)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kilojoule (kJ)"
+          }
+        }
+      }
+    },
     "Label gives values per 100 g" : {
       "localizations" : {
         "es" : {
@@ -4317,6 +5544,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Etikett nennt Werte pro 100 g"
+          }
+        }
+      }
+    },
+    "Large" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grande"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Groß"
           }
         }
       }
@@ -4397,6 +5640,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weniger"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claro"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hell"
+          }
+        }
+      }
+    },
+    "Light exercise 1–3 days a week" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejercicio ligero 1–3 días a la semana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leichter Sport an 1–3 Tagen pro Woche"
+          }
+        }
+      }
+    },
+    "Lightly active" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poco activo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leicht aktiv"
           }
         }
       }
@@ -4593,6 +5884,22 @@
         }
       }
     },
+    "Log at least one meal a day. Even rough entries show which days push you over." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra al menos una comida al día. Incluso entradas aproximadas muestran qué días te pasas."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasse mindestens eine Mahlzeit pro Tag. Schon grobe Einträge zeigen, welche Tage dich übers Ziel bringen."
+          }
+        }
+      }
+    },
     "Log at least two readings to see a trend." : {
       "localizations" : {
         "es" : {
@@ -4657,6 +5964,22 @@
         }
       }
     },
+    "Log food on most days for two more weeks so the adaptive target can measure your real maintenance." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra la comida casi todos los días durante dos semanas más para que el objetivo adaptativo mida tu mantenimiento real."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasse noch zwei Wochen an den meisten Tagen dein Essen, damit das adaptive Ziel deine echte Erhaltung messen kann."
+          }
+        }
+      }
+    },
     "Log now" : {
       "localizations" : {
         "es" : {
@@ -4685,6 +6008,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rezept erfassen"
+          }
+        }
+      }
+    },
+    "Log the slip-up meal too. Data, not guilt, is what moves the needle." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra también la comida del desliz. Los datos, no la culpa, son los que marcan la diferencia."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasse auch den Ausrutscher. Daten, nicht Schuldgefühle, bringen dich weiter."
           }
         }
       }
@@ -4769,6 +6108,22 @@
         }
       }
     },
+    "Log your %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra tu %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ erfassen"
+          }
+        }
+      }
+    },
     "Logged" : {
       "localizations" : {
         "es" : {
@@ -4801,6 +6156,22 @@
         }
       }
     },
+    "Logged intake looks incomplete" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La ingesta registrada parece incompleta"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die erfasste Aufnahme wirkt unvollständig"
+          }
+        }
+      }
+    },
     "Logged “%@” to %@" : {
       "localizations" : {
         "es" : {
@@ -4829,6 +6200,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erfasst. Heute sind es %@."
+          }
+        }
+      }
+    },
+    "Logging right after you eat keeps your calorie count honest." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar justo después de comer mantiene tu recuento de calorías fiel."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direkt nach dem Essen zu erfassen, hält deine Kalorienbilanz ehrlich."
+          }
+        }
+      }
+    },
+    "Logging streak" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Racha de registros"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfassungsserie"
           }
         }
       }
@@ -4893,6 +6296,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ abnehmen mit %@ pro Woche."
+          }
+        }
+      }
+    },
+    "Losing faster than planned (%@ kg)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pierdes más rápido de lo previsto (%@ kg)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schneller abgenommen als geplant (%@ kg)"
+          }
+        }
+      }
+    },
+    "Low" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baja"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niedrig"
+          }
+        }
+      }
+    },
+    "Lunch" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittagessen"
           }
         }
       }
@@ -4989,6 +6440,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erhaltungsmodus"
+          }
+        }
+      }
+    },
+    "Male" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hombre"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Männlich"
+          }
+        }
+      }
+    },
+    "Match system" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Según el sistema"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wie System"
           }
         }
       }
@@ -5137,6 +6620,22 @@
         }
       }
     },
+    "Medium" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mediana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittel"
+          }
+        }
+      }
+    },
     "Method" : {
       "localizations" : {
         "es" : {
@@ -5153,6 +6652,38 @@
         }
       }
     },
+    "Metric (kg, cm)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Métrico (kg, cm)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Metrisch (kg, cm)"
+          }
+        }
+      }
+    },
+    "Milestones and plateaus" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hitos y estancamientos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meilensteine und Plateaus"
+          }
+        }
+      }
+    },
     "Mode" : {
       "localizations" : {
         "es" : {
@@ -5165,6 +6696,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modus"
+          }
+        }
+      }
+    },
+    "Moderate exercise 3–5 days a week" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejercicio moderado 3–5 días a la semana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moderater Sport an 3–5 Tagen pro Woche"
+          }
+        }
+      }
+    },
+    "Moderately active" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moderadamente activo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mäßig aktiv"
           }
         }
       }
@@ -5441,6 +7004,38 @@
         }
       }
     },
+    "Normal" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
+    },
+    "Normal in weeks two to four. If it stays flat next week, trim 100 to 150 kcal or add a daily walk." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es normal entre la segunda y la cuarta semana. Si sigue igual la próxima semana, recorta 100–150 kcal o añade un paseo diario."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal in Woche zwei bis vier. Bleibt es nächste Woche gleich, spar 100 bis 150 kcal ein oder geh täglich spazieren."
+          }
+        }
+      }
+    },
     "Not enough body-fat readings" : {
       "localizations" : {
         "es" : {
@@ -5537,6 +7132,22 @@
         }
       }
     },
+    "Nothing logged in the last 7 days" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay nada registrado en los últimos 7 días"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In den letzten 7 Tagen nichts erfasst"
+          }
+        }
+      }
+    },
     "Nothing logged today." : {
       "localizations" : {
         "es" : {
@@ -5565,6 +7176,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Noch nichts erfasst"
+          }
+        }
+      }
+    },
+    "Nothing logged yet today" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy aún no hay nada registrado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute noch nichts erfasst"
+          }
+        }
+      }
+    },
+    "Nothing new to import" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada nuevo que importar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nichts Neues zu importieren"
           }
         }
       }
@@ -5713,6 +7356,22 @@
         }
       }
     },
+    "On track: down %@ kg this week" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vas bien: %@ kg menos esta semana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf Kurs: diese Woche %@ kg weniger"
+          }
+        }
+      }
+    },
     "Once you reach your goal, switch to maintenance to hold your weight within a band instead of counting down." : {
       "localizations" : {
         "es" : {
@@ -5725,6 +7384,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hast du dein Ziel erreicht, wechsle zur Erhaltung, um dein Gewicht in einer Spanne zu halten, statt weiter herunterzuzählen."
+          }
+        }
+      }
+    },
+    "Only %lld of 7 days logged" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo %lld de 7 días registrados"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur %lld von 7 Tagen erfasst"
           }
         }
       }
@@ -5776,6 +7451,9 @@
           }
         }
       }
+    },
+    "Optic ID" : {
+      "shouldTranslate" : false
     },
     "Or enter it by hand" : {
       "localizations" : {
@@ -5837,6 +7515,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "E%lld K%lld F%lld"
+          }
+        }
+      }
+    },
+    "Passcode" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Código"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code"
           }
         }
       }
@@ -5921,6 +7615,22 @@
         }
       }
     },
+    "Pilates" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilates"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pilates"
+          }
+        }
+      }
+    },
     "Plan" : {
       "localizations" : {
         "es" : {
@@ -5949,6 +7659,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ planen"
+          }
+        }
+      }
+    },
+    "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planifica esta noche las comidas de mañana. Las decisiones con hambre rara vez son buenas."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plane die Mahlzeiten für morgen schon heute Abend. Hungrige Entscheidungen sind selten gute."
+          }
+        }
+      }
+    },
+    "Planner" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planificador"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planer"
           }
         }
       }
@@ -5997,6 +7739,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Portion"
+          }
+        }
+      }
+    },
+    "Pounds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pfund"
           }
         }
       }
@@ -6109,6 +7867,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eiweiß"
+          }
+        }
+      }
+    },
+    "Protein keeps you full longer. Aim to include a palm-sized portion in every meal." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La proteína sacia más tiempo. Intenta incluir una porción del tamaño de tu palma en cada comida."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eiweiß hält länger satt. Versuch, in jede Mahlzeit eine handtellergroße Portion einzubauen."
+          }
+        }
+      }
+    },
+    "Quick actions" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acciones rápidas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnellaktionen"
           }
         }
       }
@@ -6513,6 +8303,22 @@
         }
       }
     },
+    "Rowing machine" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rudergerät"
+          }
+        }
+      }
+    },
     "Rows skipped" : {
       "localizations" : {
         "es" : {
@@ -6525,6 +8331,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Übersprungene Zeilen"
+          }
+        }
+      }
+    },
+    "Running, easy" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrera, suave"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laufen, locker"
+          }
+        }
+      }
+    },
+    "Running, fast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrera, rápida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laufen, schnell"
           }
         }
       }
@@ -6811,6 +8649,22 @@
         }
       }
     },
+    "Sedentary" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sedentario"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sitzend"
+          }
+        }
+      }
+    },
     "Self-recorded at home with the Stride app. Not a medical record; readings are as entered by the patient." : {
       "localizations" : {
         "es" : {
@@ -7003,6 +8857,22 @@
         }
       }
     },
+    "Sleep under 7 hours raises hunger hormones. Rest is part of the plan." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormir menos de 7 horas aumenta las hormonas del hambre. Descansar es parte del plan."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weniger als 7 Stunden Schlaf erhöhen die Hungerhormone. Ruhe gehört zum Plan."
+          }
+        }
+      }
+    },
     "Sleep, sodium and patterns" : {
       "localizations" : {
         "es" : {
@@ -7035,6 +8905,38 @@
         }
       }
     },
+    "Small" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pequeña"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klein"
+          }
+        }
+      }
+    },
+    "Snacks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tentempiés"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snacks"
+          }
+        }
+      }
+    },
     "Source" : {
       "localizations" : {
         "es" : {
@@ -7047,6 +8949,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quelle"
+          }
+        }
+      }
+    },
+    "Stair climbing" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subir escaleras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Treppensteigen"
           }
         }
       }
@@ -7115,6 +9033,22 @@
         }
       }
     },
+    "Start with one meal a day. Favourite meals and copy-yesterday make it a two-tap habit." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empieza con una comida al día. Las comidas favoritas y copiar de ayer lo convierten en un hábito de dos toques."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fang mit einer Mahlzeit pro Tag an. Lieblingsmahlzeiten und „Von gestern kopieren“ machen daraus eine Zwei-Tipp-Gewohnheit."
+          }
+        }
+      }
+    },
     "Started %@" : {
       "localizations" : {
         "es" : {
@@ -7143,6 +9077,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Startgewicht"
+          }
+        }
+      }
+    },
+    "Steady" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Constante"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stetig"
+          }
+        }
+      }
+    },
+    "Stones and pounds" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stones y libras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stone und Pfund"
+          }
+        }
+      }
+    },
+    "Strength training" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrenamiento de fuerza"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Krafttraining"
           }
         }
       }
@@ -7178,6 +9160,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Vorgeschlagenes Ziel"
+          }
+        }
+      }
+    },
+    "Swimming" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Natación"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schwimmen"
           }
         }
       }
@@ -7358,6 +9356,22 @@
         }
       }
     },
+    "Tennis" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tenis"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tennis"
+          }
+        }
+      }
+    },
     "The formula is a starting guess. Measured maintenance uses what you actually ate and what the scale actually did." : {
       "localizations" : {
         "es" : {
@@ -7454,6 +9468,38 @@
         }
       }
     },
+    "Time for a glass of water" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hora de un vaso de agua"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeit für ein Glas Wasser"
+          }
+        }
+      }
+    },
+    "Tip of the day" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consejo del día"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipp des Tages"
+          }
+        }
+      }
+    },
     "Tips will show next time you open the app" : {
       "localizations" : {
         "es" : {
@@ -7501,6 +9547,25 @@
           }
         }
       }
+    },
+    "Tomorrow" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mañana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morgen"
+          }
+        }
+      }
+    },
+    "Touch ID" : {
+      "shouldTranslate" : false
     },
     "Touch and hold for quick actions" : {
       "localizations" : {
@@ -7710,6 +9775,38 @@
         }
       }
     },
+    "Very active" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muy activo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr aktiv"
+          }
+        }
+      }
+    },
+    "Very hard exercise or a physical job" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ejercicio muy intenso o trabajo físico"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sehr intensiver Sport oder körperliche Arbeit"
+          }
+        }
+      }
+    },
     "Vitals" : {
       "localizations" : {
         "es" : {
@@ -7758,6 +9855,54 @@
         }
       }
     },
+    "Walking after meals helps blunt blood sugar spikes and adds up over a week." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caminar después de comer ayuda a suavizar los picos de glucosa y suma a lo largo de la semana."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gehen nach dem Essen dämpft Blutzuckerspitzen und summiert sich über die Woche."
+          }
+        }
+      }
+    },
+    "Walking, brisk" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caminar, rápido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gehen, zügig"
+          }
+        }
+      }
+    },
+    "Walking, moderate" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caminar, moderado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gehen, moderat"
+          }
+        }
+      }
+    },
     "Water" : {
       "localizations" : {
         "es" : {
@@ -7770,6 +9915,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wasser"
+          }
+        }
+      }
+    },
+    "Water and salt swing the scale by a kilo or two. Judge by the trend line and give it another week." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El agua y la sal mueven la báscula uno o dos kilos. Fíjate en la línea de tendencia y date otra semana."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wasser und Salz lassen die Waage um ein, zwei Kilo schwanken. Achte auf die Trendlinie und gib ihr noch eine Woche."
           }
         }
       }
@@ -7802,6 +9963,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Trinkerinnerungen enden für den Tag, sobald du dein Ziel erreichst, und Mahlzeit-Erinnerungen überspringen bereits erfasste Mahlzeiten."
+          }
+        }
+      }
+    },
+    "Water retention from stress, sleep or new training can hide fat loss for a week or two." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La retención de líquidos por estrés, sueño o un entrenamiento nuevo puede ocultar la pérdida de grasa una o dos semanas."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wassereinlagerungen durch Stress, Schlaf oder neues Training können Fettverlust ein, zwei Wochen verdecken."
           }
         }
       }
@@ -7870,6 +10047,54 @@
         }
       }
     },
+    "Weigh in a few mornings a week so next week's review can compare the scale with your intake." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pésate algunas mañanas a la semana para que el próximo resumen compare la báscula con tu ingesta."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wieg dich an ein paar Morgen pro Woche, damit der nächste Rückblick Waage und Aufnahme vergleichen kann."
+          }
+        }
+      }
+    },
+    "Weigh portions for a week. Oils, sauces and drinks are the usual under-counts." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pesa las raciones durante una semana. Aceites, salsas y bebidas son lo que más se suele infravalorar."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wieg eine Woche lang die Portionen. Öle, Soßen und Getränke werden am häufigsten unterschätzt."
+          }
+        }
+      }
+    },
+    "Weigh yourself at the same time each morning; the trend line matters more than any single day." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pésate cada mañana a la misma hora; la línea de tendencia importa más que cualquier día suelto."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wieg dich jeden Morgen zur gleichen Zeit; die Trendlinie zählt mehr als ein einzelner Tag."
+          }
+        }
+      }
+    },
     "Weigh-ins" : {
       "localizations" : {
         "es" : {
@@ -7914,6 +10139,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Übersicht Gewicht und Vitalwerte"
+          }
+        }
+      }
+    },
+    "Weight change" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cambio de peso"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewichtsveränderung"
+          }
+        }
+      }
+    },
+    "Weight down %@ kg, no meals logged" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peso %@ kg menos, sin comidas registradas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewicht %@ kg weniger, keine Mahlzeiten erfasst"
+          }
+        }
+      }
+    },
+    "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El peso varía 1–2 kg de un día a otro solo por el agua. Valora tu progreso por la media semanal."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Gewicht schwankt allein durch Wasser um 1–2 kg von Tag zu Tag. Beurteile deinen Fortschritt am Wochenschnitt."
           }
         }
       }
@@ -8020,6 +10293,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zu haltendes Gewicht"
+          }
+        }
+      }
+    },
+    "Weight up %@ kg with intake on budget" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peso %@ kg más con la ingesta dentro del presupuesto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewicht %@ kg mehr bei Aufnahme im Budget"
+          }
+        }
+      }
+    },
+    "Weight up %@ kg, no meals logged" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peso %@ kg más, sin comidas registradas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewicht %@ kg mehr, keine Mahlzeiten erfasst"
           }
         }
       }
@@ -8132,6 +10437,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gestern"
+          }
+        }
+      }
+    },
+    "Yoga" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yoga"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yoga"
           }
         }
       }
@@ -8386,6 +10707,22 @@
         }
       }
     },
+    "Your measured maintenance is about %@. A target of %@ matches your planned rate; you can apply it in Settings." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu mantenimiento medido es de unas %@. Un objetivo de %@ se ajusta al ritmo previsto; puedes aplicarlo en Ajustes."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine gemessene Erhaltung liegt bei etwa %@. Ein Ziel von %@ passt zu deinem geplanten Tempo; du kannst es in den Einstellungen übernehmen."
+          }
+        }
+      }
+    },
     "Your plan" : {
       "localizations" : {
         "es" : {
@@ -8434,6 +10771,38 @@
         }
       }
     },
+    "Your target already sits below your measured maintenance of about %@, so the gap is more likely in logging than in the plan." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu objetivo ya está por debajo de tu mantenimiento medido de unas %@, así que la diferencia está más bien en el registro que en el plan."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Ziel liegt schon unter deiner gemessenen Erhaltung von etwa %@, die Lücke liegt also eher beim Erfassen als beim Plan."
+          }
+        }
+      }
+    },
+    "breakfast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "desayuno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frühstück"
+          }
+        }
+      }
+    },
     "calories per day" : {
       "localizations" : {
         "es" : {
@@ -8453,6 +10822,22 @@
     "cm" : {
       "shouldTranslate" : false
     },
+    "dinner" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "cena"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abendessen"
+          }
+        }
+      }
+    },
     "for %lld" : {
       "localizations" : {
         "es" : {
@@ -8469,11 +10854,43 @@
         }
       }
     },
+    "height %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "altura %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Größe %@"
+          }
+        }
+      }
+    },
     "https://" : {
       "shouldTranslate" : false
     },
     "iCloud" : {
       "shouldTranslate" : false
+    },
+    "large" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "grande"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "groß"
+          }
+        }
+      }
     },
     "left" : {
       "localizations" : {
@@ -8487,6 +10904,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "übrig"
+          }
+        }
+      }
+    },
+    "lunch" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "comida"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mittagessen"
+          }
+        }
+      }
+    },
+    "medium" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mediana"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "mittel"
           }
         }
       }
@@ -8535,6 +10984,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "zu viel"
+          }
+        }
+      }
+    },
+    "small" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pequeña"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "klein"
+          }
+        }
+      }
+    },
+    "snacks" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "tentempiés"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snacks"
           }
         }
       }

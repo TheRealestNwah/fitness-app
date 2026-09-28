@@ -308,17 +308,17 @@ enum SeedData {
     }
 
     static let tips: [String] = [
-        "Weigh yourself at the same time each morning; the trend line matters more than any single day.",
-        "Protein keeps you full longer. Aim to include a palm-sized portion in every meal.",
-        "Drink a glass of water before meals. Thirst is often mistaken for hunger.",
-        "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones.",
-        "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week.",
-        "Fibre-rich vegetables add volume to meals for very few calories.",
-        "Sleep under 7 hours raises hunger hormones. Rest is part of the plan.",
-        "Log the slip-up meal too. Data, not guilt, is what moves the needle.",
-        "Walking after meals helps blunt blood sugar spikes and adds up over a week.",
-        "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average.",
-        "Keep easy high-protein snacks around so hunger never catches you unprepared.",
-        "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation.",
+        String(localized: "Weigh yourself at the same time each morning; the trend line matters more than any single day."),
+        String(localized: "Protein keeps you full longer. Aim to include a palm-sized portion in every meal."),
+        String(localized: "Drink a glass of water before meals. Thirst is often mistaken for hunger."),
+        String(localized: "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones."),
+        String(localized: "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week."),
+        String(localized: "Fibre-rich vegetables add volume to meals for very few calories."),
+        String(localized: "Sleep under 7 hours raises hunger hormones. Rest is part of the plan."),
+        String(localized: "Log the slip-up meal too. Data, not guilt, is what moves the needle."),
+        String(localized: "Walking after meals helps blunt blood sugar spikes and adds up over a week."),
+        String(localized: "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average."),
+        String(localized: "Keep easy high-protein snacks around so hunger never catches you unprepared."),
+        String(localized: "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation."),
     ]
 }

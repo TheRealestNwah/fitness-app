@@ -301,7 +301,7 @@ struct DayDiaryView: View {
                     } description: {
                         Text("Log what you eat to see calories and macros against your target.")
                     } actions: {
-                        Button("Log \(meal.label.lowercased())") { addingTo = meal }
+                        Button("Log \(meal.inSentence)") { addingTo = meal }
                             .buttonStyle(.borderedProminent)
                     }
                 }
@@ -345,7 +345,7 @@ struct DayDiaryView: View {
                                 .font(.subheadline)
                         }
                         .buttonStyle(.borderless)
-                        .accessibilityLabel("Log \(meal.label.lowercased()) from a photo")
+                        .accessibilityLabel("Log \(meal.inSentence) from a photo")
                     }
                     let fromYesterday = yesterday(for: meal)
                     if items.isEmpty, !fromYesterday.isEmpty {
@@ -355,7 +355,7 @@ struct DayDiaryView: View {
                         } label: {
                             Label {
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Copy yesterday's \(meal.label.lowercased())")
+                                    Text("Copy yesterday's \(meal.inSentence)")
                                         .font(.subheadline.weight(.medium))
                                     Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
                                         .font(.caption)
@@ -391,7 +391,7 @@ struct DayDiaryView: View {
                                 Button(role: .destructive) {
                                     clear(meal)
                                 } label: {
-                                    Label("Clear \(meal.label.lowercased())", systemImage: "trash")
+                                    Label("Clear \(meal.inSentence)", systemImage: "trash")
                                 }
                             }
                         } label: {

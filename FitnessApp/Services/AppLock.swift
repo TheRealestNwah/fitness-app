@@ -15,9 +15,9 @@ enum AppLock {
         var id: Int { rawValue }
         var label: String {
             switch self {
-            case .immediately: "Immediately"
-            case .oneMinute: "After 1 minute"
-            case .fiveMinutes: "After 5 minutes"
+            case .immediately: String(localized: "Immediately")
+            case .oneMinute: String(localized: "After 1 minute")
+            case .fiveMinutes: String(localized: "After 5 minutes")
             }
         }
     }
@@ -34,10 +34,10 @@ enum AppLock {
         let context = LAContext()
         _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         switch context.biometryType {
-        case .faceID: return "Face ID"
-        case .touchID: return "Touch ID"
-        case .opticID: return "Optic ID"
-        default: return "Passcode"
+        case .faceID: return String(localized: "Face ID")
+        case .touchID: return String(localized: "Touch ID")
+        case .opticID: return String(localized: "Optic ID")
+        default: return String(localized: "Passcode")
         }
     }
 

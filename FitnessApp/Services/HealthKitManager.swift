@@ -49,11 +49,12 @@ struct HealthImportSummary: Equatable {
 
     var description: String {
         var parts: [String] = []
-        if weighIns > 0 { parts.append("\(weighIns) weigh-in\(weighIns == 1 ? "" : "s")") }
-        if restingHeartRateDays > 0 { parts.append("\(restingHeartRateDays) resting heart rate\(restingHeartRateDays == 1 ? "" : "s")") }
-        if sleepNights > 0 { parts.append("\(sleepNights) night\(sleepNights == 1 ? "" : "s") of sleep") }
-        if workouts > 0 { parts.append("\(workouts) workout\(workouts == 1 ? "" : "s")") }
-        return parts.isEmpty ? "Nothing new to import" : "Imported " + parts.joined(separator: ", ")
+        if weighIns > 0 { parts.append(String(localized: "\(weighIns) weigh-ins")) }
+        if restingHeartRateDays > 0 { parts.append(String(localized: "\(restingHeartRateDays) resting heart rates")) }
+        if sleepNights > 0 { parts.append(String(localized: "\(sleepNights) nights of sleep")) }
+        if workouts > 0 { parts.append(String(localized: "\(workouts) workouts")) }
+        return parts.isEmpty ? String(localized: "Nothing new to import")
+                             : String(localized: "Imported \(parts.joined(separator: ", "))")
     }
 }
 
