@@ -353,7 +353,7 @@ struct LogFoodSheet: View {
                                  fiber: food.fiber * servings,
                                  sugar: food.sugar * servings,
                                  sodium: food.sodium * servings)
-        context.insert(entry)
+        context.insertDiaryEntry(entry)
         food.lastUsed = .now
         food.useCount += 1
         try? context.save()

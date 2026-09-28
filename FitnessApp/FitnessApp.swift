@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct FitnessApp: App {
+    @UIApplicationDelegateAdaptor(StrideAppDelegate.self) private var appDelegate
     let container: ModelContainer
 
     init() {

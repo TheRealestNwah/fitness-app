@@ -57,16 +57,20 @@ struct AppLockGate: ViewModifier {
     @State private var locked = UserDefaults.standard.bool(forKey: AppLock.enabledKey)
     @State private var backgroundedAt: Date?
     @State private var authenticating = false
+    @State private var scene: UIWindowScene?
+    @State private var cover = LockWindow()
+
+    /// Shown while locked, and as a privacy blur whenever the app isn't active.
+    private var showsCover: Bool { enabled && (locked || scenePhase != .active) }
 
     func body(content: Content) -> some View {
         content
-            .overlay {
-                if enabled && (locked || scenePhase != .active) {
-                    LockCover(locked: locked, unlock: unlock)
-                        .transition(.opacity)
-                }
-            }
-            .animation(.easeOut(duration: 0.2), value: locked)
+            .environment(\.isAppLocked, enabled && locked)
+            // The cover lives in its own window above the app, so it also hides open sheets.
+            .background(WindowSceneReader { scene = $0 })
+            .onChange(of: showsCover, initial: true) { updateCover() }
+            .onChange(of: locked) { updateCover() }
+            .onChange(of: scene) { updateCover() }
             .onChange(of: scenePhase) { _, phase in
                 switch phase {
                 case .background:
@@ -85,6 +89,14 @@ struct AppLockGate: ViewModifier {
                 if !on { locked = false }
             }
             .task { if locked { unlock() } }
+    }
+
+    private func updateCover() {
+        if showsCover, let scene {
+            cover.show(LockCover(locked: locked, unlock: unlock), in: scene)
+        } else {
+            cover.hide()
+        }
     }
 
     private func unlock() {
@@ -122,8 +134,78 @@ private struct LockCover: View {
     }
 }
 
+/// A window above everything else in the scene, sheets included, that holds the lock cover.
+@MainActor
+private final class LockWindow {
+    private var window: UIWindow?
+
+    func show(_ cover: LockCover, in scene: UIWindowScene) {
+        if let window, window.windowScene === scene,
+           let host = window.rootViewController as? UIHostingController<LockCover> {
+            host.rootView = cover
+            return
+        }
+        let host = UIHostingController(rootView: cover)
+        host.view.backgroundColor = .clear
+        let window = UIWindow(windowScene: scene)
+        window.windowLevel = .alert + 1
+        window.backgroundColor = .clear
+        window.rootViewController = host
+        window.isHidden = false
+        self.window = window
+    }
+
+    func hide() {
+        guard let window else { return }
+        self.window = nil
+        UIView.animate(withDuration: 0.2) {
+            window.alpha = 0
+        } completion: { _ in
+            window.isHidden = true
+        }
+    }
+}
+
+/// Reports the window scene a view is shown in.
+private struct WindowSceneReader: UIViewRepresentable {
+    var onChange: (UIWindowScene?) -> Void
+
+    func makeUIView(context: Context) -> ReaderView {
+        let view = ReaderView()
+        view.onChange = onChange
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ view: ReaderView, context: Context) {
+        view.onChange = onChange
+    }
+
+    final class ReaderView: UIView {
+        var onChange: ((UIWindowScene?) -> Void)?
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            let scene = window?.windowScene
+            DispatchQueue.main.async { [weak self] in self?.onChange?(scene) }
+        }
+    }
+}
+
 extension View {
     func appLockGate() -> some View { modifier(AppLockGate()) }
+}
+
+private struct AppLockedKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    /// True while the lock cover is waiting for Face ID, so nothing new opens behind it.
+    var isAppLocked: Bool {
+        get { self[AppLockedKey.self] }
+        set { self[AppLockedKey.self] = newValue }
+    }
 }
 
 /// Settings rows for the lock.

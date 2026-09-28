@@ -3,6 +3,8 @@ import SwiftData
 
 struct DashboardView: View {
     var selectTab: (MainTabView.Tab) -> Void
+    /// Opens Settings in the sidebar layout; nil means present it as a sheet.
+    var openSettings: (() -> Void)?
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
@@ -27,8 +29,9 @@ struct DashboardView: View {
     @State private var showLayoutEditor = false
     @AppStorage(TodayLayoutEditor.storageKey) private var layoutStorage = ""
 
-    init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void) {
+    init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void, openSettings: (() -> Void)? = nil) {
         self.selectTab = selectTab
+        self.openSettings = openSettings
         let start = Calendar.current.startOfDay(for: day)
         let end = start.adding(days: 1)
         let sixtyDaysAgo = start.adding(days: -60)
@@ -137,7 +140,9 @@ struct DashboardView: View {
             .navigationTitle("Today")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { showSettings = true } label: {
+                    Button {
+                        if let openSettings { openSettings() } else { showSettings = true }
+                    } label: {
                         Image(systemName: "gearshape")
                     }
                 }

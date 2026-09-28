@@ -12,6 +12,14 @@ struct CardBackground: ViewModifier {
 
 extension View {
     func card() -> some View { modifier(CardBackground()) }
+
+    /// Caps grouped forms at a readable width so rows don't stretch across a landscape iPad.
+    /// No effect on iPhone, where the screen is narrower than the cap.
+    func readableWidth(_ maxWidth: CGFloat = 700) -> some View {
+        frame(maxWidth: maxWidth)
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemGroupedBackground))
+    }
 }
 
 // MARK: - Progress ring
