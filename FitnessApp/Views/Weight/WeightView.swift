@@ -198,7 +198,9 @@ struct WeightView: View {
                     Image(systemName: losing ? "arrow.down.right.circle.fill" : "arrow.up.right.circle.fill")
                         .foregroundStyle(losing ? .green : .orange)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Averaging \(units.weightString(kg: abs(rate), decimals: 2)) per week \(losing ? "lost" : "gained") over the last 4 weeks.")
+                        let amount = units.weightString(kg: abs(rate), decimals: 2)
+                        Text(losing ? "Averaging \(amount) lost per week over the last 4 weeks."
+                                    : "Averaging \(amount) gained per week over the last 4 weeks.")
                         Text("Your plan aims for \(units.weightString(kg: profile.weeklyLossKg, decimals: 2)) per week.")
                             .foregroundStyle(Color.secondary)
                     }
@@ -360,7 +362,8 @@ struct AddWeightSheet: View {
                             }
                             .buttonStyle(.bordered)
                             .frame(maxWidth: .infinity)
-                            .accessibilityLabel("\(delta > 0 ? "Increase" : "Decrease") by \(abs(delta).cleanString) \(units.weightUnit)")
+                            .accessibilityLabel(delta > 0 ? "Increase by \(abs(delta).cleanString) \(units.weightUnit)"
+                                                           : "Decrease by \(abs(delta).cleanString) \(units.weightUnit)")
                         }
                     }
                     .font(.body.monospacedDigit())
