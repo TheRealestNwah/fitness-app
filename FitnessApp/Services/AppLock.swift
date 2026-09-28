@@ -60,6 +60,7 @@ struct AppLockGate: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            .environment(\.isAppLocked, enabled && locked)
             .overlay {
                 if enabled && (locked || scenePhase != .active) {
                     LockCover(locked: locked, unlock: unlock)
@@ -124,6 +125,18 @@ private struct LockCover: View {
 
 extension View {
     func appLockGate() -> some View { modifier(AppLockGate()) }
+}
+
+private struct AppLockedKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    /// True while the lock cover is waiting for Face ID, so nothing new opens behind it.
+    var isAppLocked: Bool {
+        get { self[AppLockedKey.self] }
+        set { self[AppLockedKey.self] = newValue }
+    }
 }
 
 /// Settings rows for the lock.
