@@ -48,4 +48,11 @@ final class GroceryAggregatorTests: XCTestCase {
         XCTAssertEqual(GroceryAggregator.display(Q(value: 1.5, unit: "cup")), "1.5 cups")
         XCTAssertEqual(GroceryAggregator.display(Q(value: 2, unit: "tbsp")), "2 tbsp")
     }
+
+    func testKeepsUnitsItDoesNotKnowAsWritten() {
+        XCTAssertEqual(GroceryAggregator.display(Q(value: 4, unit: "Zehen")), "4 Zehen")
+        XCTAssertEqual(GroceryAggregator.display(Q(value: 2, unit: "diente")), "2 diente")
+        XCTAssertEqual(GroceryAggregator.display(Q(value: 3, unit: "tbsp")), "3 tbsp")
+        XCTAssertEqual(GroceryAggregator.display(Q(value: 2, unit: "clove")), "2 cloves")
+    }
 }
