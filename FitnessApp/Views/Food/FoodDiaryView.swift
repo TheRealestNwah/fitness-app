@@ -201,6 +201,7 @@ struct DayDiaryView: View {
     let date: Date
 
     @Environment(UserProfile.self) private var profile
+    @AppStorage(ExtraNutrients.storageKey) private var showExtraNutrients = false
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
@@ -273,7 +274,7 @@ struct DayDiaryView: View {
             context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
                                         servingDescription: e.servingDescription, calories: e.calories,
                                         protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
-                                        fiber: e.fiber, sugar: e.sugar, sodium: e.sodium))
+                                        fiber: e.fiber, sugar: e.sugar, sodium: e.sodium).withExtras(from: e))
         }
         try? context.save()
     }
@@ -458,6 +459,12 @@ struct DayDiaryView: View {
                         sugar: entries.reduce(0) { $0 + $1.sugar },
                         sodium: entries.reduce(0) { $0 + $1.sodium },
                         profile: profile)
+            if showExtraNutrients {
+                ExtraNutrientRow(saturatedFat: entries.reduce(0) { $0 + $1.saturatedFat },
+                                 potassium: entries.reduce(0) { $0 + $1.potassium },
+                                 cholesterol: entries.reduce(0) { $0 + $1.cholesterol },
+                                 profile: profile)
+            }
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Energy.string(remaining)) remaining" : "\(Energy.string((-remaining))) over budget")
                 .font(.subheadline.weight(.medium))
@@ -511,6 +518,9 @@ struct EditLogEntrySheet: View {
                         entry.fiber *= ratio
                         entry.sugar *= ratio
                         entry.sodium *= ratio
+                        entry.saturatedFat *= ratio
+                        entry.potassium *= ratio
+                        entry.cholesterol *= ratio
                         entry.servings = servings
                         entry.calories = p.kcal * servings
                         entry.protein = p.p * servings

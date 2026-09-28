@@ -479,6 +479,10 @@ struct CreateFoodSheet: View {
     @State private var fiber: Double?
     @State private var sugar: Double?
     @State private var sodium: Double?
+    @State private var saturatedFat: Double?
+    @State private var potassium: Double?
+    @State private var cholesterol: Double?
+    @AppStorage(ExtraNutrients.storageKey) private var showExtras = false
     @State private var per100g = false
     @State private var servingGrams: Double?
     @State private var showCamera = false
@@ -541,6 +545,11 @@ struct CreateFoodSheet: View {
                     DecimalField(title: "Fibre", value: $fiber, unit: "g")
                     DecimalField(title: "Sugar", value: $sugar, unit: "g")
                     DecimalField(title: "Sodium", value: $sodium, unit: "mg")
+                    if showExtras {
+                        DecimalField(title: "Saturated fat", value: $saturatedFat, unit: "g")
+                        DecimalField(title: "Potassium", value: $potassium, unit: "mg")
+                        DecimalField(title: "Cholesterol", value: $cholesterol, unit: "mg")
+                    }
                 }
             }
             .navigationTitle("New food")
@@ -575,6 +584,9 @@ struct CreateFoodSheet: View {
                                             sugar: n(sugar), sodium: n(sodium),
                                             isCustom: true)
                         item.barcode = barcode
+                        item.saturatedFat = n(saturatedFat)
+                        item.potassium = n(potassium)
+                        item.cholesterol = n(cholesterol)
                         let label = measureName.trimmingCharacters(in: .whitespaces)
                         if !label.isEmpty, let amount = measureServings, amount > 0 {
                             item.servingPresets = [ServingPreset(label: label, servings: amount)]
@@ -614,6 +626,9 @@ struct CreateFoodSheet: View {
             fiber = label.fiber ?? fiber
             sugar = label.sugar ?? sugar
             sodium = label.sodiumMg ?? sodium
+            saturatedFat = label.saturatedFat ?? saturatedFat
+            potassium = label.potassiumMg ?? potassium
+            cholesterol = label.cholesterolMg ?? cholesterol
             scanNote = "Filled from the label. Check the numbers before saving."
         }
     }

@@ -33,6 +33,10 @@ final class UserProfile {
     var fiberTargetG: Double?
     var sugarLimitG: Double?
     var sodiumLimitMg: Double?
+    /// Goals for the extra nutrients, shown when turned on in Settings.
+    var saturatedFatLimitG: Double?
+    var potassiumTargetMg: Double?
+    var cholesterolLimitMg: Double?
     var startDate: Date = Date()
     var weighInReminderEnabled: Bool = false
     var weighInReminderHour: Int = 7

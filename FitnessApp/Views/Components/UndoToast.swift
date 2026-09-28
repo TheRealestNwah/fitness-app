@@ -77,6 +77,7 @@ extension FoodLogEntry {
                                 servingDescription: servingDescription, calories: calories,
                                 protein: protein, carbs: carbs, fat: fat, foodItemID: foodItemID,
                                 fiber: fiber, sugar: sugar, sodium: sodium)
+            .withExtras(from: self)
         copy.uuid = uuid
         copy.photo = photo
         copy.isEstimate = isEstimate

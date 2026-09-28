@@ -22,6 +22,11 @@ final class FoodItem {
     var sugar: Double = 0
     /// Milligrams.
     var sodium: Double = 0
+    var saturatedFat: Double = 0
+    /// Milligrams.
+    var potassium: Double = 0
+    /// Milligrams.
+    var cholesterol: Double = 0
     var isFavorite: Bool = false
     var isCustom: Bool = false
     var lastUsed: Date?
@@ -82,6 +87,7 @@ extension FoodItem {
                                  fiber: fiber * servings,
                                  sugar: sugar * servings,
                                  sodium: sodium * servings)
+        entry.withExtras(from: self, servings: servings)
         context.insertDiaryEntry(entry)
         lastUsed = .now
         useCount += 1

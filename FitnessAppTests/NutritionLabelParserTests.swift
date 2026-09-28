@@ -20,6 +20,15 @@ final class NutritionLabelParserTests: XCTestCase {
         XCTAssertEqual(label.fiber, 4)
         XCTAssertEqual(label.sugar, 12)
         XCTAssertEqual(label.protein, 3)
+        XCTAssertEqual(label.saturatedFat, 1)
+        XCTAssertEqual(label.cholesterolMg, 0)
+        XCTAssertNil(label.potassiumMg)
+    }
+
+    func testPotassiumAndCholesterolInMilligrams() {
+        let label = NutritionLabelParser.parse(["Calories 150", "Cholesterol 35mg 12%", "Potassium 470mg 10%"])
+        XCTAssertEqual(label.cholesterolMg, 35)
+        XCTAssertEqual(label.potassiumMg, 470)
     }
 
     func testCaloriesOnTheNextLine() {
@@ -36,6 +45,7 @@ final class NutritionLabelParserTests: XCTestCase {
         XCTAssertTrue(label.per100g)
         XCTAssertEqual(label.servingGrams, 30)
         XCTAssertEqual(label.calories, 378)
+        XCTAssertEqual(label.saturatedFat, 1.2)
         XCTAssertEqual(label.fat, 7.6)
         XCTAssertEqual(label.carbs, 60)
         XCTAssertEqual(label.sugar, 11)
