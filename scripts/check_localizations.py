@@ -23,7 +23,9 @@ def extracted_keys(build_dir, targets):
     keys = {}
     paths = []
     for target in targets:
-        paths += glob.glob(os.path.join(build_dir, "**", target, "**", "*.stringsdata"), recursive=True)
+        # <project>.build/<Configuration>-<platform>/<target>.build/...; the project folder shares the
+        # app target's name, so match the target inside a configuration folder.
+        paths += glob.glob(os.path.join(build_dir, "**", "*-*", target, "**", "*.stringsdata"), recursive=True)
     for path in paths:
         if "Tests" in path:
             continue

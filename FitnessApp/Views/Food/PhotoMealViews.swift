@@ -82,7 +82,7 @@ struct PhotoMealSheet: View {
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let entry = FoodLogEntry(date: mealType.logDate(on: date), mealType: mealType,
                                  foodName: trimmed.isEmpty ? "Photo meal" : trimmed, servings: 1,
-                                 servingDescription: "\(portion.inSentence) portion, estimated",
+                                 servingDescription: String(localized: "\(portion.inSentence) portion, estimated"),
                                  calories: calories ?? Double(estimate), protein: 0, carbs: 0, fat: 0)
         entry.photo = photo
         entry.isEstimate = true
