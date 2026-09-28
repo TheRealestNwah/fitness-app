@@ -195,6 +195,7 @@ T = [
     ("Start", "Empezar", "Starten"),
     ("Start %@-hour fast", "Empezar ayuno de %@ horas", "%@-Stunden-Fasten starten"),
     ("Start a fast now. You'll see the countdown here.", "Empieza un ayuno ahora. Verás la cuenta atrás aquí.", "Starte jetzt ein Fasten. Den Countdown siehst du hier."),
+    ("Start fast", "Empezar ayuno", "Fasten starten"),
     ("Start my journey", "Empezar mi camino", "Meine Reise starten"),
     ("Started %@", "Empezó a las %@", "Gestartet um %@"),
     ("Starting weight", "Peso inicial", "Startgewicht"),
