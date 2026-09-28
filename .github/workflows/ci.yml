@@ -22,6 +22,12 @@ jobs:
           xcodebuild -version
           swift --version
 
+      - name: Lint
+        run: |
+          command -v swiftlint >/dev/null || brew install swiftlint
+          swiftlint version
+          swiftlint lint --strict --reporter github-actions-logging
+
       - name: Pick an iPhone simulator
         id: sim
         run: |
