@@ -34,10 +34,22 @@ final class IPadScreenshotTests: XCTestCase {
         snap("ipad-11-food-diary")
         open("Weight", in: app)
         snap("ipad-12-weight")
+        let row = app.buttons.matching(identifier: "weighInRow").firstMatch
+        if row.waitForExistence(timeout: 5) {
+            row.tap()
+            snap("ipad-12b-weigh-in-detail")
+        }
         open("Vitals", in: app)
         snap("ipad-13-vitals")
         open("Plan", in: app)
         snap("ipad-14-meal-planner")
+        app.buttons["Recipes"].firstMatch.tap()
+        snap("ipad-14b-recipes")
+        let recipe = app.buttons.matching(identifier: "recipeRow").firstMatch
+        if recipe.waitForExistence(timeout: 5) {
+            recipe.tap()
+            snap("ipad-14c-recipe-detail")
+        }
 
         open("Today", in: app)
         XCUIDevice.shared.orientation = .portrait
