@@ -82,6 +82,7 @@ struct MainTabView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var selection: Tab = .today
     @State private var undoCenter = UndoCenter()
+    @Environment(\.undoManager) private var undoManager
     @State private var columns: NavigationSplitViewVisibility = .all
     /// Settings is showing in the detail column (sidebar layout only).
     @State private var showsSettings = false
@@ -209,6 +210,8 @@ struct MainTabView: View {
             }
         }
         .focusedSceneValue(\.sceneActions, sceneActions)
+        .onAppear { undoCenter.undoManager = undoManager }
+        .onChange(of: undoManager) { _, manager in undoCenter.undoManager = manager }
         .onChange(of: quickActions.pending, initial: true) { performQuickAction() }
         .onChange(of: isAppLocked) { performQuickAction() }
         .onAppear {
@@ -255,8 +258,7 @@ struct MainTabView: View {
                      logWater: { _ = try? QuickLog.water(ml: nil, context: context) },
                      openSettings: {
                          if sizeClass == .regular { showsSettings = true } else { quickSheet = .settings }
-                     },
-                     undoDelete: undoCenter.toast == nil ? nil : { undoCenter.undo() })
+                     })
     }
 
     private func select(_ tab: Tab) {

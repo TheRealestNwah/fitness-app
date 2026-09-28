@@ -7,8 +7,6 @@ struct SceneActions {
     var logWeight: () -> Void
     var logWater: () -> Void
     var openSettings: () -> Void
-    /// Nil when there's no recent deletion to undo.
-    var undoDelete: (() -> Void)?
 }
 
 /// Previous and next day, while the Food diary is showing.
@@ -53,18 +51,12 @@ struct StrideCommands: Commands {
                 .keyboardShortcut(",")
                 .disabled(actions == nil)
         }
-        CommandGroup(after: .undoRedo) {
-            // Only enabled while the undo toast is up, so text fields keep their own ⌘Z otherwise.
-            Button("Undo Delete") { actions?.undoDelete?() }
-                .keyboardShortcut("z")
-                .disabled(actions?.undoDelete == nil)
-        }
+        // ⌘Z is the system Edit › Undo: UndoCenter registers each delete with the window's UndoManager.
         CommandMenu("Log") {
             Group {
+                // Opens food search with its search field; ⌘F stays the system Find.
                 Button("Log Food") { actions?.logFood() }
                     .keyboardShortcut("n")
-                Button("Search Foods") { actions?.logFood() }
-                    .keyboardShortcut("f")
                 Button("Weigh In") { actions?.logWeight() }
                     .keyboardShortcut("w", modifiers: [.command, .shift])
                 Button("Log Water") { actions?.logWater() }
