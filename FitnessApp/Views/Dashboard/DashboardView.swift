@@ -289,7 +289,7 @@ struct DashboardView: View {
 
     private var budgetNote: String? {
         if profile.isOnDietBreak, let end = profile.dietBreakEnd {
-            return "Diet break: eating at maintenance until \(end.formatted(.dateTime.weekday(.wide).month(.abbreviated).day()))."
+            return "Diet break: eating at maintenance until \(end.longDateLabel())."
         }
         guard baseTarget != dailyTarget else { return nil }
         let balance = BudgetCalculator.weekBalance(dailyTarget: dailyTarget, intakeByDay: intakeByDay)
@@ -416,7 +416,7 @@ struct DashboardView: View {
                 if remaining == 0 {
                     Text("Goal reached!")
                 } else if let projected {
-                    Text("ETA \(projected.formatted(.dateTime.month(.abbreviated).day()))")
+                    Text("ETA \(projected.shortDateLabel())")
                 }
             }
             .font(.caption)
@@ -473,7 +473,7 @@ struct DashboardView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(milestone.percent)% of your starting weight lost")
                     .font(.headline)
-                Text("Your 7-day average passed \(units.weightString(kg: milestone.thresholdKg)) on \(milestone.reachedOn.formatted(.dateTime.weekday(.wide).month(.abbreviated).day())). That's a real change, not a good morning.")
+                Text("Your 7-day average passed \(units.weightString(kg: milestone.thresholdKg)) on \(milestone.reachedOn.longDateLabel()). That's a real change, not a good morning.")
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -567,11 +567,24 @@ struct DashboardView: View {
                     .accessibilityIdentifier("waterTotal")
             }
             HStack(spacing: 6) {
-                ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
-                    Image(systemName: i < glasses ? "drop.fill" : "drop")
-                        .foregroundStyle(i < glasses ? Color.cyan : Color.secondary.opacity(0.4))
+                // A weight-based goal can mean 15+ glasses; one drop each would push the card
+                // (and the whole dashboard) wider than the screen, so fall back to a bar.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 6) {
+                        ForEach(0..<max(goalGlasses, 1), id: \.self) { i in
+                            Image(systemName: i < glasses ? "drop.fill" : "drop")
+                                .foregroundStyle(i < glasses ? Color.cyan : Color.secondary.opacity(0.4))
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("\(glasses) of \(max(goalGlasses, 1)) glasses")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                        ProgressView(value: Double(min(glasses, goalGlasses)), total: Double(max(goalGlasses, 1)))
+                            .tint(.cyan)
+                    }
                 }
-                Spacer()
+                Spacer(minLength: 8)
                 Button {
                     removeWater()
                 } label: {

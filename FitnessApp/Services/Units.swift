@@ -127,7 +127,23 @@ extension Date {
         if Calendar.current.isDateInToday(self) { return String(localized: "Today") }
         if Calendar.current.isDateInYesterday(self) { return String(localized: "Yesterday") }
         if Calendar.current.isDateInTomorrow(self) { return String(localized: "Tomorrow") }
-        return formatted(.dateTime.weekday(.wide).month(.abbreviated).day())
+        return longDateLabel()
+    }
+
+    /// "Oct 30", with the year added when it isn't the current one ("Oct 30, 2028").
+    func shortDateLabel(relativeTo now: Date = .now) -> String {
+        formatted(isInSameYear(as: now) ? .dateTime.month(.abbreviated).day()
+                                         : .dateTime.month(.abbreviated).day().year())
+    }
+
+    /// "Friday, Oct 30", with the year added when it isn't the current one.
+    func longDateLabel(relativeTo now: Date = .now) -> String {
+        formatted(isInSameYear(as: now) ? .dateTime.weekday(.wide).month(.abbreviated).day()
+                                         : .dateTime.weekday(.wide).month(.abbreviated).day().year())
+    }
+
+    private func isInSameYear(as other: Date) -> Bool {
+        Calendar.current.isDate(self, equalTo: other, toGranularity: .year)
     }
 }
 
