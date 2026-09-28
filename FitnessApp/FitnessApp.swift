@@ -20,6 +20,7 @@ struct FitnessApp: App {
                 .appLockGate()
         }
         .modelContainer(container)
+        .commands { StrideCommands() }
         .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
             await BackgroundRefresh.run()
         }
