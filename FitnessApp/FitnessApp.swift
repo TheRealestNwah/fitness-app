@@ -17,6 +17,7 @@ struct FitnessApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .uiTestSizeClass()
                 .appLockGate()
         }
         .modelContainer(container)
