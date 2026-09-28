@@ -12961,6 +12961,22 @@
         }
       }
     },
+    "Start fast" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar ayuno"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fasten starten"
+          }
+        }
+      }
+    },
     "Start my journey" : {
       "localizations" : {
         "es" : {

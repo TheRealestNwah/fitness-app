@@ -77,4 +77,31 @@ final class QuickLogTests: XCTestCase {
             XCTAssertEqual($0 as? QuickLogError, .noProfile)
         }
     }
+
+    func testToggleFastStartsWithTheLastTargetThenEnds() throws {
+        let earlier = FastingSession(start: noon.addingTimeInterval(-86_400 * 2), targetHours: 18)
+        earlier.end = noon.addingTimeInterval(-86_400)
+        context.insert(earlier)
+
+        let started = try QuickLog.toggleFast(context: context, now: noon)
+        XCTAssertEqual(started.targetHours, 18)
+        XCTAssertNil(started.end)
+        XCTAssertEqual(QuickLog.activeFast(context: context)?.uuid, started.uuid)
+
+        let later = noon.addingTimeInterval(3600)
+        let ended = try QuickLog.toggleFast(context: context, now: later)
+        XCTAssertEqual(ended.uuid, started.uuid)
+        XCTAssertEqual(ended.end, later)
+        XCTAssertNil(QuickLog.activeFast(context: context))
+    }
+
+    func testToggleFastDefaultsToSixteenHours() throws {
+        XCTAssertEqual(try QuickLog.toggleFast(context: context, now: noon).targetHours, 16)
+    }
+
+    func testHomeQuickActionsRoundTripAndFollowTheFast() {
+        let idle = HomeQuickAction.items(fastRunning: false)
+        XCTAssertEqual(idle.compactMap { HomeQuickAction($0) }, HomeQuickAction.allCases)
+        XCTAssertNotEqual(idle.last?.localizedTitle, HomeQuickAction.items(fastRunning: true).last?.localizedTitle)
+    }
 }
