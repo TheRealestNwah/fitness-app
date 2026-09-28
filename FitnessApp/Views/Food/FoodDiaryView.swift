@@ -340,6 +340,9 @@ struct DayDiaryView: View {
                                 .font(.subheadline.weight(.medium))
                         }
                         .buttonStyle(.borderless)
+                        .foodDropDestination { references in
+                            references.map { $0.log(on: date, as: meal, context: context) }.contains(true)
+                        }
                         Spacer()
                         Button {
                             photographing = meal

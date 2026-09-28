@@ -32,6 +32,7 @@ struct RootView: View {
 
     private func resetAllData() async {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        SpotlightIndex.removeAll()
         UIApplication.shared.shortcutItems = []
         // Let the Settings sheet finish dismissing and keep the progress visible long enough to read.
         try? await Task.sleep(for: .milliseconds(600))
@@ -196,6 +197,7 @@ struct MainTabView: View {
             }
         }
         .environment(undoCenter)
+        .spotlightSupport()
         .overlay(alignment: .bottom) {
             UndoToastView()
                 .environment(undoCenter)
