@@ -7,8 +7,11 @@ struct VitalsView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \VitalsEntry.date, order: .reverse) private var entries: [VitalsEntry]
 
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var showAdd = false
     @State private var editing: VitalsEntry?
+    /// The vital shown beside the list on iPad; the first one with a reading until one is picked.
+    @State private var selectedKind: VitalKind?
 
     private var units: Units { profile.units }
 
@@ -18,70 +21,29 @@ struct VitalsView: View {
 
     private func hasAny(_ kind: VitalKind) -> Bool { latest(kind) != nil }
 
+    private var shownKind: VitalKind? {
+        if let selectedKind, hasAny(selectedKind) { return selectedKind }
+        return VitalKind.allCases.first(where: hasAny)
+    }
+
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    ForEach(VitalKind.allCases) { kind in
-                        if let entry = latest(kind) {
-                            NavigationLink(value: kind) {
-                                VitalRow(kind: kind, entry: entry, units: units)
-                            }
+            Group {
+                if sizeClass == .regular {
+                    // iPad: the vitals on the left, the chosen vital's chart and readings on the right.
+                    HStack(spacing: 0) {
+                        list
+                            .frame(width: 400)
+                        Divider()
+                        if let kind = shownKind {
+                            VitalDetailView(kind: kind, embedded: true)
+                                .id(kind)
+                        } else {
+                            Color(.systemGroupedBackground)
                         }
                     }
-                    if entries.isEmpty {
-                        ContentUnavailableView {
-                            Label("No vitals yet", systemImage: "heart.text.square")
-                        } description: {
-                            Text("Blood pressure, resting heart rate, body measurements and sleep all respond to weight loss. Log them weekly to see the change.")
-                        } actions: {
-                            Button("Log vitals") { showAdd = true }
-                                .buttonStyle(.borderedProminent)
-                        }
-                    }
-                } header: {
-                    Text("Latest")
-                } footer: {
-                    if !entries.isEmpty {
-                        Text("Tap a vital to see its history. Readings are for your own tracking and are not medical advice.")
-                    }
-                }
-
-                if !entries.isEmpty {
-                    Section("Trends") {
-                        if hasAny(.waist) || hasAny(.hips) || hasAny(.chest) || hasAny(.bodyFat) {
-                            NavigationLink {
-                                BodyTrendsView()
-                            } label: {
-                                Label("Measurements and body fat", systemImage: "chart.xyaxis.line")
-                            }
-                        }
-                        NavigationLink {
-                            CorrelationsView()
-                        } label: {
-                            Label("Sleep, sodium and patterns", systemImage: "chart.dots.scatter")
-                        }
-                    }
-                }
-
-                if !entries.isEmpty {
-                    Section("All entries") {
-                        ForEach(entries) { entry in
-                            Button { editing = entry } label: {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(entry.date.formatted(date: .abbreviated, time: .shortened))
-                                        .foregroundStyle(Color.primary)
-                                    Text(summary(for: entry))
-                                        .font(.caption)
-                                        .foregroundStyle(Color.secondary)
-                                }
-                            }
-                        }
-                        .onDelete { offsets in
-                            for i in offsets { context.delete(entries[i]) }
-                            try? context.save()
-                        }
-                    }
+                } else {
+                    list
                 }
             }
             .navigationTitle("Vitals")
@@ -95,6 +57,90 @@ struct VitalsView: View {
             }
             .sheet(isPresented: $showAdd) { AddVitalsSheet() }
             .sheet(item: $editing) { AddVitalsSheet(entry: $0) }
+        }
+    }
+
+    @ViewBuilder
+    private func vitalRow(_ kind: VitalKind, entry: VitalsEntry) -> some View {
+        if sizeClass == .regular {
+            Button { selectedKind = kind } label: {
+                VitalRow(kind: kind, entry: entry, units: units)
+                    .foregroundStyle(Color.primary)
+                    .contentShape(Rectangle())
+            }
+            .listRowBackground(kind == shownKind ? Color.accentColor.opacity(0.15)
+                                                 : Color(.secondarySystemGroupedBackground))
+            .accessibilityAddTraits(kind == shownKind ? .isSelected : [])
+            .accessibilityIdentifier("vitalRow")
+        } else {
+            NavigationLink(value: kind) {
+                VitalRow(kind: kind, entry: entry, units: units)
+            }
+        }
+    }
+
+    private var list: some View {
+        List {
+            Section {
+                ForEach(VitalKind.allCases) { kind in
+                    if let entry = latest(kind) {
+                        vitalRow(kind, entry: entry)
+                    }
+                }
+                if entries.isEmpty {
+                    ContentUnavailableView {
+                        Label("No vitals yet", systemImage: "heart.text.square")
+                    } description: {
+                        Text("Blood pressure, resting heart rate, body measurements and sleep all respond to weight loss. Log them weekly to see the change.")
+                    } actions: {
+                        Button("Log vitals") { showAdd = true }
+                            .buttonStyle(.borderedProminent)
+                    }
+                }
+            } header: {
+                Text("Latest")
+            } footer: {
+                if !entries.isEmpty {
+                    Text("Tap a vital to see its history. Readings are for your own tracking and are not medical advice.")
+                }
+            }
+
+            if !entries.isEmpty {
+                Section("Trends") {
+                    if hasAny(.waist) || hasAny(.hips) || hasAny(.chest) || hasAny(.bodyFat) {
+                        NavigationLink {
+                            BodyTrendsView()
+                        } label: {
+                            Label("Measurements and body fat", systemImage: "chart.xyaxis.line")
+                        }
+                    }
+                    NavigationLink {
+                        CorrelationsView()
+                    } label: {
+                        Label("Sleep, sodium and patterns", systemImage: "chart.dots.scatter")
+                    }
+                }
+            }
+
+            if !entries.isEmpty {
+                Section("All entries") {
+                    ForEach(entries) { entry in
+                        Button { editing = entry } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(entry.date.formatted(date: .abbreviated, time: .shortened))
+                                    .foregroundStyle(Color.primary)
+                                Text(summary(for: entry))
+                                    .font(.caption)
+                                    .foregroundStyle(Color.secondary)
+                            }
+                        }
+                    }
+                    .onDelete { offsets in
+                        for i in offsets { context.delete(entries[i]) }
+                        try? context.save()
+                    }
+                }
+            }
         }
     }
 
@@ -232,6 +278,8 @@ extension VitalKind {
 
 struct VitalDetailView: View {
     let kind: VitalKind
+    /// Shown beside the vitals list on iPad, where the list's title stays.
+    var embedded = false
 
     @Environment(UserProfile.self) private var profile
     @Query(sort: \VitalsEntry.date) private var entries: [VitalsEntry]
@@ -259,8 +307,24 @@ struct VitalDetailView: View {
     }
 
     var body: some View {
+        if embedded {
+            content
+        } else {
+            content
+                .navigationTitle(kind.label)
+                .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+
+    private var content: some View {
         ScrollView {
             VStack(spacing: 16) {
+                if embedded {
+                    Label(kind.label, systemImage: kind.systemImage)
+                        .font(.title2.bold())
+                        .foregroundStyle(kind.tint)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 if let latestEntry = entries.last(where: { $0.value(for: kind) != nil }) {
                     HStack(spacing: 12) {
                         StatTile(title: "Latest", value: kind.display(entry: latestEntry, units: units), subtitle: latestEntry.date.relativeDayLabel, systemImage: kind.systemImage, tint: kind.tint)
@@ -328,8 +392,6 @@ struct VitalDetailView: View {
             .padding()
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle(kind.label)
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

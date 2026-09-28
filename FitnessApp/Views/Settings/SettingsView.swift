@@ -255,6 +255,7 @@ struct SettingsView: View {
                     Text("About")
                 }
             }
+            .readableWidth()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -482,6 +483,7 @@ struct ProfileEditorView: View {
                 }
             }
         }
+        .readableWidth()
         .navigationTitle("Body & goals")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

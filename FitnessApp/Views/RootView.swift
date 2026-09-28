@@ -32,6 +32,7 @@ struct RootView: View {
 
     private func resetAllData() async {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UIApplication.shared.shortcutItems = []
         // Let the Settings sheet finish dismissing and keep the progress visible long enough to read.
         try? await Task.sleep(for: .milliseconds(600))
         DemoData.wipe(context: context)
@@ -84,6 +85,9 @@ struct MainTabView: View {
     @State private var columns: NavigationSplitViewVisibility = .all
     /// Settings is showing in the detail column (sidebar layout only).
     @State private var showsSettings = false
+    @State private var quickActions = HomeQuickActionCenter.shared
+    @State private var quickSheet: QuickSheet?
+    @Environment(\.isAppLocked) private var isAppLocked
     /// Start of the current day. Today's queries are built from it, so it's refreshed at
     /// midnight and whenever the app comes back to the foreground.
     @State private var today = Date.now.startOfDay
@@ -132,6 +136,12 @@ struct MainTabView: View {
                 break
             }
         }
+    }
+
+    /// Sheets opened from a Home Screen quick action.
+    enum QuickSheet: Identifiable {
+        case food, weight
+        var id: Self { self }
     }
 
     @ViewBuilder
@@ -191,7 +201,18 @@ struct MainTabView: View {
                 .padding(.bottom, sizeClass == .regular ? 16 : 58)   // clear of the tab bar
         }
         .animation(.snappy, value: undoCenter.toast)
-        .onAppear { NotificationManager.sync(with: profile) }
+        .sheet(item: $quickSheet) { sheet in
+            switch sheet {
+            case .food: FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current())
+            case .weight: AddWeightSheet()
+            }
+        }
+        .onChange(of: quickActions.pending, initial: true) { performQuickAction() }
+        .onChange(of: isAppLocked) { performQuickAction() }
+        .onAppear {
+            NotificationManager.sync(with: profile)
+            HomeQuickActionCenter.publish(context: context)
+        }
         .task { await refreshHealth() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { BackgroundRefresh.schedule() }
@@ -203,6 +224,7 @@ struct MainTabView: View {
                 }
                 NotificationManager.sync(with: profile)
                 WidgetSnapshot.publish(profile: profile)
+                HomeQuickActionCenter.publish(context: context)
                 Task { await refreshHealth() }
             }
         }
@@ -218,6 +240,7 @@ struct MainTabView: View {
             Task { @MainActor in
                 NotificationManager.sync(with: profile)
                 WidgetSnapshot.publish(profile: profile)
+                HomeQuickActionCenter.publish(context: context)
             }
         }
     }
@@ -225,6 +248,19 @@ struct MainTabView: View {
     private func select(_ tab: Tab) {
         selection = tab
         showsSettings = false
+    }
+
+    /// Runs the Home Screen quick action the app was opened with, once the app is unlocked.
+    private func performQuickAction() {
+        guard !isAppLocked, let action = quickActions.pending else { return }
+        quickActions.pending = nil
+        select(.today)
+        switch action {
+        case .logFood: quickSheet = .food
+        case .logWeight: quickSheet = .weight
+        case .logWater: _ = try? QuickLog.water(ml: nil, context: context)
+        case .toggleFast: _ = try? QuickLog.toggleFast(context: context)
+        }
     }
 
     private func refreshToday() {
