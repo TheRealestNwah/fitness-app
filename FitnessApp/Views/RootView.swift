@@ -82,6 +82,8 @@ struct MainTabView: View {
     @State private var selection: Tab = .today
     @State private var undoCenter = UndoCenter()
     @State private var columns: NavigationSplitViewVisibility = .all
+    /// Settings is showing in the detail column (sidebar layout only).
+    @State private var showsSettings = false
     /// Start of the current day. Today's queries are built from it, so it's refreshed at
     /// midnight and whenever the app comes back to the foreground.
     @State private var today = Date.now.startOfDay
@@ -110,10 +112,35 @@ struct MainTabView: View {
         }
     }
 
+    /// A row in the sidebar: one of the sections, or Settings below them.
+    enum SidebarItem: Hashable {
+        case section(Tab)
+        case settings
+    }
+
+    private var sidebarSelection: Binding<SidebarItem?> {
+        Binding {
+            showsSettings ? .settings : .section(selection)
+        } set: { item in
+            switch item {
+            case .section(let tab):
+                selection = tab
+                showsSettings = false
+            case .settings:
+                showsSettings = true
+            case nil:
+                break
+            }
+        }
+    }
+
     @ViewBuilder
     private func screen(_ tab: Tab) -> some View {
         switch tab {
-        case .today: DashboardView(day: today, selectTab: { selection = $0 }).id(today)
+        case .today:
+            DashboardView(day: today, selectTab: select,
+                          openSettings: sizeClass == .regular ? { showsSettings = true } : nil)
+                .id(today)
         case .food: FoodDiaryView()
         case .weight: WeightView()
         case .vitals: VitalsView()
@@ -126,14 +153,25 @@ struct MainTabView: View {
             if sizeClass == .regular {
                 // iPad and wide windows: a sidebar instead of the tab bar.
                 NavigationSplitView(columnVisibility: $columns) {
-                    List(Tab.allCases, id: \.self, selection: Binding<Tab?>(get: { selection },
-                                                                           set: { if let tab = $0 { selection = tab } })) { tab in
-                        Label(tab.title, systemImage: tab.systemImage)
-                            .accessibilityIdentifier("sidebar-\(tab.title)")
+                    List(selection: sidebarSelection) {
+                        ForEach(Tab.allCases, id: \.self) { tab in
+                            Label(tab.title, systemImage: tab.systemImage)
+                                .accessibilityIdentifier("sidebar-\(tab.title)")
+                                .tag(SidebarItem.section(tab))
+                        }
+                        Section {
+                            Label("Settings", systemImage: "gearshape")
+                                .accessibilityIdentifier("sidebar-Settings")
+                                .tag(SidebarItem.settings)
+                        }
                     }
                     .navigationTitle("Stride")
                 } detail: {
-                    screen(selection)
+                    if showsSettings {
+                        SettingsView(isSheet: false)
+                    } else {
+                        screen(selection)
+                    }
                 }
                 .navigationSplitViewStyle(.balanced)
             } else {
@@ -182,6 +220,11 @@ struct MainTabView: View {
                 WidgetSnapshot.publish(profile: profile)
             }
         }
+    }
+
+    private func select(_ tab: Tab) {
+        selection = tab
+        showsSettings = false
     }
 
     private func refreshToday() {

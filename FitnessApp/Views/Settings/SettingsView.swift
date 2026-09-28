@@ -4,6 +4,9 @@ import TipKit
 import UserNotifications
 
 struct SettingsView: View {
+    /// Presented as a sheet on iPhone (with Done); shown in the sidebar's detail column on iPad.
+    var isSheet = true
+
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -255,11 +258,13 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+                if isSheet {
+                    ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
+                }
             }
             .alert("Reset all data?", isPresented: $showResetConfirm) {
                 Button("Delete everything", role: .destructive) {
-                    dismiss()
+                    if isSheet { dismiss() }
                     resetAllData()
                 }
                 Button("Cancel", role: .cancel) {}
