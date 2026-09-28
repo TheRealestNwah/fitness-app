@@ -1005,22 +1005,6 @@
         }
       }
     },
-    "%lld of %lld glasses" : {
-      "localizations" : {
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld de %lld vasos"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld von %lld Gläsern"
-          }
-        }
-      }
-    },
     "%lld of %lld grams, %lld percent" : {
       "localizations" : {
         "es" : {
@@ -2986,6 +2970,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2 Tassen (85 g)"
+          }
+        }
+      }
+    },
+    "2 eggs, a slice of toast and a black coffee" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 huevos, una tostada y un café solo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2 Eier, eine Scheibe Toast und ein schwarzer Kaffee"
           }
         }
       }
@@ -5287,6 +5287,22 @@
         }
       }
     },
+    "Choose a food" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige un alimento"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lebensmittel wählen"
+          }
+        }
+      }
+    },
     "Choose a label photo" : {
       "localizations" : {
         "es" : {
@@ -6163,6 +6179,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Deine Daten werden gelöscht …"
+          }
+        }
+      }
+    },
+    "Describe what you ate" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe lo que has comido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beschreibe, was du gegessen hast"
           }
         }
       }
@@ -7098,6 +7130,22 @@
         }
       }
     },
+    "Find foods" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscar alimentos"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lebensmittel finden"
+          }
+        }
+      }
+    },
     "First diary entries" : {
       "localizations" : {
         "es" : {
@@ -7332,6 +7380,22 @@
         }
       }
     },
+    "Found" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Encontrado"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gefunden"
+          }
+        }
+      }
+    },
     "French fries" : {
       "localizations" : {
         "es" : {
@@ -7360,6 +7424,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aus Apple Health"
+          }
+        }
+      }
+    },
+    "From “%@”. Tap to change." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De «%@». Toca para cambiar."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus „%@“. Zum Ändern tippen."
           }
         }
       }
@@ -8276,6 +8356,38 @@
         }
       }
     },
+    "Include" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluir"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einbeziehen"
+          }
+        }
+      }
+    },
+    "Included" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incluido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einbezogen"
+          }
+        }
+      }
+    },
     "Increase by %@ %@" : {
       "localizations" : {
         "es" : {
@@ -8704,6 +8816,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mageres Putenhack"
+          }
+        }
+      }
+    },
+    "Left out" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluido"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgelassen"
           }
         }
       }
@@ -10256,6 +10384,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Keine Treffer für „%@“."
+          }
+        }
+      }
+    },
+    "No match. Tap to search." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin coincidencias. Toca para buscar."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Treffer. Zum Suchen tippen."
           }
         }
       }
@@ -12481,6 +12625,22 @@
         }
       }
     },
+    "Separate foods with commas or “and”. You can dictate with the microphone on the keyboard." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Separa los alimentos con comas o «y». Puedes dictar con el micrófono del teclado."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trenne Lebensmittel mit Kommas oder „und“. Mit dem Mikrofon auf der Tastatur kannst du auch diktieren."
+          }
+        }
+      }
+    },
     "Series" : {
       "localizations" : {
         "es" : {
@@ -13696,6 +13856,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gemüse mit Öl vermengen und bei 200 °C 15 Minuten rösten. Lachs aufs Blech legen und weitere 10–12 Minuten garen."
+          }
+        }
+      }
+    },
+    "Total: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamt: %@"
           }
         }
       }

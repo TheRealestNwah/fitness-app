@@ -21,6 +21,7 @@ struct FoodSearchView: View {
     @State private var selectedRecipe: Recipe?
     @State private var showCreate = false
     @State private var showQuickAdd = false
+    @State private var showSentence = false
     @State private var showScanner = false
     @State private var unknownBarcode: UnknownBarcode?
 
@@ -156,6 +157,10 @@ struct FoodSearchView: View {
                         } label: {
                             Label("Scan a barcode", systemImage: "barcode.viewfinder")
                         }
+                        Button { showSentence = true } label: {
+                            Label("Describe what you ate", systemImage: "text.bubble")
+                        }
+                        .accessibilityIdentifier("describeMeal")
                         Button { showQuickAdd = true } label: {
                             Label("Quick add calories", systemImage: "bolt.fill")
                         }
@@ -240,6 +245,12 @@ struct FoodSearchView: View {
             }
             .sheet(isPresented: $showQuickAdd) {
                 QuickAddSheet(date: date, mealType: mealType)
+            }
+            .sheet(isPresented: $showSentence) {
+                SentenceLogSheet(date: date, mealType: mealType) {
+                    // Everything's logged: close search too once the sheet has gone.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { dismiss() }
+                }
             }
         }
     }
@@ -338,23 +349,7 @@ struct LogFoodSheet: View {
     }
 
     private func log() {
-        food.lastServings = servings
-        let entry = FoodLogEntry(date: meal.logDate(on: date),
-                                 mealType: meal,
-                                 foodName: food.displayName,
-                                 servings: servings,
-                                 servingDescription: food.servingDescription,
-                                 calories: food.calories * servings,
-                                 protein: food.protein * servings,
-                                 carbs: food.carbs * servings,
-                                 fat: food.fat * servings,
-                                 foodItemID: food.uuid,
-                                 fiber: food.fiber * servings,
-                                 sugar: food.sugar * servings,
-                                 sodium: food.sodium * servings)
-        context.insert(entry)
-        food.lastUsed = .now
-        food.useCount += 1
+        food.log(servings: servings, meal: meal, on: date, context: context)
         try? context.save()
         dismiss()
     }

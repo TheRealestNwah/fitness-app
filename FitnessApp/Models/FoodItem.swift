@@ -62,3 +62,28 @@ final class FoodItem {
         brand.isEmpty ? name : "\(name) (\(brand))"
     }
 }
+
+extension FoodItem {
+    /// Adds this food to the diary and remembers the amount for next time.
+    @discardableResult
+    func log(servings: Double, meal: MealType, on date: Date, context: ModelContext) -> FoodLogEntry {
+        lastServings = servings
+        let entry = FoodLogEntry(date: meal.logDate(on: date),
+                                 mealType: meal,
+                                 foodName: displayName,
+                                 servings: servings,
+                                 servingDescription: servingDescription,
+                                 calories: calories * servings,
+                                 protein: protein * servings,
+                                 carbs: carbs * servings,
+                                 fat: fat * servings,
+                                 foodItemID: uuid,
+                                 fiber: fiber * servings,
+                                 sugar: sugar * servings,
+                                 sodium: sodium * servings)
+        context.insert(entry)
+        lastUsed = .now
+        useCount += 1
+        return entry
+    }
+}

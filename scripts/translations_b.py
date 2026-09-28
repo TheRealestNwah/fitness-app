@@ -305,6 +305,21 @@ T = [
     ("of %@h", "de %@ h", "von %@ Std."),
     ("over", "de más", "zu viel"),
     ("target ~%@", "objetivo ~%@", "Ziel ~%@"),
+    # Describe what you ate
+    ("2 eggs, a slice of toast and a black coffee", "2 huevos, una tostada y un café solo", "2 Eier, eine Scheibe Toast und ein schwarzer Kaffee"),
+    ("Find foods", "Buscar alimentos", "Lebensmittel finden"),
+    ("Separate foods with commas or “and”. You can dictate with the microphone on the keyboard.",
+     "Separa los alimentos con comas o «y». Puedes dictar con el micrófono del teclado.",
+     "Trenne Lebensmittel mit Kommas oder „und“. Mit dem Mikrofon auf der Tastatur kannst du auch diktieren."),
+    ("Found", "Encontrado", "Gefunden"),
+    ("Total: %@", "Total: %@", "Gesamt: %@"),
+    ("Describe what you ate", "Describe lo que has comido", "Beschreibe, was du gegessen hast"),
+    ("Include", "Incluir", "Einbeziehen"),
+    ("Included", "Incluido", "Einbezogen"),
+    ("Left out", "Excluido", "Ausgelassen"),
+    ("No match. Tap to search.", "Sin coincidencias. Toca para buscar.", "Kein Treffer. Zum Suchen tippen."),
+    ("From “%@”. Tap to change.", "De «%@». Toca para cambiar.", "Aus „%@“. Zum Ändern tippen."),
+    ("Choose a food", "Elige un alimento", "Lebensmittel wählen"),
 ]
 
 # Not translated: units, brand names and URL prefixes.
