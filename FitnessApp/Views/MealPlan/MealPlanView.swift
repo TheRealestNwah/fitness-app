@@ -436,6 +436,8 @@ struct GroceryListView: View {
     @AppStorage("groceryChecked") private var checkedData: Data = Data()
 
     @State private var weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: .now)?.start ?? Date.now.startOfDay
+    @State private var sending = false
+    @State private var sendResult: String?
 
     private var weekEnd: Date { weekStart.adding(days: 7) }
 
@@ -492,6 +494,20 @@ struct GroceryListView: View {
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
                 }
                 .buttonStyle(.bordered)
+                if !items.isEmpty {
+                    Button {
+                        Task { await sendToReminders() }
+                    } label: {
+                        HStack {
+                            Label("Send to Reminders", systemImage: "checklist")
+                            if sending {
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(sending)
+                }
             }
             if items.isEmpty {
                 ContentUnavailableView("Nothing planned this week", systemImage: "cart",
@@ -533,5 +549,25 @@ struct GroceryListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .alert("Reminders", isPresented: Binding(get: { sendResult != nil }, set: { if !$0 { sendResult = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(sendResult ?? "")
+        }
+    }
+
+    /// Items not yet ticked off, as reminder titles with their amounts in the notes.
+    private func sendToReminders() async {
+        sending = true
+        defer { sending = false }
+        let lines = items.filter { !checked.contains($0.name) }.map {
+            GroceryReminders.Line(title: $0.name.capitalized, notes: $0.amounts.joined(separator: " + "))
+        }
+        do {
+            let count = try await GroceryReminders.send(lines)
+            sendResult = String(localized: "\(count) items are on the “\(GroceryReminders.listTitle)” list in Reminders.")
+        } catch {
+            sendResult = error.localizedDescription
+        }
     }
 }
