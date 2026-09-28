@@ -13,6 +13,8 @@ struct FoodSearchView: View {
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
     @Query(sort: \SavedMeal.name) private var savedMeals: [SavedMeal]
+    @Query(filter: #Predicate<MealPrepBatch> { $0.portionsLeft > 0 }, sort: \MealPrepBatch.cookedAt, order: .reverse)
+    private var batches: [MealPrepBatch]
 
     @State private var search = ""
     @AppStorage(RecentSearches.storageKey) private var recentSearches = ""
@@ -66,6 +68,19 @@ struct FoodSearchView: View {
         }
     }
 
+    private var matchingBatches: [MealPrepBatch] {
+        query.isEmpty ? batches : batches.filter { $0.name.lowercased().contains(query) }
+    }
+
+    private func logPortion(_ batch: MealPrepBatch) {
+        guard batch.logPortion(on: date, as: mealType, context: context) != nil else { return }
+        try? context.save()
+        withAnimation { loggedMealName = batch.name }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+            dismiss()
+        }
+    }
+
     private func logSavedMeal(_ meal: SavedMeal) {
         meal.log(on: date, as: mealType, context: context)
         try? context.save()
@@ -90,6 +105,31 @@ struct FoodSearchView: View {
                     Section {
                         Label("Logged “\(loggedMealName)” to \(mealType.inSentence)", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(Color.green)
+                    }
+                }
+                if !matchingBatches.isEmpty {
+                    Section("Meal prep") {
+                        ForEach(matchingBatches) { batch in
+                            Button { logPortion(batch) } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(batch.name).foregroundStyle(Color.primary)
+                                        Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
+                                            .font(.caption)
+                                            .foregroundStyle(Color.secondary)
+                                    }
+                                    Spacer()
+                                    Text("\(Int(batch.caloriesPerPortion.rounded()))")
+                                        .font(.body.monospacedDigit())
+                                }
+                            }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    batch.portionsLeft = 0
+                                    try? context.save()
+                                } label: { Label("Finished", systemImage: "checkmark") }
+                            }
+                        }
                     }
                 }
                 if !matchingSavedMeals.isEmpty {

@@ -216,6 +216,10 @@ struct PlannerView: View {
                                     carbs: entry.totalCarbs, fat: entry.totalFat,
                                     foodItemID: entry.foodItemID))
         entry.isLogged = true
+        if let id = entry.batchID,
+           let batch = try? context.fetch(FetchDescriptor<MealPrepBatch>(predicate: #Predicate { $0.uuid == id })).first {
+            batch.usePortion()
+        }
         try? context.save()
     }
 
@@ -329,19 +333,29 @@ struct PlanItemPicker: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
+    @Query(filter: #Predicate<MealPrepBatch> { $0.portionsLeft > 0 }, sort: \MealPrepBatch.cookedAt, order: .reverse)
+    private var batches: [MealPrepBatch]
 
     @State private var search = ""
     @State private var source: Source = .recipes
 
     enum Source: String, CaseIterable, Identifiable {
+        case prep = "Meal prep"
         case recipes = "Recipes"
         case foods = "Foods"
         var id: String { rawValue }
 
         var label: String {
-            self == .recipes ? String(localized: "Recipes") : String(localized: "Foods")
+            switch self {
+            case .prep: String(localized: "Meal prep")
+            case .recipes: String(localized: "Recipes")
+            case .foods: String(localized: "Foods")
+            }
         }
     }
+
+    /// Meal prep is only offered while a batch has portions left.
+    private var sources: [Source] { batches.isEmpty ? [.recipes, .foods] : Source.allCases }
 
     private var query: String { search.trimmingCharacters(in: .whitespaces).lowercased() }
 
@@ -364,13 +378,30 @@ struct PlanItemPicker: View {
             List {
                 Section {
                     Picker("Source", selection: $source) {
-                        ForEach(Source.allCases) { Text($0.label).tag($0) }
+                        ForEach(sources) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 }
                 switch source {
+                case .prep:
+                    Section {
+                        ForEach(batches) { batch in
+                            Button { add(batch) } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(batch.name).foregroundStyle(Color.primary)
+                                        Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
+                                            .font(.caption).foregroundStyle(Color.secondary)
+                                    }
+                                    Spacer()
+                                    Text("\(Int(batch.caloriesPerPortion.rounded()))")
+                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
+                                }
+                            }
+                        }
+                    }
                 case .recipes:
                     Section {
                         ForEach(matchingRecipes) { recipe in
@@ -417,6 +448,12 @@ struct PlanItemPicker: View {
 
     private func add(_ recipe: Recipe) {
         context.insert(MealPlanEntry(recipe: recipe, day: day, mealType: mealType))
+        try? context.save()
+        dismiss()
+    }
+
+    private func add(_ batch: MealPrepBatch) {
+        context.insert(MealPlanEntry(batch: batch, day: day, mealType: mealType))
         try? context.save()
         dismiss()
     }
