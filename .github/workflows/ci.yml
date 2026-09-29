@@ -10,8 +10,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Docs-only changes skip the macOS build. A job skipped by `if:` still
+  # counts as passing for the required "Build & test" check, so those PRs
+  # can merge without waiting ~20 minutes.
+  changes:
+    name: Detect code changes
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          predicate-quantifier: every
+          filters: |
+            code:
+              - '**'
+              - '!docs/**'
+              - '!**/*.md'
+              - '!LICENSE'
+
   build-and-test:
     name: Build & test (iOS Simulator)
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: macos-15
     timeout-minutes: 45
     steps:
