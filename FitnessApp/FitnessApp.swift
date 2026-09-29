@@ -20,6 +20,7 @@ struct FitnessApp: App {
                 .appLockGate()
         }
         .modelContainer(container)
+        .commands { StrideCommands() }
         .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
             await BackgroundRefresh.run()
         }
@@ -44,6 +45,7 @@ enum AppStore {
         SavedMeal.self,
         FastingSession.self,
         ExerciseEntry.self,
+        MealPrepBatch.self,
     ]
 
     @MainActor static let container: ModelContainer = CloudSync.makeContainer(schema: schema)

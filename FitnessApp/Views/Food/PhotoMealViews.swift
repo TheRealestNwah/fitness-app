@@ -75,6 +75,7 @@ struct PhotoMealSheet: View {
                 }
             }
             .onChange(of: portion) { _, _ in calories = nil }
+            .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image) }
         }
     }
 

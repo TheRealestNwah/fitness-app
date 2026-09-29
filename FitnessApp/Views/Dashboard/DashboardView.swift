@@ -28,6 +28,7 @@ struct DashboardView: View {
     @ScaledMetric(relativeTo: .title) private var ringSize: CGFloat = 130
     @State private var showLayoutEditor = false
     @AppStorage(TodayLayoutEditor.storageKey) private var layoutStorage = ""
+    @AppStorage(StreakSettings.graceDayKey) private var streakGraceDay = false
 
     init(day: Date = .now, selectTab: @escaping (MainTabView.Tab) -> Void, openSettings: (() -> Void)? = nil) {
         self.selectTab = selectTab
@@ -79,8 +80,17 @@ struct DashboardView: View {
     private var fat: Double { todaysFood.reduce(0) { $0 + $1.fat } }
     private var waterMl: Double { todaysWater.reduce(0) { $0 + $1.amountMl } }
 
-    private var streak: Int {
-        NutritionCalculator.streak(logDates: recentFood.map(\.date) + recentWeights.map(\.date))
+    private var streakDetail: NutritionCalculator.Streak {
+        NutritionCalculator.streakDetail(logDates: recentFood.map(\.date) + recentWeights.map(\.date),
+                                         graceDay: streakGraceDay)
+    }
+
+    private var streak: Int { streakDetail.days }
+
+    /// The grace day covered a miss in the last week.
+    private var usedGraceThisWeek: Bool {
+        guard let last = streakDetail.forgiven.first else { return false }
+        return last >= Date.now.startOfDay.adding(days: -7)
     }
 
     private var greeting: String {
@@ -97,7 +107,7 @@ struct DashboardView: View {
     private var weeklyReview: WeeklyReview {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
-            weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
+            weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
             budget: calorieTarget,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
@@ -116,7 +126,8 @@ struct DashboardView: View {
         let estimate = AdaptiveTargetCalculator.estimate(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays)
-        return ProgressCalculator.plateau(weights: weightDays, goalKg: profile.goalWeightKg,
+        return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
+                                          goalKg: profile.goalWeightKg,
                                           currentTarget: baseTarget, maintenance: estimate,
                                           weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
     }
@@ -148,6 +159,7 @@ struct DashboardView: View {
                 }
             }
             .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
+            .task { await HealthKitManager.shared.refreshCycle() }
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
@@ -221,12 +233,19 @@ struct DashboardView: View {
             }
             Spacer()
             if streak > 0 {
-                Label("\(streak) days", systemImage: "flame.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.orange)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color.orange.opacity(0.12), in: Capsule())
+                HStack(spacing: 4) {
+                    Label("\(streak) days", systemImage: "flame.fill")
+                    if usedGraceThisWeek {
+                        Image(systemName: "bandage.fill")
+                            .font(.caption)
+                            .accessibilityLabel("Grace day used this week")
+                    }
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.orange)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(Color.orange.opacity(0.12), in: Capsule())
             }
         }
     }
@@ -376,6 +395,7 @@ struct DashboardView: View {
                 }
             }
             .buttonStyle(.plain)
+            .hoverEffect(.highlight)
             if MaintenanceCalculator.shouldOffer(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays),
                                                  goalKg: profile.goalWeightKg,
                                                  isMaintaining: profile.isMaintaining) {
@@ -643,7 +663,7 @@ struct DashboardView: View {
             }
         }
         .buttonStyle(.plain)
-        .card()
+        .tappableCard()
     }
 
     private var vitalsCard: some View {
@@ -679,7 +699,7 @@ struct DashboardView: View {
             .font(.subheadline)
         }
         .buttonStyle(.plain)
-        .card()
+        .tappableCard()
     }
 
     private var tipCard: some View {
@@ -727,8 +747,10 @@ struct QuickActionButton: View {
                     .foregroundStyle(Color.primary)
             }
             .frame(maxWidth: .infinity)
+            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+        .hoverEffect(.highlight)
     }
 }
 
