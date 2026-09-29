@@ -152,6 +152,8 @@ final class HealthKitManager {
     var todayActiveEnergyKcal: Double = 0
     var lastRefresh: Date?
     var lastError: String?
+    /// Likely water-retention days from cycle data, when cycle-aware weight is on.
+    var retentionDays: Set<Date> = []
 
     static var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
@@ -226,6 +228,30 @@ final class HealthKitManager {
         } catch {
             lastError = error.localizedDescription
         }
+    }
+
+    // MARK: Cycle
+
+    func requestCycleAccess() async throws {
+        guard Self.isAvailable else { throw HealthKitError.unavailable }
+        try await store.requestAuthorization(toShare: [], read: [HKCategoryType(.menstrualFlow)])
+    }
+
+    /// Reads six months of menstrual flow and works out likely retention days.
+    func refreshCycle() async {
+        guard CycleCalculator.isEnabled, Self.isAvailable else {
+            retentionDays = []
+            return
+        }
+        let since = Calendar.current.date(byAdding: .day, value: -180, to: .now) ?? .now
+        let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
+        let descriptor = HKSampleQueryDescriptor(
+            predicates: [.categorySample(type: HKCategoryType(.menstrualFlow), predicate: predicate)],
+            sortDescriptors: [SortDescriptor(\.startDate)])
+        guard let samples = try? await descriptor.result(for: store) else { return }
+        // Raw value 5 is "no flow" (HKCategoryValueMenstrualFlow.none), logged on some days.
+        let flowDays = samples.filter { $0.value != 5 }.map(\.startDate)
+        retentionDays = CycleCalculator.retentionDays(periodStarts: CycleCalculator.periodStarts(flowDays: flowDays))
     }
 
     // MARK: Import into the app's store

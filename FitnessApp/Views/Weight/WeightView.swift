@@ -64,6 +64,15 @@ struct WeightView: View {
         return NutritionCalculator.weeklyRate(points: recent)
     }
 
+    private var retentionDays: Set<Date> { HealthKitManager.shared.retentionDays }
+
+    /// Retention days in the chart's range, for shading.
+    private var visibleRetentionDays: [Date] {
+        guard let first = visible.map(\.date).min() else { return [] }
+        let start = Calendar.current.startOfDay(for: first)
+        return retentionDays.filter { $0 >= start }.sorted()
+    }
+
     private var weightDays: [WeeklyReviewCalculator.WeightDay] {
         entries.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
     }
@@ -81,7 +90,8 @@ struct WeightView: View {
         let estimate = AdaptiveTargetCalculator.estimate(
             foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays)
-        return ProgressCalculator.plateau(weights: weightDays, goalKg: profile.goalWeightKg,
+        return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays),
+                                          goalKg: profile.goalWeightKg,
                                           currentTarget: profile.calorieTarget(currentWeightKg: currentKg),
                                           maintenance: estimate, weeklyLossKg: profile.weeklyLossKg,
                                           sex: profile.sex)
@@ -147,6 +157,7 @@ struct WeightView: View {
                 }
             }
             .sheet(isPresented: $showAdd) { AddWeightSheet() }
+            .task { await HealthKitManager.shared.refreshCycle() }
             .sheet(item: $editing) { AddWeightSheet(entry: $0) }
             .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
         }
@@ -182,6 +193,10 @@ struct WeightView: View {
                     .frame(height: 200)
             } else {
                 Chart {
+                    ForEach(visibleRetentionDays, id: \.self) { day in
+                        RectangleMark(xStart: .value("Date", day), xEnd: .value("Date", day.adding(days: 1)))
+                            .foregroundStyle(.pink.opacity(0.12))
+                    }
                     RuleMark(y: .value("Goal", units.weightValue(kg: profile.goalWeightKg)))
                         .foregroundStyle(.purple.opacity(0.6))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
@@ -208,6 +223,9 @@ struct WeightView: View {
                 HStack(spacing: 16) {
                     Label("Weigh-ins", systemImage: "circle.fill").foregroundStyle(.indigo.opacity(0.5))
                     Label("7-day average", systemImage: "line.diagonal").foregroundStyle(.indigo)
+                    if !visibleRetentionDays.isEmpty {
+                        Label("Likely water retention", systemImage: "square.fill").foregroundStyle(.pink.opacity(0.5))
+                    }
                 }
                 .font(.caption)
             }
