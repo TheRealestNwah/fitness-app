@@ -281,6 +281,20 @@ struct DayDiaryView: View {
         try? context.save()
     }
 
+    /// Changes an entry's servings from its row, with undo.
+    private func setServings(_ entry: FoodLogEntry, to servings: Double) {
+        let previous = entry.servings
+        guard servings != previous else { return }
+        entry.scale(toServings: servings)
+        try? context.save()
+        HealthKitManager.shared.recordDiaryEntry(entry)
+        undoCenter.offer(String(localized: "Changed \(entry.foodName) to \(servings.cleanString) servings")) {
+            entry.scale(toServings: previous)
+            try? context.save()
+            HealthKitManager.shared.recordDiaryEntry(entry)
+        }
+    }
+
     private func clear(_ meal: MealType) {
         context.deleteDiaryEntries(entries(for: meal), undo: undoCenter)
     }
@@ -313,20 +327,27 @@ struct DayDiaryView: View {
                 let items = entries(for: meal)
                 Section {
                     ForEach(items) { entry in
-                        Button { editing = entry } label: {
-                            HStack {
-                                if let photo = entry.photo { EntryThumbnail(data: photo) }
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(entry.foodName).foregroundStyle(Color.primary)
-                                    Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
-                                        .font(.caption)
-                                        .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
+                        HStack {
+                            Button { editing = entry } label: {
+                                HStack {
+                                    if let photo = entry.photo { EntryThumbnail(data: photo) }
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(entry.foodName).foregroundStyle(Color.primary)
+                                        Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
+                                            .font(.caption)
+                                            .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
+                                    }
+                                    Spacer()
                                 }
-                                Spacer()
-                                Text("\(Int(entry.calories.rounded()))")
-                                    .font(.body.monospacedDigit())
-                                    .foregroundStyle(Color.secondary)
+                                .contentShape(Rectangle())
                             }
+                            .buttonStyle(.plain)
+                            if !entry.isEstimate {
+                                ServingsMenu(servings: entry.servings) { setServings(entry, to: $0) }
+                            }
+                            Text("\(Int(entry.calories.rounded()))")
+                                .font(.body.monospacedDigit())
+                                .foregroundStyle(Color.secondary)
                         }
                     }
                     .onDelete { offsets in
@@ -509,16 +530,7 @@ struct EditLogEntrySheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        let p = perServing
-                        let ratio = servings / max(entry.servings, 0.01)
-                        entry.fiber *= ratio
-                        entry.sugar *= ratio
-                        entry.sodium *= ratio
-                        entry.servings = servings
-                        entry.calories = p.kcal * servings
-                        entry.protein = p.p * servings
-                        entry.carbs = p.c * servings
-                        entry.fat = p.f * servings
+                        entry.scale(toServings: servings)
                         entry.mealType = meal
                         try? context.save()
                         HealthKitManager.shared.recordDiaryEntry(entry)
@@ -675,5 +687,38 @@ struct SaveFavouriteMealSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+}
+
+/// A compact servings picker shown in a diary row.
+struct ServingsMenu: View {
+    var servings: Double
+    var onChange: (Double) -> Void
+
+    private static let choices: [Double] = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4]
+
+    var body: some View {
+        Menu {
+            Picker("Servings", selection: Binding(get: { servings }, set: onChange)) {
+                ForEach(Self.choices.contains(servings) ? Self.choices : (Self.choices + [servings]).sorted(),
+                        id: \.self) { value in
+                    Text("\(value.cleanString)×").tag(value)
+                }
+            }
+            Divider()
+            Button { onChange(servings + 0.5) } label: { Label("Add half a serving", systemImage: "plus") }
+            if servings > 0.5 {
+                Button { onChange(servings - 0.5) } label: { Label("Remove half a serving", systemImage: "minus") }
+            }
+        } label: {
+            Text("\(servings.cleanString)×")
+                .font(.caption.monospacedDigit().weight(.semibold))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color(.tertiarySystemFill), in: Capsule())
+        }
+        .accessibilityLabel("Servings")
+        .accessibilityValue(servings.cleanString)
+        .accessibilityIdentifier("servingsMenu")
     }
 }
