@@ -78,3 +78,46 @@ final class FoodLogEntry {
         return servingDescription.isEmpty ? "\(qty) serving" : "\(qty) × \(servingDescription)"
     }
 }
+
+extension FoodLogEntry {
+    /// A new entry with the same food and amounts in another meal or on another day.
+    func copy(to meal: MealType, on day: Date) -> FoodLogEntry {
+        let copy = restorableCopy()
+        copy.uuid = UUID()
+        copy.mealType = meal
+        copy.date = meal.logDate(on: day)
+        return copy
+    }
+}
+
+extension ModelContext {
+    /// Moves a diary line to another meal or day, updating Health, with undo.
+    @MainActor
+    func moveDiaryEntry(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
+        let previous = (meal: entry.mealType, date: entry.date)
+        let target = meal.logDate(on: day)
+        guard previous.meal != meal || !Calendar.current.isDate(previous.date, inSameDayAs: target) else { return }
+        entry.mealType = meal
+        entry.date = target
+        try? save()
+        HealthKitManager.shared.recordDiaryEntry(entry)
+        center?.offer(String(localized: "Moved \(entry.foodName) to \(meal.inSentence)")) {
+            entry.mealType = previous.meal
+            entry.date = previous.date
+            try? self.save()
+            HealthKitManager.shared.recordDiaryEntry(entry)
+        }
+    }
+
+    /// Copies a diary line to another meal or day, with undo.
+    @MainActor
+    func copyDiaryEntry(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
+        let copy = entry.copy(to: meal, on: day)
+        insertDiaryEntry(copy)
+        try? save()
+        center?.offer(String(localized: "Copied \(entry.foodName) to \(meal.inSentence)")) {
+            self.deleteDiaryEntry(copy)
+            try? self.save()
+        }
+    }
+}
