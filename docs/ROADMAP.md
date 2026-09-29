@@ -10,12 +10,11 @@ Stride already covers the core of a weight-loss journey:
 - **Logging:** food diary with a built-in database, fuzzy search, typed-sentence logging, barcode and nutrition-label scanning, Open Food Facts, favourites, copy yesterday, inline serving edits, moving and copying entries between meals and days, photo meals, recipes with scaling and URL import, meal-prep batches; fibre, sugar, sodium, saturated fat, potassium and cholesterol; weigh-ins with progress photos and cycle-aware notes; vitals and body measurements; water; exercise with earn-back calories; fasting timer with a Live Activity.
 - **Insight:** weight trend and rate of loss, milestones and plateau detection, weekly review and monthly report, correlations, logging and protein streaks with an optional grace day, shareable summaries and a doctor-friendly PDF.
 - **Nudges:** weigh-in, meal, water, protein and evening check-in reminders; grocery list sent to Apple Reminders.
-- **Everywhere:** Apple Health sync, iCloud sync, widgets and controls, Apple Watch app, Siri and Shortcuts, Spotlight, Home Screen quick actions, app lock; on iPad a sidebar layout, keyboard shortcuts and menu commands, pointer hover and drag and drop, and multiple windows.
+- **Everywhere:** Apple Health sync, iCloud sync, widgets and controls, Apple Watch app, Siri and Shortcuts, Spotlight, Home Screen quick actions, app lock, searchable Settings; on iPad a sidebar layout, keyboard shortcuts and menu commands, pointer hover and drag and drop, and multiple windows.
 
 ## In progress
 
-- [#166](https://github.com/TheRealestNwah/fitness-app/issues/166) Reorganise Settings into pages
-- [#195](https://github.com/TheRealestNwah/fitness-app/issues/195) Protein check and evening check-in never ask for notification permission
+Nothing right now.
 
 ## Next
 
