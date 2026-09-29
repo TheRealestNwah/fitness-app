@@ -345,7 +345,7 @@ struct SettingsView: View {
     }
 
     private func reminderChanged() {
-        let anyOn = profile.weighInReminderEnabled || profile.mealReminderEnabled || profile.waterReminderEnabled
+        let anyOn = NotificationManager.anyReminderEnabled(profile)
         Task { @MainActor in
             if anyOn {
                 let granted = await NotificationManager.requestAuthorization()
