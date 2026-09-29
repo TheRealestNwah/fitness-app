@@ -33,4 +33,13 @@ final class HealthExportTests: XCTestCase {
                                                       fiber: 1, sugar: 1, sodiumMg: 1).map(\.type)
         XCTAssertEqual(Set(written), Set(HealthImportRules.dietaryTypes))
     }
+
+    func testProfileDetailsMapSexForTheCalorieFormula() {
+        XCTAssertEqual(HealthProfileDetails.sex(.female), .female)
+        XCTAssertEqual(HealthProfileDetails.sex(.male), .male)
+        XCTAssertNil(HealthProfileDetails.sex(.other))
+        XCTAssertNil(HealthProfileDetails.sex(.notSet))
+        XCTAssertTrue(HealthProfileDetails().isEmpty)
+        XCTAssertFalse(HealthProfileDetails(heightCm: 170).isEmpty)
+    }
 }

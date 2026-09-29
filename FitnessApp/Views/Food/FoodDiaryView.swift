@@ -38,6 +38,9 @@ struct FoodDiaryView: View {
             .sheet(isPresented: $showCalendar) {
                 DiaryCalendarSheet(date: $date)
             }
+            .focusedSceneValue(\.diaryDayActions, DiaryDayActions(
+                previous: { withAnimation { date = date.adding(days: -1) } },
+                next: date.isToday ? nil : { withAnimation { date = date.adding(days: 1) } }))
         }
     }
 
