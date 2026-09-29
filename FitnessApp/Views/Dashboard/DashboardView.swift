@@ -107,7 +107,7 @@ struct DashboardView: View {
     private var weeklyReview: WeeklyReview {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
-            weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
+            weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
             budget: calorieTarget,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
@@ -126,7 +126,8 @@ struct DashboardView: View {
         let estimate = AdaptiveTargetCalculator.estimate(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays)
-        return ProgressCalculator.plateau(weights: weightDays, goalKg: profile.goalWeightKg,
+        return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
+                                          goalKg: profile.goalWeightKg,
                                           currentTarget: baseTarget, maintenance: estimate,
                                           weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
     }
@@ -158,6 +159,7 @@ struct DashboardView: View {
                 }
             }
             .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
+            .task { await HealthKitManager.shared.refreshCycle() }
             .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
             .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
             .sheet(isPresented: $showSettings) { SettingsView() }
