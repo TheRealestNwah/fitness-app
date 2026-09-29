@@ -1,8 +1,13 @@
 name: Screenshots
 
+# Nightly rather than on every push to main: a run takes ~35 minutes and
+# screenshots only need to be roughly current. Run it by hand from the
+# Actions tab when you want fresh ones sooner.
 on:
+  schedule:
+    - cron: '0 8 * * *'
   push:
-    branches: [main, 'claude/**']
+    branches: ['claude/**']
   workflow_dispatch:
 
 permissions:
