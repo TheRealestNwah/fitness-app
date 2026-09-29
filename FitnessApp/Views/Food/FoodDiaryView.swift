@@ -43,7 +43,7 @@ struct FoodDiaryView: View {
             .onAppear {
                 if storedDay > 0 { date = DiaryDayRestore.day(stored: storedDay) }
             }
-            .onChange(of: date) { _, day in storedDay = day.timeIntervalSinceReferenceDate }
+            .onChange(of: date) { _, day in storedDay = DiaryDayRestore.stored(day) }
             .focusedSceneValue(\.diaryDayActions, DiaryDayActions(
                 previous: { withAnimation { date = date.adding(days: -1) } },
                 next: date.isToday ? nil : { withAnimation { date = date.adding(days: 1) } }))
@@ -697,6 +697,12 @@ struct SaveFavouriteMealSheet: View {
 }
 
 enum DiaryDayRestore {
+    /// What to keep for a window: nothing (0) for today, so a relaunch the next morning opens
+    /// on that day rather than yesterday. Only a day picked on purpose is kept.
+    static func stored(_ day: Date, now: Date = .now, calendar: Calendar = .current) -> Double {
+        calendar.isDate(day, inSameDayAs: now) ? 0 : day.timeIntervalSinceReferenceDate
+    }
+
     /// A restored diary day, unless it's in the future (the clock changed) — then today.
     static func day(stored: Double, now: Date = .now) -> Date {
         let day = Date(timeIntervalSinceReferenceDate: stored)
