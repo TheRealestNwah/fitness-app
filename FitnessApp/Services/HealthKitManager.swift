@@ -83,12 +83,15 @@ enum HealthImportRules {
 
     /// Nutrient types a diary entry is written to Health as.
     static let dietaryTypes: [HKQuantityTypeIdentifier] = [.dietaryEnergyConsumed, .dietaryProtein, .dietaryCarbohydrates,
-                                                           .dietaryFatTotal, .dietaryFiber, .dietarySugar, .dietarySodium]
+                                                           .dietaryFatTotal, .dietaryFiber, .dietarySugar, .dietarySodium,
+                                                           .dietaryFatSaturated, .dietaryPotassium, .dietaryCholesterol]
 
     /// What a diary entry is written to Health as. Energy and macros are always written;
     /// fibre, sugar and sodium only when recorded, since zero usually means unknown.
     static func dietaryValues(calories: Double, protein: Double, carbs: Double, fat: Double,
-                              fiber: Double, sugar: Double, sodiumMg: Double) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
+                              fiber: Double, sugar: Double, sodiumMg: Double,
+                              saturatedFat: Double = 0, potassiumMg: Double = 0,
+                              cholesterolMg: Double = 0) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
         var values: [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] = [
             (.dietaryEnergyConsumed, max(calories, 0), .kilocalorie()),
             (.dietaryProtein, max(protein, 0), .gram()),
@@ -98,6 +101,9 @@ enum HealthImportRules {
         if fiber > 0 { values.append((.dietaryFiber, fiber, .gram())) }
         if sugar > 0 { values.append((.dietarySugar, sugar, .gram())) }
         if sodiumMg > 0 { values.append((.dietarySodium, sodiumMg, .gramUnit(with: .milli))) }
+        if saturatedFat > 0 { values.append((.dietaryFatSaturated, saturatedFat, .gram())) }
+        if potassiumMg > 0 { values.append((.dietaryPotassium, potassiumMg, .gramUnit(with: .milli))) }
+        if cholesterolMg > 0 { values.append((.dietaryCholesterol, cholesterolMg, .gramUnit(with: .milli))) }
         return values
     }
 
@@ -410,7 +416,9 @@ final class HealthKitManager {
         let metadata: [String: Any] = [HealthImportRules.metadataKey: entry.uuid.uuidString,
                                        HKMetadataKeyFoodType: entry.foodName]
         return HealthImportRules.dietaryValues(calories: entry.calories, protein: entry.protein, carbs: entry.carbs,
-                                               fat: entry.fat, fiber: entry.fiber, sugar: entry.sugar, sodiumMg: entry.sodium)
+                                               fat: entry.fat, fiber: entry.fiber, sugar: entry.sugar, sodiumMg: entry.sodium,
+                                               saturatedFat: entry.saturatedFat, potassiumMg: entry.potassium,
+                                               cholesterolMg: entry.cholesterol)
             .map { HKQuantitySample(type: HKQuantityType($0.type), quantity: HKQuantity(unit: $0.unit, doubleValue: $0.value),
                                     start: entry.date, end: entry.date, metadata: metadata) }
     }

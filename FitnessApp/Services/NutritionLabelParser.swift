@@ -15,6 +15,9 @@ enum NutritionLabelParser {
         var fiber: Double?
         var sugar: Double?
         var sodiumMg: Double?
+        var saturatedFat: Double?
+        var potassiumMg: Double?
+        var cholesterolMg: Double?
 
         var isEmpty: Bool { calories == nil && protein == nil && carbs == nil && fat == nil }
     }
@@ -68,6 +71,13 @@ enum NutritionLabelParser {
                 } else if let plain = found.first(where: { $0.unit == "" }) {
                     label.calories = plain.value
                 }
+            } else if line.contains("saturate"), !line.contains("unsaturate"), !line.contains("trans") {
+                // "Saturated Fat 3g" (US) or "of which saturates 3g" (EU); before the fat check below.
+                if label.saturatedFat == nil { label.saturatedFat = grams(line) }
+            } else if label.cholesterolMg == nil, line.contains("cholesterol") {
+                label.cholesterolMg = grams(line).map { ($0 * 1000).rounded() }
+            } else if label.potassiumMg == nil, line.contains("potassium") {
+                label.potassiumMg = grams(line).map { ($0 * 1000).rounded() }
             } else if label.fat == nil, line.hasPrefix("fat") || line.contains("total fat") {
                 label.fat = grams(line)
             } else if label.carbs == nil, line.contains("carbohydrate") || line.hasPrefix("carbs") {

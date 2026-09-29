@@ -86,6 +86,7 @@ struct FoodReference: Codable, Hashable, Transferable {
                                  carbs: food.carbs * servings, fat: food.fat * servings, foodItemID: food.uuid,
                                  fiber: food.fiber * servings, sugar: food.sugar * servings,
                                  sodium: food.sodium * servings)
+                .withExtras(from: food, servings: servings)
             food.lastUsed = .now
             food.useCount += 1
         }

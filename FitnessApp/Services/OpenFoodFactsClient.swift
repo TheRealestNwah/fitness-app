@@ -14,12 +14,20 @@ struct ScannedProduct: Equatable {
     var sugar: Double = 0
     /// Milligrams.
     var sodium: Double = 0
+    var saturatedFat: Double = 0
+    /// Milligrams.
+    var potassium: Double = 0
+    /// Milligrams.
+    var cholesterol: Double = 0
 
     func makeFoodItem() -> FoodItem {
         let item = FoodItem(name: name, brand: brand, servingDescription: servingDescription,
                             calories: calories, protein: protein, carbs: carbs, fat: fat, fiber: fiber,
                             sugar: sugar, sodium: sodium, isCustom: true)
         item.barcode = barcode
+        item.saturatedFat = saturatedFat
+        item.potassium = potassium
+        item.cholesterol = cholesterol
         return item
     }
 }
@@ -119,7 +127,10 @@ enum OpenFoodFactsClient {
                                   fat: number("fat_serving") ?? 0,
                                   fiber: number("fiber_serving") ?? 0,
                                   sugar: number("sugars_serving") ?? 0,
-                                  sodium: sodiumMg("_serving") ?? 0)
+                                  sodium: sodiumMg("_serving") ?? 0,
+                                  saturatedFat: number("saturated-fat_serving") ?? 0,
+                                  potassium: (number("potassium_serving") ?? 0) * 1000,
+                                  cholesterol: (number("cholesterol_serving") ?? 0) * 1000)
         }
         guard let per100 = kcal("_100g") else { return nil }
         let factor: Double
@@ -138,6 +149,10 @@ enum OpenFoodFactsClient {
                               fat: (number("fat_100g") ?? 0) * factor,
                               fiber: (number("fiber_100g") ?? 0) * factor,
                               sugar: (number("sugars_100g") ?? 0) * factor,
-                              sodium: (sodiumMg("_100g") ?? 0) * factor)
+                              sodium: (sodiumMg("_100g") ?? 0) * factor,
+                              saturatedFat: (number("saturated-fat_100g") ?? 0) * factor,
+                              // Open Food Facts gives potassium and cholesterol in grams.
+                              potassium: (number("potassium_100g") ?? 0) * 1000 * factor,
+                              cholesterol: (number("cholesterol_100g") ?? 0) * 1000 * factor)
     }
 }

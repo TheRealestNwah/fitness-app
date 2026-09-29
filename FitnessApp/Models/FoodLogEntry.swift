@@ -19,6 +19,11 @@ final class FoodLogEntry {
     var sugar: Double = 0
     /// Milligrams.
     var sodium: Double = 0
+    var saturatedFat: Double = 0
+    /// Milligrams.
+    var potassium: Double = 0
+    /// Milligrams.
+    var cholesterol: Double = 0
     var foodItemID: UUID?
     /// A photo of the meal, stored outside the database file.
     @Attribute(.externalStorage) var photo: Data?
@@ -70,12 +75,36 @@ final class FoodLogEntry {
         fiber *= ratio
         sugar *= ratio
         sodium *= ratio
+        saturatedFat *= ratio
+        potassium *= ratio
+        cholesterol *= ratio
         servings = newServings
     }
 
     var servingsLabel: String {
         let qty = servings == servings.rounded() ? String(Int(servings)) : String(format: "%.2g", servings)
         return servingDescription.isEmpty ? "\(qty) serving" : "\(qty) × \(servingDescription)"
+    }
+}
+
+extension FoodLogEntry {
+    /// Copies saturated fat, potassium and cholesterol from another entry (they aren't init
+    /// parameters, to keep the long initialiser manageable).
+    @discardableResult
+    func withExtras(from other: FoodLogEntry, scale: Double = 1) -> FoodLogEntry {
+        saturatedFat = other.saturatedFat * scale
+        potassium = other.potassium * scale
+        cholesterol = other.cholesterol * scale
+        return self
+    }
+
+    /// The same, from a food for `servings` of it.
+    @discardableResult
+    func withExtras(from food: FoodItem, servings: Double) -> FoodLogEntry {
+        saturatedFat = food.saturatedFat * servings
+        potassium = food.potassium * servings
+        cholesterol = food.cholesterol * servings
+        return self
     }
 }
 

@@ -30,8 +30,21 @@ final class HealthExportTests: XCTestCase {
 
     func testEveryWrittenTypeIsDeletable() {
         let written = HealthImportRules.dietaryValues(calories: 1, protein: 1, carbs: 1, fat: 1,
-                                                      fiber: 1, sugar: 1, sodiumMg: 1).map(\.type)
+                                                      fiber: 1, sugar: 1, sodiumMg: 1, saturatedFat: 1,
+                                                      potassiumMg: 1, cholesterolMg: 1).map(\.type)
         XCTAssertEqual(Set(written), Set(HealthImportRules.dietaryTypes))
+    }
+
+    func testWritesExtraNutrientsWhenRecorded() {
+        let values = HealthImportRules.dietaryValues(calories: 300, protein: 10, carbs: 20, fat: 12,
+                                                     fiber: 0, sugar: 0, sodiumMg: 0,
+                                                     saturatedFat: 4, potassiumMg: 350, cholesterolMg: 60)
+        let byType = Dictionary(uniqueKeysWithValues: values.map { ($0.type, $0) })
+        XCTAssertEqual(byType[.dietaryFatSaturated]?.value, 4)
+        XCTAssertEqual(byType[.dietaryFatSaturated]?.unit, .gram())
+        XCTAssertEqual(byType[.dietaryPotassium]?.value, 350)
+        XCTAssertEqual(byType[.dietaryPotassium]?.unit, .gramUnit(with: .milli))
+        XCTAssertEqual(byType[.dietaryCholesterol]?.value, 60)
     }
 
     func testProfileDetailsMapSexForTheCalorieFormula() {

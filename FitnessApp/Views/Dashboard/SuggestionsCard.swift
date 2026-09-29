@@ -78,7 +78,8 @@ struct SuggestionsCard: View {
                                                   servings: s, servingDescription: food.servingDescription,
                                                   calories: food.calories * s, protein: food.protein * s,
                                                   carbs: food.carbs * s, fat: food.fat * s, foodItemID: food.uuid,
-                                                  fiber: food.fiber * s, sugar: food.sugar * s, sodium: food.sodium * s))
+                                                  fiber: food.fiber * s, sugar: food.sugar * s, sodium: food.sodium * s)
+                .withExtras(from: food, servings: s))
             food.lastUsed = .now
             food.useCount += 1
         case .meal(let id):

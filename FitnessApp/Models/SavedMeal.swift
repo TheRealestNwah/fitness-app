@@ -16,6 +16,9 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
     var fiber: Double?
     var sugar: Double?
     var sodium: Double?
+    var saturatedFat: Double?
+    var potassium: Double?
+    var cholesterol: Double?
 
     init(foodName: String, servings: Double, servingDescription: String,
          calories: Double, protein: Double, carbs: Double, fat: Double, foodItemID: UUID? = nil) {
@@ -37,6 +40,9 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
         fiber = entry.fiber
         sugar = entry.sugar
         sodium = entry.sodium
+        saturatedFat = entry.saturatedFat
+        potassium = entry.potassium
+        cholesterol = entry.cholesterol
     }
 }
 
@@ -79,10 +85,14 @@ final class SavedMeal {
     func log(on day: Date, as meal: MealType, context: ModelContext) -> [FoodLogEntry] {
         let stamp = meal.logDate(on: day)
         let entries = items.map { item in
-            FoodLogEntry(date: stamp, mealType: meal, foodName: item.foodName, servings: item.servings,
-                         servingDescription: item.servingDescription, calories: item.calories,
-                         protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID,
-                         fiber: item.fiber ?? 0, sugar: item.sugar ?? 0, sodium: item.sodium ?? 0)
+            let entry = FoodLogEntry(date: stamp, mealType: meal, foodName: item.foodName, servings: item.servings,
+                                     servingDescription: item.servingDescription, calories: item.calories,
+                                     protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID,
+                                     fiber: item.fiber ?? 0, sugar: item.sugar ?? 0, sodium: item.sodium ?? 0)
+            entry.saturatedFat = item.saturatedFat ?? 0
+            entry.potassium = item.potassium ?? 0
+            entry.cholesterol = item.cholesterol ?? 0
+            return entry
         }
         for e in entries { context.insertDiaryEntry(e) }
         lastUsed = .now
