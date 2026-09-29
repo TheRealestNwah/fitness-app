@@ -220,6 +220,7 @@ struct DayDiaryView: View {
 
     @State private var addingTo: MealType?
     @State private var editing: FoodLogEntry?
+    @State private var relocating: Relocation?
     @State private var savingFavourite: MealType?
     @State private var photographing: MealType?
     @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 84
@@ -285,6 +286,32 @@ struct DayDiaryView: View {
                                         fiber: e.fiber, sugar: e.sugar, sodium: e.sodium))
         }
         try? context.save()
+    }
+
+    /// Move or copy a diary line: other meals today, tomorrow, or any day.
+    @ViewBuilder
+    private func relocateMenu(_ entry: FoodLogEntry) -> some View {
+        Menu {
+            ForEach(MealType.allCases.filter { $0 != entry.mealType }) { meal in
+                Button(meal.label) { context.moveDiaryEntry(entry, to: meal, on: date, undo: undoCenter) }
+            }
+            Divider()
+            Button("Another day…") { relocating = Relocation(entry: entry, copying: false) }
+        } label: {
+            Label("Move to", systemImage: "arrow.right.circle")
+        }
+        Menu {
+            ForEach(MealType.allCases) { meal in
+                Button(meal.label) { context.copyDiaryEntry(entry, to: meal, on: date, undo: undoCenter) }
+            }
+            Divider()
+            Button("Tomorrow") {
+                context.copyDiaryEntry(entry, to: entry.mealType, on: date.adding(days: 1), undo: undoCenter)
+            }
+            Button("Another day…") { relocating = Relocation(entry: entry, copying: true) }
+        } label: {
+            Label("Copy to", systemImage: "doc.on.doc")
+        }
     }
 
     /// Changes an entry's servings from its row, with undo.
@@ -355,6 +382,8 @@ struct DayDiaryView: View {
                                 .font(.body.monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
+                        .contextMenu { relocateMenu(entry) }
+                        .draggable(FoodReference(entry: entry))
                     }
                     .onDelete { offsets in
                         context.deleteDiaryEntries(offsets.map { items[$0] }, undo: undoCenter)
@@ -368,7 +397,7 @@ struct DayDiaryView: View {
                         }
                         .buttonStyle(.borderless)
                         .foodDropDestination { references in
-                            references.map { $0.log(on: date, as: meal, context: context) }.contains(true)
+                            references.map { $0.log(on: date, as: meal, context: context, undo: undoCenter) }.contains(true)
                         }
                         Spacer()
                         Button {
@@ -440,6 +469,15 @@ struct DayDiaryView: View {
         .listStyle(.insetGrouped)
         .sheet(item: $addingTo) { meal in
             FoodSearchView(date: date, mealType: meal)
+        }
+        .sheet(item: $relocating) { relocation in
+            RelocateEntrySheet(entry: relocation.entry, copying: relocation.copying) { meal, day in
+                if relocation.copying {
+                    context.copyDiaryEntry(relocation.entry, to: meal, on: day, undo: undoCenter)
+                } else {
+                    context.moveDiaryEntry(relocation.entry, to: meal, on: day, undo: undoCenter)
+                }
+            }
         }
         .sheet(item: $editing) { entry in
             if entry.photo != nil || entry.isEstimate {
@@ -734,5 +772,52 @@ struct ServingsMenu: View {
         .accessibilityLabel("Servings")
         .accessibilityValue(servings.cleanString)
         .accessibilityIdentifier("servingsMenu")
+    }
+}
+
+/// A diary line waiting for a day and meal to be moved or copied to.
+struct Relocation: Identifiable {
+    let entry: FoodLogEntry
+    let copying: Bool
+    var id: UUID { entry.uuid }
+}
+
+/// Pick a day and meal to move or copy a diary line to.
+struct RelocateEntrySheet: View {
+    let entry: FoodLogEntry
+    let copying: Bool
+    var perform: (MealType, Date) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var day = Date.now
+    @State private var meal: MealType = .snack
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section(entry.foodName) {
+                    DatePicker("Day", selection: $day, displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                    Picker("Meal", selection: $meal) {
+                        ForEach(MealType.allCases) { Text($0.label).tag($0) }
+                    }
+                }
+            }
+            .navigationTitle(copying ? "Copy to" : "Move to")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(copying ? "Copy" : "Move") {
+                        perform(meal, day.startOfDay)
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear {
+                day = entry.date
+                meal = entry.mealType
+            }
+        }
     }
 }
