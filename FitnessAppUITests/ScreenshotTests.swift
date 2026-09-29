@@ -69,7 +69,7 @@ final class ScreenshotTests: XCTestCase {
         tabs.buttons["Weight"].tap()
         snap("14-weight")
 
-        app.navigationBars["Weight"].buttons.element(boundBy: 0).tap()
+        app.navigationBars["Weight"].buttons["addWeighIn"].tap()
         XCTAssertTrue(app.navigationBars["Weigh in"].waitForExistence(timeout: 5))
         snap("15-weigh-in-sheet")
         app.buttons["Cancel"].firstMatch.tap()

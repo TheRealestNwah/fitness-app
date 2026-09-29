@@ -159,6 +159,8 @@ struct WeightView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Weigh in")
+                        .accessibilityIdentifier("addWeighIn")
                 }
             }
             .sheet(isPresented: $showAdd) { AddWeightSheet() }
