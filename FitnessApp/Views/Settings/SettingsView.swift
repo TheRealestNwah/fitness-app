@@ -221,6 +221,16 @@ struct SettingsView: View {
                     }
                     Toggle("Meal logging reminders", isOn: $profile.mealReminderEnabled)
                     Toggle("Water reminders", isOn: $profile.waterReminderEnabled)
+                    Toggle("Evening check-in", isOn: Binding(
+                        get: { profile.dayCloseReminderHour != nil },
+                        set: { profile.dayCloseReminderHour = $0 ? 20 : nil }))
+                    if let hour = profile.dayCloseReminderHour {
+                        Picker("Check-in time", selection: Binding(get: { hour }, set: { profile.dayCloseReminderHour = $0 })) {
+                            ForEach(18..<23, id: \.self) { hour in
+                                Text(hourLabel(hour)).tag(hour)
+                            }
+                        }
+                    }
                     if notificationsDenied {
                         Text("Notifications are turned off for this app. Enable them in iOS Settings to receive reminders.")
                             .font(.footnote)
@@ -229,7 +239,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Reminders")
                 } footer: {
-                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged.")
+                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The evening check-in only comes if dinner isn't logged.")
                 }
 
                 AppLockSection()
@@ -299,6 +309,7 @@ struct SettingsView: View {
             .onChange(of: profile.weighInReminderHour) { _, _ in reminderChanged() }
             .onChange(of: profile.mealReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.waterReminderEnabled) { _, _ in reminderChanged() }
+            .onChange(of: profile.dayCloseReminderHour) { _, _ in reminderChanged() }
             .onDisappear { try? context.save() }
         }
     }
