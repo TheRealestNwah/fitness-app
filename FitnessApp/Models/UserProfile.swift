@@ -40,6 +40,8 @@ final class UserProfile {
     var mealReminderEnabled: Bool = false
     /// Evening check-in when dinner isn't logged; nil when off.
     var dayCloseReminderHour: Int?
+    /// Afternoon nudge when protein is well short of the target.
+    var proteinReminderEnabled: Bool = false
 
     init(name: String,
          sex: BiologicalSex,
