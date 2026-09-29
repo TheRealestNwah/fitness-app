@@ -24,6 +24,13 @@ struct FitnessApp: App {
         .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
             await BackgroundRefresh.run()
         }
+
+        // A recipe opened in its own window from the recipe library (iPad, Stage Manager).
+        WindowGroup("Recipe", id: RecipeWindow.id, for: UUID.self) { $recipeID in
+            RecipeWindow(recipeID: recipeID)
+                .appLockGate()
+        }
+        .modelContainer(container)
     }
 }
 
