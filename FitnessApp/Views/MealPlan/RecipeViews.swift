@@ -677,6 +677,7 @@ struct RecipeWindow: View {
 
     @Query private var recipes: [Recipe]
     @Query private var profiles: [UserProfile]
+    @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
 
     private var recipe: Recipe? { recipes.first { $0.uuid == recipeID } }
 
@@ -690,5 +691,6 @@ struct RecipeWindow: View {
                                        description: Text("It may have been deleted."))
             }
         }
+        .preferredColorScheme((Appearance(rawValue: appearanceRaw) ?? .system).colorScheme)
     }
 }
