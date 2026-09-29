@@ -18,6 +18,7 @@ struct SettingsView: View {
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
     @AppStorage(HealthSettings.creditPercentKey) private var healthCreditPercent = 0
+    @AppStorage(CycleCalculator.enabledKey) private var cycleAware = false
     @AppStorage(StreakSettings.graceDayKey) private var streakGraceDay = false
     @State private var healthStatus: String?
     @State private var healthBusy = false
@@ -182,6 +183,7 @@ struct SettingsView: View {
                                 LabeledContent("Last import", value: last.formatted(date: .abbreviated, time: .shortened))
                             }
                         }
+                        Toggle("Cycle-aware weight", isOn: $cycleAware)
                         if let healthStatus {
                             Text(healthStatus)
                                 .font(.footnote)
@@ -191,7 +193,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Apple Health")
                 } footer: {
-                    Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice.")
+                    Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice. Cycle-aware weight reads your cycle from Health to mark likely water-retention days on the weight chart and leave them out of plateau checks.")
                 }
 
                 Section("Water") {
@@ -219,6 +221,16 @@ struct SettingsView: View {
                     }
                     Toggle("Meal logging reminders", isOn: $profile.mealReminderEnabled)
                     Toggle("Water reminders", isOn: $profile.waterReminderEnabled)
+                    Toggle("Evening check-in", isOn: Binding(
+                        get: { profile.dayCloseReminderHour != nil },
+                        set: { profile.dayCloseReminderHour = $0 ? 20 : nil }))
+                    if let hour = profile.dayCloseReminderHour {
+                        Picker("Check-in time", selection: Binding(get: { hour }, set: { profile.dayCloseReminderHour = $0 })) {
+                            ForEach(18..<23, id: \.self) { hour in
+                                Text(hourLabel(hour)).tag(hour)
+                            }
+                        }
+                    }
                     if notificationsDenied {
                         Text("Notifications are turned off for this app. Enable them in iOS Settings to receive reminders.")
                             .font(.footnote)
@@ -227,7 +239,7 @@ struct SettingsView: View {
                 } header: {
                     Text("Reminders")
                 } footer: {
-                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged.")
+                    Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The evening check-in only comes if dinner isn't logged.")
                 }
 
                 AppLockSection()
@@ -287,10 +299,17 @@ struct SettingsView: View {
             .onChange(of: healthEnabled) { _, on in
                 if on { runHealthImport(force: true) } else { healthStatus = nil }
             }
+            .onChange(of: cycleAware) { _, on in
+                Task {
+                    if on { try? await HealthKitManager.shared.requestCycleAccess() }
+                    await HealthKitManager.shared.refreshCycle()
+                }
+            }
             .onChange(of: profile.weighInReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.weighInReminderHour) { _, _ in reminderChanged() }
             .onChange(of: profile.mealReminderEnabled) { _, _ in reminderChanged() }
             .onChange(of: profile.waterReminderEnabled) { _, _ in reminderChanged() }
+            .onChange(of: profile.dayCloseReminderHour) { _, _ in reminderChanged() }
             .onDisappear { try? context.save() }
         }
     }

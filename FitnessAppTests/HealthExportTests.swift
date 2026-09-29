@@ -46,4 +46,13 @@ final class HealthExportTests: XCTestCase {
         XCTAssertEqual(byType[.dietaryPotassium]?.unit, .gramUnit(with: .milli))
         XCTAssertEqual(byType[.dietaryCholesterol]?.value, 60)
     }
+
+    func testProfileDetailsMapSexForTheCalorieFormula() {
+        XCTAssertEqual(HealthProfileDetails.sex(.female), .female)
+        XCTAssertEqual(HealthProfileDetails.sex(.male), .male)
+        XCTAssertNil(HealthProfileDetails.sex(.other))
+        XCTAssertNil(HealthProfileDetails.sex(.notSet))
+        XCTAssertTrue(HealthProfileDetails().isEmpty)
+        XCTAssertFalse(HealthProfileDetails(heightCm: 170).isEmpty)
+    }
 }

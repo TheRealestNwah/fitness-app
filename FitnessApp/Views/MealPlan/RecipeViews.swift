@@ -166,6 +166,7 @@ struct RecipeDetailView: View {
     @State private var showPlan = false
     @State private var showLog = false
     @State private var showEditor = false
+    @State private var showBatch = false
     @State private var scaledServings = 0
 
     private var servingsShown: Int { scaledServings > 0 ? scaledServings : recipe.servings }
@@ -261,6 +262,9 @@ struct RecipeDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button { showBatch = true } label: {
+                        Label("Start a meal-prep batch", systemImage: "takeoutbag.and.cup.and.straw")
+                    }
                     Button { showEditor = true } label: { Label("Edit recipe", systemImage: "pencil") }
                     Button {
                         recipe.isFavorite.toggle()
@@ -282,6 +286,53 @@ struct RecipeDetailView: View {
         .sheet(isPresented: $showEditor) {
             RecipeEditorView(recipe: recipe)
         }
+        .sheet(isPresented: $showBatch) {
+            StartBatchSheet(recipe: recipe)
+        }
+    }
+}
+
+/// Cook a recipe once and split it into portions to log over the next few days.
+struct StartBatchSheet: View {
+    let recipe: Recipe
+
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @State private var portions = 4
+
+    private var perPortion: Double {
+        recipe.caloriesPerServing * Double(max(recipe.servings, 1)) / Double(max(portions, 1))
+    }
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Stepper(value: $portions, in: 1...20) {
+                        LabeledContent("Portions", value: "\(portions)")
+                    }
+                    LabeledContent("Each portion", value: Energy.string(perPortion))
+                } header: {
+                    Text(recipe.name)
+                } footer: {
+                    Text("The batch shows at the top of food search and in the planner until every portion is logged.")
+                }
+            }
+            .navigationTitle("Meal-prep batch")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Start") {
+                        context.insert(MealPrepBatch(recipe: recipe, portions: portions))
+                        try? context.save()
+                        dismiss()
+                    }
+                }
+            }
+            .onAppear { portions = max(recipe.servings, 1) }
+        }
+        .presentationDetents([.medium])
     }
 }
 

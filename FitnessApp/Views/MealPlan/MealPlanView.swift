@@ -216,6 +216,10 @@ struct PlannerView: View {
                                     carbs: entry.totalCarbs, fat: entry.totalFat,
                                     foodItemID: entry.foodItemID))
         entry.isLogged = true
+        if let id = entry.batchID,
+           let batch = try? context.fetch(FetchDescriptor<MealPrepBatch>(predicate: #Predicate { $0.uuid == id })).first {
+            batch.usePortion()
+        }
         try? context.save()
     }
 
@@ -329,19 +333,29 @@ struct PlanItemPicker: View {
     @Environment(\.dismiss) private var dismiss
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
     @Query(sort: \FoodItem.name) private var foods: [FoodItem]
+    @Query(filter: #Predicate<MealPrepBatch> { $0.portionsLeft > 0 }, sort: \MealPrepBatch.cookedAt, order: .reverse)
+    private var batches: [MealPrepBatch]
 
     @State private var search = ""
     @State private var source: Source = .recipes
 
     enum Source: String, CaseIterable, Identifiable {
+        case prep = "Meal prep"
         case recipes = "Recipes"
         case foods = "Foods"
         var id: String { rawValue }
 
         var label: String {
-            self == .recipes ? String(localized: "Recipes") : String(localized: "Foods")
+            switch self {
+            case .prep: String(localized: "Meal prep")
+            case .recipes: String(localized: "Recipes")
+            case .foods: String(localized: "Foods")
+            }
         }
     }
+
+    /// Meal prep is only offered while a batch has portions left.
+    private var sources: [Source] { batches.isEmpty ? [.recipes, .foods] : Source.allCases }
 
     private var query: String { search.trimmingCharacters(in: .whitespaces).lowercased() }
 
@@ -364,13 +378,30 @@ struct PlanItemPicker: View {
             List {
                 Section {
                     Picker("Source", selection: $source) {
-                        ForEach(Source.allCases) { Text($0.label).tag($0) }
+                        ForEach(sources) { Text($0.label).tag($0) }
                     }
                     .pickerStyle(.segmented)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                 }
                 switch source {
+                case .prep:
+                    Section {
+                        ForEach(batches) { batch in
+                            Button { add(batch) } label: {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(batch.name).foregroundStyle(Color.primary)
+                                        Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
+                                            .font(.caption).foregroundStyle(Color.secondary)
+                                    }
+                                    Spacer()
+                                    Text("\(Int(batch.caloriesPerPortion.rounded()))")
+                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
+                                }
+                            }
+                        }
+                    }
                 case .recipes:
                     Section {
                         ForEach(matchingRecipes) { recipe in
@@ -421,6 +452,12 @@ struct PlanItemPicker: View {
         dismiss()
     }
 
+    private func add(_ batch: MealPrepBatch) {
+        context.insert(MealPlanEntry(batch: batch, day: day, mealType: mealType))
+        try? context.save()
+        dismiss()
+    }
+
     private func add(_ food: FoodItem) {
         context.insert(MealPlanEntry(food: food, day: day, mealType: mealType))
         try? context.save()
@@ -436,6 +473,8 @@ struct GroceryListView: View {
     @AppStorage("groceryChecked") private var checkedData: Data = Data()
 
     @State private var weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: .now)?.start ?? Date.now.startOfDay
+    @State private var sending = false
+    @State private var sendResult: String?
 
     private var weekEnd: Date { weekStart.adding(days: 7) }
 
@@ -492,6 +531,20 @@ struct GroceryListView: View {
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
                 }
                 .buttonStyle(.bordered)
+                if !items.isEmpty {
+                    Button {
+                        Task { await sendToReminders() }
+                    } label: {
+                        HStack {
+                            Label("Send to Reminders", systemImage: "checklist")
+                            if sending {
+                                Spacer()
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(sending)
+                }
             }
             if items.isEmpty {
                 ContentUnavailableView("Nothing planned this week", systemImage: "cart",
@@ -533,5 +586,25 @@ struct GroceryListView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .alert("Reminders", isPresented: Binding(get: { sendResult != nil }, set: { if !$0 { sendResult = nil } })) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(sendResult ?? "")
+        }
+    }
+
+    /// Items not yet ticked off, as reminder titles with their amounts in the notes.
+    private func sendToReminders() async {
+        sending = true
+        defer { sending = false }
+        let lines = items.filter { !checked.contains($0.name) }.map {
+            GroceryReminders.Line(title: $0.name.capitalized, notes: $0.amounts.joined(separator: " + "))
+        }
+        do {
+            let count = try await GroceryReminders.send(lines)
+            sendResult = String(localized: "\(count) items are on the “\(GroceryReminders.listTitle)” list in Reminders.")
+        } catch {
+            sendResult = error.localizedDescription
+        }
     }
 }

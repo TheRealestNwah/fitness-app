@@ -15,12 +15,17 @@ final class UndoCenter {
     private(set) var toast: Toast?
     @ObservationIgnored private var restore: (() -> Void)?
     @ObservationIgnored private var expiry: Task<Void, Never>?
+    /// The window's undo manager, so Edit › Undo (⌘Z on a keyboard) also restores while the toast shows.
+    @ObservationIgnored var undoManager: UndoManager?
 
     /// Shows `message` with an Undo button; a newer offer replaces an older one.
     func offer(_ message: String, restore: @escaping () -> Void) {
         let toast = Toast(message: message)
         self.toast = toast
         self.restore = restore
+        undoManager?.removeAllActions(withTarget: self)
+        undoManager?.registerUndo(withTarget: self) { $0.undo() }
+        undoManager?.setActionName(message)
         expiry?.cancel()
         expiry = Task { [weak self] in
             try? await Task.sleep(for: .seconds(Self.visibleSeconds))
@@ -38,6 +43,7 @@ final class UndoCenter {
         expiry?.cancel()
         toast = nil
         restore = nil
+        undoManager?.removeAllActions(withTarget: self)
     }
 }
 

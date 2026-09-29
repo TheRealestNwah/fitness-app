@@ -42,6 +42,8 @@ final class UserProfile {
     var weighInReminderHour: Int = 7
     var waterReminderEnabled: Bool = false
     var mealReminderEnabled: Bool = false
+    /// Evening check-in when dinner isn't logged; nil when off.
+    var dayCloseReminderHour: Int?
 
     init(name: String,
          sex: BiologicalSex,

@@ -64,6 +64,23 @@ final class FoodLogEntry {
         set { mealTypeRaw = newValue.rawValue }
     }
 
+    /// Changes the amount, scaling calories and nutrients in proportion.
+    func scale(toServings newServings: Double) {
+        guard newServings > 0 else { return }
+        let ratio = newServings / max(servings, 0.01)
+        calories *= ratio
+        protein *= ratio
+        carbs *= ratio
+        fat *= ratio
+        fiber *= ratio
+        sugar *= ratio
+        sodium *= ratio
+        saturatedFat *= ratio
+        potassium *= ratio
+        cholesterol *= ratio
+        servings = newServings
+    }
+
     var servingsLabel: String {
         let qty = servings == servings.rounded() ? String(Int(servings)) : String(format: "%.2g", servings)
         return servingDescription.isEmpty ? "\(qty) serving" : "\(qty) × \(servingDescription)"

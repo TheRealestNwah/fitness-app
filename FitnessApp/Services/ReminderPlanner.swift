@@ -2,12 +2,15 @@ import Foundation
 
 /// Works out which one-off reminders to schedule for the next few days, so today's can
 /// adapt to what has already been logged: no water nudges once the goal is met, no
-/// reminder for a meal already logged, and a nudge if nothing is logged by lunchtime.
+/// reminder for a meal already logged, a nudge if nothing is logged by lunchtime, and an
+/// optional evening check-in when dinner still isn't logged.
 enum ReminderPlanner {
     struct Settings {
         var waterEnabled: Bool
         var waterGoalMl: Double
         var mealsEnabled: Bool
+        /// Hour of the evening check-in; nil when it's off.
+        var dayCloseHour: Int? = nil
     }
 
     struct Today {
@@ -58,6 +61,19 @@ enum ReminderPlanner {
                         body: nothingYet ? String(localized: "A quick log of breakfast and lunch keeps today's numbers useful.")
                                          : String(localized: "Logging right after you eat keeps your calorie count honest.")))
                 }
+            }
+
+            if let hour = settings.dayCloseHour,
+               let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now,
+               !(isToday && today.loggedMeals.contains(.dinner)),
+               // A dinner reminder in the hour before would say the same thing.
+               !reminders.contains(where: { $0.id == "meal.\(key).dinner" && date.timeIntervalSince($0.date) <= 3600 }) {
+                let nothing = isToday && today.loggedMeals.isEmpty
+                reminders.append(Reminder(
+                    id: "dayclose.\(key)", date: date,
+                    title: String(localized: "Finish today's log"),
+                    body: nothing ? String(localized: "Nothing's logged today yet. A rough entry for each meal still keeps your week on track.")
+                                  : String(localized: "Dinner isn't logged yet. A quick entry keeps today's numbers right.")))
             }
         }
         return reminders

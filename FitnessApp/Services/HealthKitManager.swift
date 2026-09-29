@@ -29,6 +29,25 @@ enum HealthSettings {
     }
 }
 
+/// What onboarding can fill in from Apple Health; each part is nil when Health has nothing.
+struct HealthProfileDetails: Equatable {
+    var birthDate: Date?
+    var sex: BiologicalSex?
+    var heightCm: Double?
+    var weightKg: Double?
+
+    var isEmpty: Bool { birthDate == nil && sex == nil && heightCm == nil && weightKg == nil }
+
+    /// Health's sex, when it's one the calorie formula uses.
+    static func sex(_ value: HKBiologicalSex) -> BiologicalSex? {
+        switch value {
+        case .female: .female
+        case .male: .male
+        default: nil
+        }
+    }
+}
+
 struct HealthQuantitySample: Equatable {
     var id: UUID
     var date: Date
@@ -158,6 +177,8 @@ final class HealthKitManager {
     var todayActiveEnergyKcal: Double = 0
     var lastRefresh: Date?
     var lastError: String?
+    /// Likely water-retention days from cycle data, when cycle-aware weight is on.
+    var retentionDays: Set<Date> = []
 
     static var isAvailable: Bool { HKHealthStore.isHealthDataAvailable() }
 
@@ -168,8 +189,15 @@ final class HealthKitManager {
     }
 
     private var readTypes: Set<HKObjectType> {
-        [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
-         HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
+        let sync: Set<HKObjectType> = [HKQuantityType(.bodyMass), HKQuantityType(.stepCount), HKQuantityType(.activeEnergyBurned),
+                                       HKQuantityType(.restingHeartRate), HKCategoryType(.sleepAnalysis), HKObjectType.workoutType()]
+        return sync.union(profileTypes)
+    }
+
+    /// Read during setup to fill in the profile.
+    private var profileTypes: Set<HKObjectType> {
+        [HKCharacteristicType(.dateOfBirth), HKCharacteristicType(.biologicalSex),
+         HKQuantityType(.height), HKQuantityType(.bodyMass)]
     }
 
     private var writeTypes: Set<HKSampleType> {
@@ -184,6 +212,30 @@ final class HealthKitManager {
     }
 
     // MARK: Reads
+
+    /// Asks for read access to the profile basics and returns whatever Health has.
+    /// Denied or missing items come back nil (Health doesn't say which were denied).
+    func profileDetails() async throws -> HealthProfileDetails {
+        guard Self.isAvailable else { throw HealthKitError.unavailable }
+        try await store.requestAuthorization(toShare: [], read: profileTypes)
+        var details = HealthProfileDetails()
+        if let components = try? store.dateOfBirthComponents() {
+            details.birthDate = Calendar.current.date(from: components)
+        }
+        if let sex = try? store.biologicalSex().biologicalSex {
+            details.sex = HealthProfileDetails.sex(sex)
+        }
+        details.heightCm = try? await latestValue(.height, unit: .meterUnit(with: .centi))
+        details.weightKg = try? await latestValue(.bodyMass, unit: .gramUnit(with: .kilo))
+        return details
+    }
+
+    private func latestValue(_ identifier: HKQuantityTypeIdentifier, unit: HKUnit) async throws -> Double? {
+        let descriptor = HKSampleQueryDescriptor(predicates: [.quantitySample(type: HKQuantityType(identifier))],
+                                                 sortDescriptors: [SortDescriptor(\.endDate, order: .reverse)],
+                                                 limit: 1)
+        return try await descriptor.result(for: store).first?.quantity.doubleValue(for: unit)
+    }
 
     private func quantitySamples(_ identifier: HKQuantityTypeIdentifier, unit: HKUnit, since: Date) async throws -> [HealthQuantitySample] {
         let type = HKQuantityType(identifier)
@@ -232,6 +284,30 @@ final class HealthKitManager {
         } catch {
             lastError = error.localizedDescription
         }
+    }
+
+    // MARK: Cycle
+
+    func requestCycleAccess() async throws {
+        guard Self.isAvailable else { throw HealthKitError.unavailable }
+        try await store.requestAuthorization(toShare: [], read: [HKCategoryType(.menstrualFlow)])
+    }
+
+    /// Reads six months of menstrual flow and works out likely retention days.
+    func refreshCycle() async {
+        guard CycleCalculator.isEnabled, Self.isAvailable else {
+            retentionDays = []
+            return
+        }
+        let since = Calendar.current.date(byAdding: .day, value: -180, to: .now) ?? .now
+        let predicate = HKQuery.predicateForSamples(withStart: since, end: nil)
+        let descriptor = HKSampleQueryDescriptor(
+            predicates: [.categorySample(type: HKCategoryType(.menstrualFlow), predicate: predicate)],
+            sortDescriptors: [SortDescriptor(\.startDate)])
+        guard let samples = try? await descriptor.result(for: store) else { return }
+        // Raw value 5 is "no flow" (HKCategoryValueMenstrualFlow.none), logged on some days.
+        let flowDays = samples.filter { $0.value != 5 }.map(\.startDate)
+        retentionDays = CycleCalculator.retentionDays(periodStarts: CycleCalculator.periodStarts(flowDays: flowDays))
     }
 
     // MARK: Import into the app's store
