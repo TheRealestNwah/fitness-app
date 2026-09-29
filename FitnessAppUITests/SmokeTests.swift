@@ -53,7 +53,7 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(rows.firstMatch.waitForExistence(timeout: 10))
         let before = rows.count
 
-        app.navigationBars["Weight"].buttons.element(boundBy: 0).tap()
+        app.navigationBars["Weight"].buttons["addWeighIn"].tap()
         XCTAssertTrue(app.navigationBars["Weigh in"].waitForExistence(timeout: 5))
         app.buttons["Save"].tap()
         XCTAssertTrue(app.navigationBars["Weigh in"].waitForNonExistence(timeout: 5))

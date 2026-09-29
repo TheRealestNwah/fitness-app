@@ -7,6 +7,8 @@ struct FoodDiaryView: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var date = Date.now
     @State private var showCalendar = false
+    /// The diary day per window, restored on relaunch (SceneStorage can't hold a Date).
+    @SceneStorage("diaryDay") private var storedDay: Double = 0
 
     var body: some View {
         NavigationStack {
@@ -38,6 +40,10 @@ struct FoodDiaryView: View {
             .sheet(isPresented: $showCalendar) {
                 DiaryCalendarSheet(date: $date)
             }
+            .onAppear {
+                if storedDay > 0 { date = DiaryDayRestore.day(stored: storedDay) }
+            }
+            .onChange(of: date) { _, day in storedDay = day.timeIntervalSinceReferenceDate }
             .focusedSceneValue(\.diaryDayActions, DiaryDayActions(
                 previous: { withAnimation { date = date.adding(days: -1) } },
                 next: date.isToday ? nil : { withAnimation { date = date.adding(days: 1) } }))
@@ -732,6 +738,14 @@ struct SaveFavouriteMealSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+}
+
+enum DiaryDayRestore {
+    /// A restored diary day, unless it's in the future (the clock changed) — then today.
+    static func day(stored: Double, now: Date = .now) -> Date {
+        let day = Date(timeIntervalSinceReferenceDate: stored)
+        return day > now ? now : day
     }
 }
 

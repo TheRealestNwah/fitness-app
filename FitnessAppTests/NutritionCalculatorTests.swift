@@ -430,4 +430,15 @@ final class RecipeTests: XCTestCase {
         XCTAssertEqual(streak.days, 11)
         XCTAssertEqual(streak.forgiven, [day(2), day(9)])
     }
+
+    func testProteinStreakCountsFromYesterdayUntilTodayIsMet() {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: .now)
+        func day(_ offset: Int) -> Date { cal.date(byAdding: .day, value: -offset, to: today)! }
+        var byDay = [day(1): 120.0, day(2): 115, day(3): 80, day(4): 130]
+        XCTAssertEqual(NutritionCalculator.proteinStreak(proteinByDay: byDay, target: 120, today: today, calendar: cal), 2)
+        byDay[day(0)] = 125
+        XCTAssertEqual(NutritionCalculator.proteinStreak(proteinByDay: byDay, target: 120, today: today, calendar: cal), 3)
+        XCTAssertEqual(NutritionCalculator.proteinStreak(proteinByDay: byDay, target: 0, today: today, calendar: cal), 0)
+    }
 }
