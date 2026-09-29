@@ -12,9 +12,9 @@ final class ReminderPlannerTests: XCTestCase {
         calendar.date(from: DateComponents(year: 2026, month: 6, day: 30, hour: hour, minute: minute))!
     }
 
-    private func plan(water: Bool = true, meals: Bool = true, waterMl: Double = 0,
+    private func plan(water: Bool = true, meals: Bool = true, waterMl: Double = 0, dayClose: Int? = nil,
                       logged: Set<MealType> = [], now: Date) -> [ReminderPlanner.Reminder] {
-        ReminderPlanner.plan(settings: .init(waterEnabled: water, waterGoalMl: 2000, mealsEnabled: meals),
+        ReminderPlanner.plan(settings: .init(waterEnabled: water, waterGoalMl: 2000, mealsEnabled: meals, dayCloseHour: dayClose),
                              today: .init(waterMl: waterMl, loggedMeals: logged), now: now, calendar: calendar)
     }
 
@@ -55,5 +55,18 @@ final class ReminderPlannerTests: XCTestCase {
 
     func testNothingWhenDisabled() {
         XCTAssertTrue(plan(water: false, meals: false, now: at(8)).isEmpty)
+    }
+
+    func testEveningCheckInWhenDinnerIsMissing() {
+        let checkIn = today(plan(water: false, meals: false, dayClose: 21, logged: [.breakfast], now: at(12)))
+        XCTAssertEqual(checkIn.map(\.id), ["dayclose.20260630"])
+        XCTAssertEqual(checkIn.first?.date, at(21))
+        XCTAssertTrue(today(plan(water: false, meals: false, dayClose: 21, logged: [.dinner], now: at(12))).isEmpty)
+    }
+
+    func testEveningCheckInDefersToAnEarlierDinnerReminder() {
+        // Dinner reminder at 19:30; a check-in at 20:00 would repeat it, one at 21:00 wouldn't.
+        XCTAssertFalse(today(plan(water: false, dayClose: 20, now: at(12))).contains { $0.id.hasPrefix("dayclose") })
+        XCTAssertTrue(today(plan(water: false, dayClose: 21, now: at(12))).contains { $0.id.hasPrefix("dayclose") })
     }
 }
