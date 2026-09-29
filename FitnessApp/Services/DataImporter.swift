@@ -22,6 +22,9 @@ enum DataImporter {
         var fiber: Double
         var sugar: Double
         var sodiumMg: Double
+        var saturatedFat: Double = 0
+        var potassiumMg: Double = 0
+        var cholesterolMg: Double = 0
     }
 
     struct Preview: Equatable {
@@ -164,7 +167,10 @@ enum DataImporter {
                     fat: number(value(column("fatg", "fat", "totalfatg"))) ?? 0,
                     fiber: number(value(column("fiberg", "fiber", "fibreg", "fibre"))) ?? 0,
                     sugar: number(value(column("sugarg", "sugar", "sugars"))) ?? 0,
-                    sodiumMg: number(value(column("sodiummg", "sodium"))) ?? 0))
+                    sodiumMg: number(value(column("sodiummg", "sodium"))) ?? 0,
+                    saturatedFat: number(value(column("saturatedfatg", "saturatedfat"))) ?? 0,
+                    potassiumMg: number(value(column("potassiummg", "potassium"))) ?? 0,
+                    cholesterolMg: number(value(column("cholesterolmg", "cholesterol"))) ?? 0))
             }
         }
         return preview
@@ -199,9 +205,13 @@ enum DataImporter {
             context.insert(WeightEntry(date: w.date, weightKg: w.kg, note: w.note))
         }
         for f in preview.food {
-            context.insert(FoodLogEntry(date: f.date, mealType: f.meal, foodName: f.name, servings: f.servings,
-                                        servingDescription: "imported", calories: f.calories, protein: f.protein,
-                                        carbs: f.carbs, fat: f.fat, fiber: f.fiber, sugar: f.sugar, sodium: f.sodiumMg))
+            let entry = FoodLogEntry(date: f.date, mealType: f.meal, foodName: f.name, servings: f.servings,
+                                     servingDescription: "imported", calories: f.calories, protein: f.protein,
+                                     carbs: f.carbs, fat: f.fat, fiber: f.fiber, sugar: f.sugar, sodium: f.sodiumMg)
+            entry.saturatedFat = f.saturatedFat
+            entry.potassium = f.potassiumMg
+            entry.cholesterol = f.cholesterolMg
+            context.insert(entry)
         }
         try context.save()
     }
