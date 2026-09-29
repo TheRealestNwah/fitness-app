@@ -11,6 +11,17 @@ enum NotificationManager {
     private static let weighInID = "reminder.weighin"
     private static let plannedPrefix = "reminder."
 
+    /// Whether any reminder is switched on, and so whether notification permission is needed.
+    static func anyReminderEnabled(_ profile: UserProfile) -> Bool {
+        profile.weighInReminderEnabled || plannedRemindersEnabled(profile)
+    }
+
+    /// Reminders that `ReminderPlanner` schedules as one-offs (everything except the weigh-in).
+    private static func plannedRemindersEnabled(_ profile: UserProfile) -> Bool {
+        profile.waterReminderEnabled || profile.mealReminderEnabled || profile.dayCloseReminderHour != nil
+            || profile.proteinReminderEnabled
+    }
+
     static func requestAuthorization() async -> Bool {
         let center = UNUserNotificationCenter.current()
         do {
@@ -38,9 +49,7 @@ enum NotificationManager {
             center.add(UNNotificationRequest(identifier: weighInID, content: content, trigger: trigger))
         }
 
-        guard profile.waterReminderEnabled || profile.mealReminderEnabled || profile.dayCloseReminderHour != nil
-                || profile.proteinReminderEnabled
-        else { return }
+        guard plannedRemindersEnabled(profile) else { return }
         let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
                                                 waterGoalMl: profile.waterGoalMl,
                                                 mealsEnabled: profile.mealReminderEnabled,
