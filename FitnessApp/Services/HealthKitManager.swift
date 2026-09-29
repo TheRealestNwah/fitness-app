@@ -211,6 +211,20 @@ final class HealthKitManager {
         try await store.requestAuthorization(toShare: writeTypes, read: readTypes)
     }
 
+    /// Asks again only when there are types the user hasn't been asked about yet, such as ones
+    /// added in an update. Health shows just the new ones.
+    func requestNewTypesIfNeeded() async {
+        guard HealthSettings.isEnabled, Self.isAvailable,
+              (try? await store.statusForAuthorizationRequest(toShare: writeTypes, read: readTypes)) == .shouldRequest
+        else { return }
+        try? await requestAuthorization()
+    }
+
+    /// Writing or deleting a type the user hasn't allowed fails the whole call, so each is checked.
+    private func canShare(_ type: HKObjectType) -> Bool {
+        store.authorizationStatus(for: type) == .sharingAuthorized
+    }
+
     // MARK: Reads
 
     /// Asks for read access to the profile basics and returns whatever Health has.
@@ -426,7 +440,7 @@ final class HealthKitManager {
     private func deleteDietarySamples(entryID: UUID) async throws {
         let predicate = HKQuery.predicateForObjects(withMetadataKey: HealthImportRules.metadataKey,
                                                     allowedValues: [entryID.uuidString])
-        for id in HealthImportRules.dietaryTypes {
+        for id in HealthImportRules.dietaryTypes where canShare(HKQuantityType(id)) {
             _ = try await store.deleteObjects(of: HKQuantityType(id), predicate: predicate)
         }
     }
@@ -434,12 +448,12 @@ final class HealthKitManager {
     /// Fire-and-forget: mirrors a diary entry into Health when sync is on.
     func recordDiaryEntry(_ entry: FoodLogEntry) {
         guard HealthSettings.isEnabled, Self.isAvailable, entry.calories > 0 else { return }
-        let samples = dietarySamples(for: entry)
+        let samples = dietarySamples(for: entry).filter { canShare($0.sampleType) }
         let id = entry.uuid
         Task { @MainActor in
             do {
                 try await deleteDietarySamples(entryID: id)
-                try await store.save(samples)
+                if !samples.isEmpty { try await store.save(samples) }
             } catch {
                 lastError = error.localizedDescription
             }

@@ -289,6 +289,7 @@ struct MainTabView: View {
 
     private func refreshHealth() async {
         guard HealthSettings.isEnabled else { return }
+        await HealthKitManager.shared.requestNewTypesIfNeeded()
         await HealthKitManager.shared.refreshToday()
         _ = await HealthKitManager.shared.importIfDue(into: context)
     }
