@@ -36,6 +36,17 @@ final class DataImporterTests: XCTestCase {
                                                 protein: 6, carbs: 30, fat: 9, fiber: 4, sugar: 12, sodiumMg: 800)])
     }
 
+    func testReadsExtraNutrientsFromStrideExport() throws {
+        let csv = """
+        date,meal,food,servings,calories,protein_g,carbs_g,fat_g,fiber_g,sugar_g,sodium_mg,saturated_fat_g,potassium_mg,cholesterol_mg
+        2026-01-05T12:15:00Z,lunch,Omelette,1.0,300.0,20.0,2.0,22.0,0.0,1.0,400.0,7.5,250.0,370.0
+        """
+        let food = try XCTUnwrap(DataImporter.preview(csv: csv).food.first)
+        XCTAssertEqual(food.saturatedFat, 7.5)
+        XCTAssertEqual(food.potassiumMg, 250)
+        XCTAssertEqual(food.cholesterolMg, 370)
+    }
+
     func testReadsMyFitnessPalStyleMealTotals() throws {
         let csv = """
         Date,Meal,Calories,Fat (g),Saturated Fat,Sodium (mg),Carbohydrates (g),Fiber,Sugar,Protein (g),Note
