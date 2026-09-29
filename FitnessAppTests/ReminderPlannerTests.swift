@@ -69,4 +69,27 @@ final class ReminderPlannerTests: XCTestCase {
         XCTAssertFalse(today(plan(water: false, dayClose: 20, now: at(12))).contains { $0.id.hasPrefix("dayclose") })
         XCTAssertTrue(today(plan(water: false, dayClose: 21, now: at(12))).contains { $0.id.hasPrefix("dayclose") })
     }
+
+    func testProteinCheckWhenWellShort() {
+        let settings = ReminderPlanner.Settings(waterEnabled: false, waterGoalMl: 2000, mealsEnabled: false, proteinHour: 17)
+        let short = ReminderPlanner.plan(settings: settings,
+                                         today: .init(waterMl: 0, loggedMeals: [.lunch], proteinShortG: 40, proteinIdea: "Greek yogurt"),
+                                         now: at(12), calendar: calendar)
+        XCTAssertEqual(short.map(\.id), ["protein.20260630"])
+        XCTAssertEqual(short.first?.date, at(17))
+        XCTAssertTrue(short.first?.body.contains("Greek yogurt") ?? false)
+        let nearly = ReminderPlanner.plan(settings: settings, today: .init(waterMl: 0, loggedMeals: [], proteinShortG: 10),
+                                          now: at(12), calendar: calendar)
+        XCTAssertTrue(nearly.isEmpty)
+        XCTAssertTrue(ReminderPlanner.plan(settings: settings, today: .init(waterMl: 0, loggedMeals: [], proteinShortG: 40),
+                                           now: at(18), calendar: calendar).isEmpty, "too late today")
+    }
+
+    func testProteinIdeaPicksTheLeanestFoodThatFits() {
+        let foods = [(name: "Cheddar", protein: 7.0, kcal: 120.0), (name: "Greek yogurt", protein: 17.0, kcal: 100.0),
+                     (name: "Chicken breast", protein: 31.0, kcal: 165.0), (name: "Almonds", protein: 6.0, kcal: 160.0)]
+        XCTAssertEqual(ReminderPlanner.proteinIdea(foods: foods, shortG: 30, kcalLeft: 500), "Chicken breast")
+        XCTAssertEqual(ReminderPlanner.proteinIdea(foods: foods, shortG: 30, kcalLeft: 120), "Greek yogurt")
+        XCTAssertNil(ReminderPlanner.proteinIdea(foods: foods, shortG: 30, kcalLeft: 50))
+    }
 }

@@ -11,11 +11,29 @@ enum ReminderPlanner {
         var mealsEnabled: Bool
         /// Hour of the evening check-in; nil when it's off.
         var dayCloseHour: Int? = nil
+        /// Hour of the protein check; nil when it's off.
+        var proteinHour: Int? = nil
     }
 
     struct Today {
         var waterMl: Double
         var loggedMeals: Set<MealType>
+        /// Grams still needed to reach today's protein target.
+        var proteinShortG: Double = 0
+        /// A saved food that would close most of the gap, if one fits.
+        var proteinIdea: String? = nil
+    }
+
+    /// Below this, a protein nudge isn't worth sending.
+    static let proteinNudgeMinimumG = 15.0
+
+    /// The saved food with the most protein per calorie that fits in what's left, among ones
+    /// with a useful amount (at least a third of the gap or 10 g).
+    static func proteinIdea(foods: [(name: String, protein: Double, kcal: Double)], shortG: Double,
+                            kcalLeft: Double) -> String? {
+        foods.filter { $0.kcal > 0 && $0.kcal <= max(kcalLeft, 0) && $0.protein >= min(shortG / 3, 10) }
+            .max { $0.protein / $0.kcal < $1.protein / $1.kcal }?
+            .name
     }
 
     struct Reminder: Equatable {
@@ -75,6 +93,16 @@ enum ReminderPlanner {
                     body: nothing ? String(localized: "Nothing's logged today yet. A rough entry for each meal still keeps your week on track.")
                                   : String(localized: "Dinner isn't logged yet. A quick entry keeps today's numbers right.")))
             }
+        }
+        // Protein is only known for today; later days are planned when the app is next opened.
+        if let hour = settings.proteinHour, today.proteinShortG >= proteinNudgeMinimumG,
+           let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: start), date > now {
+            let short = Int(today.proteinShortG.rounded())
+            reminders.append(Reminder(
+                id: "protein.\(dayKey(start, calendar: calendar))", date: date,
+                title: String(localized: "Protein check"),
+                body: today.proteinIdea.map { String(localized: "You're \(short) g short of today's protein goal. \($0) would close a good part of it.") }
+                    ?? String(localized: "You're \(short) g short of today's protein goal. A protein-rich dinner or snack would close it.")))
         }
         return reminders
     }

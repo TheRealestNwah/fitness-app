@@ -152,6 +152,23 @@ enum NutritionCalculator {
         streakDetail(logDates: logDates, today: today, calendar: calendar, graceDay: graceDay).days
     }
 
+    /// Days in a row the protein target was met, ending today if it's already met, otherwise
+    /// yesterday (today is still in progress). Needs at least 90% of the target to count.
+    static func proteinStreak(proteinByDay: [Date: Double], target: Double, today: Date = .now,
+                              calendar: Calendar = .current) -> Int {
+        guard target > 0 else { return 0 }
+        func met(_ day: Date) -> Bool { (proteinByDay[day] ?? 0) >= target * 0.9 }
+        var cursor = calendar.startOfDay(for: today)
+        if !met(cursor) { cursor = calendar.date(byAdding: .day, value: -1, to: cursor) ?? cursor }
+        var days = 0
+        while met(cursor) {
+            days += 1
+            guard let previous = calendar.date(byAdding: .day, value: -1, to: cursor) else { break }
+            cursor = previous
+        }
+        return days
+    }
+
     struct Streak: Equatable {
         var days: Int
         /// Missed days the grace day covered, newest first.

@@ -61,4 +61,42 @@ final class IPadScreenshotTests: XCTestCase {
         XCUIDevice.shared.orientation = .portrait
         snap("ipad-15-today-portrait")
     }
+
+    /// Split View / Slide Over: a compact-width iPad window uses the tab bar.
+    func testCompactWidthUsesTheTabBar() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app = XCUIApplication()
+        app.launchArguments = ["-demoData", "-compactWidth"]
+        app.launch()
+
+        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 20), "compact width should use the tab bar")
+        XCTAssertFalse(app.descendants(matching: .any)["sidebar-Today"].exists)
+        snap("ipad-20-compact-today")
+        app.tabBars.buttons["Food"].tap()
+        snap("ipad-21-compact-food")
+        app.tabBars.buttons["Plan"].tap()
+        snap("ipad-22-compact-plan")
+    }
+
+    /// Going from full screen into Split View mid-session keeps the section and an open sheet.
+    func testSwitchingToCompactKeepsSectionAndSheet() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+        let app = XCUIApplication()
+        app.launchArguments = ["-demoData", "-flipWidthAfter", "12"]
+        app.launch()
+
+        XCTAssertTrue(app.descendants(matching: .any)["sidebar-Food"].waitForExistence(timeout: 20))
+        open("Food", in: app)
+        let addFood = app.buttons["Add food"].firstMatch
+        XCTAssertTrue(addFood.waitForExistence(timeout: 5))
+        addFood.tap()
+        XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 5))
+
+        // The width flips to compact about 12 s after launch.
+        let foodTab = app.tabBars.buttons["Food"]
+        XCTAssertTrue(foodTab.waitForExistence(timeout: 20), "should switch to the tab bar")
+        snap("ipad-23-switched-to-compact")
+        XCTAssertTrue(foodTab.isSelected, "the selected section should carry over")
+        XCTAssertTrue(app.navigationBars["Log food"].exists, "the open sheet should survive the switch")
+    }
 }

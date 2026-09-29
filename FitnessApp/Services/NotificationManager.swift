@@ -39,12 +39,14 @@ enum NotificationManager {
         }
 
         guard profile.waterReminderEnabled || profile.mealReminderEnabled || profile.dayCloseReminderHour != nil
+                || profile.proteinReminderEnabled
         else { return }
         let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
                                                 waterGoalMl: profile.waterGoalMl,
                                                 mealsEnabled: profile.mealReminderEnabled,
-                                                dayCloseHour: profile.dayCloseReminderHour)
-        for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile.modelContext, now: now), now: now) {
+                                                dayCloseHour: profile.dayCloseReminderHour,
+                                                proteinHour: profile.proteinReminderEnabled ? proteinHour : nil)
+        for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile, now: now), now: now) {
             let content = UNMutableNotificationContent()
             content.title = reminder.title
             content.body = reminder.body
@@ -56,14 +58,29 @@ enum NotificationManager {
     }
 
     @MainActor
-    private static func todaysLog(_ context: ModelContext?, now: Date) -> ReminderPlanner.Today {
-        guard let context else { return .init(waterMl: 0, loggedMeals: []) }
+    /// 5 pm: late enough to know, early enough to fix at dinner.
+    static let proteinHour = 17
+
+    @MainActor
+    private static func todaysLog(_ profile: UserProfile, now: Date) -> ReminderPlanner.Today {
+        guard let context = profile.modelContext else { return .init(waterMl: 0, loggedMeals: []) }
         let start = Calendar.current.startOfDay(for: now)
         let end = start.adding(days: 1)
         let water = (try? context.fetch(FetchDescriptor<WaterEntry>(
             predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
         let food = (try? context.fetch(FetchDescriptor<FoodLogEntry>(
             predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
-        return .init(waterMl: water.reduce(0) { $0 + $1.amountMl }, loggedMeals: Set(food.map(\.mealType)))
+        var today = ReminderPlanner.Today(waterMl: water.reduce(0) { $0 + $1.amountMl }, loggedMeals: Set(food.map(\.mealType)))
+        guard profile.proteinReminderEnabled else { return today }
+        let latestKg = (try? context.fetch(FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])).first?.weightKg)
+            ?? profile.startWeightKg
+        let target = profile.macroTargets(currentWeightKg: latestKg)
+        today.proteinShortG = max(target.protein - food.reduce(0) { $0 + $1.protein }, 0)
+        let kcalLeft = Double(profile.calorieTarget(currentWeightKg: latestKg)) - food.reduce(0) { $0 + $1.calories }
+        let saved = ((try? context.fetch(FetchDescriptor<FoodItem>())) ?? [])
+            .filter { $0.isFavorite || $0.lastUsed != nil }
+            .map { (name: $0.displayName, protein: $0.protein, kcal: $0.calories) }
+        today.proteinIdea = ReminderPlanner.proteinIdea(foods: saved, shortG: today.proteinShortG, kcalLeft: kcalLeft)
+        return today
     }
 }
