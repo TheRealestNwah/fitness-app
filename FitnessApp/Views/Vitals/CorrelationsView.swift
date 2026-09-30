@@ -87,6 +87,7 @@ private struct PairChartCard: View {
                 .chartXAxisLabel(xLabel)
                 .chartYAxisLabel(yLabel)
                 .frame(height: 220)
+                .accessibilityLabel(title)
                 Text(summary ?? "\(pairs.count) days so far. A pattern summary appears after \(CorrelationCalculator.minimumForSummary).")
                     .font(.subheadline)
                     .foregroundStyle(summary == nil ? Color.secondary : Color.primary)

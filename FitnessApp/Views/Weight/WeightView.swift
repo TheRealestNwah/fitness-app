@@ -228,6 +228,9 @@ struct WeightView: View {
                 .chartYScale(domain: yDomain)
                 .chartYAxisLabel(units.weightUnit)
                 .frame(height: 220)
+                .accessibilityLabel("Weight chart")
+                .accessibilityValue(ChartSummary.describe(visible.map { (date: $0.date, value: $0.weightKg) },
+                                                          format: { units.weightString(kg: $0) }))
                 HStack(spacing: 16) {
                     Label("Weigh-ins", systemImage: "circle.fill").foregroundStyle(.indigo.opacity(0.5))
                     Label("7-day average", systemImage: "line.diagonal").foregroundStyle(.indigo)

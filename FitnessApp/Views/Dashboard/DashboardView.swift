@@ -156,6 +156,7 @@ struct DashboardView: View {
                     } label: {
                         Image(systemName: "gearshape")
                     }
+                    .accessibilityLabel("Settings")
                 }
             }
             .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
@@ -626,6 +627,7 @@ struct DashboardView: View {
                 } label: {
                     Image(systemName: "minus.circle")
                 }
+                .accessibilityLabel("Remove last glass")
                 .disabled(todaysWater.isEmpty)
                 Button {
                     addWater()

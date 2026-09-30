@@ -171,6 +171,7 @@ struct PlannerView: View {
             Button { selectedDay = selectedDay.adding(days: -7) } label: {
                 Image(systemName: "chevron.left").frame(width: 24, height: 44)
             }
+            .accessibilityLabel("Previous week")
             ForEach(weekDays, id: \.self) { day in
                 let isSelected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
                 let kcal = calories(on: day)
@@ -203,6 +204,7 @@ struct PlannerView: View {
             Button { selectedDay = selectedDay.adding(days: 7) } label: {
                 Image(systemName: "chevron.right").frame(width: 24, height: 44)
             }
+            .accessibilityLabel("Next week")
         }
     }
 
@@ -524,11 +526,13 @@ struct GroceryListView: View {
             Section {
                 HStack {
                     Button { weekStart = weekStart.adding(days: -7) } label: { Image(systemName: "chevron.left") }
+                        .accessibilityLabel("Previous week")
                     Spacer()
                     Text("\(weekStart.shortDateLabel()) – \(weekEnd.adding(days: -1).shortDateLabel())")
                         .font(.headline)
                     Spacer()
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
+                        .accessibilityLabel("Next week")
                 }
                 .buttonStyle(.bordered)
                 if !items.isEmpty {

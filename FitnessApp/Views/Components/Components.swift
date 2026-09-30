@@ -186,6 +186,7 @@ struct DayStepper: View {
                 Image(systemName: "chevron.left")
                     .frame(width: 32, height: 32)
             }
+            .accessibilityLabel("Previous day")
             Spacer()
             VStack(spacing: 2) {
                 Text(date.relativeDayLabel)
@@ -200,6 +201,7 @@ struct DayStepper: View {
                 Image(systemName: "chevron.right")
                     .frame(width: 32, height: 32)
             }
+            .accessibilityLabel("Next day")
             .disabled(date.isToday || date > .now)
         }
         .buttonStyle(.bordered)

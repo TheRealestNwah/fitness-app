@@ -77,6 +77,7 @@ struct BodyTrendsView: View {
                 .chartYScale(domain: .automatic(includesZero: false))
                 .chartYAxisLabel(units.lengthUnit)
                 .frame(height: 220)
+                .accessibilityLabel("Waist, hips and chest measurements")
                 changeSummary
             }
         }
@@ -113,6 +114,7 @@ struct BodyTrendsView: View {
                 .chartYScale(domain: .automatic(includesZero: false))
                 .chartYAxisLabel("%")
                 .frame(height: 150)
+                .accessibilityLabel("Body fat")
                 let trend = weightTrend.filter { domain.contains($0.date) }
                 if trend.count >= 2 {
                     Chart(trend) { p in
@@ -124,6 +126,7 @@ struct BodyTrendsView: View {
                     .chartYScale(domain: .automatic(includesZero: false))
                     .chartYAxisLabel(units.weightUnit)
                     .frame(height: 150)
+                    .accessibilityLabel("Weight trend")
                 }
                 fatSummary(weightTrend: trend)
             } else {
