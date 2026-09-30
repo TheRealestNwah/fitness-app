@@ -296,3 +296,23 @@ struct TrendProgressView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
+extension View {
+    /// The background for controls floating over content (the undo toast, camera hints): Liquid
+    /// Glass on iOS 26, a material with a soft shadow before. Glass adapts to Reduce Transparency
+    /// and Increase Contrast by itself.
+    @ViewBuilder
+    func floatingBackground<S: Shape>(_ material: Material = .thickMaterial, in shape: S) -> some View {
+        #if compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            glassEffect(.regular, in: shape)
+        } else {
+            background(material, in: shape)
+                .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+        }
+        #else
+        background(material, in: shape)
+            .shadow(color: .black.opacity(0.15), radius: 8, y: 2)
+        #endif
+    }
+}
