@@ -40,6 +40,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Select Xcode 26
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+
       - name: Show toolchain
         run: |
           xcodebuild -version
@@ -54,10 +60,13 @@ jobs:
       - name: Pick an iPhone simulator
         id: sim
         run: |
-          DEVICE=$(xcrun simctl list devices available -j \
-            | jq -r '[.devices[] | .[] | select(.name | startswith("iPhone"))][0].name')
-          echo "Using simulator: $DEVICE"
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          # Newest iOS runtime first, so iOS 26 code paths are exercised.
+          UDID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries | map(select(.key | test("iOS-[0-9]+")))
+                | sort_by(.key | capture("iOS-(?<v>[0-9]+)").v | tonumber) | reverse
+                | .[].value[] | select(.name | startswith("iPhone"))][0].udid')
+          echo "Using simulator: $UDID"
+          echo "device=$UDID" >> "$GITHUB_OUTPUT"
 
       - name: Build
         run: |
@@ -65,7 +74,7 @@ jobs:
           xcodebuild build-for-testing \
             -project FitnessApp.xcodeproj \
             -scheme FitnessApp \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" \
             | tee build.log | grep -E "error:|warning: unre|BUILD|Compiling|\*\*" || true
@@ -77,7 +86,7 @@ jobs:
           xcodebuild test-without-building \
             -project FitnessApp.xcodeproj \
             -scheme FitnessApp \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -skip-testing:FitnessAppUITests \
             CODE_SIGNING_ALLOWED=NO \
@@ -90,7 +99,7 @@ jobs:
           xcodebuild test-without-building \
             -project FitnessApp.xcodeproj \
             -scheme FitnessApp \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -only-testing:FitnessAppUITests/SmokeTests \
             CODE_SIGNING_ALLOWED=NO \
