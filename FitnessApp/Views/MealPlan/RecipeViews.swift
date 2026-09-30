@@ -188,7 +188,7 @@ struct RecipeDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 12) {
+                AdaptiveStack(spacing: 12) {
                     StatTile(title: "Calories", value: "\(Int(recipe.caloriesPerServing.rounded()))", subtitle: "per serving", systemImage: "flame.fill", tint: .orange)
                     StatTile(title: "Protein", value: "\(Int(recipe.proteinPerServing.rounded())) g", subtitle: "carbs \(Int(recipe.carbsPerServing.rounded())) · fat \(Int(recipe.fatPerServing.rounded()))", systemImage: "p.circle.fill", tint: .blue)
                 }

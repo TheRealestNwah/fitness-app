@@ -120,8 +120,8 @@ struct MonthlyReportCard: View {
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
             }
-            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                GridRow {
+            VStack(spacing: 12) {
+                AdaptiveStack(spacing: 12) {
                     StatTile(title: String(localized: "Trend change"),
                              value: report.changeKg.map { units.weightString(kg: $0, signed: true) } ?? "—",
                              subtitle: report.endTrendKg.map { String(localized: "now \(units.weightString(kg: $0))") },
@@ -132,7 +132,7 @@ struct MonthlyReportCard: View {
                              subtitle: report.bestWeek.map { String(localized: "from \($0.start.formatted(.dateTime.month(.abbreviated).day()))") },
                              systemImage: "star.fill", tint: .yellow)
                 }
-                GridRow {
+                AdaptiveStack(spacing: 12) {
                     StatTile(title: String(localized: "Days logged"),
                              value: "\(report.daysLogged)/\(report.daysSoFar)",
                              subtitle: String(localized: "longest run \(report.longestStreak)"),
@@ -143,7 +143,7 @@ struct MonthlyReportCard: View {
                              systemImage: "fork.knife", tint: .green)
                 }
                 if report.completedFasts > 0 || report.workouts > 0 {
-                    GridRow {
+                    AdaptiveStack(spacing: 12) {
                         StatTile(title: String(localized: "Fasts completed"), value: "\(report.completedFasts)",
                                  systemImage: "timer", tint: .purple)
                         StatTile(title: String(localized: "Workouts"), value: "\(report.workouts)",
