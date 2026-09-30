@@ -444,9 +444,9 @@ struct DashboardView: View {
         let projected = BudgetCalculator.goalDate(
             NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
             breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
-        let forecast = ProgressCalculator.trendForecast(
-            weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
-            goalKg: profile.goalWeightKg)
+        let trendWeights = CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays)
+        let forecast = ProgressCalculator.trendForecast(weights: trendWeights, goalKg: profile.goalWeightKg)
+        let forecastProgress = TrendReadiness.forecast(weights: trendWeights)
         return VStack(alignment: .leading, spacing: 12) {
             ProgressView(value: progress)
                 .tint(.indigo)
@@ -464,6 +464,10 @@ struct DashboardView: View {
             if remaining > 0, let forecast {
                 Label("At your current pace, around \(forecast.goalDate.shortDateLabel())",
                       systemImage: "chart.line.downtrend.xyaxis")
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+            } else if remaining > 0, !forecastProgress.isReady {
+                Label("Pace forecast: \(forecastProgress.summary.lowercased())", systemImage: "hourglass")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
             }
