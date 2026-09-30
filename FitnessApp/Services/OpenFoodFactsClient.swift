@@ -1,7 +1,7 @@
 import Foundation
 
 /// A packaged food as returned by Open Food Facts, reduced to what the diary needs.
-struct ScannedProduct: Equatable {
+struct ScannedProduct: Equatable, Codable {
     var barcode: String
     var name: String
     var brand: String
@@ -40,9 +40,14 @@ enum OpenFoodFactsError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .badBarcode: return "That doesn't look like a product barcode."
-        case .network: return "Couldn't reach the food database. Check your connection and try again."
+        case .network: return "Couldn't reach the food database, and this product hasn't been looked up on this device before. You can add it yourself from the nutrition label."
         case .badResponse: return "The food database sent something unexpected."
         }
+    }
+
+    var isNetwork: Bool {
+        if case .network = self { return true }
+        return false
     }
 }
 
@@ -62,9 +67,17 @@ enum OpenFoodFactsClient {
         return comps.url!
     }
 
-    /// Returns nil when the database has no entry for the barcode.
-    static func product(barcode raw: String, session: URLSession = .shared) async throws -> ScannedProduct? {
+    /// Returns nil when the database has no entry for the barcode. Products looked up before come
+    /// from `ProductCache` while fresh, and as a fallback when the network fails.
+    static func product(barcode raw: String, session: URLSession = .shared,
+                        cacheURL: URL = ProductCache.fileURL, now: Date = .now) async throws -> ScannedProduct? {
         guard let barcode = normalise(raw) else { throw OpenFoodFactsError.badBarcode }
+        var cache = ProductCache.load(from: cacheURL)
+        let cached = cache.lookup(barcode, now: now)
+        if let cached, cached.fresh {
+            cache.save(to: cacheURL)
+            return cached.product
+        }
         var request = URLRequest(url: url(for: barcode))
         request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         request.timeoutInterval = 15
@@ -72,9 +85,18 @@ enum OpenFoodFactsClient {
         do {
             (data, _) = try await session.data(for: request)
         } catch {
+            if let cached {
+                cache.save(to: cacheURL)
+                return cached.product
+            }
             throw OpenFoodFactsError.network(error)
         }
-        return try parse(data, barcode: barcode)
+        let found = try parse(data, barcode: barcode)
+        if let found {
+            cache.store(found, now: now)
+            cache.save(to: cacheURL)
+        }
+        return found
     }
 
     /// Pure parsing of the v2 product JSON. Nutriment values arrive as numbers or strings, so read them loosely.
