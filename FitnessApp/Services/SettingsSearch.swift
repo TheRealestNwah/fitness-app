@@ -61,6 +61,7 @@ enum SettingsSearch {
         Entry(title: "Water reminders", page: .reminders, keywords: ["notifications", "hydration"]),
         Entry(title: "Protein check", page: .reminders, keywords: ["notifications"]),
         Entry(title: "Evening check-in", page: .reminders, keywords: ["notifications", "day close"]),
+        Entry(title: "Pause during diet breaks", page: .reminders, keywords: ["notifications", "diet break", "reminders"]),
 
         Entry(title: "Apple Health", page: .healthData, keywords: ["HealthKit", "sync", "steps", "active energy", "import"]),
         Entry(title: "Cycle-aware weight", page: .healthData, keywords: ["period", "menstrual", "water retention"]),
