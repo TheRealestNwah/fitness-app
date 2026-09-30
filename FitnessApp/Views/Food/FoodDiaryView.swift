@@ -689,6 +689,7 @@ struct SaveFavouriteMealSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
+    @State private var photo: Data?
 
     private var totalCalories: Double { entries.reduce(0) { $0 + $1.calories } }
 
@@ -700,6 +701,7 @@ struct SaveFavouriteMealSheet: View {
                 } footer: {
                     Text("Favourite meals appear at the top of food search and log every line with one tap.")
                 }
+                MealPhotoSection(photo: $photo)
                 Section("\(entries.count) items · \(Energy.string(totalCalories))") {
                     ForEach(entries) { e in
                         HStack {
@@ -724,6 +726,7 @@ struct SaveFavouriteMealSheet: View {
                         let meal = SavedMeal(name: name.trimmingCharacters(in: .whitespaces),
                                              mealType: mealType,
                                              items: entries.map(SavedMealItem.init(entry:)))
+                        meal.photo = photo
                         context.insert(meal)
                         try? context.save()
                         dismiss()
@@ -734,6 +737,7 @@ struct SaveFavouriteMealSheet: View {
             .onAppear {
                 if name.isEmpty {
                     name = "\(mealType.label) · \(Date.now.formatted(.dateTime.weekday(.abbreviated)))"
+                    photo = SavedMeal.firstPhoto(in: entries)
                 }
             }
         }

@@ -19,4 +19,18 @@ final class PhotoMealTests: XCTestCase {
         let decoded = try XCTUnwrap(UIImage(data: data))
         XCTAssertEqual(max(decoded.size.width * decoded.scale, decoded.size.height * decoded.scale), 1024, accuracy: 1)
     }
+
+    func testNewFavouriteStartsWithTheFirstDiaryPhoto() {
+        func entry(_ name: String, photo: Data?) -> FoodLogEntry {
+            let e = FoodLogEntry(date: .now, mealType: .lunch, foodName: name, servings: 1, servingDescription: "serving",
+                                 calories: 100, protein: 0, carbs: 0, fat: 0)
+            e.photo = photo
+            return e
+        }
+        let plain = entry("Soup", photo: nil)
+        let first = entry("Salad", photo: Data([1]))
+        let second = entry("Bread", photo: Data([2]))
+        XCTAssertEqual(SavedMeal.firstPhoto(in: [plain, first, second]), Data([1]))
+        XCTAssertNil(SavedMeal.firstPhoto(in: [plain]))
+    }
 }
