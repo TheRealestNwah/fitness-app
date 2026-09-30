@@ -217,6 +217,8 @@ struct DayDiaryView: View {
     @Query private var yesterdayEntries: [FoodLogEntry]
     @Query private var exercise: [ExerciseEntry]
     @Query private var earlierThisWeek: [FoodLogEntry]
+    /// The weeks before this day, for "Log again".
+    @Query private var history: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
     @State private var addingTo: MealType?
@@ -224,6 +226,8 @@ struct DayDiaryView: View {
     @State private var relocating: Relocation?
     @State private var savingFavourite: MealType?
     @State private var photographing: MealType?
+    @State private var editMode: EditMode = .inactive
+    @State private var selection: Set<PersistentIdentifier> = []
     @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 84
 
     init(date: Date) {
@@ -238,6 +242,32 @@ struct DayDiaryView: View {
         _exercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
         let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
         _earlierThisWeek = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < start })
+        let lookback = start.adding(days: -RecentFoods.lookbackDays)
+        _history = Query(filter: #Predicate<FoodLogEntry> { $0.date >= lookback && $0.date < start },
+                         sort: \FoodLogEntry.date, order: .reverse)
+    }
+
+    private var isSelecting: Bool { editMode.isEditing }
+
+    private var selectedEntries: [FoodLogEntry] {
+        entries.filter { selection.contains($0.persistentModelID) }
+    }
+
+    private func endSelecting() {
+        withAnimation {
+            editMode = .inactive
+            selection = []
+        }
+    }
+
+    /// Foods eaten in this meal on earlier days, offered as one-tap "Log again" chips.
+    private func logAgainOptions(for meal: MealType) -> [FoodLogEntry] {
+        let pool = history.filter { $0.mealType == meal && !$0.isEstimate }
+        let keys = RecentFoods.suggestions(history: pool.map(\.recentLine), meal: meal,
+                                           alreadyLogged: Set(entries(for: meal).map(\.recentKey)))
+        var latest: [String: FoodLogEntry] = [:]
+        for entry in pool where latest[entry.recentKey] == nil { latest[entry.recentKey] = entry }
+        return keys.compactMap { latest[$0] }
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
@@ -297,7 +327,7 @@ struct DayDiaryView: View {
                 Button(meal.label) { context.moveDiaryEntry(entry, to: meal, on: date, undo: undoCenter) }
             }
             Divider()
-            Button("Another day…") { relocating = Relocation(entry: entry, copying: false) }
+            Button("Another day…") { relocating = Relocation(entries: [entry], copying: false) }
         } label: {
             Label("Move to", systemImage: "arrow.right.circle")
         }
@@ -309,7 +339,7 @@ struct DayDiaryView: View {
             Button("Tomorrow") {
                 context.copyDiaryEntry(entry, to: entry.mealType, on: date.adding(days: 1), undo: undoCenter)
             }
-            Button("Another day…") { relocating = Relocation(entry: entry, copying: true) }
+            Button("Another day…") { relocating = Relocation(entries: [entry], copying: true) }
         } label: {
             Label("Copy to", systemImage: "doc.on.doc")
         }
@@ -334,11 +364,11 @@ struct DayDiaryView: View {
     }
 
     var body: some View {
-        List {
+        List(selection: $selection) {
             Section {
                 summary
             }
-            if date.isToday, canCopyFromYesterday {
+            if date.isToday, canCopyFromYesterday, !isSelecting {
                 Section { TipView(CopyYesterdayTip()) }
             }
             if entries.isEmpty {
@@ -361,123 +391,37 @@ struct DayDiaryView: View {
                 let items = entries(for: meal)
                 Section {
                     ForEach(items) { entry in
-                        HStack {
-                            Button { editing = entry } label: {
-                                HStack {
-                                    if let photo = entry.photo { EntryThumbnail(data: photo) }
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(entry.foodName).foregroundStyle(Color.primary)
-                                        Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
-                                            .font(.caption)
-                                            .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
-                                    }
-                                    Spacer()
-                                }
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            if !entry.isEstimate {
-                                ServingsMenu(servings: entry.servings) { setServings(entry, to: $0) }
-                            }
-                            Text("\(Int(entry.calories.rounded()))")
-                                .font(.body.monospacedDigit())
-                                .foregroundStyle(Color.secondary)
-                        }
-                        .contextMenu { relocateMenu(entry) }
-                        .draggable(FoodReference(entry: entry))
+                        entryRow(entry)
+                            .tag(entry.persistentModelID)
                     }
                     .onDelete { offsets in
                         context.deleteDiaryEntries(offsets.map { items[$0] }, undo: undoCenter)
                     }
-                    HStack {
-                        Button {
-                            addingTo = meal
-                        } label: {
-                            Label("Add food", systemImage: "plus.circle.fill")
-                                .font(.subheadline.weight(.medium))
-                        }
-                        .buttonStyle(.borderless)
-                        .foodDropDestination { references in
-                            references.map { $0.log(on: date, as: meal, context: context, undo: undoCenter) }.contains(true)
-                        }
-                        Spacer()
-                        Button {
-                            photographing = meal
-                        } label: {
-                            Label("Photo", systemImage: "camera")
-                                .font(.subheadline)
-                        }
-                        .buttonStyle(.borderless)
-                        .accessibilityLabel("Log \(meal.inSentence) from a photo")
-                    }
-                    let fromYesterday = yesterday(for: meal)
-                    if items.isEmpty, !fromYesterday.isEmpty {
-                        let kcal = fromYesterday.reduce(0) { $0 + $1.calories }
-                        Button {
-                            copyYesterday(meal)
-                        } label: {
-                            Label {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Copy yesterday's \(meal.inSentence)")
-                                        .font(.subheadline.weight(.medium))
-                                    Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
-                                        .font(.caption)
-                                        .foregroundStyle(Color.secondary)
-                                }
-                            } icon: {
-                                Image(systemName: "arrow.uturn.backward.circle.fill")
-                            }
-                        }
+                    if !isSelecting {
+                        mealActions(meal, items: items)
                     }
                 } header: {
-                    HStack {
-                        Label(meal.label, systemImage: meal.systemImage)
-                        Spacer()
-                        let kcal = items.reduce(0) { $0 + $1.calories }
-                        if kcal > 0 {
-                            Text("\(Energy.string(kcal))")
-                        }
-                        Menu {
-                            Button {
-                                copyYesterday(meal)
-                            } label: {
-                                Label("Copy from yesterday", systemImage: "arrow.uturn.backward")
-                            }
-                            .disabled(yesterday(for: meal).isEmpty)
-                            Button {
-                                savingFavourite = meal
-                            } label: {
-                                Label("Save as favourite meal", systemImage: "star")
-                            }
-                            .disabled(items.isEmpty)
-                            if !items.isEmpty {
-                                Button(role: .destructive) {
-                                    clear(meal)
-                                } label: {
-                                    Label("Clear \(meal.inSentence)", systemImage: "trash")
-                                }
-                            }
-                        } label: {
-                            Image(systemName: "ellipsis.circle")
-                                .font(.body)
-                                .accessibilityLabel("\(meal.label) options")
-                        }
-                        .textCase(nil)
-                    }
+                    mealHeader(meal, items: items)
                 }
             }
         }
         .listStyle(.insetGrouped)
+        .environment(\.editMode, $editMode)
+        .toolbar { selectionToolbar }
+        .onChange(of: entries.isEmpty) { _, empty in
+            if empty { endSelecting() }
+        }
         .sheet(item: $addingTo) { meal in
             FoodSearchView(date: date, mealType: meal)
         }
         .sheet(item: $relocating) { relocation in
-            RelocateEntrySheet(entry: relocation.entry, copying: relocation.copying) { meal, day in
+            RelocateEntrySheet(entries: relocation.entries, copying: relocation.copying) { meal, day in
                 if relocation.copying {
-                    context.copyDiaryEntry(relocation.entry, to: meal, on: day, undo: undoCenter)
+                    context.copyDiaryEntries(relocation.entries, to: meal, on: day, undo: undoCenter)
                 } else {
-                    context.moveDiaryEntry(relocation.entry, to: meal, on: day, undo: undoCenter)
+                    context.moveDiaryEntries(relocation.entries, to: meal, on: day, undo: undoCenter)
                 }
+                endSelecting()
             }
         }
         .sheet(item: $editing) { entry in
@@ -494,6 +438,205 @@ struct DayDiaryView: View {
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
         .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
+    }
+
+    /// A diary line: tap to edit, with an inline servings menu. Plain while selecting,
+    /// so a tap selects the row instead.
+    @ViewBuilder
+    private func entryRow(_ entry: FoodLogEntry) -> some View {
+        let content = HStack {
+            if let photo = entry.photo { EntryThumbnail(data: photo) }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(entry.foodName).foregroundStyle(Color.primary)
+                Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
+                    .font(.caption)
+                    .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
+            }
+            Spacer()
+        }
+        let kcal = Text("\(Int(entry.calories.rounded()))")
+            .font(.body.monospacedDigit())
+            .foregroundStyle(Color.secondary)
+        if isSelecting {
+            HStack {
+                content
+                kcal
+            }
+        } else {
+            HStack {
+                Button { editing = entry } label: {
+                    content.contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                if !entry.isEstimate {
+                    ServingsMenu(servings: entry.servings) { setServings(entry, to: $0) }
+                }
+                kcal
+            }
+            .contextMenu { relocateMenu(entry) }
+            .draggable(FoodReference(entry: entry))
+        }
+    }
+
+    /// Add food, photo, copy-yesterday and "Log again" rows under a meal's entries.
+    @ViewBuilder
+    private func mealActions(_ meal: MealType, items: [FoodLogEntry]) -> some View {
+        HStack {
+            Button {
+                addingTo = meal
+            } label: {
+                Label("Add food", systemImage: "plus.circle.fill")
+                    .font(.subheadline.weight(.medium))
+            }
+            .buttonStyle(.borderless)
+            .foodDropDestination { references in
+                references.map { $0.log(on: date, as: meal, context: context, undo: undoCenter) }.contains(true)
+            }
+            Spacer()
+            Button {
+                photographing = meal
+            } label: {
+                Label("Photo", systemImage: "camera")
+                    .font(.subheadline)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Log \(meal.inSentence) from a photo")
+        }
+        let fromYesterday = yesterday(for: meal)
+        if items.isEmpty, !fromYesterday.isEmpty {
+            let kcal = fromYesterday.reduce(0) { $0 + $1.calories }
+            Button {
+                copyYesterday(meal)
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Copy yesterday's \(meal.inSentence)")
+                            .font(.subheadline.weight(.medium))
+                        Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
+                            .font(.caption)
+                            .foregroundStyle(Color.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "arrow.uturn.backward.circle.fill")
+                }
+            }
+        }
+        let again = logAgainOptions(for: meal)
+        if !again.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    Text("Log again")
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                        .accessibilityHidden(true)
+                    ForEach(again) { entry in
+                        Button {
+                            context.logAgain(entry, to: meal, on: date, undo: undoCenter)
+                        } label: {
+                            Label(entry.foodName, systemImage: "plus")
+                                .font(.caption.weight(.medium))
+                                .lineLimit(1)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .accessibilityLabel("Log \(entry.foodName) again")
+                        .accessibilityHint(entry.servingsLabel)
+                    }
+                }
+            }
+        }
+    }
+
+    private func mealHeader(_ meal: MealType, items: [FoodLogEntry]) -> some View {
+        HStack {
+            Label(meal.label, systemImage: meal.systemImage)
+            Spacer()
+            let kcal = items.reduce(0) { $0 + $1.calories }
+            if kcal > 0 {
+                Text("\(Energy.string(kcal))")
+            }
+            Menu {
+                Button {
+                    copyYesterday(meal)
+                } label: {
+                    Label("Copy from yesterday", systemImage: "arrow.uturn.backward")
+                }
+                .disabled(yesterday(for: meal).isEmpty)
+                Button {
+                    savingFavourite = meal
+                } label: {
+                    Label("Save as favourite meal", systemImage: "star")
+                }
+                .disabled(items.isEmpty)
+                if !items.isEmpty {
+                    Button(role: .destructive) {
+                        clear(meal)
+                    } label: {
+                        Label("Clear \(meal.inSentence)", systemImage: "trash")
+                    }
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .font(.body)
+                    .accessibilityLabel("\(meal.label) options")
+            }
+            .textCase(nil)
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var selectionToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            if isSelecting {
+                Button("Done") { endSelecting() }
+            } else if !entries.isEmpty {
+                Button("Select") { withAnimation { editMode = .active } }
+            }
+        }
+        if isSelecting {
+            ToolbarItemGroup(placement: .bottomBar) {
+                let chosen = selectedEntries
+                Menu {
+                    ForEach(MealType.allCases) { meal in
+                        Button(meal.label) {
+                            context.moveDiaryEntries(chosen, to: meal, on: date, undo: undoCenter)
+                            endSelecting()
+                        }
+                    }
+                    Divider()
+                    Button("Another day…") { relocating = Relocation(entries: chosen, copying: false) }
+                } label: {
+                    Label("Move to", systemImage: "arrow.right.circle")
+                }
+                .disabled(chosen.isEmpty)
+                Spacer()
+                Menu {
+                    ForEach(MealType.allCases) { meal in
+                        Button(meal.label) {
+                            context.copyDiaryEntries(chosen, to: meal, on: date, undo: undoCenter)
+                            endSelecting()
+                        }
+                    }
+                    Divider()
+                    Button("Another day…") { relocating = Relocation(entries: chosen, copying: true) }
+                } label: {
+                    Label("Copy to", systemImage: "doc.on.doc")
+                }
+                .disabled(chosen.isEmpty)
+                Spacer()
+                Text(chosen.isEmpty ? "Select entries" : "\(chosen.count) selected")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+                Spacer()
+                Button(role: .destructive) {
+                    context.deleteDiaryEntries(chosen, undo: undoCenter)
+                    endSelecting()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .disabled(chosen.isEmpty)
+            }
+        }
     }
 
     private var summary: some View {
@@ -792,16 +935,16 @@ struct ServingsMenu: View {
     }
 }
 
-/// A diary line waiting for a day and meal to be moved or copied to.
+/// Diary lines waiting for a day and meal to be moved or copied to.
 struct Relocation: Identifiable {
-    let entry: FoodLogEntry
+    let id = UUID()
+    let entries: [FoodLogEntry]
     let copying: Bool
-    var id: UUID { entry.uuid }
 }
 
-/// Pick a day and meal to move or copy a diary line to.
+/// Pick a day and meal to move or copy diary lines to.
 struct RelocateEntrySheet: View {
-    let entry: FoodLogEntry
+    let entries: [FoodLogEntry]
     let copying: Bool
     var perform: (MealType, Date) -> Void
 
@@ -812,7 +955,7 @@ struct RelocateEntrySheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section(entry.foodName) {
+                Section(entries.count == 1 ? entries[0].foodName : String(localized: "\(entries.count) entries")) {
                     DatePicker("Day", selection: $day, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                     Picker("Meal", selection: $meal) {
@@ -832,8 +975,9 @@ struct RelocateEntrySheet: View {
                 }
             }
             .onAppear {
-                day = entry.date
-                meal = entry.mealType
+                guard let first = entries.first else { return }
+                day = first.date
+                meal = first.mealType
             }
         }
     }

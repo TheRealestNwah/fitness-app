@@ -149,4 +149,53 @@ extension ModelContext {
             try? self.save()
         }
     }
+
+    /// Logs a past diary line again in `meal` on `day`, with undo.
+    @MainActor
+    func logAgain(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
+        let copy = entry.copy(to: meal, on: day)
+        insertDiaryEntry(copy)
+        try? save()
+        center?.offer(String(localized: "Logged \(entry.foodName)")) {
+            self.deleteDiaryEntry(copy)
+            try? self.save()
+        }
+    }
+
+    /// Moves several diary lines at once, with a single undo.
+    @MainActor
+    func moveDiaryEntries(_ entries: [FoodLogEntry], to meal: MealType, on day: Date, undo center: UndoCenter?) {
+        guard !entries.isEmpty else { return }
+        if entries.count == 1 { return moveDiaryEntry(entries[0], to: meal, on: day, undo: center) }
+        let previous = entries.map { (entry: $0, meal: $0.mealType, date: $0.date) }
+        let target = meal.logDate(on: day)
+        for entry in entries {
+            entry.mealType = meal
+            entry.date = target
+            HealthKitManager.shared.recordDiaryEntry(entry)
+        }
+        try? save()
+        center?.offer(String(localized: "Moved \(entries.count) entries to \(meal.inSentence)")) {
+            for old in previous {
+                old.entry.mealType = old.meal
+                old.entry.date = old.date
+                HealthKitManager.shared.recordDiaryEntry(old.entry)
+            }
+            try? self.save()
+        }
+    }
+
+    /// Copies several diary lines at once, with a single undo.
+    @MainActor
+    func copyDiaryEntries(_ entries: [FoodLogEntry], to meal: MealType, on day: Date, undo center: UndoCenter?) {
+        guard !entries.isEmpty else { return }
+        if entries.count == 1 { return copyDiaryEntry(entries[0], to: meal, on: day, undo: center) }
+        let copies = entries.map { $0.copy(to: meal, on: day) }
+        for copy in copies { insertDiaryEntry(copy) }
+        try? save()
+        center?.offer(String(localized: "Copied \(entries.count) entries to \(meal.inSentence)")) {
+            for copy in copies { self.deleteDiaryEntry(copy) }
+            try? self.save()
+        }
+    }
 }
