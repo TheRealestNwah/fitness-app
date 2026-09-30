@@ -222,3 +222,96 @@ struct CameraPicker: UIViewControllerRepresentable {
         }
     }
 }
+
+/// Add, replace or remove a meal photo from the camera, the library or a drop.
+struct MealPhotoSection: View {
+    @Binding var photo: Data?
+    @State private var showCamera = false
+    @State private var libraryItem: PhotosPickerItem?
+
+    var body: some View {
+        Section("Photo") {
+            if let photo, let image = UIImage(data: photo) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 160)
+                    .clipped()
+                    .listRowInsets(EdgeInsets())
+                    .accessibilityLabel("Meal photo")
+            }
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button { showCamera = true } label: {
+                    Label(photo == nil ? "Take photo" : "Retake photo", systemImage: "camera")
+                }
+                .fullScreenCover(isPresented: $showCamera) {
+                    CameraPicker { image in photo = PhotoMeal.jpeg(from: image) }
+                        .ignoresSafeArea()
+                }
+            }
+            // Modifiers go on rows, not the Section, which would apply them to every row.
+            PhotosPicker(selection: $libraryItem, matching: .images) {
+                Label(photo == nil ? "Choose from library" : "Replace from library", systemImage: "photo.on.rectangle")
+            }
+            .onChange(of: libraryItem) { _, item in
+                Task {
+                    if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        photo = PhotoMeal.jpeg(from: image)
+                    }
+                }
+            }
+            .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image) }
+            if photo != nil {
+                Button(role: .destructive) { photo = nil } label: {
+                    Label("Remove photo", systemImage: "trash")
+                }
+            }
+        }
+    }
+}
+
+/// A small square photo for list rows.
+struct MealThumbnail: View {
+    let data: Data
+    var size: CGFloat = 44
+
+    var body: some View {
+        if let image = UIImage(data: data) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size, height: size)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityHidden(true)
+        }
+    }
+}
+
+/// Changes the photo on a saved favourite meal.
+struct SavedMealPhotoSheet: View {
+    let meal: SavedMeal
+
+    @Environment(\.modelContext) private var context
+    @Environment(\.dismiss) private var dismiss
+    @State private var photo: Data?
+
+    var body: some View {
+        NavigationStack {
+            Form { MealPhotoSection(photo: $photo) }
+                .navigationTitle(meal.name)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save") {
+                            meal.photo = photo
+                            try? context.save()
+                            dismiss()
+                        }
+                    }
+                }
+                .onAppear { photo = meal.photo }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}

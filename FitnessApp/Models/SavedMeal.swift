@@ -56,6 +56,8 @@ final class SavedMeal {
     var createdAt: Date = Date()
     var lastUsed: Date?
     var useCount: Int = 0
+    /// A photo of the meal, stored outside the database file. Shown as a thumbnail in search.
+    @Attribute(.externalStorage) var photo: Data?
 
     init(name: String, mealType: MealType, items: [SavedMealItem]) {
         self.uuid = UUID()
@@ -77,6 +79,11 @@ final class SavedMeal {
 
     var summary: String {
         items.map(\.foodName).joined(separator: ", ")
+    }
+
+    /// The photo a new favourite starts with: the first one among the diary lines it's made from.
+    static func firstPhoto(in entries: [FoodLogEntry]) -> Data? {
+        entries.lazy.compactMap(\.photo).first
     }
 
     /// Inserts a diary entry for each item and returns them.

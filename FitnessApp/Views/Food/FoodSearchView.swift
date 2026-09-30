@@ -26,6 +26,7 @@ struct FoodSearchView: View {
     @State private var showSentence = false
     @State private var showScanner = false
     @State private var unknownBarcode: UnknownBarcode?
+    @State private var photoMeal: SavedMeal?
 
     init(date: Date, mealType: MealType) {
         self.date = date
@@ -138,6 +139,9 @@ struct FoodSearchView: View {
                         ForEach(matchingSavedMeals) { meal in
                             Button { logSavedMeal(meal) } label: {
                                 HStack {
+                                    if let photo = meal.photo {
+                                        MealThumbnail(data: photo)
+                                    }
                                     VStack(alignment: .leading, spacing: 2) {
                                         HStack(spacing: 6) {
                                             Text(meal.name).foregroundStyle(Color.primary)
@@ -163,6 +167,15 @@ struct FoodSearchView: View {
                                     context.delete(meal)
                                     try? context.save()
                                 } label: { Label("Delete", systemImage: "trash") }
+                                Button { photoMeal = meal } label: {
+                                    Label(meal.photo == nil ? "Add photo" : "Photo", systemImage: "camera")
+                                }
+                                .tint(.indigo)
+                            }
+                            .contextMenu {
+                                Button { photoMeal = meal } label: {
+                                    Label(meal.photo == nil ? "Add photo" : "Change photo", systemImage: "camera")
+                                }
                             }
                         }
                     }
@@ -257,6 +270,9 @@ struct FoodSearchView: View {
             }
             .sheet(item: $selected) { food in
                 LogFoodSheet(food: food, date: date, mealType: mealType)
+            }
+            .sheet(item: $photoMeal) { meal in
+                SavedMealPhotoSheet(meal: meal)
             }
             .sheet(item: $selectedRecipe) { recipe in
                 LogRecipeSheet(recipe: recipe, date: date, mealType: mealType)
