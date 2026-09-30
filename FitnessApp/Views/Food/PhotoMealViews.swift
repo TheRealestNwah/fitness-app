@@ -295,6 +295,13 @@ struct SavedMealPhotoSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var photo: Data?
 
+    // Seeded here rather than in onAppear: closing the full-screen camera re-runs onAppear,
+    // which would throw away the photo just taken.
+    init(meal: SavedMeal) {
+        self.meal = meal
+        _photo = State(initialValue: meal.photo)
+    }
+
     var body: some View {
         NavigationStack {
             Form { MealPhotoSection(photo: $photo) }
@@ -310,7 +317,6 @@ struct SavedMealPhotoSheet: View {
                         }
                     }
                 }
-                .onAppear { photo = meal.photo }
         }
         .presentationDetents([.medium, .large])
     }
