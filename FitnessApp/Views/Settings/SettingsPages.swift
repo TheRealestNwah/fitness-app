@@ -192,9 +192,10 @@ private struct NutritionSettingsPage: View {
                         .foregroundStyle(Color.green)
                 }
             } else {
-                Text("Needs at least \(AdaptiveTargetCalculator.minimumDaysLogged) logged days and \(AdaptiveTargetCalculator.minimumWeighIns) weigh-ins spread over two weeks or more, within the last \(AdaptiveTargetCalculator.windowDays) days.")
-                    .font(.footnote)
-                    .foregroundStyle(Color.secondary)
+                TrendProgressView(title: "Your measured maintenance appears after two weeks of logging food and weighing in.",
+                                  progress: TrendReadiness.maintenance(
+                                    foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
+                                    weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }))
             }
         } header: {
             Text("Adaptive target")

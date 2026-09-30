@@ -266,3 +266,33 @@ struct IntField: View {
         }
     }
 }
+
+/// "Your trend needs a little more data": progress towards a trend insight, with an optional
+/// button to log a weigh-in when that's what's missing.
+struct TrendProgressView: View {
+    var title: LocalizedStringKey
+    var progress: TrendProgress
+    var logWeighIn: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(Color.secondary)
+            ProgressView(value: progress.fraction)
+                .tint(.indigo)
+                .accessibilityLabel(Text(title))
+                .accessibilityValue(progress.summary)
+            Text(progress.summary)
+                .font(.caption)
+                .foregroundStyle(Color.secondary)
+                .accessibilityHidden(true)
+            if progress.needsWeighIns, let logWeighIn {
+                Button("Log a weigh-in", action: logWeighIn)
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}

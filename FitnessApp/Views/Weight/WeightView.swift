@@ -59,8 +59,13 @@ struct WeightView: View {
         return points.filter { $0.date >= cutoff }
     }
 
+    private var rateProgress: TrendProgress { TrendReadiness.rate(weights: weightDays) }
+    private var forecastProgress: TrendProgress {
+        TrendReadiness.forecast(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays))
+    }
+
     private var weeklyRate: Double? {
-        let cutoff = Date.now.adding(days: -28)
+        let cutoff = Date.now.adding(days: -TrendReadiness.rateWindowDays)
         let recent = chronological.filter { $0.date >= cutoff }.map { (date: $0.date, weightKg: $0.weightKg) }
         return NutritionCalculator.weeklyRate(points: recent)
     }
@@ -257,7 +262,7 @@ struct WeightView: View {
                                     centerKg: profile.maintenanceCenterKg, bandKg: profile.maintenanceBandKg,
                                     units: units)
             }
-            if let rate = weeklyRate, entries.count >= 3 {
+            if let rate = weeklyRate, rateProgress.isReady {
                 let losing = rate < 0
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: losing ? "arrow.down.right.circle.fill" : "arrow.up.right.circle.fill")
@@ -272,9 +277,8 @@ struct WeightView: View {
                 }
                 .font(.subheadline)
             } else {
-                Text("Keep logging for a couple of weeks and we'll show your real rate of loss here.")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.secondary)
+                TrendProgressView(title: "Your real rate of loss appears after a few weigh-ins.",
+                                  progress: rateProgress, logWeighIn: { showAdd = true })
             }
             if let latest = milestones.last {
                 HStack(alignment: .top, spacing: 10) {
@@ -314,6 +318,9 @@ struct WeightView: View {
                         Text("At your current pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week, you'll get there around \(forecast.goalDate.formatted(date: .abbreviated, time: .omitted)).")
                     }
                     .font(.subheadline)
+                } else if !forecastProgress.isReady, rateProgress.isReady {
+                    TrendProgressView(title: "A goal date from your actual pace needs two weeks of weigh-ins.",
+                                      progress: forecastProgress)
                 }
             } else if remaining == 0, !profile.isMaintaining {
                 VStack(alignment: .leading, spacing: 8) {
