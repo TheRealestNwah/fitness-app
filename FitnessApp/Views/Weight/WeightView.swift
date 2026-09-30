@@ -104,6 +104,11 @@ struct WeightView: View {
             breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
     }
 
+    private var forecast: TrendForecast? {
+        ProgressCalculator.trendForecast(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays),
+                                         goalKg: profile.goalWeightKg)
+    }
+
     private var yDomain: ClosedRange<Double> {
         let values = visible.map { units.weightValue(kg: $0.weightKg) } + [units.weightValue(kg: profile.goalWeightKg)]
         guard let lo = values.min(), let hi = values.max() else { return 0...100 }
@@ -300,6 +305,13 @@ struct WeightView: View {
                     Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.formatted(date: .abbreviated, time: .omitted)).")
                 }
                 .font(.subheadline)
+                if let forecast {
+                    HStack(spacing: 10) {
+                        Image(systemName: "chart.line.downtrend.xyaxis").foregroundStyle(.teal)
+                        Text("At your current pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week, you'll get there around \(forecast.goalDate.formatted(date: .abbreviated, time: .omitted)).")
+                    }
+                    .font(.subheadline)
+                }
             } else if remaining == 0, !profile.isMaintaining {
                 VStack(alignment: .leading, spacing: 8) {
                     Label("You've reached your goal weight.", systemImage: "party.popper.fill")

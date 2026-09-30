@@ -8,6 +8,13 @@ struct Milestone: Equatable {
     var reachedOn: Date
 }
 
+/// When the goal will be reached if weight keeps falling at the rate it actually has been.
+struct TrendForecast: Equatable {
+    /// Recent loss per week, from a straight-line fit through the weigh-ins. Positive means losing.
+    var weeklyLossKg: Double
+    var goalDate: Date
+}
+
 /// The trend has stalled while there is still weight to lose.
 struct Plateau: Equatable {
     /// How long the trend has stayed within `ProgressCalculator.plateauToleranceKg`.
@@ -23,6 +30,12 @@ enum ProgressCalculator {
     /// Movement smaller than this over the plateau window counts as "hasn't moved".
     static let plateauToleranceKg = 0.3
     static let plateauMinimumWeighIns = 4
+    static let forecastWindowDays = 28
+    static let forecastMinimumSpanDays = 14
+    static let forecastMinimumWeighIns = 5
+    /// Slower than this and the goal is too far off to put a date on.
+    static let forecastMinimumWeeklyLossKg = 0.05
+    static let forecastMaximumDays = 3 * 365
 
     typealias WeightDay = WeeklyReviewCalculator.WeightDay
 
@@ -115,5 +128,36 @@ enum ProgressCalculator {
         suggestions.append(String(localized: "Water retention from stress, sleep or new training can hide fat loss for a week or two."))
         suggestions.append(String(localized: "If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier."))
         return Plateau(days: days, trendKg: now, suggestions: suggestions)
+    }
+
+    /// Fits a line through the last `forecastWindowDays` of weigh-ins and projects when the 7-day trend
+    /// reaches `goalKg` at that rate. Nil without enough data (at least `forecastMinimumWeighIns` spread
+    /// over `forecastMinimumSpanDays`), when weight is flat or rising, when the goal is already reached,
+    /// or when the date would be more than `forecastMaximumDays` away.
+    static func trendForecast(weights: [WeightDay], goalKg: Double, today: Date = .now,
+                              calendar: Calendar = .current) -> TrendForecast? {
+        let end = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: today)) ?? today
+        let start = calendar.date(byAdding: .day, value: -forecastWindowDays, to: end) ?? end
+        let window = weights.filter { $0.date >= start && $0.date < end }
+        guard window.count >= forecastMinimumWeighIns,
+              let first = window.map(\.date).min(), let last = window.map(\.date).max(),
+              last.timeIntervalSince(first) >= Double(forecastMinimumSpanDays - 1) * 86_400 else { return nil }
+
+        let points = window.map { (x: $0.date.timeIntervalSince(first) / 86_400, y: $0.weightKg) }
+        let n = Double(points.count)
+        let meanX = points.reduce(0) { $0 + $1.x } / n
+        let meanY = points.reduce(0) { $0 + $1.y } / n
+        let sxx = points.reduce(0) { $0 + ($1.x - meanX) * ($1.x - meanX) }
+        guard sxx > 0 else { return nil }
+        let slopePerDay = points.reduce(0) { $0 + ($1.x - meanX) * ($1.y - meanY) } / sxx
+        let weeklyLoss = -slopePerDay * 7
+        guard weeklyLoss >= forecastMinimumWeeklyLossKg,
+              let current = trend(on: today, weights: weights, calendar: calendar),
+              current > goalKg else { return nil }
+
+        let days = ((current - goalKg) / -slopePerDay).rounded()
+        guard days <= Double(forecastMaximumDays),
+              let date = calendar.date(byAdding: .day, value: Int(days), to: calendar.startOfDay(for: today)) else { return nil }
+        return TrendForecast(weeklyLossKg: weeklyLoss, goalDate: date)
     }
 }

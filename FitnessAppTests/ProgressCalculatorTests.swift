@@ -93,4 +93,34 @@ final class ProgressCalculatorTests: XCTestCase {
         let result = plateau(series(Array(repeating: 90, count: 30)), target: 2000, maintenance: estimate)
         XCTAssertTrue(result?.suggestions.first?.contains("1850 kcal") ?? false, "\(result?.suggestions ?? [])")
     }
+
+    func testForecastFollowsTheActualRate() throws {
+        // 0.1 kg a day for four weeks: 0.7 kg a week.
+        let weights = series((0..<28).map { 90 - Double($0) * 0.1 })
+        let forecast = try XCTUnwrap(ProgressCalculator.trendForecast(weights: weights, goalKg: 80,
+                                                                      today: today, calendar: calendar))
+        XCTAssertEqual(forecast.weeklyLossKg, 0.7, accuracy: 0.001)
+        // The 7-day trend is 87.6 kg; 7.6 kg at 0.1 kg a day is 76 days.
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: today), to: forecast.goalDate).day
+        XCTAssertEqual(days, 76)
+    }
+
+    func testNoForecastWhenFlatOrGaining() {
+        let flat = series(Array(repeating: 85, count: 20))
+        XCTAssertNil(ProgressCalculator.trendForecast(weights: flat, goalKg: 80, today: today, calendar: calendar))
+        let gaining = series((0..<20).map { 85 + Double($0) * 0.05 })
+        XCTAssertNil(ProgressCalculator.trendForecast(weights: gaining, goalKg: 80, today: today, calendar: calendar))
+    }
+
+    func testNoForecastWithoutEnoughHistory() {
+        let week = series((0..<7).map { 90 - Double($0) * 0.2 })
+        XCTAssertNil(ProgressCalculator.trendForecast(weights: week, goalKg: 80, today: today, calendar: calendar))
+        let sparse = series((0..<20).map { 90 - Double($0) * 0.1 }).enumerated().filter { $0.offset % 5 == 0 }.map(\.element)
+        XCTAssertNil(ProgressCalculator.trendForecast(weights: sparse, goalKg: 80, today: today, calendar: calendar))
+    }
+
+    func testNoForecastOnceTheGoalIsReached() {
+        let weights = series((0..<20).map { 81 - Double($0) * 0.1 })
+        XCTAssertNil(ProgressCalculator.trendForecast(weights: weights, goalKg: 80, today: today, calendar: calendar))
+    }
 }
