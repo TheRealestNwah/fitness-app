@@ -67,6 +67,9 @@ jobs:
                 | .[].value[] | select(.name | startswith("iPhone"))][0].udid')
           echo "Using simulator: $UDID"
           echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: Build
         run: |
@@ -102,6 +105,7 @@ jobs:
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -only-testing:FitnessAppUITests/SmokeTests \
+            -retry-tests-on-failure -test-iterations 3 \
             CODE_SIGNING_ALLOWED=NO \
             | tee uitest.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log

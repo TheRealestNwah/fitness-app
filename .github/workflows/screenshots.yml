@@ -41,6 +41,9 @@ jobs:
                 | .[].value[] | select(.name | startswith("iPhone"))][0].udid')
           echo "Using simulator: $UDID"
           echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: Run screenshot UI tests
         id: uitest
@@ -71,6 +74,9 @@ jobs:
                 | .[].value[] | select(.name | startswith("iPad"))][0].udid')
           echo "Using simulator: $UDID"
           echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: Run iPad screenshot UI tests
         id: ipadtest
