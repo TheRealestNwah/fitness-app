@@ -2,7 +2,8 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
-/// Take a photo of a meal and log a rough estimate now; fill in the details later.
+/// Take a photo of a meal and log the foods Stride recognises in it, or a rough estimate to
+/// fill in later.
 struct PhotoMealSheet: View {
     let date: Date
     let mealType: MealType
@@ -17,6 +18,12 @@ struct PhotoMealSheet: View {
     @State private var calories: Double?
     @State private var showCamera = false
     @State private var libraryItem: PhotosPickerItem?
+    @Query private var foods: [FoodItem]
+    @State private var suggestions: [PhotoFoodRecognizer.Suggestion] = []
+    @State private var chosen: Set<UUID> = []
+    @State private var recognising = false
+
+    private var chosenSuggestions: [PhotoFoodRecognizer.Suggestion] { suggestions.filter { chosen.contains($0.id) } }
 
     private var estimate: Int { PhotoMeal.estimate(dailyTarget: dailyTarget, meal: mealType, portion: portion) }
 
@@ -41,17 +48,21 @@ struct PhotoMealSheet: View {
                         Label("Choose from library", systemImage: "photo.on.rectangle")
                     }
                 }
-                Section {
-                    TextField("What was it? (optional)", text: $name)
-                    Picker("Portion", selection: $portion) {
-                        ForEach(PhotoMeal.Portion.allCases) { Text($0.label).tag($0) }
+                if recognising {
+                    Section { ProgressView("Looking at your photo…") }
+                } else if !suggestions.isEmpty {
+                    Section {
+                        ForEach($suggestions) { $suggestion in
+                            suggestionRow($suggestion)
+                        }
+                    } header: {
+                        Text("Looks like")
+                    } footer: {
+                        Text("Recognised on your iPhone from your saved foods. Tick what's on the plate and adjust the amounts; the photo is kept with the first item.")
                     }
-                    .pickerStyle(.segmented)
-                    DecimalField(title: "Calories", value: $calories, unit: "kcal")
-                } header: {
-                    Text("Rough estimate")
-                } footer: {
-                    Text("About \(estimate) kcal for a \(portion.inSentence) \(mealType.inSentence). Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details.")
+                }
+                if chosen.isEmpty {
+                    estimateSection
                 }
             }
             .navigationTitle("Photo meal")
@@ -74,12 +85,75 @@ struct PhotoMealSheet: View {
                     }
                 }
             }
+            .onChange(of: photo) { _, data in recognise(data) }
             .onChange(of: portion) { _, _ in calories = nil }
             .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image) }
         }
     }
 
+    @ViewBuilder
+    private func suggestionRow(_ suggestion: Binding<PhotoFoodRecognizer.Suggestion>) -> some View {
+        let value = suggestion.wrappedValue
+        let isChosen = chosen.contains(value.id)
+        VStack(alignment: .leading, spacing: 6) {
+            Toggle(isOn: Binding(get: { isChosen },
+                                 set: { on in if on { chosen.insert(value.id) } else { chosen.remove(value.id) } })) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(value.food.displayName)
+                    Text("Seen as “\(value.source)” · \(Energy.string(value.food.calories * value.servings))")
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                }
+            }
+            .toggleStyle(.checkmark)
+            if isChosen {
+                Stepper(value: suggestion.servings, in: 0.25...20, step: 0.25) {
+                    Text("\(value.servings.cleanString) × \(value.food.servingDescription)")
+                        .font(.subheadline)
+                        .monospacedDigit()
+                }
+            }
+        }
+    }
+
+    private var estimateSection: some View {
+        Section {
+            TextField("What was it? (optional)", text: $name)
+            Picker("Portion", selection: $portion) {
+                ForEach(PhotoMeal.Portion.allCases) { Text($0.label).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            DecimalField(title: "Calories", value: $calories, unit: "kcal")
+        } header: {
+            Text("Rough estimate")
+        } footer: {
+            Text("About \(estimate) kcal for a \(portion.inSentence) \(mealType.inSentence). Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details.")
+        }
+    }
+
+    private func recognise(_ data: Data?) {
+        suggestions = []
+        chosen = []
+        guard let data, let image = UIImage(data: data) else { return }
+        recognising = true
+        Task { @MainActor in
+            let found = await PhotoFoodRecognizer.suggestions(for: image, foods: foods)
+            guard photo == data else { return }     // a newer photo replaced this one
+            suggestions = found
+            recognising = false
+        }
+    }
+
     private func log() {
+        if !chosenSuggestions.isEmpty {
+            for (index, suggestion) in chosenSuggestions.enumerated() {
+                let entry = suggestion.food.log(servings: suggestion.servings, meal: mealType, on: date, context: context)
+                if index == 0 { entry.photo = photo }
+            }
+            try? context.save()
+            dismiss()
+            return
+        }
         let trimmed = name.trimmingCharacters(in: .whitespaces)
         let entry = FoodLogEntry(date: mealType.logDate(on: date), mealType: mealType,
                                  foodName: trimmed.isEmpty ? "Photo meal" : trimmed, servings: 1,
