@@ -86,7 +86,7 @@ struct BarcodeScanSheet: View {
                             Text("Point the camera at the barcode")
                                 .font(.footnote)
                                 .padding(8)
-                                .background(.ultraThinMaterial, in: Capsule())
+                                .floatingBackground(.ultraThinMaterial, in: Capsule())
                                 .padding()
                         }
                 }
