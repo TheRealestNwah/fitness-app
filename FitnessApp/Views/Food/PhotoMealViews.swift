@@ -244,28 +244,29 @@ struct MealPhotoSection: View {
                 Button { showCamera = true } label: {
                     Label(photo == nil ? "Take photo" : "Retake photo", systemImage: "camera")
                 }
+                .fullScreenCover(isPresented: $showCamera) {
+                    CameraPicker { image in photo = PhotoMeal.jpeg(from: image) }
+                        .ignoresSafeArea()
+                }
             }
+            // Modifiers go on rows, not the Section, which would apply them to every row.
             PhotosPicker(selection: $libraryItem, matching: .images) {
                 Label(photo == nil ? "Choose from library" : "Replace from library", systemImage: "photo.on.rectangle")
             }
+            .onChange(of: libraryItem) { _, item in
+                Task {
+                    if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        photo = PhotoMeal.jpeg(from: image)
+                    }
+                }
+            }
+            .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image) }
             if photo != nil {
                 Button(role: .destructive) { photo = nil } label: {
                     Label("Remove photo", systemImage: "trash")
                 }
             }
         }
-        .fullScreenCover(isPresented: $showCamera) {
-            CameraPicker { image in photo = PhotoMeal.jpeg(from: image) }
-                .ignoresSafeArea()
-        }
-        .onChange(of: libraryItem) { _, item in
-            Task {
-                if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
-                    photo = PhotoMeal.jpeg(from: image)
-                }
-            }
-        }
-        .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image) }
     }
 }
 
