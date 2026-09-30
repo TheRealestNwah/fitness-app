@@ -25,13 +25,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Select Xcode 26
+        run: |
+          XCODE=$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)
+          echo "Using $XCODE"
+          sudo xcode-select -s "$XCODE"
+
       - name: Pick an iPhone simulator
         id: sim
         run: |
-          DEVICE=$(xcrun simctl list devices available -j \
-            | jq -r '[.devices[] | .[] | select(.name | startswith("iPhone"))][0].name')
-          echo "Using simulator: $DEVICE"
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          # Newest iOS runtime first, so iOS 26 code paths are exercised.
+          UDID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries | map(select(.key | test("iOS-[0-9]+")))
+                | sort_by(.key | capture("iOS-(?<v>[0-9]+)").v | tonumber) | reverse
+                | .[].value[] | select(.name | startswith("iPhone"))][0].udid')
+          echo "Using simulator: $UDID"
+          echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: Run screenshot UI tests
         id: uitest
@@ -41,7 +53,7 @@ jobs:
           xcodebuild test \
             -project FitnessApp.xcodeproj \
             -scheme FitnessApp \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -resultBundlePath build/UITests.xcresult \
             -only-testing:FitnessAppUITests \
@@ -56,10 +68,15 @@ jobs:
       - name: Pick an iPad simulator
         id: ipad
         run: |
-          DEVICE=$(xcrun simctl list devices available -j \
-            | jq -r '[.devices[] | .[] | select(.name | startswith("iPad"))][0].name')
-          echo "Using simulator: $DEVICE"
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          UDID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries | map(select(.key | test("iOS-[0-9]+")))
+                | sort_by(.key | capture("iOS-(?<v>[0-9]+)").v | tonumber) | reverse
+                | .[].value[] | select(.name | startswith("iPad"))][0].udid')
+          echo "Using simulator: $UDID"
+          echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
 
       - name: Run iPad screenshot UI tests
         id: ipadtest
@@ -69,7 +86,7 @@ jobs:
           xcodebuild test \
             -project FitnessApp.xcodeproj \
             -scheme FitnessApp \
-            -destination "platform=iOS Simulator,name=${{ steps.ipad.outputs.device }}" \
+            -destination "platform=iOS Simulator,id=${{ steps.ipad.outputs.device }}" \
             -derivedDataPath build \
             -resultBundlePath build/iPadTests.xcresult \
             -only-testing:FitnessAppUITests/IPadScreenshotTests \

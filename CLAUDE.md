@@ -26,6 +26,8 @@ Development happens on Windows, so there is **no local Swift, Xcode or SwiftLint
 - Follow `.swiftlint.yml`. CI runs `swiftlint lint --strict`, so any warning fails the build.
 - Add or update unit tests in `FitnessAppTests/` for new logic in `Services/`.
 
+CI builds with Xcode 26 (iOS 26 SDK) on the newest iOS simulator, but the deployment target is iOS 17. Wrap iOS 26-only APIs (Foundation Models, HealthKit medications, iPhone workout sessions, glass effects) in `#available(iOS 26, *)` and keep a fallback for older versions.
+
 CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then the UI smoke tests on an iPhone simulator. The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
 
 Screenshots (`.github/workflows/screenshots.yml`) run nightly, on pushes to `claude/**` branches, and on demand (Actions → Screenshots → Run workflow). They publish to the `screenshots` branch.
