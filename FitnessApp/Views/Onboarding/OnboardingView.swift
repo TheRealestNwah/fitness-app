@@ -275,7 +275,7 @@ struct OnboardingView: View {
                 .frame(maxWidth: .infinity)
                 .card()
 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                StatGrid {
                     StatTile(title: "Maintenance", value: "\(Energy.string(tdee))", subtitle: "what you burn now", systemImage: "flame.fill", tint: .orange)
                     StatTile(title: "Daily deficit", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: units.weightString(kg: rate.rawValue, decimals: 2) + "/week", systemImage: "arrow.down.right", tint: .green)
                     StatTile(title: "Protein", value: "\(Int(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)

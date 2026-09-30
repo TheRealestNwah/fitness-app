@@ -498,7 +498,7 @@ struct DashboardView: View {
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
             }
-            HStack(spacing: 12) {
+            AdaptiveStack(spacing: 12) {
                 StatTile(title: "Steps", value: health.todaySteps.formatted(), subtitle: "today", systemImage: "shoeprints.fill", tint: .green)
                 StatTile(title: "Active energy", value: "\(Energy.string(health.todayActiveEnergyKcal))",
                          subtitle: activeCredit > 0 ? "+\(Energy.string(activeCredit)) to budget" : "not added to budget",
@@ -575,7 +575,7 @@ struct DashboardView: View {
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
             }
-            HStack(spacing: 12) {
+            AdaptiveStack(spacing: 12) {
                 StatTile(title: "Average intake", value: intakeValue, subtitle: intakeSubtitle,
                          systemImage: "fork.knife", tint: intakeTint)
                 StatTile(title: "Weight change", value: weightValue, subtitle: weightSubtitle,

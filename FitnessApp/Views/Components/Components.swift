@@ -63,6 +63,18 @@ struct AdaptiveStack<Content: View>: View {
     }
 }
 
+/// Stat tiles two to a row, or one to a row at accessibility text sizes.
+struct StatGrid<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    @Environment(\.dynamicTypeSize) private var typeSize
+
+    var body: some View {
+        let count = typeSize.isAccessibilitySize ? 1 : 2
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: count), spacing: 12) { content }
+    }
+}
+
 // MARK: - Macro bar
 
 struct MacroBar: View {
@@ -109,7 +121,11 @@ struct StatTile: View {
     var systemImage: String? = nil
     var tint: Color = .accentColor
 
+    @Environment(\.dynamicTypeSize) private var typeSize
+
     var body: some View {
+        // At accessibility sizes the tile has the full width, so let text wrap rather than truncate.
+        let lines: Int? = typeSize.isAccessibilitySize ? nil : 1
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 if let systemImage {
@@ -122,13 +138,13 @@ struct StatTile: View {
             }
             Text(value)
                 .font(.title3.weight(.semibold).monospacedDigit())
-                .lineLimit(1)
+                .lineLimit(lines)
                 .minimumScaleFactor(0.7)
             if let subtitle {
                 Text(subtitle)
                     .font(.caption2)
                     .foregroundStyle(Color.secondary)
-                    .lineLimit(1)
+                    .lineLimit(lines)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

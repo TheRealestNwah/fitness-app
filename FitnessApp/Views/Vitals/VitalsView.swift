@@ -327,7 +327,7 @@ struct VitalDetailView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 if let latestEntry = entries.last(where: { $0.value(for: kind) != nil }) {
-                    HStack(spacing: 12) {
+                    AdaptiveStack(spacing: 12) {
                         StatTile(title: "Latest", value: kind.display(entry: latestEntry, units: units), subtitle: latestEntry.date.relativeDayLabel, systemImage: kind.systemImage, tint: kind.tint)
                         if let change {
                             StatTile(title: "Since first", value: String(format: "%+.1f %@", change, kind.unitLabel(units)), subtitle: "\(points.count) readings", systemImage: change <= 0 ? "arrow.down.right" : "arrow.up.right", tint: .secondary)

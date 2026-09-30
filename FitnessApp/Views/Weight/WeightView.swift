@@ -177,7 +177,7 @@ struct WeightView: View {
     }
 
     private var statsGrid: some View {
-        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+        StatGrid {
             StatTile(title: "Current", value: units.weightString(kg: currentKg), subtitle: entries.first.map { $0.date.relativeDayLabel }, systemImage: "scalemass.fill", tint: .indigo)
             StatTile(title: "Lost so far", value: units.weightString(kg: lost), subtitle: "from \(units.weightString(kg: profile.startWeightKg))", systemImage: "arrow.down.right", tint: lost >= 0 ? .green : .orange)
             if profile.isMaintaining {
