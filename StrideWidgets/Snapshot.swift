@@ -11,12 +11,15 @@ struct Snapshot: Codable {
     var streak: Int
     var energyUnit: String
     var glassMl: Double? = nil
+    var proteinG: Double? = nil
+    var proteinTargetG: Double? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"
 
     static let placeholder = Snapshot(day: .now, consumedKcal: 1240, targetKcal: 1850, waterMl: 1500,
-                                      waterGoalMl: 2500, weightText: "72.4 kg", streak: 12, energyUnit: "kcal")
+                                      waterGoalMl: 2500, weightText: "72.4 kg", streak: 12, energyUnit: "kcal",
+                                      proteinG: 82, proteinTargetG: 120)
 
     /// The last snapshot the app saved. A snapshot from an earlier day means nothing is
     /// logged yet today, so its totals start again from zero.
@@ -27,6 +30,7 @@ struct Snapshot: Codable {
             snapshot.day = Calendar.current.startOfDay(for: now)
             snapshot.consumedKcal = 0
             snapshot.waterMl = 0
+            if snapshot.proteinG != nil { snapshot.proteinG = 0 }
         }
         return snapshot
     }
@@ -34,6 +38,10 @@ struct Snapshot: Codable {
     var remainingKcal: Double { Double(targetKcal) - consumedKcal }
     var progress: Double { targetKcal > 0 ? consumedKcal / Double(targetKcal) : 0 }
     var waterProgress: Double { waterGoalMl > 0 ? waterMl / waterGoalMl : 0 }
+    var proteinProgress: Double {
+        guard let proteinG, let proteinTargetG, proteinTargetG > 0 else { return 0 }
+        return proteinG / proteinTargetG
+    }
 
     func energy(_ kcal: Double) -> String {
         energyUnit == "kJ" ? "\(Int((kcal * 4.184).rounded()))" : "\(Int(kcal.rounded()))"

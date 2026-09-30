@@ -5,6 +5,7 @@ import WidgetKit
 struct StrideWidgetBundle: WidgetBundle {
     var body: some Widget {
         CaloriesWidget()
+        ProteinWidget()
 #if os(iOS)
         FastingLiveActivity()
         if #available(iOS 18.0, *) {
@@ -174,6 +175,86 @@ struct CaloriesWidgetView: View {
             if let weight = s.weightText {
                 Text(weight).font(.caption)
             }
+        }
+    }
+}
+
+struct ProteinWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "ProteinWidget", provider: SnapshotProvider()) { entry in
+            ProteinWidgetView(entry: entry)
+                .containerBackground(.fill.tertiary, for: .widget)
+        }
+        .configurationDisplayName("Protein")
+        .description("Protein eaten today against your target.")
+        .supportedFamilies(Self.families)
+    }
+
+#if os(watchOS)
+    static let families: [WidgetFamily] = [.accessoryCircular, .accessoryRectangular, .accessoryInline, .accessoryCorner]
+#else
+    static let families: [WidgetFamily] = [.systemSmall, .accessoryCircular, .accessoryRectangular, .accessoryInline]
+#endif
+}
+
+struct ProteinWidgetView: View {
+    var entry: SnapshotEntry
+    @Environment(\.widgetFamily) private var family
+
+    var body: some View {
+        if let s = entry.snapshot, let eaten = s.proteinG, let target = s.proteinTargetG {
+            let progress = min(max(s.proteinProgress, 0), 1)
+            let eatenText = "\(Int(eaten.rounded()))"
+            let targetText = "\(Int(target.rounded())) g"
+            Group {
+                switch family {
+#if os(watchOS)
+                case .accessoryCorner:
+                    Text("\(eatenText) g")
+                        .font(.title3.monospacedDigit())
+                        .widgetLabel {
+                            Gauge(value: progress) { Text("Protein") }
+                        }
+#endif
+                case .accessoryCircular:
+                    Gauge(value: progress) {
+                        Text("P")
+                    } currentValueLabel: {
+                        Text(eatenText).minimumScaleFactor(0.5)
+                    }
+                    .gaugeStyle(.accessoryCircularCapacity)
+                case .accessoryRectangular:
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Protein").font(.headline)
+                        Gauge(value: progress) { EmptyView() }
+                            .gaugeStyle(.accessoryLinearCapacity)
+                        Text("\(eatenText) of \(targetText)").font(.caption.monospacedDigit())
+                    }
+                case .accessoryInline:
+                    Text("Protein \(eatenText) of \(targetText)")
+                default:
+                    VStack(spacing: 6) {
+                        Gauge(value: progress) {
+                            Text("Protein")
+                        } currentValueLabel: {
+                            Text(eatenText).font(.title2.bold().monospacedDigit())
+                        }
+                        .gaugeStyle(.accessoryCircularCapacity)
+                        .tint(.purple)
+                        .scaleEffect(1.4)
+                        .padding(.vertical, 12)
+                        Text("of \(targetText) protein")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Protein: \(eatenText) of \(targetText) today")
+        } else {
+            Text("Open Stride to start")
+                .font(.caption)
+                .multilineTextAlignment(.center)
         }
     }
 }

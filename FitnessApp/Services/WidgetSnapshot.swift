@@ -15,6 +15,9 @@ struct WidgetSnapshot: Codable, Equatable {
     var energyUnit: String
     /// One glass in millilitres, for the widget's water button.
     var glassMl: Double? = nil
+    /// Protein eaten today and the daily target, in grams. Optional so older snapshots still decode.
+    var proteinG: Double? = nil
+    var proteinTargetG: Double? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"
@@ -22,8 +25,8 @@ struct WidgetSnapshot: Codable, Equatable {
     var remainingKcal: Double { Double(targetKcal) - consumedKcal }
 
     static func make(profile: UserProfile, food: [(date: Date, calories: Double)], water: [(date: Date, ml: Double)],
-                     latestWeightKg: Double?, logDates: [Date], now: Date = .now,
-                     calendar: Calendar = .current) -> WidgetSnapshot {
+                     latestWeightKg: Double?, logDates: [Date], protein: [(date: Date, grams: Double)] = [],
+                     now: Date = .now, calendar: Calendar = .current) -> WidgetSnapshot {
         let start = calendar.startOfDay(for: now)
         let end = calendar.date(byAdding: .day, value: 1, to: start) ?? now
         let today = { (date: Date) in date >= start && date < end }
@@ -37,7 +40,9 @@ struct WidgetSnapshot: Codable, Equatable {
             weightText: latestWeightKg.map { profile.units.weightString(kg: $0) },
             streak: NutritionCalculator.streak(logDates: logDates, today: now, calendar: calendar),
             energyUnit: EnergyUnit.current.rawValue,
-            glassMl: profile.units.glassMl)
+            glassMl: profile.units.glassMl,
+            proteinG: protein.filter { today($0.date) }.reduce(0) { $0 + $1.grams },
+            proteinTargetG: profile.macroTargets(currentWeightKg: currentKg).protein)
     }
 
     /// Recomputes today's snapshot from the store, saves it for the widgets and asks them to reload.
@@ -67,6 +72,7 @@ struct WidgetSnapshot: Codable, Equatable {
                     food: food.map { (date: $0.date, calories: $0.calories) },
                     water: water.map { (date: $0.date, ml: $0.amountMl) },
                     latestWeightKg: (try? context.fetch(latest))?.first?.weightKg,
-                    logDates: food.map(\.date) + weights.map(\.date), now: now)
+                    logDates: food.map(\.date) + weights.map(\.date),
+                    protein: food.map { (date: $0.date, grams: $0.protein) }, now: now)
     }
 }
