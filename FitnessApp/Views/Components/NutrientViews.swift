@@ -32,6 +32,25 @@ struct ExtraNutrientRow: View {
     }
 }
 
+/// Alcohol and caffeine for a day, shown when either was logged.
+struct DrinksNutrientRow: View {
+    var alcohol: Double
+    var caffeine: Double
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if alcohol > 0 {
+                NutrientPill(name: "Alcohol", value: alcohol, unit: "g", goal: nil, isMinimum: false)
+                NutrientPill(name: "Drinks", value: Alcohol.standardDrinks(grams: alcohol), unit: "", goal: nil,
+                             isMinimum: false, fractionDigits: 1)
+            }
+            if caffeine > 0 {
+                NutrientPill(name: "Caffeine", value: caffeine, unit: "mg", goal: Caffeine.dailyLimitMg, isMinimum: false)
+            }
+        }
+    }
+}
+
 /// Whether saturated fat, potassium and cholesterol are shown and tracked.
 enum ExtraNutrients {
     static let storageKey = "showExtraNutrients"
@@ -44,6 +63,7 @@ struct NutrientPill: View {
     var goal: Double?
     /// A minimum (fibre) is good once reached; a limit (sugar, sodium) is a warning once passed.
     var isMinimum: Bool
+    var fractionDigits = 0
 
     private var tint: Color {
         guard let goal, goal > 0 else { return .secondary }
@@ -52,8 +72,8 @@ struct NutrientPill: View {
     }
 
     private var text: String {
-        let amount = "\(Int(value.rounded()))"
-        guard let goal, goal > 0 else { return "\(amount) \(unit)" }
+        let amount = value.formatted(.number.precision(.fractionLength(0...fractionDigits)))
+        guard let goal, goal > 0 else { return unit.isEmpty ? amount : "\(amount) \(unit)" }
         return "\(amount) / \(Int(goal.rounded())) \(unit)"
     }
 

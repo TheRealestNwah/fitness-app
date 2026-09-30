@@ -84,14 +84,16 @@ enum HealthImportRules {
     /// Nutrient types a diary entry is written to Health as.
     static let dietaryTypes: [HKQuantityTypeIdentifier] = [.dietaryEnergyConsumed, .dietaryProtein, .dietaryCarbohydrates,
                                                            .dietaryFatTotal, .dietaryFiber, .dietarySugar, .dietarySodium,
-                                                           .dietaryFatSaturated, .dietaryPotassium, .dietaryCholesterol]
+                                                           .dietaryFatSaturated, .dietaryPotassium, .dietaryCholesterol,
+                                                           .dietaryCaffeine, .numberOfAlcoholicBeverages]
 
     /// What a diary entry is written to Health as. Energy and macros are always written;
     /// fibre, sugar and sodium only when recorded, since zero usually means unknown.
     static func dietaryValues(calories: Double, protein: Double, carbs: Double, fat: Double,
                               fiber: Double, sugar: Double, sodiumMg: Double,
                               saturatedFat: Double = 0, potassiumMg: Double = 0,
-                              cholesterolMg: Double = 0) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
+                              cholesterolMg: Double = 0, alcoholG: Double = 0,
+                              caffeineMg: Double = 0) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
         var values: [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] = [
             (.dietaryEnergyConsumed, max(calories, 0), .kilocalorie()),
             (.dietaryProtein, max(protein, 0), .gram()),
@@ -104,6 +106,9 @@ enum HealthImportRules {
         if saturatedFat > 0 { values.append((.dietaryFatSaturated, saturatedFat, .gram())) }
         if potassiumMg > 0 { values.append((.dietaryPotassium, potassiumMg, .gramUnit(with: .milli))) }
         if cholesterolMg > 0 { values.append((.dietaryCholesterol, cholesterolMg, .gramUnit(with: .milli))) }
+        if caffeineMg > 0 { values.append((.dietaryCaffeine, caffeineMg, .gramUnit(with: .milli))) }
+        // Health counts alcohol as standard drinks rather than grams.
+        if alcoholG > 0 { values.append((.numberOfAlcoholicBeverages, Alcohol.standardDrinks(grams: alcoholG), .count())) }
         return values
     }
 
@@ -432,7 +437,8 @@ final class HealthKitManager {
         return HealthImportRules.dietaryValues(calories: entry.calories, protein: entry.protein, carbs: entry.carbs,
                                                fat: entry.fat, fiber: entry.fiber, sugar: entry.sugar, sodiumMg: entry.sodium,
                                                saturatedFat: entry.saturatedFat, potassiumMg: entry.potassium,
-                                               cholesterolMg: entry.cholesterol)
+                                               cholesterolMg: entry.cholesterol, alcoholG: entry.alcohol,
+                                               caffeineMg: entry.caffeine)
             .map { HKQuantitySample(type: HKQuantityType($0.type), quantity: HKQuantity(unit: $0.unit, doubleValue: $0.value),
                                     start: entry.date, end: entry.date, metadata: metadata) }
     }
@@ -447,7 +453,8 @@ final class HealthKitManager {
 
     /// Fire-and-forget: mirrors a diary entry into Health when sync is on.
     func recordDiaryEntry(_ entry: FoodLogEntry) {
-        guard HealthSettings.isEnabled, Self.isAvailable, entry.calories > 0 else { return }
+        // Zero-calorie drinks still count for their caffeine.
+        guard HealthSettings.isEnabled, Self.isAvailable, entry.calories > 0 || entry.caffeine > 0 else { return }
         let samples = dietarySamples(for: entry).filter { canShare($0.sampleType) }
         let id = entry.uuid
         Task { @MainActor in

@@ -24,6 +24,10 @@ final class FoodLogEntry {
     var potassium: Double = 0
     /// Milligrams.
     var cholesterol: Double = 0
+    /// Grams of pure alcohol (ethanol).
+    var alcohol: Double = 0
+    /// Milligrams.
+    var caffeine: Double = 0
     var foodItemID: UUID?
     /// A photo of the meal, stored outside the database file.
     @Attribute(.externalStorage) var photo: Data?
@@ -78,6 +82,8 @@ final class FoodLogEntry {
         saturatedFat *= ratio
         potassium *= ratio
         cholesterol *= ratio
+        alcohol *= ratio
+        caffeine *= ratio
         servings = newServings
     }
 
@@ -88,13 +94,15 @@ final class FoodLogEntry {
 }
 
 extension FoodLogEntry {
-    /// Copies saturated fat, potassium and cholesterol from another entry (they aren't init
-    /// parameters, to keep the long initialiser manageable).
+    /// Copies saturated fat, potassium, cholesterol, alcohol and caffeine from another entry (they
+    /// aren't init parameters, to keep the long initialiser manageable).
     @discardableResult
     func withExtras(from other: FoodLogEntry, scale: Double = 1) -> FoodLogEntry {
         saturatedFat = other.saturatedFat * scale
         potassium = other.potassium * scale
         cholesterol = other.cholesterol * scale
+        alcohol = other.alcohol * scale
+        caffeine = other.caffeine * scale
         return self
     }
 
@@ -104,6 +112,8 @@ extension FoodLogEntry {
         saturatedFat = food.saturatedFat * servings
         potassium = food.potassium * servings
         cholesterol = food.cholesterol * servings
+        alcohol = food.alcohol * servings
+        caffeine = food.caffeine * servings
         return self
     }
 }

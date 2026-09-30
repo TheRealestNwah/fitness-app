@@ -25,6 +25,8 @@ enum DataImporter {
         var saturatedFat: Double = 0
         var potassiumMg: Double = 0
         var cholesterolMg: Double = 0
+        var alcoholG: Double = 0
+        var caffeineMg: Double = 0
     }
 
     struct Preview: Equatable {
@@ -178,7 +180,9 @@ enum DataImporter {
                     sodiumMg: number(value(column("sodiummg", "sodium"))) ?? 0,
                     saturatedFat: number(value(column("saturatedfatg", "saturatedfat"))) ?? 0,
                     potassiumMg: number(value(column("potassiummg", "potassium"))) ?? 0,
-                    cholesterolMg: number(value(column("cholesterolmg", "cholesterol"))) ?? 0))
+                    cholesterolMg: number(value(column("cholesterolmg", "cholesterol"))) ?? 0,
+                    alcoholG: number(value(column("alcoholg", "alcohol"))) ?? 0,
+                    caffeineMg: number(value(column("caffeinemg", "caffeine"))) ?? 0))
             }
         }
         return preview
@@ -219,6 +223,8 @@ enum DataImporter {
             entry.saturatedFat = f.saturatedFat
             entry.potassium = f.potassiumMg
             entry.cholesterol = f.cholesterolMg
+            entry.alcohol = f.alcoholG
+            entry.caffeine = f.caffeineMg
             context.insert(entry)
         }
         try context.save()
