@@ -697,7 +697,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stride;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and to take meal and progress photos.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads your weight, height, date of birth, sex, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads your weight, height, date of birth, sex, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand, and, if you choose, GLP-1 medication doses you've logged there.";
 				INFOPLIST_KEY_NSRemindersFullAccessUsageDescription = "Stride adds your grocery list to a list in Reminders when you ask it to.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Stride writes your weigh-ins and logged calories to Health so other apps can see them.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -736,7 +736,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Stride;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Stride uses the camera to scan food barcodes and to take meal and progress photos.";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads your weight, height, date of birth, sex, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Stride reads your weight, height, date of birth, sex, steps, active energy, resting heart rate and sleep from Health so you don't have to enter them by hand, and, if you choose, GLP-1 medication doses you've logged there.";
 				INFOPLIST_KEY_NSRemindersFullAccessUsageDescription = "Stride adds your grocery list to a list in Reminders when you ask it to.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Stride writes your weigh-ins and logged calories to Health so other apps can see them.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

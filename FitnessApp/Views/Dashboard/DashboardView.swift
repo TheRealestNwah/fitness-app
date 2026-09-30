@@ -211,6 +211,7 @@ struct DashboardView: View {
         case .tip: tipCard
         case .exercise: ExerciseCard(weightKg: currentKg)
         case .fasting: FastingCard()
+        case .medication: MedicationCard()
         }
     }
 

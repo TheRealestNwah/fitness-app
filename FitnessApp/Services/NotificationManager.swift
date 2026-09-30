@@ -13,6 +13,7 @@ enum NotificationManager {
     static func anyReminderEnabled(_ profile: UserProfile) -> Bool {
         profile.weighInReminderEnabled || profile.waterReminderEnabled || profile.mealReminderEnabled
             || profile.dayCloseReminderHour != nil || profile.proteinReminderEnabled
+            || (profile.medicationEnabled && profile.medicationReminderEnabled)
     }
 
     static func requestAuthorization() async -> Bool {
@@ -35,13 +36,18 @@ enum NotificationManager {
         if profile.pauseRemindersOnDietBreak, let start = profile.dietBreakStart, let end = profile.dietBreakEnd, end > start {
             pause = DateInterval(start: start, end: end)
         }
-        let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
+        var settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
                                                 waterGoalMl: profile.waterGoalMl,
                                                 mealsEnabled: profile.mealReminderEnabled,
                                                 dayCloseHour: profile.dayCloseReminderHour,
                                                 proteinHour: profile.proteinReminderEnabled ? proteinHour : nil,
                                                 weighInHour: profile.weighInReminderEnabled ? profile.weighInReminderHour : nil,
                                                 pause: pause)
+        if profile.medicationEnabled, profile.medicationReminderEnabled {
+            settings.medicationDue = nextMedicationDose(profile)
+            settings.medicationHour = profile.medicationReminderHour
+            settings.medicationName = profile.medicationName
+        }
         for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile, now: now), now: now) {
             let content = UNMutableNotificationContent()
             content.title = reminder.title
@@ -56,6 +62,16 @@ enum NotificationManager {
     @MainActor
     /// 5 pm: late enough to know, early enough to fix at dinner.
     static let proteinHour = 17
+
+    @MainActor
+    private static func nextMedicationDose(_ profile: UserProfile) -> Date? {
+        guard let context = profile.modelContext else { return nil }
+        var latest = FetchDescriptor<MedicationDose>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        latest.fetchLimit = 1
+        let last = (try? context.fetch(latest))?.first?.date
+        let interval = MedicationPlanner.medication(named: profile.medicationName)?.intervalDays ?? profile.medicationIntervalDays
+        return MedicationPlanner.nextDose(after: last, intervalDays: interval)
+    }
 
     @MainActor
     private static func todaysLog(_ profile: UserProfile, now: Date) -> ReminderPlanner.Today {

@@ -44,6 +44,8 @@ enum SettingsSearch {
               keywords: ["name", "sex", "age", "birthday", "height", "weight", "goal weight", "starting weight", "activity", "weekly loss"]),
         Entry(title: "Units", page: .profile, keywords: ["metric", "imperial", "kg", "lb", "stone", "kcal", "kJ", "energy"]),
         Entry(title: "Appearance", page: .profile, keywords: ["dark mode", "light mode", "theme"]),
+        Entry(title: "Medication", page: .profile,
+              keywords: ["glp-1", "semaglutide", "tirzepatide", "ozempic", "wegovy", "mounjaro", "zepbound", "injection", "dose"]),
         Entry(title: "Water goal", page: .profile, keywords: ["hydration", "drink"]),
         Entry(title: "Streak grace day", page: .profile, keywords: ["streak", "missed day"]),
 

@@ -19,6 +19,11 @@ enum ReminderPlanner {
         /// Days when weigh-in, meal, check-in and protein reminders are paused (a diet break);
         /// the end day is not included.
         var pause: DateInterval? = nil
+        /// The day the next medication dose is due, and the hour to remind; nil when off.
+        /// Not paused by a diet break.
+        var medicationDue: Date? = nil
+        var medicationHour: Int? = nil
+        var medicationName = ""
     }
 
     struct Today {
@@ -53,7 +58,7 @@ enum ReminderPlanner {
     static let waterHours = Array(stride(from: 9, through: 21, by: 2))
     static let mealTimes: [(meal: MealType, hour: Int, minute: Int)] = [(.breakfast, 8, 30), (.lunch, 13, 30), (.dinner, 19, 30)]
     /// Scheduled ahead so reminders still arrive on days the app isn't opened.
-    /// iOS keeps at most 64 pending requests; this plans at most 49.
+    /// iOS keeps at most 64 pending requests; this plans at most 50.
     static let daysAhead = 4
 
     static func plan(settings: Settings, today: Today, now: Date = .now,
@@ -65,6 +70,16 @@ enum ReminderPlanner {
             let isToday = offset == 0
             let key = dayKey(day, calendar: calendar)
             let paused = isPaused(day, settings.pause, calendar: calendar)
+
+            // Due that day, or overdue (reminded today only).
+            if let due = settings.medicationDue, let hour = settings.medicationHour,
+               calendar.isDate(day, inSameDayAs: due) || (isToday && due < start),
+               let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now {
+                let name = settings.medicationName.isEmpty ? String(localized: "your medication") : settings.medicationName
+                reminders.append(Reminder(id: "medication.\(key)", date: date,
+                                          title: String(localized: "Dose due today"),
+                                          body: String(localized: "Time for \(name). Log it in Stride so the next date and injection site stay right.")))
+            }
 
             if let hour = settings.weighInHour, !paused, !(isToday && today.weighedIn),
                let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now {

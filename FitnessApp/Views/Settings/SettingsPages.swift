@@ -68,6 +68,8 @@ private struct ProfileSettingsPage: View {
                 }
             }
 
+            MedicationSettingsSection(profile: profile)
+
             Section {
                 Toggle("Streak grace day", isOn: $streakGraceDay)
             } header: {

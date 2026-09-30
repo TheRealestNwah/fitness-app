@@ -48,6 +48,16 @@ final class UserProfile {
     var proteinReminderEnabled: Bool = false
     /// Hold weigh-in, meal, check-in and protein reminders during a diet break.
     var pauseRemindersOnDietBreak: Bool = false
+    /// Weight-loss medication tracking (GLP-1), off by default.
+    var medicationEnabled: Bool = false
+    /// A `MedicationPlanner.medications` name, or empty.
+    var medicationName: String = ""
+    var medicationDoseMg: Double = 0
+    /// Days between doses, for a medication not in the built-in list.
+    var medicationIntervalDays: Int = 7
+    var medicationStartDate: Date?
+    var medicationReminderEnabled: Bool = false
+    var medicationReminderHour: Int = 9
 
     init(name: String,
          sex: BiologicalSex,
