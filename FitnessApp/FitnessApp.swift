@@ -54,6 +54,7 @@ enum AppStore {
         FastingSession.self,
         ExerciseEntry.self,
         MealPrepBatch.self,
+        MealCheckIn.self,
     ]
 
     @MainActor static let container: ModelContainer = CloudSync.makeContainer(schema: schema)

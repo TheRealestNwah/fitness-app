@@ -7,6 +7,19 @@ import Charts
 struct CorrelationsView: View {
     @Query(sort: \VitalsEntry.date) private var vitals: [VitalsEntry]
     @Query private var food: [FoodLogEntry]
+    @Query private var checkIns: [MealCheckIn]
+
+    private var hungerRatings: [(date: Date, rating: Int)] {
+        checkIns.compactMap { c in c.hunger.map { (date: c.day, rating: $0) } }
+    }
+
+    private var hungerProteinPairs: [CorrelationCalculator.Pair] {
+        CorrelationCalculator.hungerVersus(food.map { (date: $0.date, value: $0.protein) }, hunger: hungerRatings)
+    }
+
+    private var hungerCaloriePairs: [CorrelationCalculator.Pair] {
+        CorrelationCalculator.hungerVersus(food.map { (date: $0.date, value: $0.calories) }, hunger: hungerRatings)
+    }
 
     private var sleepPairs: [CorrelationCalculator.Pair] {
         CorrelationCalculator.sleepVersusIntake(
@@ -33,6 +46,16 @@ struct CorrelationsView: View {
                               pairs: sodiumPairs, tint: .red,
                               emptyText: "Log blood pressure in Vitals, and foods that list sodium the day before. Scanned packaged foods usually do.",
                               summary: sodiumSummary)
+                PairChartCard(title: "Protein and hunger",
+                              xLabel: "Protein (g)", yLabel: "Hunger (1–5)",
+                              pairs: hungerProteinPairs, tint: .blue,
+                              emptyText: "Rate hunger before meals from the diary's meal menu. A few weeks shows whether higher-protein days leave you less hungry.",
+                              summary: hungerSummary(hungerProteinPairs, measure: { "\(Int($0.rounded())) g of protein" }))
+                PairChartCard(title: "Calories and hunger",
+                              xLabel: "Calories", yLabel: "Hunger (1–5)",
+                              pairs: hungerCaloriePairs, tint: .orange,
+                              emptyText: "Rate hunger before meals from the diary's meal menu to see how it tracks with how much you eat.",
+                              summary: hungerSummary(hungerCaloriePairs, measure: { Energy.string($0) }))
                 Text("These show what happened together, not what caused what.")
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
@@ -50,6 +73,14 @@ struct CorrelationsView: View {
         let kcal = Int(abs(split.difference).rounded())
         if kcal < 50 { return "Your eating looks about the same whether you slept more or less than \(hours) h." }
         return "After nights over \(hours) h you ate about \(Energy.string(kcal)) \(split.difference < 0 ? "less" : "more") than after shorter nights."
+    }
+
+    private func hungerSummary(_ pairs: [CorrelationCalculator.Pair], measure: (Double) -> String) -> String? {
+        guard let split = CorrelationCalculator.split(pairs) else { return nil }
+        let threshold = measure(split.medianX)
+        let change = abs(split.difference).formatted(.number.precision(.fractionLength(1)))
+        if abs(split.difference) < 0.3 { return "Your hunger looks about the same on days above and below \(threshold)." }
+        return "On days over \(threshold), your hunger averaged \(change) points \(split.difference < 0 ? "lower" : "higher") (out of 5)."
     }
 
     private var sodiumSummary: String? {
