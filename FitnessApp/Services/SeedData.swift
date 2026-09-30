@@ -6,6 +6,9 @@ enum SeedData {
     /// Bump when `restaurantTable` gains items, so existing installs pick them up once.
     static let restaurantFoodsVersion = 1
     static let restaurantFoodsVersionKey = "restaurantFoodsVersion"
+    /// Bump when `drinkTable` changes, so existing installs pick it up once.
+    static let drinksVersion = 1
+    static let drinksVersionKey = "drinksVersion"
 
     static func seedIfNeeded(context: ModelContext, defaults: UserDefaults = .standard) {
         let foodCount = (try? context.fetchCount(FetchDescriptor<FoodItem>())) ?? 0
@@ -18,6 +21,10 @@ enum SeedData {
             for f in restaurantFoods where !existing.contains("\(f.name)|\(f.brand)") { context.insert(f) }
         }
         defaults.set(restaurantFoodsVersion, forKey: restaurantFoodsVersionKey)
+        if foodCount > 0, defaults.integer(forKey: drinksVersionKey) < drinksVersion {
+            updateDrinks(context: context)
+        }
+        defaults.set(drinksVersion, forKey: drinksVersionKey)
         let recipeCount = (try? context.fetchCount(FetchDescriptor<Recipe>())) ?? 0
         if recipeCount == 0 {
             for r in recipes { context.insert(r) }
@@ -108,13 +115,8 @@ enum SeedData {
         (String(localized: "Chia seeds"), String(localized: "1 tbsp (12 g)"), 58, 2, 5, 3.7, 4),
         (String(localized: "Flaxseed, ground"), String(localized: "1 tbsp (7 g)"), 37, 1.3, 2, 3, 1.9),
         (String(localized: "Hummus"), String(localized: "2 tbsp (30 g)"), 70, 2, 6, 5, 2),
-        // Drinks
-        (String(localized: "Coffee, black"), String(localized: "1 cup (240 ml)"), 2, 0.3, 0, 0, 0),
-        (String(localized: "Latte, 2% milk"), String(localized: "12 fl oz (355 ml)"), 150, 10, 15, 6, 0),
+        // Drinks (coffee, tea, soda and alcohol are in `drinkTable`)
         (String(localized: "Orange juice"), String(localized: "1 cup (248 ml)"), 112, 1.7, 26, 0.5, 0.5),
-        (String(localized: "Cola"), String(localized: "12 fl oz can (355 ml)"), 140, 0, 39, 0, 0),
-        (String(localized: "Beer, regular"), String(localized: "12 fl oz (355 ml)"), 153, 1.6, 13, 0, 0),
-        (String(localized: "Wine, red"), String(localized: "5 fl oz (148 ml)"), 125, 0.1, 3.8, 0, 0),
         (String(localized: "Protein shake, ready to drink"), String(localized: "1 bottle (325 ml)"), 160, 30, 5, 3, 1),
         // Snacks & convenience
         (String(localized: "Dark chocolate, 70%"), String(localized: "1 oz (28 g)"), 170, 2.2, 13, 12, 3),
@@ -191,6 +193,49 @@ enum SeedData {
         foodTable.map { row in
             FoodItem(name: row.0, servingDescription: row.1, calories: row.2,
                      protein: row.3, carbs: row.4, fat: row.5, fiber: row.6)
+        } + drinks
+    }
+
+    // name, serving, kcal, protein, carbs, fat, alcohol g, caffeine mg
+    private static let drinkTable: [(String, String, Double, Double, Double, Double, Double, Double)] = [
+        (String(localized: "Coffee, black"), String(localized: "1 cup (240 ml)"), 2, 0.3, 0, 0, 0, 95),
+        (String(localized: "Espresso"), String(localized: "1 shot (30 ml)"), 3, 0.1, 0.5, 0.1, 0, 63),
+        (String(localized: "Latte, 2% milk"), String(localized: "12 fl oz (355 ml)"), 150, 10, 15, 6, 0, 75),
+        (String(localized: "Tea, black"), String(localized: "1 cup (240 ml)"), 2, 0, 0.7, 0, 0, 47),
+        (String(localized: "Tea, green"), String(localized: "1 cup (240 ml)"), 2, 0.5, 0, 0, 0, 28),
+        (String(localized: "Cola"), String(localized: "12 fl oz can (355 ml)"), 140, 0, 39, 0, 0, 34),
+        (String(localized: "Diet cola"), String(localized: "12 fl oz can (355 ml)"), 0, 0, 0, 0, 0, 46),
+        (String(localized: "Energy drink"), String(localized: "8.4 fl oz can (250 ml)"), 110, 0, 27, 0, 0, 80),
+        (String(localized: "Beer, regular"), String(localized: "12 fl oz (355 ml)"), 153, 1.6, 13, 0, 14, 0),
+        (String(localized: "Beer, light"), String(localized: "12 fl oz (355 ml)"), 103, 0.9, 5.8, 0, 11, 0),
+        (String(localized: "Wine, red"), String(localized: "5 fl oz (148 ml)"), 125, 0.1, 3.8, 0, 15, 0),
+        (String(localized: "Wine, white"), String(localized: "5 fl oz (148 ml)"), 121, 0.1, 3.8, 0, 15, 0),
+        (String(localized: "Spirits (vodka, gin, whiskey)"), String(localized: "1.5 fl oz shot (44 ml)"), 97, 0, 0, 0, 14, 0),
+        (String(localized: "Hard seltzer"), String(localized: "12 fl oz can (355 ml)"), 100, 0, 2, 0, 14, 0),
+    ]
+
+    static var drinks: [FoodItem] {
+        drinkTable.map { row in
+            let item = FoodItem(name: row.0, servingDescription: row.1, calories: row.2,
+                                protein: row.3, carbs: row.4, fat: row.5)
+            item.alcohol = row.6
+            item.caffeine = row.7
+            return item
+        }
+    }
+
+    /// Existing install: fills in alcohol and caffeine on the built-in drinks it already has,
+    /// and adds the ones it's missing.
+    private static func updateDrinks(context: ModelContext) {
+        let builtIn = ((try? context.fetch(FetchDescriptor<FoodItem>())) ?? []).filter { !$0.isCustom && $0.brand.isEmpty }
+        let byName = Dictionary(builtIn.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
+        for drink in drinks {
+            if let existing = byName[drink.name] {
+                existing.alcohol = drink.alcohol
+                existing.caffeine = drink.caffeine
+            } else {
+                context.insert(drink)
+            }
         }
     }
 

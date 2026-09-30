@@ -27,6 +27,10 @@ final class FoodItem {
     var potassium: Double = 0
     /// Milligrams.
     var cholesterol: Double = 0
+    /// Grams of pure alcohol (ethanol).
+    var alcohol: Double = 0
+    /// Milligrams.
+    var caffeine: Double = 0
     var isFavorite: Bool = false
     var isCustom: Bool = false
     var lastUsed: Date?

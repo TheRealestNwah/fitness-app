@@ -676,6 +676,11 @@ struct DayDiaryView: View {
                                  cholesterol: entries.reduce(0) { $0 + $1.cholesterol },
                                  profile: profile)
             }
+            let alcohol = entries.reduce(0) { $0 + $1.alcohol }
+            let caffeine = entries.reduce(0) { $0 + $1.caffeine }
+            if alcohol > 0 || caffeine > 0 {
+                DrinksNutrientRow(alcohol: alcohol, caffeine: caffeine)
+            }
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Energy.string(remaining)) remaining" : "\(Energy.string((-remaining))) over budget")
                 .font(.subheadline.weight(.medium))

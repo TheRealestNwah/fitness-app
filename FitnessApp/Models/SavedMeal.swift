@@ -19,6 +19,8 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
     var saturatedFat: Double?
     var potassium: Double?
     var cholesterol: Double?
+    var alcohol: Double?
+    var caffeine: Double?
 
     init(foodName: String, servings: Double, servingDescription: String,
          calories: Double, protein: Double, carbs: Double, fat: Double, foodItemID: UUID? = nil) {
@@ -43,6 +45,8 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
         saturatedFat = entry.saturatedFat
         potassium = entry.potassium
         cholesterol = entry.cholesterol
+        alcohol = entry.alcohol
+        caffeine = entry.caffeine
     }
 }
 
@@ -99,6 +103,8 @@ final class SavedMeal {
             entry.saturatedFat = item.saturatedFat ?? 0
             entry.potassium = item.potassium ?? 0
             entry.cholesterol = item.cholesterol ?? 0
+            entry.alcohol = item.alcohol ?? 0
+            entry.caffeine = item.caffeine ?? 0
             return entry
         }
         for e in entries { context.insertDiaryEntry(e) }

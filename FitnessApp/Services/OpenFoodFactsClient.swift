@@ -19,6 +19,10 @@ struct ScannedProduct: Equatable, Codable {
     var potassium: Double = 0
     /// Milligrams.
     var cholesterol: Double = 0
+    /// Grams of pure alcohol.
+    var alcohol: Double = 0
+    /// Milligrams.
+    var caffeine: Double = 0
 
     func makeFoodItem() -> FoodItem {
         let item = FoodItem(name: name, brand: brand, servingDescription: servingDescription,
@@ -28,6 +32,8 @@ struct ScannedProduct: Equatable, Codable {
         item.saturatedFat = saturatedFat
         item.potassium = potassium
         item.cholesterol = cholesterol
+        item.alcohol = alcohol
+        item.caffeine = caffeine
         return item
     }
 }
@@ -129,6 +135,12 @@ enum OpenFoodFactsClient {
             return nil
         }
 
+        // Alcohol is given as % by volume (in every field), so convert it to grams for an amount.
+        func alcoholG(millilitres: Double) -> Double {
+            guard let abv = number("alcohol_100g") ?? number("alcohol") else { return 0 }
+            return Alcohol.grams(percentABV: abv, millilitres: millilitres)
+        }
+
         let name = (product["product_name"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let brand = ((product["brands"] as? String) ?? "")
             .split(separator: ",").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? ""
@@ -152,7 +164,9 @@ enum OpenFoodFactsClient {
                                   sodium: sodiumMg("_serving") ?? 0,
                                   saturatedFat: number("saturated-fat_serving") ?? 0,
                                   potassium: (number("potassium_serving") ?? 0) * 1000,
-                                  cholesterol: (number("cholesterol_serving") ?? 0) * 1000)
+                                  cholesterol: (number("cholesterol_serving") ?? 0) * 1000,
+                                  alcohol: alcoholG(millilitres: servingQuantity ?? 0),
+                                  caffeine: (number("caffeine_serving") ?? 0) * 1000)
         }
         guard let per100 = kcal("_100g") else { return nil }
         let factor: Double
@@ -175,6 +189,8 @@ enum OpenFoodFactsClient {
                               saturatedFat: (number("saturated-fat_100g") ?? 0) * factor,
                               // Open Food Facts gives potassium and cholesterol in grams.
                               potassium: (number("potassium_100g") ?? 0) * 1000 * factor,
-                              cholesterol: (number("cholesterol_100g") ?? 0) * 1000 * factor)
+                              cholesterol: (number("cholesterol_100g") ?? 0) * 1000 * factor,
+                              alcohol: alcoholG(millilitres: 100) * factor,
+                              caffeine: (number("caffeine_100g") ?? 0) * 1000 * factor)
     }
 }

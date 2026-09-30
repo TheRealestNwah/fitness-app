@@ -538,6 +538,9 @@ struct CreateFoodSheet: View {
     @State private var saturatedFat: Double?
     @State private var potassium: Double?
     @State private var cholesterol: Double?
+    @State private var alcohol: Double?
+    @State private var caffeine: Double?
+    @State private var showDrinkFields = false
     @AppStorage(ExtraNutrients.storageKey) private var showExtras = false
     @State private var per100g = false
     @State private var servingGrams: Double?
@@ -606,6 +609,10 @@ struct CreateFoodSheet: View {
                         DecimalField(title: "Potassium", value: $potassium, unit: "mg")
                         DecimalField(title: "Cholesterol", value: $cholesterol, unit: "mg")
                     }
+                    DisclosureGroup("Alcohol and caffeine", isExpanded: $showDrinkFields) {
+                        DecimalField(title: "Alcohol", value: $alcohol, unit: "g")
+                        DecimalField(title: "Caffeine", value: $caffeine, unit: "mg")
+                    }
                 }
             }
             .navigationTitle("New food")
@@ -643,6 +650,8 @@ struct CreateFoodSheet: View {
                         item.saturatedFat = n(saturatedFat)
                         item.potassium = n(potassium)
                         item.cholesterol = n(cholesterol)
+                        item.alcohol = n(alcohol)
+                        item.caffeine = n(caffeine)
                         let label = measureName.trimmingCharacters(in: .whitespaces)
                         if !label.isEmpty, let amount = measureServings, amount > 0 {
                             item.servingPresets = [ServingPreset(label: label, servings: amount)]

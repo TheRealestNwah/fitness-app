@@ -31,7 +31,8 @@ final class HealthExportTests: XCTestCase {
     func testEveryWrittenTypeIsDeletable() {
         let written = HealthImportRules.dietaryValues(calories: 1, protein: 1, carbs: 1, fat: 1,
                                                       fiber: 1, sugar: 1, sodiumMg: 1, saturatedFat: 1,
-                                                      potassiumMg: 1, cholesterolMg: 1).map(\.type)
+                                                      potassiumMg: 1, cholesterolMg: 1,
+                                                      alcoholG: 1, caffeineMg: 1).map(\.type)
         XCTAssertEqual(Set(written), Set(HealthImportRules.dietaryTypes))
     }
 
@@ -45,6 +46,16 @@ final class HealthExportTests: XCTestCase {
         XCTAssertEqual(byType[.dietaryPotassium]?.value, 350)
         XCTAssertEqual(byType[.dietaryPotassium]?.unit, .gramUnit(with: .milli))
         XCTAssertEqual(byType[.dietaryCholesterol]?.value, 60)
+    }
+
+    func testWritesCaffeineAndAlcoholAsStandardDrinks() {
+        let values = HealthImportRules.dietaryValues(calories: 150, protein: 1, carbs: 13, fat: 0,
+                                                     fiber: 0, sugar: 0, sodiumMg: 0, alcoholG: 28, caffeineMg: 95)
+        let byType = Dictionary(uniqueKeysWithValues: values.map { ($0.type, $0) })
+        XCTAssertEqual(byType[.numberOfAlcoholicBeverages]?.value, 2)
+        XCTAssertEqual(byType[.numberOfAlcoholicBeverages]?.unit, .count())
+        XCTAssertEqual(byType[.dietaryCaffeine]?.value, 95)
+        XCTAssertEqual(byType[.dietaryCaffeine]?.unit, .gramUnit(with: .milli))
     }
 
     func testProfileDetailsMapSexForTheCalorieFormula() {
