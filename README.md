@@ -2,6 +2,10 @@
 
 A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-device (SwiftData), no account required.
 
+> **Built with AI.** Stride's code, tests and documentation were written by
+> Claude, an AI model from Anthropic, directed and tested by the maintainer.
+> See [AI disclosure](#ai-disclosure).
+
 ## Features
 
 **Today dashboard**
@@ -106,6 +110,22 @@ Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and loa
 `.github/workflows/ci.yml` lints the Swift sources with SwiftLint (`swiftlint lint --strict`, configured in `.swiftlint.yml`), builds the app (with its widget and watch targets) and runs the unit tests on an iOS simulator (macOS runner, Xcode 16) for every pull request and push to `main`. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
 
 `.github/workflows/screenshots.yml` runs the `FitnessAppUITests` screenshot suite on a simulator and publishes the PNGs to the `screenshots` branch (and as a workflow artifact).
+
+## AI disclosure
+
+Stride was built with [Claude Code](https://claude.com/claude-code), Anthropic's
+AI coding assistant. Claude wrote the code, tests and documentation. The
+maintainer ([@TheRealestNwah](https://github.com/TheRealestNwah)) decided what
+it should do, tested it, and made the release decisions. Commits written with
+Claude carry a `Co-Authored-By: Claude` trailer, so the git history shows which
+changes were AI-written.
+
+## Support
+
+Everything on my GitHub is free of charge and open source. If you find it
+useful and want to leave a tip or buy me a coffee, you can do that at
+[ko-fi.com/morrowheat23](https://ko-fi.com/morrowheat23). It's appreciated,
+never expected.
 
 ## License
 
