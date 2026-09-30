@@ -96,16 +96,20 @@ struct PhotoMealSheet: View {
         let value = suggestion.wrappedValue
         let isChosen = chosen.contains(value.id)
         VStack(alignment: .leading, spacing: 6) {
-            Toggle(isOn: Binding(get: { isChosen },
-                                 set: { on in if on { chosen.insert(value.id) } else { chosen.remove(value.id) } })) {
+            HStack(alignment: .firstTextBaseline) {
+                Toggle("Include \(value.food.displayName)",
+                       isOn: Binding(get: { isChosen },
+                                     set: { on in if on { chosen.insert(value.id) } else { chosen.remove(value.id) } }))
+                    .labelsHidden()
+                    .toggleStyle(.checkmark)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value.food.displayName)
                     Text("Seen as “\(value.source)” · \(Energy.string(value.food.calories * value.servings))")
                         .font(.caption)
                         .foregroundStyle(Color.secondary)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .toggleStyle(.checkmark)
             if isChosen {
                 Stepper(value: suggestion.servings, in: 0.25...20, step: 0.25) {
                     Text("\(value.servings.cleanString) × \(value.food.servingDescription)")

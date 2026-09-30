@@ -247,7 +247,7 @@ struct FoodPickerSheet: View {
     }
 }
 
-private struct CheckmarkToggleStyle: ToggleStyle {
+struct CheckmarkToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() } label: {
             Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
@@ -259,6 +259,6 @@ private struct CheckmarkToggleStyle: ToggleStyle {
     }
 }
 
-private extension ToggleStyle where Self == CheckmarkToggleStyle {
+extension ToggleStyle where Self == CheckmarkToggleStyle {
     static var checkmark: CheckmarkToggleStyle { CheckmarkToggleStyle() }
 }
