@@ -69,6 +69,8 @@ struct BarcodeScanSheet: View {
     @State private var lookingUp = false
     @State private var lastCode: String?
     @State private var errorMessage: String?
+    /// The lookup failed for lack of a connection, so offer to add the food by hand.
+    @State private var offlineCode: String?
     @State private var product: ScannedProduct?
     @State private var cachedMatch: FoodItem?
 
@@ -128,9 +130,16 @@ struct BarcodeScanSheet: View {
                             }
                         }
                         if let errorMessage {
-                            Label(errorMessage, systemImage: "exclamationmark.triangle")
+                            Label(errorMessage, systemImage: offlineCode == nil ? "exclamationmark.triangle" : "wifi.slash")
                                 .font(.footnote)
                                 .foregroundStyle(.orange)
+                        }
+                        if let offlineCode {
+                            Button {
+                                onNotFound(offlineCode)
+                            } label: {
+                                Label("Add it from the label", systemImage: "text.viewfinder")
+                            }
                         }
                     } header: {
                         Text(scannerSupported ? "Or enter it by hand" : "Enter the barcode")
@@ -167,6 +176,7 @@ struct BarcodeScanSheet: View {
                 product = nil
                 cachedMatch = nil
                 errorMessage = nil
+                offlineCode = nil
             }
         } header: {
             Text(source)
@@ -179,6 +189,7 @@ struct BarcodeScanSheet: View {
             return
         }
         errorMessage = nil
+        offlineCode = nil
         product = nil
         lastCode = code
         if let cached = foods.first(where: { $0.barcode == code }) {
@@ -196,6 +207,7 @@ struct BarcodeScanSheet: View {
                 }
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                if (error as? OpenFoodFactsError)?.isNetwork == true { offlineCode = code }
             }
         }
     }
