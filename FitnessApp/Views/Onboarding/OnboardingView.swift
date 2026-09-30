@@ -5,6 +5,8 @@ struct OnboardingView: View {
     @Environment(\.modelContext) private var context
 
     @State private var step = 0
+    @ScaledMetric(relativeTo: .largeTitle) private var welcomeIconSize: CGFloat = 72
+    @ScaledMetric(relativeTo: .largeTitle) private var targetSize: CGFloat = 56
     @State private var name = ""
     @State private var sex: BiologicalSex = .female
     @State private var birthDate = Calendar.current.date(byAdding: .year, value: -30, to: .now) ?? .now
@@ -95,7 +97,7 @@ struct OnboardingView: View {
         VStack(spacing: 24) {
             Spacer()
             Image(systemName: "figure.walk.motion")
-                .font(.system(size: 72))
+                .font(.system(size: welcomeIconSize))
                 .foregroundStyle(Color.accentColor)
             Text("Welcome to Stride")
                 .font(.largeTitle.bold())
@@ -266,7 +268,7 @@ struct OnboardingView: View {
 
                 VStack(spacing: 4) {
                     Text("\(target)")
-                        .font(.system(size: 56, weight: .bold, design: .rounded).monospacedDigit())
+                        .font(.system(size: targetSize, weight: .bold, design: .rounded).monospacedDigit())
                     Text("calories per day")
                         .foregroundStyle(Color.secondary)
                 }

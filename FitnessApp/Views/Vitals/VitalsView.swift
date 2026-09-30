@@ -53,6 +53,7 @@ struct VitalsView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
+                        .accessibilityLabel("Add reading")
                 }
             }
             .sheet(isPresented: $showAdd) { AddVitalsSheet() }
@@ -358,6 +359,9 @@ struct VitalDetailView: View {
                         }
                         .chartYAxisLabel(kind.unitLabel(units))
                         .frame(height: 220)
+                        .accessibilityLabel("\(kind.label) history")
+                        .accessibilityValue(ChartSummary.describe(points.map { (date: $0.date, value: $0.value) },
+                                                                  format: { "\($0.cleanString) \(kind.unitLabel(units))" }))
                         if kind == .bloodPressure {
                             HStack(spacing: 16) {
                                 Label("Systolic", systemImage: "circle.fill").foregroundStyle(kind.tint)
