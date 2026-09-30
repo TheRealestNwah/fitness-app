@@ -64,6 +64,24 @@ final class DataImporterTests: XCTestCase {
         XCTAssertEqual(Calendar.current.component(.hour, from: food[0].date), 8)
     }
 
+    func testReadsLoseItFoodLog() throws {
+        let csv = """
+        Date,Name,Icon,Type,Quantity,Units,Calories,Deleted,Fat (g),Protein (g),Carbohydrates (g),Saturated Fat (g),Sugars (g),Fiber (g),Cholesterol (mg),Sodium (mg)
+        01/05/2026,Oatmeal,Oatmeal,Breakfast,1,Cup,166,false,3.6,5.9,28,0.6,0.6,4,0,9
+        01/05/2026,Cookie,Cookie,Snacks,2,Each,160,true,8,2,20,4,12,1,10,110
+        01/05/2026,Chicken Breast,Chicken,Dinner,1.5,Serving,248,false,5.4,46.5,0,1.5,0,0,128,111
+        """
+        let food = try DataImporter.preview(csv: csv).food
+        XCTAssertEqual(food.map(\.name), ["Oatmeal", "Chicken Breast"])
+        XCTAssertEqual(food.map(\.meal), [.breakfast, .dinner])
+        XCTAssertEqual(food.first?.sugar, 0.6)
+        XCTAssertEqual(food.first?.saturatedFat, 0.6)
+        XCTAssertEqual(food.last?.servings, 1.5)
+        XCTAssertEqual(food.last?.protein, 46.5)
+        XCTAssertEqual(food.last?.cholesterolMg, 128)
+        XCTAssertEqual(Calendar.current.component(.hour, from: food[1].date), 19)
+    }
+
     func testSkipsUnreadableRows() throws {
         let preview = try DataImporter.preview(csv: "date,weight_kg\nyesterday,80\n2026-01-05,abc\n2026-01-05,5\n2026-01-06,80")
         XCTAssertEqual(preview.weights.count, 1)
