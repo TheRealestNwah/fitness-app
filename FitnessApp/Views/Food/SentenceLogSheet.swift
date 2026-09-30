@@ -14,6 +14,7 @@ struct SentenceLogSheet: View {
     @State private var text = ""
     @State private var lines: [Line] = []
     @State private var choosingFor: Line.ID?
+    @State private var dictation = VoiceDictation()
     @FocusState private var editing: Bool
 
     struct Line: Identifiable {
@@ -46,10 +47,35 @@ struct SentenceLogSheet: View {
                         .submitLabel(.done)
                         .onSubmit(findFoods)
                         .accessibilityIdentifier("sentenceField")
-                    Button("Find foods", action: findFoods)
-                        .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    HStack {
+                        Button("Find foods", action: findFoods)
+                            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || dictation.isListening)
+                        Spacer()
+                        Button {
+                            editing = false
+                            Task { await dictation.toggle() }
+                        } label: {
+                            Label(dictation.isListening ? "Stop" : "Speak",
+                                  systemImage: dictation.isListening ? "stop.circle.fill" : "mic.circle.fill")
+                                .font(.headline)
+                                .symbolEffect(.pulse, isActive: dictation.isListening)
+                        }
+                        .buttonStyle(.borderless)
+                        .tint(dictation.isListening ? .red : .accentColor)
+                        .accessibilityLabel(dictation.isListening ? "Stop listening" : "Say what you ate")
+                        .accessibilityIdentifier("dictateButton")
+                    }
                 } footer: {
-                    Text("Separate foods with commas or “and”. You can dictate with the microphone on the keyboard.")
+                    switch dictation.status {
+                    case .listening:
+                        Text("Listening… say what you ate, like “two eggs and a slice of toast”, then tap Stop.")
+                    case .denied:
+                        Text("Stride needs microphone and speech recognition access to listen. Turn them on in iOS Settings, or type instead.")
+                    case .unavailable:
+                        Text("Speech recognition isn't available right now. Type instead.")
+                    case .idle:
+                        Text("Separate foods with commas or “and”, or tap Speak and say it.")
+                    }
                 }
 
                 if !lines.isEmpty {
@@ -90,6 +116,17 @@ struct SentenceLogSheet: View {
                 }
             }
             .onAppear { editing = true }
+            .onChange(of: dictation.transcript) { _, spoken in
+                if dictation.isListening { text = spoken }
+            }
+            .onChange(of: dictation.isListening) { wasListening, listening in
+                // Finished speaking: show what was found.
+                if wasListening, !listening {
+                    if !dictation.transcript.isEmpty { text = dictation.transcript }
+                    if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { findFoods() }
+                }
+            }
+            .onDisappear { dictation.stop() }
         }
     }
 
@@ -210,7 +247,7 @@ struct FoodPickerSheet: View {
     }
 }
 
-private struct CheckmarkToggleStyle: ToggleStyle {
+struct CheckmarkToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() } label: {
             Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
@@ -222,6 +259,6 @@ private struct CheckmarkToggleStyle: ToggleStyle {
     }
 }
 
-private extension ToggleStyle where Self == CheckmarkToggleStyle {
+extension ToggleStyle where Self == CheckmarkToggleStyle {
     static var checkmark: CheckmarkToggleStyle { CheckmarkToggleStyle() }
 }
