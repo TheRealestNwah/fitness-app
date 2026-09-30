@@ -54,6 +54,20 @@ enum CorrelationCalculator {
         .sorted { $0.date < $1.date }
     }
 
+    /// A day's food total (protein or calories) against the average hunger rated before that
+    /// day's meals. Days without a hunger rating or without food are left out.
+    static func hungerVersus(_ food: [(date: Date, value: Double)], hunger: [(date: Date, rating: Int)],
+                             calendar: Calendar = .current) -> [Pair] {
+        let totals = dailyTotals(food, calendar: calendar)
+        var ratings: [Date: [Int]] = [:]
+        for item in hunger { ratings[calendar.startOfDay(for: item.date), default: []].append(item.rating) }
+        return ratings.compactMap { day, values -> Pair? in
+            guard let total = totals[day], total > 0, !values.isEmpty else { return nil }
+            return Pair(date: day, x: total, y: Double(values.reduce(0, +)) / Double(values.count))
+        }
+        .sorted { $0.date < $1.date }
+    }
+
     /// Splits at the median x and compares the average y on each side.
     static func split(_ pairs: [Pair]) -> Split? {
         guard pairs.count >= minimumForSummary else { return nil }

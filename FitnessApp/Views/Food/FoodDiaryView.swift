@@ -225,6 +225,8 @@ struct DayDiaryView: View {
     @State private var editing: FoodLogEntry?
     @State private var relocating: Relocation?
     @State private var savingFavourite: MealType?
+    @State private var checkingIn: MealType?
+    @Query private var checkIns: [MealCheckIn]
     @State private var photographing: MealType?
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<PersistentIdentifier> = []
@@ -243,6 +245,7 @@ struct DayDiaryView: View {
         let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
         _earlierThisWeek = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < start })
         let lookback = start.adding(days: -RecentFoods.lookbackDays)
+        _checkIns = Query(filter: #Predicate<MealCheckIn> { $0.day >= start && $0.day < end })
         _history = Query(filter: #Predicate<FoodLogEntry> { $0.date >= lookback && $0.date < start },
                          sort: \FoodLogEntry.date, order: .reverse)
     }
@@ -434,6 +437,9 @@ struct DayDiaryView: View {
         .sheet(item: $photographing) { meal in
             PhotoMealSheet(date: date, mealType: meal, dailyTarget: profile.calorieTarget(currentWeightKg: currentKg))
         }
+        .sheet(item: $checkingIn) { meal in
+            MealCheckInSheet(day: date, mealType: meal, existing: checkIn(for: meal))
+        }
         .sheet(item: $savingFavourite) { meal in
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
@@ -547,9 +553,22 @@ struct DayDiaryView: View {
         }
     }
 
+    private func checkIn(for meal: MealType) -> MealCheckIn? {
+        checkIns.first { $0.mealType == meal }
+    }
+
     private func mealHeader(_ meal: MealType, items: [FoodLogEntry]) -> some View {
         HStack {
             Label(meal.label, systemImage: meal.systemImage)
+            if let rated = checkIn(for: meal), rated.hunger != nil || rated.mood != nil {
+                Button { checkingIn = meal } label: {
+                    Image(systemName: "face.smiling")
+                        .font(.caption)
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(MealCheckInSheet.summary(rated))
+                .accessibilityHint("Edit hunger and mood")
+            }
             Spacer()
             let kcal = items.reduce(0) { $0 + $1.calories }
             if kcal > 0 {
@@ -568,6 +587,11 @@ struct DayDiaryView: View {
                     Label("Save as favourite meal", systemImage: "star")
                 }
                 .disabled(items.isEmpty)
+                Button {
+                    checkingIn = meal
+                } label: {
+                    Label("Hunger and mood…", systemImage: "face.smiling")
+                }
                 if !items.isEmpty {
                     Button(role: .destructive) {
                         clear(meal)
