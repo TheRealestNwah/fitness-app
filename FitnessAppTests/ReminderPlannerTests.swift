@@ -92,4 +92,33 @@ final class ReminderPlannerTests: XCTestCase {
         XCTAssertEqual(ReminderPlanner.proteinIdea(foods: foods, shortG: 30, kcalLeft: 120), "Greek yogurt")
         XCTAssertNil(ReminderPlanner.proteinIdea(foods: foods, shortG: 30, kcalLeft: 50))
     }
+    func testWeighInReminderSkipsTodayOnceWeighedIn() {
+        let settings = ReminderPlanner.Settings(waterEnabled: false, waterGoalMl: 2000, mealsEnabled: false, weighInHour: 7)
+        let before = ReminderPlanner.plan(settings: settings, today: .init(waterMl: 0, loggedMeals: []), now: at(6), calendar: calendar)
+        XCTAssertEqual(today(before).map(\.id), ["weighin.20260630"])
+        var done = ReminderPlanner.Today(waterMl: 0, loggedMeals: [])
+        done.weighedIn = true
+        let after = ReminderPlanner.plan(settings: settings, today: done, now: at(6), calendar: calendar)
+        XCTAssertTrue(today(after).isEmpty)
+        XCTAssertEqual(after.count, ReminderPlanner.daysAhead - 1, "later days still get one each")
+    }
+
+    func testDietBreakPausesEverythingButWater() {
+        // A break covering today and tomorrow (the end day is not included).
+        let pause = DateInterval(start: at(0), end: calendar.date(byAdding: .day, value: 2, to: at(0))!)
+        let settings = ReminderPlanner.Settings(waterEnabled: true, waterGoalMl: 2000, mealsEnabled: true, dayCloseHour: 20,
+                                                proteinHour: 17, weighInHour: 7, pause: pause)
+        var log = ReminderPlanner.Today(waterMl: 0, loggedMeals: [])
+        log.proteinShortG = 40
+        let reminders = ReminderPlanner.plan(settings: settings, today: log, now: at(6), calendar: calendar)
+        let paused = reminders.filter { $0.date < pause.end }
+        XCTAssertFalse(paused.isEmpty)
+        XCTAssertTrue(paused.allSatisfy { $0.id.hasPrefix("water") })
+        let afterBreak = reminders.filter { $0.date >= pause.end }
+        XCTAssertTrue(afterBreak.contains { $0.id.hasPrefix("weighin") })
+        XCTAssertTrue(afterBreak.contains { $0.id.hasPrefix("meal") })
+        XCTAssertLessThanOrEqual(ReminderPlanner.plan(settings: .init(waterEnabled: true, waterGoalMl: 2000, mealsEnabled: true,
+                                                                      dayCloseHour: 22, proteinHour: 17, weighInHour: 5),
+                                                      today: log, now: at(0), calendar: calendar).count, 64)
+    }
 }

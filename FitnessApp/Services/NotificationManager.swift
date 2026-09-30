@@ -4,22 +4,15 @@ import UserNotifications
 
 /// Schedules the local reminders configured in Settings.
 ///
-/// The weigh-in reminder repeats daily. Water and meal reminders are one-offs for the next
-/// few days (see `ReminderPlanner`), rebuilt whenever the app opens or saves data, so today's
-/// can react to what has been logged.
+/// Every reminder is a one-off for the next few days (see `ReminderPlanner`), rebuilt whenever
+/// the app opens or saves data, so today's can react to what has been logged.
 enum NotificationManager {
-    private static let weighInID = "reminder.weighin"
     private static let plannedPrefix = "reminder."
 
     /// Whether any reminder is switched on, and so whether notification permission is needed.
     static func anyReminderEnabled(_ profile: UserProfile) -> Bool {
-        profile.weighInReminderEnabled || plannedRemindersEnabled(profile)
-    }
-
-    /// Reminders that `ReminderPlanner` schedules as one-offs (everything except the weigh-in).
-    private static func plannedRemindersEnabled(_ profile: UserProfile) -> Bool {
-        profile.waterReminderEnabled || profile.mealReminderEnabled || profile.dayCloseReminderHour != nil
-            || profile.proteinReminderEnabled
+        profile.weighInReminderEnabled || profile.waterReminderEnabled || profile.mealReminderEnabled
+            || profile.dayCloseReminderHour != nil || profile.proteinReminderEnabled
     }
 
     static func requestAuthorization() async -> Bool {
@@ -37,24 +30,18 @@ enum NotificationManager {
         let center = UNUserNotificationCenter.current()
         center.removeAllPendingNotificationRequests()
 
-        if profile.weighInReminderEnabled {
-            let content = UNMutableNotificationContent()
-            content.title = "Morning weigh-in"
-            content.body = "Step on the scale before breakfast and log it. Consistency beats perfection."
-            content.sound = .default
-            var comps = DateComponents()
-            comps.hour = profile.weighInReminderHour
-            comps.minute = 0
-            let trigger = UNCalendarNotificationTrigger(dateMatching: comps, repeats: true)
-            center.add(UNNotificationRequest(identifier: weighInID, content: content, trigger: trigger))
+        guard anyReminderEnabled(profile) else { return }
+        var pause: DateInterval?
+        if profile.pauseRemindersOnDietBreak, let start = profile.dietBreakStart, let end = profile.dietBreakEnd, end > start {
+            pause = DateInterval(start: start, end: end)
         }
-
-        guard plannedRemindersEnabled(profile) else { return }
         let settings = ReminderPlanner.Settings(waterEnabled: profile.waterReminderEnabled,
                                                 waterGoalMl: profile.waterGoalMl,
                                                 mealsEnabled: profile.mealReminderEnabled,
                                                 dayCloseHour: profile.dayCloseReminderHour,
-                                                proteinHour: profile.proteinReminderEnabled ? proteinHour : nil)
+                                                proteinHour: profile.proteinReminderEnabled ? proteinHour : nil,
+                                                weighInHour: profile.weighInReminderEnabled ? profile.weighInReminderHour : nil,
+                                                pause: pause)
         for reminder in ReminderPlanner.plan(settings: settings, today: todaysLog(profile, now: now), now: now) {
             let content = UNMutableNotificationContent()
             content.title = reminder.title
@@ -79,7 +66,10 @@ enum NotificationManager {
             predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
         let food = (try? context.fetch(FetchDescriptor<FoodLogEntry>(
             predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? []
+        let weighIns = (try? context.fetchCount(FetchDescriptor<WeightEntry>(
+            predicate: #Predicate { $0.date >= start && $0.date < end }))) ?? 0
         var today = ReminderPlanner.Today(waterMl: water.reduce(0) { $0 + $1.amountMl }, loggedMeals: Set(food.map(\.mealType)))
+        today.weighedIn = weighIns > 0
         guard profile.proteinReminderEnabled else { return today }
         let latestKg = (try? context.fetch(FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])).first?.weightKg)
             ?? profile.startWeightKg

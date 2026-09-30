@@ -235,13 +235,14 @@ private struct ReminderSettingsPage: View {
                         }
                     }
                 }
+                Toggle("Pause during diet breaks", isOn: $profile.pauseRemindersOnDietBreak)
                 if notificationsDenied {
                     Text("Notifications are turned off for this app. Enable them in iOS Settings to receive reminders.")
                         .font(.footnote)
                         .foregroundStyle(.orange)
                 }
             } footer: {
-                Text("Water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The protein check comes at 5 pm when you're at least 15 g short, and the evening check-in only if dinner isn't logged.")
+                Text("The weigh-in reminder skips days you've already weighed in, water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The protein check comes at 5 pm when you're at least 15 g short, and the evening check-in only if dinner isn't logged. During a diet break, everything except water can pause.")
             }
         }
         .onChange(of: profile.weighInReminderEnabled) { _, _ in reminderChanged() }
@@ -250,6 +251,7 @@ private struct ReminderSettingsPage: View {
         .onChange(of: profile.waterReminderEnabled) { _, _ in reminderChanged() }
         .onChange(of: profile.dayCloseReminderHour) { _, _ in reminderChanged() }
         .onChange(of: profile.proteinReminderEnabled) { _, _ in reminderChanged() }
+        .onChange(of: profile.pauseRemindersOnDietBreak) { _, _ in reminderChanged() }
     }
 
     private func hourLabel(_ hour: Int) -> String {

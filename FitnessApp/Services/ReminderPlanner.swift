@@ -1,9 +1,10 @@
 import Foundation
 
 /// Works out which one-off reminders to schedule for the next few days, so today's can
-/// adapt to what has already been logged: no water nudges once the goal is met, no
-/// reminder for a meal already logged, a nudge if nothing is logged by lunchtime, and an
-/// optional evening check-in when dinner still isn't logged.
+/// adapt to what has already been logged: no weigh-in reminder once today's weight is in,
+/// no water nudges once the goal is met, no reminder for a meal already logged, a nudge if
+/// nothing is logged by lunchtime, and an optional evening check-in when dinner still isn't
+/// logged. Weigh-in, meal, check-in and protein reminders can pause during a diet break.
 enum ReminderPlanner {
     struct Settings {
         var waterEnabled: Bool
@@ -13,6 +14,11 @@ enum ReminderPlanner {
         var dayCloseHour: Int? = nil
         /// Hour of the protein check; nil when it's off.
         var proteinHour: Int? = nil
+        /// Hour of the morning weigh-in reminder; nil when it's off.
+        var weighInHour: Int? = nil
+        /// Days when weigh-in, meal, check-in and protein reminders are paused (a diet break);
+        /// the end day is not included.
+        var pause: DateInterval? = nil
     }
 
     struct Today {
@@ -22,6 +28,7 @@ enum ReminderPlanner {
         var proteinShortG: Double = 0
         /// A saved food that would close most of the gap, if one fits.
         var proteinIdea: String? = nil
+        var weighedIn = false
     }
 
     /// Below this, a protein nudge isn't worth sending.
@@ -46,7 +53,7 @@ enum ReminderPlanner {
     static let waterHours = Array(stride(from: 9, through: 21, by: 2))
     static let mealTimes: [(meal: MealType, hour: Int, minute: Int)] = [(.breakfast, 8, 30), (.lunch, 13, 30), (.dinner, 19, 30)]
     /// Scheduled ahead so reminders still arrive on days the app isn't opened.
-    /// iOS keeps at most 64 pending requests; this plans at most 40.
+    /// iOS keeps at most 64 pending requests; this plans at most 49.
     static let daysAhead = 4
 
     static func plan(settings: Settings, today: Today, now: Date = .now,
@@ -57,6 +64,14 @@ enum ReminderPlanner {
             guard let day = calendar.date(byAdding: .day, value: offset, to: start) else { continue }
             let isToday = offset == 0
             let key = dayKey(day, calendar: calendar)
+            let paused = isPaused(day, settings.pause, calendar: calendar)
+
+            if let hour = settings.weighInHour, !paused, !(isToday && today.weighedIn),
+               let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now {
+                reminders.append(Reminder(id: "weighin.\(key)", date: date,
+                                          title: String(localized: "Morning weigh-in"),
+                                          body: String(localized: "Step on the scale before breakfast and log it. Consistency beats perfection.")))
+            }
 
             if settings.waterEnabled, !(isToday && today.waterMl >= settings.waterGoalMl) {
                 for hour in waterHours {
@@ -67,7 +82,7 @@ enum ReminderPlanner {
                 }
             }
 
-            if settings.mealsEnabled {
+            if settings.mealsEnabled, !paused {
                 for slot in mealTimes {
                     guard let date = calendar.date(bySettingHour: slot.hour, minute: slot.minute, second: 0, of: day),
                           date > now else { continue }
@@ -81,7 +96,7 @@ enum ReminderPlanner {
                 }
             }
 
-            if let hour = settings.dayCloseHour,
+            if let hour = settings.dayCloseHour, !paused,
                let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now,
                !(isToday && today.loggedMeals.contains(.dinner)),
                // A dinner reminder in the hour before would say the same thing.
@@ -96,6 +111,7 @@ enum ReminderPlanner {
         }
         // Protein is only known for today; later days are planned when the app is next opened.
         if let hour = settings.proteinHour, today.proteinShortG >= proteinNudgeMinimumG,
+           !isPaused(start, settings.pause, calendar: calendar),
            let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: start), date > now {
             let short = Int(today.proteinShortG.rounded())
             reminders.append(Reminder(
@@ -105,6 +121,11 @@ enum ReminderPlanner {
                     ?? String(localized: "You're \(short) g short of today's protein goal. A protein-rich dinner or snack would close it.")))
         }
         return reminders
+    }
+
+    private static func isPaused(_ day: Date, _ pause: DateInterval?, calendar: Calendar) -> Bool {
+        guard let pause else { return false }
+        return day >= calendar.startOfDay(for: pause.start) && day < calendar.startOfDay(for: pause.end)
     }
 
     private static func dayKey(_ day: Date, calendar: Calendar) -> String {

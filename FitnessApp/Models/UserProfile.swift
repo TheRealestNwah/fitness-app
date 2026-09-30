@@ -46,6 +46,8 @@ final class UserProfile {
     var dayCloseReminderHour: Int?
     /// Afternoon nudge when protein is well short of the target.
     var proteinReminderEnabled: Bool = false
+    /// Hold weigh-in, meal, check-in and protein reminders during a diet break.
+    var pauseRemindersOnDietBreak: Bool = false
 
     init(name: String,
          sex: BiologicalSex,
