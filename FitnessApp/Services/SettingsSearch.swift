@@ -66,7 +66,7 @@ enum SettingsSearch {
         Entry(title: "Cycle-aware weight", page: .healthData, keywords: ["period", "menstrual", "water retention"]),
         Entry(title: "iCloud sync", page: .healthData, keywords: ["backup", "devices", "iPad"]),
         Entry(title: "Export and share", page: .healthData, keywords: ["CSV", "PDF", "doctor", "report", "spreadsheet"]),
-        Entry(title: "Import CSV", page: .healthData, keywords: ["spreadsheet", "MyFitnessPal"]),
+        Entry(title: "Import CSV", page: .healthData, keywords: ["spreadsheet", "MyFitnessPal", "Lose It"]),
         Entry(title: "Reset all data", page: .healthData, keywords: ["delete", "erase", "start over"]),
 
         Entry(title: "App lock", page: .privacy, keywords: ["Face ID", "Touch ID", "passcode", "privacy"]),

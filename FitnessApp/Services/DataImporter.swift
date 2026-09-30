@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 /// Reads diary and weight history from CSV: Stride's own export (DataExporter) and
-/// MyFitnessPal-style files. Parsing is pure; `apply` adds what isn't already there.
+/// MyFitnessPal and Lose It! files. Parsing is pure; `apply` adds what isn't already there.
 enum DataImporter {
     struct Weight: Equatable {
         var date: Date
@@ -108,6 +108,10 @@ enum DataImporter {
         return Double(text.replacingOccurrences(of: ",", with: ""))
     }
 
+    static func isTrue(_ text: String?) -> Bool {
+        ["true", "yes", "1"].contains(key(text ?? ""))
+    }
+
     static func meal(_ text: String) -> MealType {
         let k = key(text)
         if k.hasPrefix("breakfast") { return .breakfast }
@@ -143,16 +147,20 @@ enum DataImporter {
         let calCol = column("calories", "energykcal", "kcal", "caloriesconsumed")
         guard !weightCols.isEmpty || calCol != nil else { throw ImportError.unrecognised }
 
+        // Lose It! keeps deleted entries in its export, flagged in a "Deleted" column.
+        let deletedCol = column("deleted")
+
         var preview = Preview()
         for row in all.dropFirst() {
             func value(_ index: Int?) -> String? { index.flatMap { $0 < row.count ? row[$0] : nil } }
+            if isTrue(value(deletedCol)) { continue }
             if let weightCol = weightCols.first, calCol == nil {
                 guard let kg = number(value(weightCol.0)).map({ $0 * weightCol.1 }), (20...400).contains(kg),
                       let when = date(value(dateCol) ?? "", defaultHour: 7) else { preview.skipped += 1; continue }
                 preview.weights.append(Weight(date: when, kg: (kg * 100).rounded() / 100,
                                               note: value(column("note", "notes")) ?? ""))
             } else if let calCol {
-                let mealType = meal(value(column("meal", "mealtype")) ?? "")
+                let mealType = meal(value(column("meal", "mealtype", "type")) ?? "")
                 guard let calories = number(value(calCol)), calories >= 0,
                       let when = date(value(dateCol) ?? "", defaultHour: mealHour(mealType)) else { preview.skipped += 1; continue }
                 let name = value(column("food", "foodname", "name", "item", "description"))?
@@ -166,7 +174,7 @@ enum DataImporter {
                     carbs: number(value(column("carbsg", "carbs", "carbohydratesg", "carbohydrates"))) ?? 0,
                     fat: number(value(column("fatg", "fat", "totalfatg"))) ?? 0,
                     fiber: number(value(column("fiberg", "fiber", "fibreg", "fibre"))) ?? 0,
-                    sugar: number(value(column("sugarg", "sugar", "sugars"))) ?? 0,
+                    sugar: number(value(column("sugarg", "sugarsg", "sugar", "sugars"))) ?? 0,
                     sodiumMg: number(value(column("sodiummg", "sodium"))) ?? 0,
                     saturatedFat: number(value(column("saturatedfatg", "saturatedfat"))) ?? 0,
                     potassiumMg: number(value(column("potassiummg", "potassium"))) ?? 0,
