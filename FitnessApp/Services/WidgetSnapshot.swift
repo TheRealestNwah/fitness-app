@@ -50,7 +50,7 @@ struct WidgetSnapshot: Codable, Equatable {
     static func publish(profile: UserProfile) {
         guard let snapshot = current(profile: profile),
               let data = try? JSONEncoder().encode(snapshot) else { return }
-        WatchSync.shared.send(snapshot: data)
+        WatchSync.shared.send(snapshot: data, quickFoods: profile.modelContext.flatMap(WatchSync.quickFoods(in:)))
         guard let shared = UserDefaults(suiteName: appGroup) else { return }
         if shared.data(forKey: key) != data {
             shared.set(data, forKey: key)
