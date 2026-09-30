@@ -3,11 +3,21 @@ import SwiftData
 
 /// Built-in foods and recipes inserted on first launch so the diary is useful immediately.
 enum SeedData {
-    static func seedIfNeeded(context: ModelContext) {
+    /// Bump when `restaurantTable` gains items, so existing installs pick them up once.
+    static let restaurantFoodsVersion = 1
+    static let restaurantFoodsVersionKey = "restaurantFoodsVersion"
+
+    static func seedIfNeeded(context: ModelContext, defaults: UserDefaults = .standard) {
         let foodCount = (try? context.fetchCount(FetchDescriptor<FoodItem>())) ?? 0
         if foodCount == 0 {
-            for f in foods { context.insert(f) }
+            for f in foods + restaurantFoods { context.insert(f) }
+        } else if defaults.integer(forKey: restaurantFoodsVersionKey) < restaurantFoodsVersion {
+            // Existing install: add the chain items it doesn't have yet. Done once per version,
+            // so items the user deletes don't come back on the next launch.
+            let existing = Set(((try? context.fetch(FetchDescriptor<FoodItem>())) ?? []).map { "\($0.name)|\($0.brand)" })
+            for f in restaurantFoods where !existing.contains("\(f.name)|\(f.brand)") { context.insert(f) }
         }
+        defaults.set(restaurantFoodsVersion, forKey: restaurantFoodsVersionKey)
         let recipeCount = (try? context.fetchCount(FetchDescriptor<Recipe>())) ?? 0
         if recipeCount == 0 {
             for r in recipes { context.insert(r) }
@@ -125,6 +135,57 @@ enum SeedData {
         (String(localized: "Salsa"), String(localized: "2 tbsp (32 g)"), 9, 0.4, 2, 0, 0.5),
         (String(localized: "Soy sauce"), String(localized: "1 tbsp (16 g)"), 9, 1.3, 0.8, 0, 0),
     ]
+
+    // Chain restaurant items (US menus, from the chains' published nutrition information).
+    // chain, name, serving, kcal, protein, carbs, fat, fiber, sodium (mg)
+    private static let restaurantTable: [(String, String, String, Double, Double, Double, Double, Double, Double)] = [
+        ("McDonald's", "Big Mac", "1 burger", 590, 25, 46, 34, 3, 1050),
+        ("McDonald's", "Quarter Pounder with Cheese", "1 burger", 520, 30, 42, 26, 2, 1140),
+        ("McDonald's", "McDouble", "1 burger", 400, 22, 33, 20, 2, 920),
+        ("McDonald's", "Hamburger", "1 burger", 250, 12, 31, 9, 1, 510),
+        ("McDonald's", "McChicken", "1 sandwich", 400, 14, 39, 21, 1, 560),
+        ("McDonald's", "Filet-O-Fish", "1 sandwich", 390, 16, 38, 19, 2, 560),
+        ("McDonald's", "Chicken McNuggets", "10 pieces", 410, 23, 26, 24, 1, 850),
+        ("McDonald's", "French Fries", "medium", 320, 5, 43, 15, 4, 290),
+        ("McDonald's", "Egg McMuffin", "1 sandwich", 310, 17, 30, 13, 2, 770),
+        ("Chick-fil-A", "Chick-fil-A Chicken Sandwich", "1 sandwich", 420, 29, 41, 18, 1, 1460),
+        ("Chick-fil-A", "Chick-fil-A Nuggets", "8 count", 250, 27, 11, 11, 0, 1210),
+        ("Chick-fil-A", "Grilled Nuggets", "8 count", 130, 25, 1, 3, 0, 440),
+        ("Chick-fil-A", "Waffle Potato Fries", "medium", 420, 5, 45, 24, 5, 240),
+        ("Taco Bell", "Crunchy Taco", "1 taco", 170, 8, 13, 10, 3, 310),
+        ("Taco Bell", "Soft Taco", "1 taco", 180, 9, 18, 9, 3, 500),
+        ("Taco Bell", "Bean Burrito", "1 burrito", 350, 13, 54, 9, 9, 1000),
+        ("Taco Bell", "Chicken Quesadilla", "1 quesadilla", 510, 27, 37, 27, 3, 1250),
+        ("Taco Bell", "Crunchwrap Supreme", "1 wrap", 530, 16, 71, 21, 6, 1200),
+        ("Taco Bell", "Cheesy Gordita Crunch", "1 gordita", 500, 20, 41, 28, 5, 850),
+        ("Starbucks", "Caffè Latte, 2% milk", "grande (16 fl oz)", 190, 13, 19, 7, 0, 170),
+        ("Starbucks", "Cappuccino, 2% milk", "grande (16 fl oz)", 140, 10, 14, 5, 0, 120),
+        ("Starbucks", "Caramel Macchiato, 2% milk", "grande (16 fl oz)", 250, 10, 35, 7, 0, 150),
+        ("Starbucks", "Cold Brew", "grande (16 fl oz)", 5, 0, 0, 0, 0, 15),
+        ("Starbucks", "Bacon & Gruyère Egg Bites", "2 bites", 300, 19, 9, 20, 0, 680),
+        ("Starbucks", "Egg White & Roasted Red Pepper Egg Bites", "2 bites", 170, 12, 11, 8, 1, 470),
+        ("Chipotle", "Chipotle Chicken", "4 oz", 180, 32, 0, 7, 0, 310),
+        ("Chipotle", "Chipotle Steak", "4 oz", 150, 21, 1, 6, 1, 330),
+        ("Chipotle", "Chipotle Barbacoa", "4 oz", 170, 24, 2, 7, 1, 530),
+        ("Chipotle", "Chipotle White Rice", "4 oz", 210, 4, 40, 4, 1, 350),
+        ("Chipotle", "Chipotle Brown Rice", "4 oz", 210, 4, 36, 6, 2, 190),
+        ("Chipotle", "Chipotle Black Beans", "4 oz", 130, 8, 22, 1.5, 7, 210),
+        ("Chipotle", "Chipotle Pinto Beans", "4 oz", 130, 8, 21, 1.5, 8, 210),
+        ("Chipotle", "Flour Tortilla (burrito)", "1 tortilla", 320, 8, 50, 9, 3, 600),
+        ("Chipotle", "Chipotle Guacamole", "4 oz", 230, 2, 8, 22, 6, 370),
+        ("Chipotle", "Chipotle Cheese", "1 oz", 110, 6, 1, 8, 0, 190),
+        ("Chipotle", "Chipotle Sour Cream", "2 oz", 110, 2, 2, 9, 0, 30),
+        ("Chipotle", "Chipotle Fresh Tomato Salsa", "4 oz", 25, 0, 4, 0, 1, 550),
+        ("Chipotle", "Chipotle Fajita Veggies", "2 oz", 20, 1, 5, 0, 1, 150),
+        ("Chipotle", "Chipotle Chips", "1 bag (4 oz)", 540, 7, 73, 25, 7, 390),
+    ]
+
+    static var restaurantFoods: [FoodItem] {
+        restaurantTable.map { row in
+            FoodItem(name: row.1, brand: row.0, servingDescription: row.2, calories: row.3,
+                     protein: row.4, carbs: row.5, fat: row.6, fiber: row.7, sodium: row.8)
+        }
+    }
 
     static var foods: [FoodItem] {
         foodTable.map { row in
