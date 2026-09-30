@@ -1,3 +1,4 @@
+import PhotosUI
 import SwiftUI
 import SwiftData
 
@@ -14,6 +15,7 @@ struct RecipeLibraryView: View {
     @State private var filter: MealType?
     @State private var showEditor = false
     @State private var showImport = false
+    @State private var showScan = false
 
     private var filtered: [Recipe] {
         let q = search.trimmingCharacters(in: .whitespaces).lowercased()
@@ -81,6 +83,7 @@ struct RecipeLibraryView: View {
                     Menu {
                         Button { showEditor = true } label: { Label("New recipe", systemImage: "square.and.pencil") }
                         Button { showImport = true } label: { Label("Import from a web page", systemImage: "link") }
+                        Button { showScan = true } label: { Label("Scan a printed recipe", systemImage: "doc.text.viewfinder") }
                     } label: {
                         Label("Add recipe", systemImage: "plus")
                     }
@@ -92,6 +95,7 @@ struct RecipeLibraryView: View {
         .searchable(text: $search, prompt: "Search recipes or tags")
         .sheet(isPresented: $showEditor) { RecipeEditorView() }
         .sheet(isPresented: $showImport) { ImportRecipeSheet() }
+        .sheet(isPresented: $showScan) { ScanRecipeSheet() }
     }
 
     /// Pushes the recipe on iPhone; selects it for the side-by-side detail on iPad.
@@ -393,11 +397,12 @@ struct AddToPlanSheet: View {
 
 struct RecipeEditorView: View {
     var recipe: Recipe?
-    /// Pre-fills a new recipe from a web page.
+    /// Pre-fills a new recipe from a web page or a scanned page.
     var imported: RecipeImporter.Imported? = nil
 
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Query private var foods: [FoodItem]
 
     @State private var name = ""
     @State private var mealType: MealType = .dinner
@@ -489,8 +494,11 @@ struct RecipeEditorView: View {
         servings = min(max(page.servings, 1), 20)
         prepMinutes = min(page.prepMinutes, 240)
         instructions = page.instructions
-        // Lines arrive without nutrition. If the page lists nutrition, keep it as one line.
-        ingredients = page.ingredients.map { Ingredient(name: $0, amount: "", calories: 0, protein: 0, carbs: 0, fat: 0) }
+        // Lines arrive without nutrition. If the page lists nutrition, keep it as one line;
+        // otherwise match each line to a saved food.
+        ingredients = page.calories == nil
+            ? page.ingredients.map { RecipeIngredientMatcher.ingredient(for: $0, foods: foods) }
+            : page.ingredients.map { Ingredient(name: $0, amount: "", calories: 0, protein: 0, carbs: 0, fat: 0) }
         if let kcal = page.calories {
             let n = Double(servings)
             ingredients.append(Ingredient(name: "Nutrition from the recipe page", amount: "\(servings) servings",
@@ -665,6 +673,76 @@ struct ImportRecipeSheet: View {
                 imported = try await RecipeImporter.fetch(address)
             } catch {
                 self.error = error.localizedDescription
+            }
+        }
+    }
+}
+
+/// Photograph a printed recipe; the text is read on device and opens in the editor to check.
+struct ScanRecipeSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var showCamera = false
+    @State private var libraryItem: PhotosPickerItem?
+    @State private var reading = false
+    @State private var error: String?
+    @State private var imported: RecipeImporter.Imported?
+
+    var body: some View {
+        if let imported {
+            RecipeEditorView(imported: imported)
+        } else {
+            NavigationStack {
+                Form {
+                    Section {
+                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                            Button { showCamera = true } label: {
+                                Label("Photograph the page", systemImage: "camera")
+                            }
+                        }
+                        PhotosPicker(selection: $libraryItem, matching: .images) {
+                            Label("Choose a photo", systemImage: "photo.on.rectangle")
+                        }
+                    } footer: {
+                        Text("Works best with the ingredients and method in one straight-on photo. The text is read on your iPhone and the photo isn't kept. Ingredients are matched to your foods; check them before saving.")
+                    }
+                    if let error {
+                        Section { Label(error, systemImage: "exclamationmark.triangle").foregroundStyle(.orange) }
+                    }
+                    if reading {
+                        Section { ProgressView("Reading the recipe…") }
+                    }
+                }
+                .navigationTitle("Scan recipe")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
+                }
+                .fullScreenCover(isPresented: $showCamera) {
+                    CameraPicker { image in read(image) }.ignoresSafeArea()
+                }
+                .onChange(of: libraryItem) { _, item in
+                    guard let item else { return }
+                    Task {
+                        if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                            read(image)
+                        }
+                        libraryItem = nil
+                    }
+                }
+            }
+        }
+    }
+
+    private func read(_ image: UIImage) {
+        reading = true
+        error = nil
+        Task { @MainActor in
+            defer { reading = false }
+            let lines = await LabelTextRecognizer.lines(in: image)
+            if let recipe = RecipeTextParser.parse(lines: lines) {
+                imported = recipe
+            } else {
+                error = String(localized: "Couldn't find ingredients in that photo. Try a sharper, straight-on shot of the ingredient list.")
             }
         }
     }
