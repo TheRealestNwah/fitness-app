@@ -340,7 +340,8 @@ final class HealthKitManager {
 
         // Weight
         let existingWeights = try context.fetch(FetchDescriptor<WeightEntry>())
-        let knownIDs = Set(existingWeights.compactMap(\.sourceID))
+        // Weigh-ins deleted in Stride stay deleted.
+        let knownIDs = Set(existingWeights.compactMap(\.sourceID)).union(HealthDismissals.ids(.weight))
         let weights = try await quantitySamples(.bodyMass, unit: .gramUnit(with: .kilo), since: since)
         for s in HealthImportRules.newSamples(weights, existingIDs: knownIDs) {
             let entry = WeightEntry(date: s.date, weightKg: (s.value * 10).rounded() / 10, note: "From Apple Health")

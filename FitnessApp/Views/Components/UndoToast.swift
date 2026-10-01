@@ -127,12 +127,16 @@ extension ModelContext {
     }
 
     @MainActor
-    func deleteWeightEntries(_ entries: [WeightEntry], undo center: UndoCenter) {
+    func deleteWeightEntries(_ entries: [WeightEntry], undo center: UndoCenter, defaults: UserDefaults = .standard) {
         guard !entries.isEmpty else { return }
         let copies = entries.map { $0.restorableCopy() }
+        // Remember Health weigh-ins so the next import doesn't bring them back.
+        let healthIDs = entries.compactMap(\.sourceID)
+        HealthDismissals.dismiss(healthIDs, kind: .weight, defaults: defaults)
         for entry in entries { delete(entry) }
         try? save()
         center.offer(entries.count == 1 ? "Deleted weigh-in" : "Deleted \(entries.count) weigh-ins") {
+            HealthDismissals.restore(healthIDs, kind: .weight, defaults: defaults)
             for copy in copies { self.insert(copy) }
             try? self.save()
         }
