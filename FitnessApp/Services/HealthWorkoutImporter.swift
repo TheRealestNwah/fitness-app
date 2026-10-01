@@ -13,13 +13,15 @@ struct HealthWorkoutSample {
 enum HealthWorkoutImporter {
     /// Returns the number of new entries. The caller saves the context with the other Health imports.
     @MainActor
-    static func importSamples(into context: ModelContext,
+    static func importSamples(into context: ModelContext, defaults: UserDefaults = .standard,
                               query: @MainActor () async throws -> [HealthWorkoutSample]) async throws -> Int {
         let workouts = try await query()
 
         // A recording or another import may have saved while Health's query was suspended.
         // Reconcile now, without another await between this fetch and the inserts.
         var knownIDs = Set(try context.fetch(FetchDescriptor<ExerciseEntry>()).compactMap(\.sourceID))
+        // Workouts whose entries were deleted stay deleted.
+        knownIDs.formUnion(HealthDismissals.ids(.workout, defaults: defaults))
         var imported = 0
         for workout in workouts {
             let sourceID = workout.id.uuidString
@@ -33,5 +35,16 @@ enum HealthWorkoutImporter {
             imported += 1
         }
         return imported
+    }
+}
+
+extension ModelContext {
+    /// Deletes an exercise entry. One imported from Health is remembered so the next import skips it.
+    @MainActor
+    func deleteExerciseEntry(_ entry: ExerciseEntry, defaults: UserDefaults = .standard) {
+        if let sourceID = entry.sourceID {
+            HealthDismissals.dismiss([sourceID], kind: .workout, defaults: defaults)
+        }
+        delete(entry)
     }
 }

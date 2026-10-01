@@ -103,4 +103,20 @@ final class HealthWorkoutImporterTests: XCTestCase {
             XCTAssertTrue(try entries().isEmpty)
         }
     }
+
+    func testDeletedHealthWorkoutIsNotImportedAgain() async throws {
+        let suiteName = "HealthWorkoutImporterTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let workout = sample()
+
+        _ = try await HealthWorkoutImporter.importSamples(into: context, defaults: defaults) { [workout] }
+        let entry = try XCTUnwrap(try entries().first)
+        context.deleteExerciseEntry(entry, defaults: defaults)
+        try context.save()
+        let imported = try await HealthWorkoutImporter.importSamples(into: context, defaults: defaults) { [workout] }
+
+        XCTAssertEqual(imported, 0)
+        XCTAssertTrue(try entries().isEmpty)
+    }
 }
