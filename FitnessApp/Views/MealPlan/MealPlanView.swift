@@ -171,6 +171,8 @@ struct PlannerView: View {
             Button { selectedDay = selectedDay.adding(days: -7) } label: {
                 Image(systemName: "chevron.left").frame(width: 24, height: 44)
             }
+            // The strip is one List row; a default-style button there would fire with every tap on the row.
+            .buttonStyle(.borderless)
             .accessibilityLabel("Previous week")
             ForEach(weekDays, id: \.self) { day in
                 let isSelected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
@@ -204,6 +206,7 @@ struct PlannerView: View {
             Button { selectedDay = selectedDay.adding(days: 7) } label: {
                 Image(systemName: "chevron.right").frame(width: 24, height: 44)
             }
+            .buttonStyle(.borderless)
             .accessibilityLabel("Next week")
         }
     }

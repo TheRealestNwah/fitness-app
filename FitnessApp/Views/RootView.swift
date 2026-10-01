@@ -24,9 +24,9 @@ struct RootView: View {
                 OnboardingView()
             }
         }
-        .preferredColorScheme(appearance.colorScheme)
-        // preferredColorScheme doesn't reach a sheet that's already open (Settings, where the
-        // choice is made), so set the windows' style too; presented sheets inherit it at once.
+        // Set the windows' style rather than using preferredColorScheme: that doesn't reach a sheet
+        // that's already open (Settings, where the choice is made), and alongside this override it
+        // re-applies the previous choice, leaving the sheet one step behind.
         .onChange(of: appearanceRaw, initial: true) { applyToWindows(appearance) }
         .task {
             SeedData.seedIfNeeded(context: context)
