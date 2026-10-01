@@ -12,7 +12,7 @@ SwiftUI weight-loss companion for iPhone, iPad and Apple Watch. Data lives on-de
 - `StrideWatch/` – watchOS app
 - `StrideWidgets/` – widgets, Live Activity and Control Center controls
 - `FitnessAppTests/` – unit tests (one `*Tests.swift` per service)
-- `FitnessAppUITests/` – `SmokeTests` (run in CI) plus iPhone/iPad screenshot tests
+- `FitnessAppUITests/` – one XCUITest class per area (`SmokeTests`, `SettingsTests`, `LoggingTests`, `PlannerTests`…), all run in CI, plus iPhone/iPad screenshot tests that aren't
 - `docs/ROADMAP.md` – planned work
 - `scripts/` – one-off helpers (app icon generation)
 
@@ -20,15 +20,16 @@ The Xcode project uses synchronized folders, so new `.swift` files are picked up
 
 ## Building and testing
 
-Development happens on Windows, so there is **no local Swift, Xcode or SwiftLint**. CI on a macOS runner is the only place the app builds, and a run takes about 20 minutes. So before pushing:
+Development happens on a MacBook Air with Xcode 27 and SwiftLint installed, but it has only 8 GB of RAM: local builds work, while simulators tend to freeze mid-run. **Treat CI as the source of truth for tests**, and don't burn time fighting a hung local simulator. A CI run takes about 20 minutes. So before pushing:
 
+- Run `swiftlint lint --strict` (CI fails on any warning) and, where practical, a local build.
 - Re-read the diff for compile errors: missing imports, typos in identifiers, wrong argument labels, unhandled optionals.
-- Follow `.swiftlint.yml`. CI runs `swiftlint lint --strict`, so any warning fails the build.
+- Follow `.swiftlint.yml`.
 - Add or update unit tests in `FitnessAppTests/` for new logic in `Services/`.
 
-CI builds with Xcode 26 (iOS 26 SDK) on the newest iOS simulator, but the deployment target is iOS 17. Wrap iOS 26-only APIs (Foundation Models, HealthKit medications, iPhone workout sessions, glass effects) in `#available(iOS 26, *)` and keep a fallback for older versions.
+CI builds with Xcode 26 (iOS 26 SDK; local Xcode is newer, so check that APIs exist in the iOS 26 SDK) on the newest iOS simulator, but the deployment target is iOS 17. Wrap iOS 26-only APIs (Foundation Models, HealthKit medications, iPhone workout sessions, glass effects) in `#available(iOS 26, *)` and keep a fallback for older versions.
 
-CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then the UI smoke tests on an iPhone simulator. The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
+CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then every UI test class except `ScreenshotTests`/`IPadScreenshotTests` on an iPhone simulator. New UI test classes are picked up without editing the workflow. UI tests launch with `-demoData` (Sam's profile, six weeks of weigh-ins, a week of food logs, a meal plan for today and tomorrow) or `-resetData` (onboarding). The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
 
 Screenshots (`.github/workflows/screenshots.yml`) run nightly, on pushes to `claude/**` branches, and on demand (Actions → Screenshots → Run workflow). They publish to the `screenshots` branch.
 
