@@ -38,6 +38,16 @@ final class SettingsTests: XCTestCase {
         return (CGFloat(pixel[0]) + CGFloat(pixel[1]) + CGFloat(pixel[2])) / (3 * 255)
     }
 
+    /// Samples the background for up to three seconds, stopping once `done` holds.
+    private func brightness(of app: XCUIApplication, settlingWhere done: (CGFloat) -> Bool) -> CGFloat {
+        var value = backgroundBrightness(of: app)
+        for _ in 0..<6 where !done(value) {
+            Thread.sleep(forTimeInterval: 0.5)
+            value = backgroundBrightness(of: app)
+        }
+        return value
+    }
+
     private func choose(_ option: String, fromPicker label: String, in app: XCUIApplication) {
         let picker = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", label)).firstMatch
         XCTAssertTrue(picker.waitForExistence(timeout: 5), "No \(label) picker")
@@ -66,10 +76,11 @@ final class SettingsTests: XCTestCase {
         let app = openSettings()
         openPage("Profile & goals", in: app)
 
+        // The repaint can trail the picker by a frame or two, so give it a moment.
         choose("Light", fromPicker: "Appearance", in: app)
-        let light = backgroundBrightness(of: app)
+        let light = brightness(of: app, settlingWhere: { $0 > 0.8 })
         choose("Dark", fromPicker: "Appearance", in: app)
-        let dark = backgroundBrightness(of: app)
+        let dark = brightness(of: app, settlingWhere: { $0 < 0.2 })
         XCTAssertGreaterThan(light, 0.8, "Light appearance should have a light background")
         XCTAssertLessThan(dark, 0.2, "Dark appearance should have a dark background")
 

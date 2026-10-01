@@ -36,7 +36,13 @@ final class LoggingTests: XCTestCase {
     }
 
     private func closeFoodSearch(in app: XCUIApplication) {
-        app.navigationBars["Log food"].buttons["Done"].tap()
+        let bar = app.navigationBars["Log food"]
+        // While a search is active the bar shows the search's Close button instead of Done.
+        if !bar.buttons["Done"].exists, bar.buttons["Close"].exists {
+            bar.buttons["Close"].tap()
+        }
+        XCTAssertTrue(bar.buttons["Done"].waitForExistence(timeout: 5))
+        bar.buttons["Done"].tap()
         XCTAssertTrue(app.navigationBars["Log food"].waitForNonExistence(timeout: 5))
     }
 

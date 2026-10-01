@@ -108,6 +108,7 @@ jobs:
             -skip-testing:FitnessAppUITests/ScreenshotTests \
             -skip-testing:FitnessAppUITests/IPadScreenshotTests \
             -retry-tests-on-failure -test-iterations 3 \
+            -resultBundlePath uitest.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             | tee uitest.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log
@@ -121,3 +122,4 @@ jobs:
             build.log
             test.log
             uitest.log
+            uitest.xcresult

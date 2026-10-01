@@ -55,9 +55,11 @@ final class FavouritesTests: XCTestCase {
 
         let sheet = app.navigationBars["Save favourite"]
         XCTAssertTrue(sheet.waitForExistence(timeout: 5))
+        // The sheet suggests a name ("Breakfast · Thu"); replace it.
         let name = app.textFields["Name (e.g. Weekday breakfast)"]
         name.tap()
-        name.typeText("UI test breakfast")
+        let suggested = (name.value as? String) ?? ""
+        name.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: suggested.count) + "UI test breakfast")
         sheet.buttons["Save"].tap()
         XCTAssertTrue(sheet.waitForNonExistence(timeout: 5))
 
