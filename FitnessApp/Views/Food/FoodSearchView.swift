@@ -117,7 +117,7 @@ struct FoodSearchView: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(batch.name).foregroundStyle(Color.primary)
                                         Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
-                                            .font(.caption)
+                                            .font(.footnote)
                                             .foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
@@ -148,7 +148,7 @@ struct FoodSearchView: View {
                                             Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
                                         }
                                         Text(meal.summary)
-                                            .font(.caption)
+                                            .font(.footnote)
                                             .foregroundStyle(Color.secondary)
                                             .lineLimit(1)
                                     }
@@ -157,7 +157,7 @@ struct FoodSearchView: View {
                                         Text("\(Int(meal.totalCalories.rounded()))")
                                             .font(.body.monospacedDigit())
                                         Text("\(meal.items.count) items")
-                                            .font(.caption2)
+                                            .font(.footnote)
                                             .foregroundStyle(Color.secondary)
                                     }
                                 }
@@ -196,7 +196,7 @@ struct FoodSearchView: View {
                             Text("Recent searches")
                             Spacer()
                             Button("Clear") { recentSearches = "" }
-                                .font(.caption)
+                                .font(.footnote)
                                 .textCase(nil)
                         }
                     }
@@ -239,7 +239,7 @@ struct FoodSearchView: View {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(recipe.name).foregroundStyle(Color.primary)
-                                        Text("1 serving").font(.caption).foregroundStyle(Color.secondary)
+                                        Text("1 serving").font(.footnote).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
@@ -325,14 +325,14 @@ struct FoodSearchView: View {
                             Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
                         }
                     }
-                    Text(food.servingDescription).font(.caption).foregroundStyle(Color.secondary)
+                    Text(food.servingDescription).font(.subheadline).foregroundStyle(Color.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(food.calories.rounded()))")
                         .font(.body.monospacedDigit())
                     Text("P\(Int(food.protein)) C\(Int(food.carbs)) F\(Int(food.fat))")
-                        .font(.caption2.monospacedDigit())
+                        .font(.footnote.monospacedDigit())
                         .foregroundStyle(Color.secondary)
                 }
             }

@@ -105,7 +105,7 @@ struct PhotoMealSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value.food.displayName)
                     Text("Seen as “\(value.source)” · \(Energy.string(value.food.calories * value.servings))")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

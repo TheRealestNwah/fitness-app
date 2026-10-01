@@ -1,6 +1,51 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ %3$@"
+          }
+        }
+      }
+    },
+    "%@ %@ %@ today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ %3$@ today"
+          }
+        }
+      }
+    },
+    "%@ g" : {
+
+    },
+    "%@ left" : {
+
+    },
+    "%@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@"
+          }
+        }
+      }
+    },
+    "%@ over" : {
+
+    },
+    "%lld" : {
+
+    },
+    "%lld calories" : {
+
+    },
     "%lld days" : {
       "localizations" : {
         "en" : {
@@ -22,6 +67,123 @@
           }
         }
       }
+    },
+    "%lld of %lld ml" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld ml"
+          }
+        }
+      }
+    },
+    "%lld-hour fast" : {
+
+    },
+    "+%lld" : {
+
+    },
+    "Adds a glass to today's water in Stride." : {
+
+    },
+    "Calories left, water and your latest weigh-in." : {
+
+    },
+    "End fast" : {
+
+    },
+    "End Fast" : {
+
+    },
+    "Fast" : {
+
+    },
+    "Fasting" : {
+
+    },
+    "Favourite or log foods on your iPhone and they'll appear here." : {
+
+    },
+    "Favourites and recent" : {
+
+    },
+    "Glass" : {
+
+    },
+    "kcal · turn the crown" : {
+
+    },
+    "Log" : {
+
+    },
+    "Log %lld millilitres of water" : {
+
+    },
+    "Log a glass of water" : {
+
+    },
+    "Log a Glass of Water" : {
+
+    },
+    "Log food" : {
+
+    },
+    "Log water" : {
+
+    },
+    "Logged" : {
+
+    },
+    "Logs %@" : {
+
+    },
+    "of %@ protein" : {
+
+    },
+    "Open Stride on your iPhone to see today's totals." : {
+
+    },
+    "Open Stride to start" : {
+
+    },
+    "P" : {
+
+    },
+    "Protein" : {
+
+    },
+    "Protein %@ of %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Protein %1$@ of %2$@"
+          }
+        }
+      }
+    },
+    "Protein eaten today against your target." : {
+
+    },
+    "Protein: %@ of %@ today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Protein: %1$@ of %2$@ today"
+          }
+        }
+      }
+    },
+    "Quick add" : {
+
+    },
+    "Target %@" : {
+
+    },
+    "Today" : {
+
     }
   },
   "version" : "1.0"

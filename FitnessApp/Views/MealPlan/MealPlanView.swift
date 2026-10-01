@@ -180,7 +180,7 @@ struct PlannerView: View {
                 Button { selectedDay = day } label: {
                     VStack(spacing: 4) {
                         Text(day.formatted(.dateTime.weekday(.narrow)))
-                            .font(.caption2)
+                            .font(.footnote)
                         Text(day.formatted(.dateTime.day()))
                             .font(.subheadline.weight(.semibold))
                         Circle()
@@ -299,7 +299,7 @@ struct PlanEntryRow: View {
                         Text("× \(entry.servings.cleanString)")
                     }
                 }
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
             }
             Spacer()
@@ -398,7 +398,7 @@ struct PlanItemPicker: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(batch.name).foregroundStyle(Color.primary)
                                         Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
-                                            .font(.caption).foregroundStyle(Color.secondary)
+                                            .font(.footnote).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(batch.caloriesPerPortion.rounded()))")
@@ -415,7 +415,7 @@ struct PlanItemPicker: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(recipe.name).foregroundStyle(Color.primary)
                                         Text("\(recipe.mealType.label) · \(recipe.prepMinutes) min")
-                                            .font(.caption).foregroundStyle(Color.secondary)
+                                            .font(.footnote).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
@@ -431,7 +431,7 @@ struct PlanItemPicker: View {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(food.displayName).foregroundStyle(Color.primary)
-                                        Text(food.servingDescription).font(.caption).foregroundStyle(Color.secondary)
+                                        Text(food.servingDescription).font(.footnote).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(food.calories.rounded()))")
@@ -573,11 +573,11 @@ struct GroceryListView: View {
                                         .strikethrough(isChecked)
                                         .foregroundStyle(isChecked ? Color.secondary : Color.primary)
                                     Text(item.amounts.joined(separator: " + "))
-                                        .font(.caption)
+                                        .font(.footnote)
                                         .foregroundStyle(Color.secondary)
                                     Text(item.usedIn.sorted().joined(separator: ", "))
-                                        .font(.caption2)
-                                        .foregroundStyle(.tertiary)
+                                        .font(.footnote)
+                                        .foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -587,7 +587,7 @@ struct GroceryListView: View {
                         Text("\(items.count) items")
                         Spacer()
                         Button("Uncheck all") { setChecked([]) }
-                            .font(.caption)
+                            .font(.footnote)
                     }
                 }
             }

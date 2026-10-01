@@ -131,7 +131,7 @@ struct VitalsView: View {
                                 Text(entry.date.formatted(date: .abbreviated, time: .shortened))
                                     .foregroundStyle(Color.primary)
                                 Text(summary(for: entry))
-                                    .font(.caption)
+                                    .font(.footnote)
                                     .foregroundStyle(Color.secondary)
                             }
                         }
@@ -172,7 +172,7 @@ struct VitalRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(kind.label)
                 Text(entry.date.relativeDayLabel)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
             Spacer()
@@ -181,7 +181,7 @@ struct VitalRow: View {
                     .font(.body.monospacedDigit().weight(.medium))
                 if let note = kind.assessment(entry: entry) {
                     Text(note)
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -367,7 +367,7 @@ struct VitalDetailView: View {
                                 Label("Systolic", systemImage: "circle.fill").foregroundStyle(kind.tint)
                                 Label("Diastolic", systemImage: "circle.fill").foregroundStyle(kind.tint.opacity(0.5))
                             }
-                            .font(.caption)
+                            .font(.footnote)
                         }
                     }
                 }

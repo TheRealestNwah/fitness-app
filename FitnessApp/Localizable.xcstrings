@@ -1,6 +1,153 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
+    "—" : {
+
+    },
+    "·" : {
+
+    },
+    "%" : {
+
+    },
+    "%@" : {
+
+    },
+    "%@ – %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
+          }
+        }
+      }
+    },
+    "%@ – %@ · generated %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@ · generated %3$@"
+          }
+        }
+      }
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@ · %lld g protein" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@ · %3$lld g protein"
+          }
+        }
+      }
+    },
+    "%@ · %@/week" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@/week"
+          }
+        }
+      }
+    },
+    "%@ · %lld min" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$lld min"
+          }
+        }
+      }
+    },
+    "%@ / %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ / %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%@ → %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ → %2$@"
+          }
+        }
+      }
+    },
+    "%@ × %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ × %2$@"
+          }
+        }
+      }
+    },
+    "%@ history" : {
+
+    },
+    "%@ hours" : {
+
+    },
+    "%@ mg" : {
+
+    },
+    "%@ of %@ planned" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ of %2$@ planned"
+          }
+        }
+      }
+    },
+    "%@ on your 7-day average to reach %lld%%." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ on your 7-day average to reach %2$lld%%."
+          }
+        }
+      }
+    },
+    "%@ options" : {
+
+    },
     "%@ over %lld days" : {
       "localizations" : {
         "en" : {
@@ -29,6 +176,76 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%@ over budget" : {
+
+    },
+    "%@ over period" : {
+
+    },
+    "%@ photo" : {
+
+    },
+    "%@ planned" : {
+
+    },
+    "%@ portion, estimated" : {
+
+    },
+    "%@ remaining" : {
+
+    },
+    "%@ since starting" : {
+
+    },
+    "%@ to go" : {
+
+    },
+    "%@ total · %@ per serving" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ total · %2$@ per serving"
+          }
+        }
+      }
+    },
+    "%@×" : {
+
+    },
+    "%lld" : {
+
+    },
+    "%lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld · %2$@"
+          }
+        }
+      }
+    },
+    "%lld / %lld g" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld g"
+          }
+        }
+      }
+    },
+    "%lld %@ a day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@ a day"
           }
         }
       }
@@ -77,6 +294,29 @@
         }
       }
     },
+    "%lld eaten of %lld, %lld left" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld eaten of %2$lld, %3$lld left"
+          }
+        }
+      }
+    },
+    "%lld eaten of %lld, %lld over" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld eaten of %2$lld, %3$lld over"
+          }
+        }
+      }
+    },
+    "%lld entries" : {
+
+    },
     "%lld fasts completed" : {
       "localizations" : {
         "en" : {
@@ -99,6 +339,25 @@
         }
       }
     },
+    "%lld ft" : {
+
+    },
+    "%lld grams" : {
+
+    },
+    "%lld hours %lld minutes of %@ hours" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld hours %2$lld minutes of %3$@ hours"
+          }
+        }
+      }
+    },
+    "%lld in" : {
+
+    },
     "%lld items" : {
       "localizations" : {
         "en" : {
@@ -114,28 +373,6 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld items"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "%lld items logged" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld item logged"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld items logged"
                 }
               }
             }
@@ -175,6 +412,51 @@
         }
       }
     },
+    "%lld items are on the “%@” list in Reminders." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld items are on the “%2$@” list in Reminders."
+          }
+        }
+      }
+    },
+    "%lld items logged" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld item logged"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld items logged"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld min" : {
+
+    },
+    "%lld min · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld min · %2$@"
+          }
+        }
+      }
+    },
     "%lld nights of sleep" : {
       "localizations" : {
         "en" : {
@@ -193,6 +475,76 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld"
+          }
+        }
+      }
+    },
+    "%lld of %lld days of food logged" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld days of food logged"
+          }
+        }
+      }
+    },
+    "%lld of %lld glasses" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld glasses"
+          }
+        }
+      }
+    },
+    "%lld of %lld grams, %lld percent" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld grams, %3$lld percent"
+          }
+        }
+      }
+    },
+    "%lld of %lld portions left" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld portions left"
+          }
+        }
+      }
+    },
+    "%lld of %lld weigh-ins" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld of %2$lld weigh-ins"
+          }
+        }
+      }
+    },
+    "%lld readings from %@ to %@. Started at %@, latest %@, %@. Lowest %@, highest %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld readings from %2$@ to %3$@. Started at %4$@, latest %5$@, %6$@. Lowest %7$@, highest %8$@."
           }
         }
       }
@@ -240,6 +592,9 @@
           }
         }
       }
+    },
+    "%lld selected" : {
+
     },
     "%lld servings" : {
       "localizations" : {
@@ -307,6 +662,437 @@
         }
       }
     },
+    "%lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "%lld/%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld %3$@"
+          }
+        }
+      }
+    },
+    "%lld/7 days logged" : {
+
+    },
+    "%lld%%" : {
+
+    },
+    "%lld%% of your starting weight lost" : {
+
+    },
+    "%lld%% of your starting weight lost, reached %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld%% of your starting weight lost, reached %2$@."
+          }
+        }
+      }
+    },
+    "%lldg" : {
+
+    },
+    "%lldg protein" : {
+
+    },
+    "%lldh %lldm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lldh %2$lldm"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
+    "+%@" : {
+
+    },
+    "+%@ added to today's budget (%lld%% of %@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "+%1$@ added to today's budget (%2$lld%% of %3$@)."
+          }
+        }
+      }
+    },
+    "× %@" : {
+
+    },
+    "= %@ servings" : {
+
+    },
+    "−%@" : {
+
+    },
+    "1 bagel (105 g)" : {
+
+    },
+    "1 bar (60 g)" : {
+
+    },
+    "1 bottle (325 ml)" : {
+
+    },
+    "1 burger (150 g)" : {
+
+    },
+    "1 cake (9 g)" : {
+
+    },
+    "1 can (120 g)" : {
+
+    },
+    "1 can (400 g)" : {
+
+    },
+    "1 cookie (30 g)" : {
+
+    },
+    "1 cup (30 g)" : {
+
+    },
+    "1 cup (70 g)" : {
+
+    },
+    "1 cup (90 g)" : {
+
+    },
+    "1 cup (123 g)" : {
+
+    },
+    "1 cup (124 g)" : {
+
+    },
+    "1 cup (125 g)" : {
+
+    },
+    "1 cup (140 g)" : {
+
+    },
+    "1 cup (148 g)" : {
+
+    },
+    "1 cup (149 g)" : {
+
+    },
+    "1 cup (151 g)" : {
+
+    },
+    "1 cup (152 g)" : {
+
+    },
+    "1 cup (156 g)" : {
+
+    },
+    "1 cup (158 g)" : {
+
+    },
+    "1 cup (165 g)" : {
+
+    },
+    "1 cup (185 g)" : {
+
+    },
+    "1 cup (190 g)" : {
+
+    },
+    "1 cup (195 g)" : {
+
+    },
+    "1 cup (240 ml)" : {
+
+    },
+    "1 cup (244 ml)" : {
+
+    },
+    "1 cup (248 ml)" : {
+
+    },
+    "1 cup sliced (104 g)" : {
+
+    },
+    "1 egg (50 g)" : {
+
+    },
+    "1 medium (61 g)" : {
+
+    },
+    "1 medium (110 g)" : {
+
+    },
+    "1 medium (118 g)" : {
+
+    },
+    "1 medium (119 g)" : {
+
+    },
+    "1 medium (123 g)" : {
+
+    },
+    "1 medium (131 g)" : {
+
+    },
+    "1 medium (150 g)" : {
+
+    },
+    "1 medium (173 g)" : {
+
+    },
+    "1 medium (178 g)" : {
+
+    },
+    "1 medium (182 g)" : {
+
+    },
+    "1 medium (196 g)" : {
+
+    },
+    "1 oz (28 g, ~23 nuts)" : {
+
+    },
+    "1 oz (28 g)" : {
+
+    },
+    "1 scoop (30 g)" : {
+
+    },
+    "1 serving" : {
+
+    },
+    "1 serving = %@" : {
+
+    },
+    "1 shot (30 ml)" : {
+
+    },
+    "1 slice (30 g)" : {
+
+    },
+    "1 slice (43 g)" : {
+
+    },
+    "1 slice (107 g)" : {
+
+    },
+    "1 small (100 g)" : {
+
+    },
+    "1 tbsp" : {
+
+    },
+    "1 tbsp (5 g)" : {
+
+    },
+    "1 tbsp (7 g)" : {
+
+    },
+    "1 tbsp (12 g)" : {
+
+    },
+    "1 tbsp (14 g)" : {
+
+    },
+    "1 tbsp (15 g)" : {
+
+    },
+    "1 tbsp (16 g)" : {
+
+    },
+    "1 tbsp (17 g)" : {
+
+    },
+    "1 tbsp (21 g)" : {
+
+    },
+    "1 tortilla (26 g)" : {
+
+    },
+    "1 tortilla (49 g)" : {
+
+    },
+    "1 tsp (5 g)" : {
+
+    },
+    "1 tsp (7 g)" : {
+
+    },
+    "1 white (33 g)" : {
+
+    },
+    "1.5 cups (237 g)" : {
+
+    },
+    "1.5 fl oz shot (44 ml)" : {
+
+    },
+    "1/2 avocado (68 g)" : {
+
+    },
+    "1/2 cup (40 g)" : {
+
+    },
+    "1/2 cup (52 g)" : {
+
+    },
+    "1/2 cup (62 g)" : {
+
+    },
+    "1/2 cup (66 g)" : {
+
+    },
+    "1/2 cup (74 g)" : {
+
+    },
+    "1/2 cup (75 g)" : {
+
+    },
+    "1/2 cup (76 g)" : {
+
+    },
+    "1/2 cup (78 g)" : {
+
+    },
+    "1/2 cup (82 g)" : {
+
+    },
+    "1/2 cup (86 g)" : {
+
+    },
+    "1/2 cup (90 g)" : {
+
+    },
+    "1/2 cup (99 g)" : {
+
+    },
+    "1/2 cup (113 g)" : {
+
+    },
+    "1/2 cup (120 g)" : {
+
+    },
+    "1/2 cup (120 ml)" : {
+
+    },
+    "1/2 medium (55 g)" : {
+
+    },
+    "1/2 medium (62 g)" : {
+
+    },
+    "1/4 avocado (34 g)" : {
+
+    },
+    "1/4 cup (30 g)" : {
+
+    },
+    "2 cloves" : {
+
+    },
+    "2 cups (40 g)" : {
+
+    },
+    "2 cups (60 g)" : {
+
+    },
+    "2 cups (85 g)" : {
+
+    },
+    "2 cups (180 g)" : {
+
+    },
+    "2 cups (200 g)" : {
+
+    },
+    "2 cups (390 g)" : {
+
+    },
+    "2 eggs, a slice of toast and a black coffee" : {
+
+    },
+    "2 large" : {
+
+    },
+    "2 medium (122 g)" : {
+
+    },
+    "2 medium (238 g)" : {
+
+    },
+    "2 medium (392 g)" : {
+
+    },
+    "2 stalks (80 g)" : {
+
+    },
+    "2 tbsp" : {
+
+    },
+    "2 tbsp (20 g)" : {
+
+    },
+    "2 tbsp (30 g)" : {
+
+    },
+    "2 tbsp (32 g)" : {
+
+    },
+    "2 tsp (9 g)" : {
+
+    },
+    "3 cups (24 g)" : {
+
+    },
+    "3 tbsp (45 g)" : {
+
+    },
+    "4 cups (1 L)" : {
+
+    },
+    "5 fl oz (148 ml)" : {
+
+    },
+    "6 pieces (170 g)" : {
+
+    },
+    "6 spears (90 g)" : {
+
+    },
+    "7-day average" : {
+
+    },
+    "7-day avg" : {
+
+    },
+    "8.4 fl oz can (250 ml)" : {
+
+    },
+    "12 fl oz (355 ml)" : {
+
+    },
+    "12 fl oz can (355 ml)" : {
+
+    },
+    "85 g" : {
+      "shouldTranslate" : false
+    },
     "100 g" : {
       "shouldTranslate" : false
     },
@@ -328,11 +1114,972 @@
     "500 g" : {
       "shouldTranslate" : false
     },
-    "85 g" : {
+    "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week." : {
+
+    },
+    "A goal date from your actual pace needs two weeks of weigh-ins." : {
+
+    },
+    "A little hungry" : {
+
+    },
+    "A quick log of breakfast and lunch keeps today's numbers useful." : {
+
+    },
+    "A quick sip now keeps hunger and headaches away." : {
+
+    },
+    "A single missed day won't break your logging streak, once a week. Two missed days in a row still start it over." : {
+
+    },
+    "Abdomen, left" : {
+
+    },
+    "Abdomen, right" : {
+
+    },
+    "About %@ above resting for your weight. Enter your watch's number instead if you have one." : {
+
+    },
+    "About %lld kcal for a %@ %@. Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "About %1$lld kcal for a %2$@ %3$@. Change it if you know better. It counts today and keeps your streak; tap it in the diary later to fill in the details."
+          }
+        }
+      }
+    },
+    "About Stride" : {
+
+    },
+    "About you" : {
+
+    },
+    "Activity" : {
+
+    },
+    "Activity level" : {
+
+    },
+    "Adaptive target" : {
+
+    },
+    "Add" : {
+
+    },
+    "Add another photo" : {
+
+    },
+    "Add food" : {
+
+    },
+    "Add half a serving" : {
+
+    },
+    "Add ingredient" : {
+
+    },
+    "Add it from the label" : {
+
+    },
+    "Add photo" : {
+
+    },
+    "Add reading" : {
+
+    },
+    "Add recipe" : {
+
+    },
+    "Add recipes to the planner and their ingredients will show up here." : {
+
+    },
+    "Add to %@" : {
+
+    },
+    "Add to plan" : {
+
+    },
+    "Added %lld doses from Health." : {
+
+    },
+    "Adds a weigh-in to Stride." : {
+
+    },
+    "Adds GLP-1 doses you logged in the Health app's Medications section over the last year." : {
+
+    },
+    "Adds part of today's logged exercise to your calorie budget. Half is a safer choice, since exercise estimates run high. If Apple Health active energy is also counted, the larger of the two is used so workouts aren't counted twice." : {
+
+    },
+    "Adds water to today's total in Stride. Leave the amount empty to log one glass." : {
+
+    },
+    "After 1 minute" : {
+
+    },
+    "After 5 minutes" : {
+
+    },
+    "Aggressive" : {
+
+    },
+    "Alcohol and caffeine" : {
+
+    },
+    "All" : {
+
+    },
+    "All entries" : {
+
+    },
+    "All foods" : {
+
+    },
+    "Almond butter" : {
+
+    },
+    "Almond milk, unsweetened" : {
+
+    },
+    "Almonds" : {
+
+    },
+    "Amount" : {
+
+    },
+    "Amount (e.g. 200 g, 1 cup)" : {
+
+    },
+    "Amount in" : {
+
+    },
+    "Another day…" : {
+
+    },
+    "Appearance" : {
+
+    },
+    "Apple" : {
+
+    },
+    "Apple Health" : {
+
+    },
+    "Apple Health isn't available on this device." : {
+
+    },
+    "Apple with peanut butter" : {
+
+    },
+    "Asks for %@ or your passcode when Stride opens, and hides it in the app switcher." : {
+
+    },
+    "Asparagus" : {
+
+    },
+    "At your current pace of %@ a week, you'll get there around %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "At your current pace of %1$@ a week, you'll get there around %2$@."
+          }
+        }
+      }
+    },
+    "At your current pace, around %@" : {
+
+    },
+    "Athlete" : {
+
+    },
+    "Attach a photo when you weigh in. Once there are two, you can compare them here." : {
+
+    },
+    "Auto-plan" : {
+
+    },
+    "Auto-plan %@" : {
+
+    },
+    "Auto-plan fills each meal with a recipe sized to your calorie target. You can swap anything afterwards." : {
+
+    },
+    "Average intake" : {
+
+    },
+    "Averaging %@ a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something." : {
+
+    },
+    "Averaging %@ gained per week over the last 4 weeks." : {
+
+    },
+    "Averaging %@ lost per week over the last 4 weeks." : {
+
+    },
+    "Averaging %@ over budget" : {
+
+    },
+    "Avg blood pressure" : {
+
+    },
+    "Avg glucose" : {
+
+    },
+    "Avg resting HR" : {
+
+    },
+    "Avocado" : {
+
+    },
+    "Back" : {
+
+    },
+    "Back to today" : {
+
+    },
+    "Bagel, plain" : {
+
+    },
+    "Banana" : {
+
+    },
+    "Banana protein smoothie" : {
+
+    },
+    "Band" : {
+
+    },
+    "Barcode %@ wasn't in the database. Copy the numbers from the label and this food will be found instantly next time you scan it." : {
+
+    },
+    "Barcode number" : {
+
+    },
+    "Based on %lld logged days and %lld weigh-ins over the last %lld days: you averaged %@ and your weight moved %@ a week. Confidence: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Based on %1$lld logged days and %2$lld weigh-ins over the last %3$lld days: you averaged %4$@ and your weight moved %5$@ a week. Confidence: %6$@."
+          }
+        }
+      }
+    },
+    "Batch cook" : {
+
+    },
+    "Beer, light" : {
+
+    },
+    "Beer, regular" : {
+
+    },
+    "Bell pepper" : {
+
+    },
+    "Best week" : {
+
+    },
+    "Black beans, cooked" : {
+
+    },
+    "Blend everything until smooth. Add more milk to thin." : {
+
+    },
+    "Blood glucose" : {
+
+    },
+    "Blood pressure" : {
+
+    },
+    "Blood pressure, resting heart rate, body measurements and sleep all respond to weight loss. Log them weekly to see the change." : {
+
+    },
+    "Blueberries" : {
+
+    },
+    "BMI is a rough guide only. A healthy range is 18.5–24.9." : {
+
+    },
+    "Body" : {
+
+    },
+    "Body & goals" : {
+
+    },
+    "Body fat" : {
+
+    },
+    "Body fat and weight" : {
+
+    },
+    "Body trends" : {
+
+    },
+    "Both falling together: the weight you're losing is mostly fat." : {
+
+    },
+    "BP (mmHg)" : {
+
+    },
+    "Brand (optional)" : {
+
+    },
+    "breakfast" : {
+      "comment" : "Meal name inside a sentence"
+    },
+    "Breakfast" : {
+
+    },
+    "Brisk" : {
+
+    },
+    "Broccoli" : {
+
+    },
+    "Broccoli, steamed" : {
+
+    },
+    "Brown rice, cooked" : {
+
+    },
+    "Brown turkey with onion and pepper in oil. Add spices, tomatoes and beans. Simmer 25 minutes. Freezes well." : {
+
+    },
+    "Budget" : {
+
+    },
+    "budget %@" : {
+
+    },
+    "Budget by the week" : {
+
+    },
+    "Budget by the week lets lighter days bank calories for later ones; days you don't log count as on target. A diet break sets your target to maintenance for one to three weeks and moves your goal date back to match, so it isn't counted as falling behind." : {
+
+    },
+    "Butter" : {
+
+    },
+    "Calorie and macro targets use the Mifflin-St Jeor equation and standard activity multipliers. They are estimates for healthy adults. Talk to a doctor before starting a diet if you are pregnant, under 18, or have a medical condition." : {
+
+    },
+    "Calories" : {
+
+    },
+    "Calories (kcal)" : {
+
+    },
+    "Calories Left" : {
+
+    },
+    "calories per day" : {
+
+    },
+    "Calories today" : {
+
+    },
+    "Camera scanning isn't available on this device. Type the number under the barcode instead." : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Cancel diet break" : {
+
+    },
+    "Canned tomatoes" : {
+
+    },
+    "Cannellini beans" : {
+
+    },
+    "Carbs" : {
+
+    },
+    "Carrot" : {
+
+    },
+    "Category" : {
+
+    },
+    "Cauliflower" : {
+
+    },
+    "Cauliflower, roasted" : {
+
+    },
+    "Celery" : {
+
+    },
+    "Cereal, bran flakes" : {
+
+    },
+    "Change photo" : {
+
+    },
+    "Changed %@ to %@ servings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Changed %1$@ to %2$@ servings"
+          }
+        }
+      }
+    },
+    "Check drinks, sauces and evening snacks first. Trimming about 200 kcal a day gets you back on plan." : {
+
+    },
+    "Check-in time" : {
+
+    },
+    "Cheddar cheese" : {
+
+    },
+    "Cheeseburger, fast food" : {
+
+    },
+    "Cherry tomatoes" : {
+
+    },
+    "Chest" : {
+
+    },
+    "Chia seeds" : {
+
+    },
+    "Chicken breast" : {
+
+    },
+    "Chicken breast, grilled" : {
+
+    },
+    "Chicken stir-fry with rice" : {
+
+    },
+    "Chicken thigh, roasted" : {
+
+    },
+    "Chickpeas, cooked" : {
+
+    },
+    "Chili spices" : {
+
+    },
+    "Chocolate chip cookie" : {
+
+    },
+    "Choose a day" : {
+
+    },
+    "Choose a food" : {
+
+    },
+    "Choose a label photo" : {
+
+    },
+    "Choose a photo" : {
+
+    },
+    "Choose a recipe" : {
+
+    },
+    "Choose another" : {
+
+    },
+    "Choose from library" : {
+
+    },
+    "Clear" : {
+
+    },
+    "Clear %@" : {
+
+    },
+    "Clear day" : {
+
+    },
+    "cm" : {
       "shouldTranslate" : false
+    },
+    "Cod, baked" : {
+
+    },
+    "Coffee, black" : {
+
+    },
+    "Cola" : {
+
+    },
+    "Combine and eat." : {
+
+    },
+    "Compare photos" : {
+
+    },
+    "Consistency beats precision. Aim for 5 logged days next week, using favourite meals for the usual ones." : {
+
+    },
+    "Constipation" : {
+
+    },
+    "Continue" : {
+
+    },
+    "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation." : {
+
+    },
+    "Copied %@ to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Copied %1$@ to %2$@"
+          }
+        }
+      }
+    },
+    "Copied %lld entries to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Copied %1$lld entries to %2$@"
+          }
+        }
+      }
+    },
+    "Copy" : {
+
+    },
+    "Copy day to tomorrow" : {
+
+    },
+    "Copy from yesterday" : {
+
+    },
+    "Copy to" : {
+
+    },
+    "Copy yesterday's %@" : {
+
+    },
+    "Corn tortilla" : {
+
+    },
+    "Cottage cheese and berries" : {
+
+    },
+    "Cottage cheese, low fat" : {
+
+    },
+    "Couldn't confirm it's you. Set a passcode on this device to use the lock." : {
+
+    },
+    "Couldn't find ingredients in that photo. Try a sharper, straight-on shot of the ingredient list." : {
+
+    },
+    "Couldn't import" : {
+
+    },
+    "Count active energy" : {
+
+    },
+    "Create “%@” as a custom food" : {
+
+    },
+    "Create a custom food" : {
+
+    },
+    "Cucumber" : {
+
+    },
+    "Current BMI" : {
+
+    },
+    "Current weight" : {
+
+    },
+    "Curry paste" : {
+
+    },
+    "Custom" : {
+
+    },
+    "Custom target: %@" : {
+
+    },
+    "Customise Today" : {
+
+    },
+    "Cut vegetables into sticks and dip." : {
+
+    },
+    "Cycle-aware weight" : {
+
+    },
+    "Cycling, leisurely" : {
+
+    },
+    "Cycling, moderate" : {
+
+    },
+    "Daily" : {
+
+    },
+    "Daily goal" : {
+
+    },
+    "Daily grams" : {
+
+    },
+    "Daily target" : {
+
+    },
+    "Dancing" : {
+
+    },
+    "Dark" : {
+
+    },
+    "Dark chocolate, 70%" : {
+
+    },
+    "Data" : {
+
+    },
+    "Date" : {
+
+    },
+    "Date of birth" : {
+
+    },
+    "Dates" : {
+
+    },
+    "Day" : {
+
+    },
+    "Days logged" : {
+
+    },
+    "Days with food logged" : {
+
+    },
+    "Decrease by %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Decrease by %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Delete" : {
+
+    },
+    "Delete entry" : {
+
+    },
+    "Delete everything" : {
+
+    },
+    "Delete weigh-in" : {
+
+    },
+    "Deleting your data…" : {
+
+    },
+    "Describe what you ate" : {
+
+    },
+    "Description (e.g. Restaurant pasta)" : {
+
+    },
+    "Desk job, little or no exercise" : {
+
+    },
+    "Details" : {
+
+    },
+    "Diarrhoea" : {
+
+    },
+    "Diary entries" : {
+
+    },
+    "Diastolic" : {
+
+    },
+    "Diet break" : {
+
+    },
+    "Diet break from" : {
+
+    },
+    "Diet cola" : {
+
+    },
+    "dinner" : {
+      "comment" : "Meal name inside a sentence"
+    },
+    "Dinner" : {
+
+    },
+    "Dinner isn't logged yet. A quick entry keeps today's numbers right." : {
+
+    },
+    "Done" : {
+
+    },
+    "Dose" : {
+
+    },
+    "Dose due today" : {
+
+    },
+    "Dose reminder" : {
+
+    },
+    "down %@" : {
+
+    },
+    "Drag to reorder. Some cards also hide themselves when there's nothing to show, like Activity without Apple Health." : {
+
+    },
+    "Drink a glass of water before meals. Thirst is often mistaken for hunger." : {
+
+    },
+    "Due in %lld days" : {
+
+    },
+    "Due today" : {
+
+    },
+    "Due tomorrow" : {
+
+    },
+    "Due yesterday" : {
+
+    },
+    "Duration" : {
+
+    },
+    "Each portion" : {
+
+    },
+    "Earn back exercise calories" : {
+
+    },
+    "Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings." : {
+
+    },
+    "Eaten" : {
+
+    },
+    "Edamame, shelled" : {
+
+    },
+    "Edit entry" : {
+
+    },
+    "Edit hunger and mood" : {
+
+    },
+    "Edit recipe" : {
+
+    },
+    "Edit vitals" : {
+
+    },
+    "Edit weigh-in" : {
+
+    },
+    "Egg white" : {
+
+    },
+    "Egg, large" : {
+
+    },
+    "Eggs" : {
+
+    },
+    "Elevated" : {
+
+    },
+    "Elliptical" : {
+
+    },
+    "End early" : {
+
+    },
+    "End fast" : {
+
+    },
+    "End Fast" : {
+
+    },
+    "End this fast before its target?" : {
+
+    },
+    "Ends %@" : {
+
+    },
+    "Energy drink" : {
+
+    },
+    "Energy in" : {
+
+    },
+    "Enter the barcode" : {
+
+    },
+    "Enter the label's per-100 g numbers below; they're scaled to one serving when you save." : {
+
+    },
+    "Entries already in Stride are left out. Imported history isn't copied to Apple Health." : {
+
+    },
+    "Espresso" : {
+
+    },
+    "ETA %@" : {
+
+    },
+    "Evening check-in" : {
+
+    },
+    "Every weigh-in, food log, vitals reading, meal plan, recipe and setting will be deleted from this device and you'll start setup again. This can't be undone." : {
+
+    },
+    "Everything in this file is already in Stride." : {
+
+    },
+    "Exercise" : {
+
+    },
+    "Export" : {
+
+    },
+    "Export and share" : {
+
     },
     "Face ID" : {
       "shouldTranslate" : false
+    },
+    "Fast" : {
+
+    },
+    "Fast progress" : {
+
+    },
+    "Faster is not always better. Keep protein high and do not skip meals; a slightly higher target is fine." : {
+
+    },
+    "Fasting" : {
+
+    },
+    "Fasts completed" : {
+
+    },
+    "Fat" : {
+
+    },
+    "Fatigue" : {
+
+    },
+    "Favourite" : {
+
+    },
+    "Favourite meals" : {
+
+    },
+    "Favourite meals appear at the top of food search and log every line with one tap." : {
+
+    },
+    "Favourites" : {
+
+    },
+    "Feet" : {
+
+    },
+    "Female" : {
+
+    },
+    "Feta cheese" : {
+
+    },
+    "Fibre" : {
+
+    },
+    "Fibre-rich vegetables add volume to meals for very few calories." : {
+
+    },
+    "Fill empty meals" : {
+
+    },
+    "Fill from the label" : {
+
+    },
+    "Fill in from Apple Health" : {
+
+    },
+    "Fill in the details" : {
+
+    },
+    "Fill in whatever you measured. Everything is optional." : {
+
+    },
+    "Filled in from Apple Health. Check the details below and the weights on the next step." : {
+
+    },
+    "Find foods" : {
+
+    },
+    "Finish today's log" : {
+
+    },
+    "Finished" : {
+
+    },
+    "First diary entries" : {
+
+    },
+    "First weigh-ins" : {
+
+    },
+    "Fits what's left" : {
+
+    },
+    "Flake tuna, toss with beans, onion, oil and lemon. Serve over greens." : {
+
+    },
+    "Flaxseed, ground" : {
+
+    },
+    "Flexible budget" : {
+
+    },
+    "Flour tortilla" : {
+
+    },
+    "Food" : {
+
+    },
+    "Foods" : {
+
+    },
+    "Football" : {
+
+    },
+    "for %lld" : {
+
     },
     "For %lld weeks" : {
       "localizations" : {
@@ -356,8 +2103,1308 @@
         }
       }
     },
+    "For GLP-1 medication such as semaglutide or tirzepatide: log doses, see when the next is due, rotate injection sites and note side effects. Stride doesn't give medical advice; follow your prescriber." : {
+
+    },
+    "Formula estimate" : {
+
+    },
+    "Found" : {
+
+    },
+    "French fries" : {
+
+    },
+    "From “%@”. Tap to change." : {
+
+    },
+    "from %@" : {
+
+    },
+    "From Apple Health" : {
+
+    },
+    "Fry curry paste, add coconut milk and vegetables, simmer 8 minutes. Add cubed tofu and warm through. Serve with rice." : {
+
+    },
+    "Gardening" : {
+
+    },
+    "Garlic" : {
+
+    },
+    "Garlic and ginger" : {
+
+    },
+    "Gentle" : {
+
+    },
+    "Glass" : {
+
+    },
+    "Glucose" : {
+
+    },
+    "Go" : {
+
+    },
+    "Goal" : {
+
+    },
+    "Goal BMI" : {
+
+    },
+    "Goal reached!" : {
+
+    },
+    "Goal weight" : {
+
+    },
+    "Goals" : {
+
+    },
+    "Good" : {
+
+    },
+    "Grace day used this week" : {
+
+    },
+    "Granola" : {
+
+    },
+    "Grapes" : {
+
+    },
+    "Great" : {
+
+    },
+    "Greek yogurt parfait" : {
+
+    },
+    "Greek yogurt, plain nonfat" : {
+
+    },
+    "Green beans" : {
+
+    },
+    "Grilled chicken salad" : {
+
+    },
+    "Groceries" : {
+
+    },
+    "Half" : {
+
+    },
+    "handful" : {
+
+    },
+    "Hard exercise 6–7 days a week" : {
+
+    },
+    "Hard seltzer" : {
+
+    },
+    "Has progress photo" : {
+
+    },
+    "Headache" : {
+
+    },
+    "Heart" : {
+
+    },
+    "Heartburn" : {
+
+    },
+    "Heat oil in a nonstick pan. Wilt spinach and tomatoes for a minute, add beaten eggs and scramble gently. Serve on toast." : {
+
+    },
+    "Height" : {
+
+    },
+    "Height (ft)" : {
+
+    },
+    "Height (in)" : {
+
+    },
+    "height %@" : {
+
+    },
+    "High (stage 1)" : {
+
+    },
+    "High (stage 2)" : {
+
+    },
+    "High fibre" : {
+
+    },
+    "High protein" : {
+
+    },
+    "HIIT" : {
+
+    },
+    "Hiking" : {
+
+    },
+    "Hips" : {
+
+    },
+    "History" : {
+
+    },
+    "Holding %@" : {
+
+    },
+    "Honey" : {
+
+    },
+    "Household measure (optional)" : {
+
+    },
+    "Housework" : {
+
+    },
+    "How fast?" : {
+
+    },
+    "How hungry you were before eating." : {
+
+    },
+    "How many calories are left in today's budget." : {
+
+    },
+    "How much %@" : {
+
+    },
+    "How you felt afterwards. Patterns show up under Vitals → Patterns once you've rated a couple of weeks." : {
+
+    },
+    "HR (bpm)" : {
+
+    },
+    "https://" : {
+      "shouldTranslate" : false
+    },
+    "Hummus" : {
+
+    },
+    "Hunger and mood…" : {
+
+    },
+    "Hunger before" : {
+
+    },
+    "Hunger: %@" : {
+
+    },
+    "Hungry" : {
+
+    },
+    "Hypertensive crisis" : {
+
+    },
+    "Ice" : {
+
+    },
+    "Ice cream, vanilla" : {
+
+    },
+    "iCloud" : {
+      "shouldTranslate" : false
+    },
+    "If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier." : {
+
+    },
+    "Immediately" : {
+
+    },
+    "Imperial (lb, ft/in)" : {
+
+    },
+    "Import" : {
+
+    },
+    "Import doses from Health" : {
+
+    },
+    "Import from a web page" : {
+
+    },
+    "Import from CSV" : {
+
+    },
+    "Import now" : {
+
+    },
+    "Import recipe" : {
+
+    },
+    "Imported %@" : {
+
+    },
+    "Importing…" : {
+
+    },
+    "In %@" : {
+
+    },
+    "Inches" : {
+
+    },
+    "Include" : {
+
+    },
+    "Include %@" : {
+
+    },
+    "Included" : {
+
+    },
+    "Increase by %@ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Increase by %1$@ %2$@"
+          }
+        }
+      }
+    },
+    "Ingredient" : {
+
+    },
+    "Ingredients" : {
+
+    },
+    "Injection site" : {
+
+    },
+    "Injection-site reaction" : {
+
+    },
+    "Insights" : {
+
+    },
+    "Intake on budget" : {
+
+    },
+    "Intake on budget, scale moving slowly" : {
+
+    },
+    "It may have been deleted." : {
+
+    },
+    "It will be saved, but won't count as completed in your weekly review." : {
+
+    },
+    "Its ingredients, method and nutrition show here." : {
+
+    },
+    "Kale, raw" : {
+
+    },
+    "Keep doing what you are doing. Plan next week's dinners now while motivation is high." : {
+
+    },
+    "Keep easy high-protein snacks around so hunger never catches you unprepared." : {
+
+    },
+    "Keeps your diary, weigh-ins, vitals and plans the same on every iPhone and iPad signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy." : {
+
+    },
+    "Ketchup" : {
+
+    },
+    "Kidney beans, canned" : {
+
+    },
+    "Kilograms" : {
+
+    },
+    "Kilojoules (kJ)" : {
+
+    },
+    "Label gives values per 100 g" : {
+
+    },
+    "large" : {
+      "comment" : "Portion size inside a sentence"
+    },
+    "Large" : {
+
+    },
+    "Last 7 days" : {
+
+    },
+    "Last import" : {
+
+    },
+    "Last time: %@. Rotating sites helps avoid lumps and irritation." : {
+
+    },
+    "Last weigh-in %@, %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Last weigh-in %1$@, %2$@."
+          }
+        }
+      }
+    },
+    "Latest" : {
+
+    },
+    "Latte, 2% milk" : {
+
+    },
+    "Layer yogurt, granola and berries in a glass." : {
+
+    },
+    "Lean ground beef (93/7), cooked" : {
+
+    },
+    "Lean ground turkey" : {
+
+    },
+    "left" : {
+
+    },
+    "Left out" : {
+
+    },
+    "Lemon juice" : {
+
+    },
+    "Lentil and vegetable soup" : {
+
+    },
+    "Lentils, cooked" : {
+
+    },
+    "Lentils, dry" : {
+
+    },
+    "Less" : {
+
+    },
+    "Light" : {
+
+    },
+    "Light coconut milk" : {
+
+    },
+    "Light exercise 1–3 days a week" : {
+
+    },
+    "Lightly active" : {
+
+    },
+    "Likely water retention" : {
+
+    },
+    "Listening… say what you ate, like “two eggs and a slice of toast”, then tap Stop." : {
+
+    },
+    "Lock" : {
+
+    },
+    "Log" : {
+
+    },
+    "Log %@" : {
+
+    },
+    "Log %@ again" : {
+
+    },
+    "Log %@ from a photo" : {
+
+    },
+    "Log ${amount} of water" : {
+
+    },
+    "Log a dose" : {
+
+    },
+    "Log a few weigh-ins to see your trend." : {
+
+    },
+    "Log a weigh-in" : {
+
+    },
+    "Log a weight of ${weight}" : {
+
+    },
+    "Log again" : {
+
+    },
+    "Log at least one meal a day. Even rough entries show which days push you over." : {
+
+    },
+    "Log at least two readings to see a trend." : {
+
+    },
+    "Log body fat in Vitals on two or more days to compare it with your weight trend." : {
+
+    },
+    "Log dose" : {
+
+    },
+    "Log each dose to see when the next is due and keep injection sites rotating." : {
+
+    },
+    "Log exercise" : {
+
+    },
+    "Log food" : {
+
+    },
+    "Log Food" : {
+
+    },
+    "Log food on most days for two more weeks so the adaptive target can measure your real maintenance." : {
+
+    },
+    "Log now" : {
+
+    },
+    "Log recipe" : {
+
+    },
+    "Log the slip-up meal too. Data, not guilt, is what moves the needle." : {
+
+    },
+    "Log this food" : {
+
+    },
+    "Log vitals" : {
+
+    },
+    "Log waist, hips or chest in Vitals on two or more days to see them change together." : {
+
+    },
+    "Log water" : {
+
+    },
+    "Log Water" : {
+
+    },
+    "Log Weight" : {
+
+    },
+    "Log what you eat to see calories and macros against your target." : {
+
+    },
+    "Log your %@" : {
+
+    },
+    "Logged" : {
+
+    },
+    "Logged “%@” to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Logged “%1$@” to %2$@"
+          }
+        }
+      }
+    },
+    "Logged %@" : {
+
+    },
+    "Logged %@." : {
+
+    },
+    "Logged intake looks incomplete" : {
+
+    },
+    "Logged. That's %@ today." : {
+
+    },
+    "Logging right after you eat keeps your calorie count honest." : {
+
+    },
+    "Logging streak" : {
+
+    },
+    "longest run %lld" : {
+
+    },
+    "Look up" : {
+
+    },
+    "Looking at your photo…" : {
+
+    },
+    "Looking up %@…" : {
+
+    },
+    "Looks like" : {
+
+    },
+    "Lookups use Open Food Facts, a free community database. Nutrition on labels can differ; check the numbers before logging." : {
+
+    },
+    "Losing %@ at %@ a week." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Losing %1$@ at %2$@ a week."
+          }
+        }
+      }
+    },
+    "Losing faster than planned (%@ kg)" : {
+
+    },
+    "Low" : {
+
+    },
+    "Low carb" : {
+
+    },
+    "lunch" : {
+      "comment" : "Meal name inside a sentence"
+    },
+    "Lunch" : {
+
+    },
+    "Macro split" : {
+
+    },
+    "Macros (optional)" : {
+
+    },
+    "Maintaining" : {
+
+    },
+    "Maintenance" : {
+
+    },
+    "Maintenance (TDEE)" : {
+
+    },
+    "Maintenance mode" : {
+
+    },
+    "Make ahead" : {
+
+    },
+    "Male" : {
+
+    },
+    "Mango" : {
+
+    },
+    "Match system" : {
+
+    },
+    "Match units" : {
+
+    },
+    "Mayonnaise" : {
+
+    },
+    "Meal" : {
+
+    },
+    "Meal logging reminders" : {
+
+    },
+    "Meal photo" : {
+
+    },
+    "Meal plan" : {
+
+    },
+    "Meal prep" : {
+
+    },
+    "Meal-prep batch" : {
+
+    },
+    "Measured from what you logged and what the scale did. It's usually more accurate than the formula." : {
+
+    },
+    "Measured maintenance" : {
+
+    },
+    "Measurement" : {
+
+    },
+    "Measurements" : {
+
+    },
+    "Measurements and body fat" : {
+
+    },
+    "Medication" : {
+
+    },
+    "medium" : {
+      "comment" : "Portion size inside a sentence"
+    },
+    "Medium" : {
+
+    },
+    "medium (117 g)" : {
+
+    },
+    "Meh" : {
+
+    },
+    "Method" : {
+
+    },
+    "Metric (kg, cm)" : {
+
+    },
+    "Milestones and plateaus" : {
+
+    },
+    "Milk, 2%" : {
+
+    },
+    "Milk, skim" : {
+
+    },
+    "Mixed salad greens" : {
+
+    },
+    "Mode" : {
+
+    },
+    "Moderate exercise 3–5 days a week" : {
+
+    },
+    "Moderately active" : {
+
+    },
+    "Monthly report" : {
+
+    },
+    "Mood after" : {
+
+    },
+    "Mood: %@" : {
+
+    },
+    "More" : {
+
+    },
+    "Morning weigh-in" : {
+
+    },
+    "Most recent readings" : {
+
+    },
+    "Move" : {
+
+    },
+    "Move to" : {
+
+    },
+    "Moved %@ to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Moved %1$@ to %2$@"
+          }
+        }
+      }
+    },
+    "Moved %lld entries to %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Moved %1$lld entries to %2$@"
+          }
+        }
+      }
+    },
+    "Moving one slider rebalances the other two so the split stays at 100%. Higher protein helps keep muscle while losing fat." : {
+
+    },
+    "Mozzarella, part skim" : {
+
+    },
+    "Mushrooms" : {
+
+    },
+    "My last 7 days" : {
+
+    },
+    "Name" : {
+
+    },
+    "Name (e.g. 1 slice, 1 cup)" : {
+
+    },
+    "Name (e.g. Weekday breakfast)" : {
+
+    },
+    "Name (optional)" : {
+
+    },
+    "Nausea" : {
+
+    },
+    "New food" : {
+
+    },
+    "New recipe" : {
+
+    },
+    "Next day" : {
+
+    },
+    "Next Day" : {
+
+    },
+    "Next month" : {
+
+    },
+    "Next site: %@" : {
+
+    },
+    "Next week" : {
+
+    },
+    "no change" : {
+
+    },
+    "No cook" : {
+
+    },
+    "No doses yet" : {
+
+    },
+    "No match for “%@”." : {
+
+    },
+    "No match. Tap to search." : {
+
+    },
+    "No new doses found in Health." : {
+
+    },
+    "No readings" : {
+
+    },
+    "No rows could be read from this file." : {
+
+    },
+    "No vitals recorded in this period." : {
+
+    },
+    "No vitals yet" : {
+
+    },
+    "No vitals yet. Log blood pressure, measurements or sleep to see trends." : {
+
+    },
+    "No weigh-ins yet." : {
+
+    },
+    "Normal" : {
+
+    },
+    "Normal in weeks two to four. If it stays flat next week, trim 100 to 150 kcal or add a daily walk." : {
+
+    },
+    "Not enough body-fat readings" : {
+
+    },
+    "Not enough data" : {
+
+    },
+    "Not enough days yet" : {
+
+    },
+    "Not enough measurements" : {
+
+    },
+    "Not hungry" : {
+
+    },
+    "Not rated" : {
+
+    },
+    "Not recorded" : {
+
+    },
+    "Not set" : {
+
+    },
+    "Note (optional)" : {
+
+    },
+    "Nothing found in Apple Health. Fill in the details below." : {
+
+    },
+    "Nothing logged %@" : {
+
+    },
+    "Nothing logged in the last 7 days" : {
+
+    },
+    "Nothing logged this month" : {
+
+    },
+    "Nothing logged today." : {
+
+    },
+    "Nothing logged yet" : {
+
+    },
+    "Nothing logged yet today" : {
+
+    },
+    "Nothing new to import" : {
+
+    },
+    "Nothing planned this week" : {
+
+    },
+    "Nothing's logged today yet. A rough entry for each meal still keeps your week on track." : {
+
+    },
+    "Notifications are turned off for this app. Enable them in iOS Settings to receive reminders." : {
+
+    },
+    "now %@" : {
+
+    },
+    "Nutrition for this amount" : {
+
+    },
+    "Nutrition per 100 g" : {
+
+    },
+    "Nutrition per serving" : {
+
+    },
+    "Oats, rolled (dry)" : {
+
+    },
+    "of %@" : {
+
+    },
+    "of %@h" : {
+
+    },
+    "Off" : {
+
+    },
+    "Offered as a quick pick when you log this food." : {
+
+    },
+    "OK" : {
+
+    },
+    "Okay" : {
+
+    },
+    "Olive oil" : {
+
+    },
+    "On plan, you'll reach %@ around %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "On plan, you'll reach %1$@ around %2$@."
+          }
+        }
+      }
+    },
+    "On track: down %@ kg this week" : {
+
+    },
+    "Once you reach your goal, switch to maintenance to hold your weight within a band instead of counting down." : {
+
+    },
+    "One reading, %@ on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "One reading, %1$@ on %2$@."
+          }
+        }
+      }
+    },
+    "One tray" : {
+
+    },
+    "Onion" : {
+
+    },
+    "Only %lld of 7 days logged" : {
+
+    },
+    "Open diary" : {
+
+    },
+    "Open in New Window" : {
+
+    },
     "Optic ID" : {
       "shouldTranslate" : false
+    },
+    "Or enter it by hand" : {
+
+    },
+    "Orange" : {
+
+    },
+    "Orange juice" : {
+
+    },
+    "Other" : {
+
+    },
+    "Other nutrients" : {
+
+    },
+    "over" : {
+
+    },
+    "Overdue by %lld days" : {
+
+    },
+    "Overnight oats with berries" : {
+
+    },
+    "P%lld C%lld F%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "P%1$lld C%2$lld F%3$lld"
+          }
+        }
+      }
+    },
+    "Pace forecast: %@" : {
+
+    },
+    "Packable" : {
+
+    },
+    "Parmesan" : {
+
+    },
+    "Passcode" : {
+
+    },
+    "Pasta, cooked" : {
+
+    },
+    "Patterns" : {
+
+    },
+    "Pause during diet breaks" : {
+
+    },
+    "Peanut butter" : {
+
+    },
+    "Pear" : {
+
+    },
+    "Per %@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Per %1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "Photo" : {
+
+    },
+    "Photo meal" : {
+
+    },
+    "Photograph the nutrition label" : {
+
+    },
+    "Photograph the page" : {
+
+    },
+    "Pilates" : {
+
+    },
+    "Pizza, cheese" : {
+
+    },
+    "Plan" : {
+
+    },
+    "Plan %@" : {
+
+    },
+    "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones." : {
+
+    },
+    "Planner" : {
+
+    },
+    "Point the camera at a barcode to find packaged food and its nutrition label." : {
+
+    },
+    "Point the camera at the barcode" : {
+
+    },
+    "Popcorn, air-popped" : {
+
+    },
+    "portion" : {
+
+    },
+    "Portion" : {
+
+    },
+    "Portions" : {
+
+    },
+    "Potato, baked" : {
+
+    },
+    "Pounds" : {
+
+    },
+    "Prep time: %lld min" : {
+
+    },
+    "Previous day" : {
+
+    },
+    "Previous Day" : {
+
+    },
+    "Previous month" : {
+
+    },
+    "Previous week" : {
+
+    },
+    "Privacy" : {
+
+    },
+    "Profile" : {
+
+    },
+    "Progress photo" : {
+
+    },
+    "Progress photo (optional)" : {
+
+    },
+    "Projected goal date" : {
+
+    },
+    "Protein" : {
+
+    },
+    "Protein bar" : {
+
+    },
+    "Protein check" : {
+
+    },
+    "Protein goal hit %lld days running" : {
+
+    },
+    "Protein keeps you full longer. Aim to include a palm-sized portion in every meal." : {
+
+    },
+    "Protein shake, ready to drink" : {
+
+    },
+    "Quick" : {
+
+    },
+    "Quick actions" : {
+
+    },
+    "Quick add" : {
+
+    },
+    "Quick add calories" : {
+
+    },
+    "Quinoa, cooked" : {
+
+    },
+    "Ranch dressing" : {
+
+    },
+    "Range" : {
+
+    },
+    "Raspberries" : {
+
+    },
+    "Reading the label…" : {
+
+    },
+    "Reading the page" : {
+
+    },
+    "Reading the recipe…" : {
+
+    },
+    "Readings" : {
+
+    },
+    "Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice. Cycle-aware weight reads your cycle from Health to mark likely water-retention days on the weight chart and leave them out of plateau checks." : {
+
+    },
+    "Recent" : {
+
+    },
+    "Recent searches" : {
+
+    },
+    "Recipe" : {
+
+    },
+    "Recipe not found" : {
+
+    },
+    "Recipe, %@ per serving" : {
+
+    },
+    "Recipes" : {
+
+    },
+    "Recognised on your iPhone from your saved foods. Tick what's on the plate and adjust the amounts; the photo is kept with the first item." : {
+
+    },
+    "Red onion" : {
+
+    },
+    "Reminders" : {
+
+    },
+    "Remove favourite" : {
+
+    },
+    "Remove half a serving" : {
+
+    },
+    "Remove last glass" : {
+
+    },
+    "Remove photo" : {
+
+    },
+    "Replace" : {
+
+    },
+    "Replace everything planned for %@?" : {
+
+    },
+    "Replace from library" : {
+
+    },
+    "Replace whole day" : {
+
+    },
+    "Require %@" : {
+
+    },
+    "Reset all data" : {
+
+    },
+    "Reset all data?" : {
+
+    },
+    "Reset to default" : {
+
+    },
+    "Resting heart rate" : {
+
+    },
+    "Results" : {
+
+    },
+    "Retake photo" : {
+
+    },
+    "Rice cakes" : {
+
+    },
+    "Rolled oats" : {
+
+    },
+    "Rough estimate" : {
+
+    },
+    "Rowing machine" : {
+
+    },
+    "Rows skipped" : {
+
+    },
+    "Running, easy" : {
+
+    },
+    "Running, fast" : {
+
+    },
+    "Salmon fillet" : {
+
+    },
+    "Salmon with roasted vegetables" : {
+
+    },
+    "Salmon, baked" : {
+
+    },
+    "Salsa" : {
+
+    },
+    "Same as yesterday?" : {
+
+    },
+    "Same spot, same light and same time of day make the change easiest to see." : {
+
+    },
+    "Saturated fat, potassium and cholesterol" : {
+
+    },
+    "Sauté garlic in oil, add tomatoes until they burst. Toss in shrimp and zucchini noodles for 2 minutes. Finish with parmesan." : {
+
+    },
+    "Save" : {
+
+    },
+    "Save as favourite meal" : {
+
+    },
+    "Save favourite" : {
+
+    },
+    "Saving marks this as a normal entry. The photo stays with it." : {
+
+    },
+    "Say what you ate" : {
+
     },
     "Scaled from %lld servings. Nutrition per serving is unchanged." : {
       "localizations" : {
@@ -381,11 +3428,599 @@
         }
       }
     },
+    "Scan a barcode" : {
+
+    },
+    "Scan a printed recipe" : {
+
+    },
+    "Scan another" : {
+
+    },
+    "Scan barcode" : {
+
+    },
+    "Scan instead of typing" : {
+
+    },
+    "Scan recipe" : {
+
+    },
+    "Schedule" : {
+
+    },
+    "Schedule diet break" : {
+
+    },
+    "Search foods" : {
+
+    },
+    "Search recipes or tags" : {
+
+    },
+    "Search settings" : {
+
+    },
+    "Search the food list to autofill" : {
+
+    },
+    "Season and grill chicken 5–6 minutes a side. Slice over greens, tomatoes and cucumber. Crumble feta, dress with oil and lemon." : {
+
+    },
+    "Sedentary" : {
+
+    },
+    "Seen as “%@” · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Seen as “%1$@” · %2$@"
+          }
+        }
+      }
+    },
+    "Select" : {
+
+    },
+    "Select entries" : {
+
+    },
+    "Self-recorded at home with the Stride app. Not a medical record; readings are as entered by the patient." : {
+
+    },
+    "Send to Reminders" : {
+
+    },
+    "Separate foods with commas or “and”, or tap Speak and say it." : {
+
+    },
+    "Series" : {
+
+    },
+    "serving" : {
+
+    },
+    "Serving size (e.g. 1 cup, 100 g)" : {
+
+    },
+    "Servings" : {
+
+    },
+    "Servings to cook" : {
+
+    },
+    "Servings: %lld" : {
+
+    },
+    "Sesame oil" : {
+
+    },
+    "Set target manually" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Settings…" : {
+
+    },
+    "Sex" : {
+
+    },
+    "Share" : {
+
+    },
+    "Show feature tips again" : {
+
+    },
+    "Shown in the food diary for foods that list them. Common guidance is at least 30 g of fibre, under 50 g of sugar and under 2,300 mg of sodium a day, and, if you track them, under about 20 g of saturated fat and 300 mg of cholesterol with around 3,500 mg of potassium; ask your doctor if you're managing blood pressure, cholesterol or glucose." : {
+
+    },
+    "Shrimp and zucchini noodles" : {
+
+    },
+    "Shrimp, cooked" : {
+
+    },
+    "Since your last dose" : {
+
+    },
+    "Sleep" : {
+
+    },
+    "Sleep under 7 hours raises hunger hormones. Rest is part of the plan." : {
+
+    },
+    "Sleep, sodium and patterns" : {
+
+    },
+    "Slice the apple and dip." : {
+
+    },
+    "Slower is easier to stick to and keeps more muscle. Most people do best at 0.5 kg (about 1 lb) a week." : {
+
+    },
+    "small" : {
+      "comment" : "Portion size inside a sentence"
+    },
+    "Small" : {
+
+    },
+    "snacks" : {
+      "comment" : "Meal name inside a sentence"
+    },
+    "Snacks" : {
+
+    },
+    "So far: %lld days" : {
+
+    },
+    "Source" : {
+
+    },
+    "Soy sauce" : {
+
+    },
+    "Speak" : {
+
+    },
+    "Speech recognition isn't available right now. Type instead." : {
+
+    },
+    "Spinach" : {
+
+    },
+    "Spinach, raw" : {
+
+    },
+    "Spirits (vodka, gin, whiskey)" : {
+
+    },
+    "Spread hummus on the tortilla, layer turkey, avocado, spinach and tomato. Roll tightly and halve." : {
+
+    },
+    "spread over %lld of %lld days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "spread over %1$lld of %2$lld days"
+          }
+        }
+      }
+    },
+    "Stair climbing" : {
+
+    },
+    "Start" : {
+
+    },
+    "Start %@-hour fast" : {
+
+    },
+    "Start a fast now. You'll see the countdown here." : {
+
+    },
+    "Start a meal-prep batch" : {
+
+    },
+    "Start fast" : {
+
+    },
+    "Start my journey" : {
+
+    },
+    "Start with one meal a day. Favourite meals and copy-yesterday make it a two-tap habit." : {
+
+    },
+    "Started" : {
+
+    },
+    "Started %@" : {
+
+    },
+    "Starting weight" : {
+
+    },
+    "Starving" : {
+
+    },
+    "Steady" : {
+
+    },
+    "Step on the scale before breakfast and log it. Consistency beats perfection." : {
+
+    },
+    "Stir oats, yogurt, milk, chia and honey in a jar. Refrigerate overnight. Top with blueberries before eating." : {
+
+    },
+    "Stir-fry sliced chicken in oil until golden. Add vegetables, garlic and ginger, cook 4 minutes. Splash in soy sauce. Serve over rice." : {
+
+    },
+    "Stones and pounds" : {
+
+    },
+    "Stop" : {
+
+    },
+    "Stop listening" : {
+
+    },
+    "Strawberries" : {
+
+    },
+    "Streak" : {
+
+    },
+    "Streak grace day" : {
+
+    },
+    "Strength training" : {
+
+    },
     "Stride" : {
       "shouldTranslate" : false
     },
+    "Stride doesn't have access to Reminders. You can allow it in iOS Settings → Stride." : {
+
+    },
+    "Stride is locked" : {
+
+    },
+    "Stride needs microphone and speech recognition access to listen. Turn them on in iOS Settings, or type instead." : {
+
+    },
+    "Suggested target" : {
+
+    },
+    "Sushi roll, California" : {
+
+    },
+    "Sweat onion, carrot and celery in oil. Add lentils, tomatoes and stock. Simmer 25 minutes until lentils are tender. Season well." : {
+
+    },
+    "Sweet potato" : {
+
+    },
+    "Sweet potato, baked" : {
+
+    },
+    "Swimming" : {
+
+    },
+    "Switch to maintenance" : {
+
+    },
+    "Switch to maintenance: your target becomes your maintenance calories, and you'll hold %@ within ± %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Switch to maintenance: your target becomes your maintenance calories, and you'll hold %1$@ within ± %2$@."
+          }
+        }
+      }
+    },
+    "Sync with Apple Health" : {
+
+    },
+    "Sync with iCloud" : {
+
+    },
+    "Systolic" : {
+
+    },
+    "Tags, comma separated" : {
+
+    },
+    "Take photo" : {
+
+    },
+    "Take progress photo" : {
+
+    },
+    "Tap a vital to see its history. Readings are for your own tracking and are not medical advice." : {
+
+    },
+    "target ~%@" : {
+
+    },
+    "Target reached" : {
+
+    },
+    "Tea, black" : {
+
+    },
+    "Tea, green" : {
+
+    },
+    "Tempeh" : {
+
+    },
+    "Tennis" : {
+
+    },
+    "The batch shows at the top of food search and in the planner until every portion is logged." : {
+
+    },
+    "The formula is a starting guess. Measured maintenance uses what you actually ate and what the scale actually did." : {
+
+    },
+    "The summary image is for sharing your week. The health report is a one-page PDF of the last 90 days of weight and vitals to show a doctor. The CSV files open in any spreadsheet app." : {
+
+    },
+    "The target updates automatically as your weight changes, unless you set it manually." : {
+
+    },
+    "The weigh-in reminder skips days you've already weighed in, water reminders stop for the day once you reach your goal, and meal reminders skip meals you've already logged. The protein check comes at 5 pm when you're at least 15 g short, and the evening check-in only if dinner isn't logged. During a diet break, everything except water can pause." : {
+
+    },
+    "These show what happened together, not what caused what." : {
+
+    },
+    "Thigh, left" : {
+
+    },
+    "Thigh, right" : {
+
+    },
+    "This entry" : {
+
+    },
+    "Time" : {
+
+    },
+    "Time for %@. Log it in Stride so the next date and injection site stay right." : {
+
+    },
+    "Time for a glass of water" : {
+
+    },
+    "Tip of the day" : {
+
+    },
+    "Tips will show next time you open the app" : {
+
+    },
+    "Today" : {
+
+    },
+    "Today's plan" : {
+
+    },
+    "Tofu veggie curry with rice" : {
+
+    },
+    "Tofu, firm" : {
+
+    },
+    "Tomato" : {
+
+    },
+    "Tomorrow" : {
+
+    },
+    "Tortilla chips" : {
+
+    },
+    "Toss vegetables with oil, roast at 200°C for 15 minutes. Add salmon to the tray and roast 10–12 minutes more." : {
+
+    },
+    "Total: %@" : {
+
+    },
+    "Touch and hold for quick actions" : {
+
+    },
     "Touch ID" : {
       "shouldTranslate" : false
+    },
+    "Track medication" : {
+
+    },
+    "Track your weight, calories, vitals and meals in one place. Answer a few questions and we'll build a plan that fits you." : {
+
+    },
+    "Tracked with Stride" : {
+
+    },
+    "Trend" : {
+
+    },
+    "Trend change" : {
+
+    },
+    "Trends" : {
+
+    },
+    "Tuna and white bean salad" : {
+
+    },
+    "Tuna, canned in water" : {
+
+    },
+    "Turkey and avocado wrap" : {
+
+    },
+    "Turkey breast, sliced" : {
+
+    },
+    "Turkey chili" : {
+
+    },
+    "Uncheck all" : {
+
+    },
+    "Undo" : {
+
+    },
+    "Unfavourite" : {
+
+    },
+    "Units" : {
+
+    },
+    "Unlock with %@" : {
+
+    },
+    "up %@" : {
+
+    },
+    "Upper arm, left" : {
+
+    },
+    "Upper arm, right" : {
+
+    },
+    "Use %@ as my target" : {
+
+    },
+    "Use Copy yesterday's meal, or the ••• menu on any meal, to log it again in one tap." : {
+
+    },
+    "Use this for meals you can't look up. Macros are optional." : {
+
+    },
+    "Uses your height, date of birth, sex and latest weight. You can change anything afterwards." : {
+
+    },
+    "Vegan" : {
+
+    },
+    "Vegetable stock" : {
+
+    },
+    "Veggie egg scramble on toast" : {
+
+    },
+    "Veggies and hummus" : {
+
+    },
+    "Version" : {
+
+    },
+    "Very active" : {
+
+    },
+    "Very hard exercise or a physical job" : {
+
+    },
+    "Very hungry" : {
+
+    },
+    "Vitals" : {
+
+    },
+    "Volume" : {
+
+    },
+    "Vomiting" : {
+
+    },
+    "Waist" : {
+
+    },
+    "Waist, hips and chest measurements" : {
+
+    },
+    "Walking after meals helps blunt blood sugar spikes and adds up over a week." : {
+
+    },
+    "Walking, brisk" : {
+
+    },
+    "Walking, moderate" : {
+
+    },
+    "Walnuts" : {
+
+    },
+    "Water" : {
+
+    },
+    "Water and salt swing the scale by a kilo or two. Judge by the trend line and give it another week." : {
+
+    },
+    "Water reminders" : {
+
+    },
+    "Water retention from stress, sleep or new training can hide fat loss for a week or two." : {
+
+    },
+    "Watermelon" : {
+
+    },
+    "We've capped your target at %@, the lowest we recommend without medical supervision. Your loss may be a little slower than chosen." : {
+
+    },
+    "Weekly" : {
+
+    },
+    "Weekly goal" : {
+
+    },
+    "Weekly loss" : {
+
+    },
+    "Weigh in" : {
+
+    },
+    "Weigh In" : {
+
+    },
+    "Weigh in a few mornings a week so next week's review can compare the scale with your intake." : {
+
+    },
+    "Weigh portions for a week. Oils, sauces and drinks are the usual under-counts." : {
+
+    },
+    "Weigh yourself at the same time each morning; the trend line matters more than any single day." : {
+
+    },
+    "Weigh-ins" : {
+
+    },
+    "Weigh-ins, meals, fasts and workouts from this month will show up here." : {
+
+    },
+    "Weight" : {
+
+    },
+    "Weight and vitals summary" : {
+
+    },
+    "Weight change" : {
+
+    },
+    "Weight chart" : {
+
+    },
+    "Weight down %@ kg, no meals logged" : {
+
+    },
+    "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average." : {
+
     },
     "Weight has held steady for %lld days" : {
       "localizations" : {
@@ -405,6 +4040,122 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Weight in" : {
+
+    },
+    "Weight is falling faster than body fat. More protein and some strength training help keep muscle." : {
+
+    },
+    "Weight to hold" : {
+
+    },
+    "Weight trend" : {
+
+    },
+    "Weight up %@ kg with intake on budget" : {
+
+    },
+    "Weight up %@ kg, no meals logged" : {
+
+    },
+    "Welcome to Stride" : {
+
+    },
+    "What was it? (optional)" : {
+
+    },
+    "When" : {
+
+    },
+    "Where you are" : {
+
+    },
+    "Where you're going" : {
+
+    },
+    "Whey protein powder" : {
+
+    },
+    "White bread" : {
+
+    },
+    "White rice, cooked" : {
+
+    },
+    "Whole month" : {
+
+    },
+    "Whole wheat bread" : {
+
+    },
+    "Whole wheat pasta, cooked" : {
+
+    },
+    "Wine, red" : {
+
+    },
+    "Wine, white" : {
+
+    },
+    "Workouts" : {
+
+    },
+    "Works best with the ingredients and method in one straight-on photo. The text is read on your iPhone and the photo isn't kept. Ingredients are matched to your foods; check them before saving." : {
+
+    },
+    "Works with most recipe sites. Ingredients come in without nutrition unless the page lists it; edit them in the recipe to add it from your food list." : {
+
+    },
+    "Yesterday" : {
+
+    },
+    "Yoga" : {
+
+    },
+    "You can change any of this later in Settings." : {
+
+    },
+    "You have %@ left today." : {
+
+    },
+    "You'll be taken to setup when it's done." : {
+
+    },
+    "You're %@ over today." : {
+
+    },
+    "You're %lld g short of today's protein goal. %@ would close a good part of it." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "You're %1$lld g short of today's protein goal. %2$@ would close a good part of it."
+          }
+        }
+      }
+    },
+    "You're %lld g short of today's protein goal. A protein-rich dinner or snack would close it." : {
+
+    },
+    "You've reached your goal" : {
+
+    },
+    "You've reached your goal weight." : {
+
+    },
+    "Your 7-day average has stayed around %@. Plateaus are normal; a few things worth checking:" : {
+
+    },
+    "Your 7-day average passed %@ on %@. That's a real change, not a good morning." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your 7-day average passed %1$@ on %2$@. That's a real change, not a good morning."
           }
         }
       }
@@ -431,14 +4182,57 @@
         }
       }
     },
-    "cm" : {
-      "shouldTranslate" : false
+    "Your calorie target is your maintenance, and Today warns you if your 7-day average drifts outside the band." : {
+
     },
-    "https://" : {
-      "shouldTranslate" : false
+    "Your current target already matches" : {
+
     },
-    "iCloud" : {
-      "shouldTranslate" : false
+    "Your data stays on this device." : {
+
+    },
+    "Your goal should be below your current weight." : {
+
+    },
+    "Your measured maintenance appears after two weeks of logging food and weighing in." : {
+
+    },
+    "Your measured maintenance is about %@. A target of %@ matches your planned rate; you can apply it in Settings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your measured maintenance is about %1$@. A target of %2$@ matches your planned rate; you can apply it in Settings."
+          }
+        }
+      }
+    },
+    "your medication" : {
+
+    },
+    "Your medication" : {
+
+    },
+    "Your plan" : {
+
+    },
+    "Your plan aims for %@ per week." : {
+
+    },
+    "Your real maintenance is ready" : {
+
+    },
+    "Your real rate of loss appears after a few weigh-ins." : {
+
+    },
+    "Your target already sits below your measured maintenance of about %@, so the gap is more likely in logging than in the plan." : {
+
+    },
+    "Zucchini" : {
+
+    },
+    "Zucchini, spiralised" : {
+
     }
   },
   "version" : "1.0"

@@ -94,7 +94,7 @@ struct BodyTrendsView: View {
         }
         if !lines.isEmpty {
             Text("Since first reading: " + lines.joined(separator: " · "))
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
         }
     }
@@ -160,7 +160,7 @@ struct BodyTrendsView: View {
                         .foregroundStyle(Color.secondary)
                 }
             }
-            .font(.caption)
+            .font(.footnote)
         }
     }
 }

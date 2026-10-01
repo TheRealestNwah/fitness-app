@@ -57,7 +57,7 @@ struct CorrelationsView: View {
                               emptyText: "Rate hunger before meals from the diary's meal menu to see how it tracks with how much you eat.",
                               summary: hungerSummary(hungerCaloriePairs, measure: { Energy.string($0) }))
                 Text("These show what happened together, not what caused what.")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
             .padding()

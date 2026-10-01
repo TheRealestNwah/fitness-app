@@ -33,14 +33,14 @@ struct MedicationCard: View {
                     .foregroundStyle(overdue ? Color.orange : Color.primary)
                 if medication?.isInjection ?? true, let last = doses.first {
                     Text("Next site: \(MedicationPlanner.nextSite(after: last.site).label)")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
                 if let start = profile.medicationStartDate,
                    let change = MedicationPlanner.weightChange(since: start,
                                                                weights: weights.map { (date: $0.date, kg: $0.weightKg) }) {
                     Text("\(profile.units.weightString(kg: change, decimals: 1, signed: true)) since starting")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
                 Button {
@@ -90,11 +90,11 @@ struct MedicationView: View {
                     }
                     Text(dose.date.formatted(date: .abbreviated, time: .shortened)
                          + (dose.site.map { " · \($0.label)" } ?? ""))
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                     if !dose.sideEffects.isEmpty || !dose.note.isEmpty {
                         Text((dose.sideEffects + (dose.note.isEmpty ? [] : [dose.note])).joined(separator: ", "))
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
                 }

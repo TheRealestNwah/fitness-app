@@ -8,7 +8,7 @@ struct NutrientRow: View {
     var profile: UserProfile
 
     var body: some View {
-        HStack(spacing: 8) {
+        AdaptiveStack(spacing: 8) {
             NutrientPill(name: "Fibre", value: fiber, unit: "g", goal: profile.fiberTargetG, isMinimum: true)
             NutrientPill(name: "Sugar", value: sugar, unit: "g", goal: profile.sugarLimitG, isMinimum: false)
             NutrientPill(name: "Sodium", value: sodium, unit: "mg", goal: profile.sodiumLimitMg, isMinimum: false)
@@ -24,7 +24,7 @@ struct ExtraNutrientRow: View {
     var profile: UserProfile
 
     var body: some View {
-        HStack(spacing: 8) {
+        AdaptiveStack(spacing: 8) {
             NutrientPill(name: "Sat. fat", value: saturatedFat, unit: "g", goal: profile.saturatedFatLimitG, isMinimum: false)
             NutrientPill(name: "Potassium", value: potassium, unit: "mg", goal: profile.potassiumTargetMg, isMinimum: true)
             NutrientPill(name: "Cholesterol", value: cholesterol, unit: "mg", goal: profile.cholesterolLimitMg, isMinimum: false)
@@ -38,7 +38,7 @@ struct DrinksNutrientRow: View {
     var caffeine: Double
 
     var body: some View {
-        HStack(spacing: 8) {
+        AdaptiveStack(spacing: 8) {
             if alcohol > 0 {
                 NutrientPill(name: "Alcohol", value: alcohol, unit: "g", goal: nil, isMinimum: false)
                 NutrientPill(name: "Drinks", value: Alcohol.standardDrinks(grams: alcohol), unit: "", goal: nil,
@@ -78,16 +78,19 @@ struct NutrientPill: View {
     }
 
     var body: some View {
-        VStack(spacing: 2) {
+        VStack(spacing: 4) {
             Text(name)
-                .font(.caption2)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
             Text(text)
-                .font(.caption.monospacedDigit().weight(.medium))
+                .font(.subheadline.monospacedDigit().weight(.medium))
                 .foregroundStyle(tint == .secondary ? Color.primary : tint)
         }
+        .multilineTextAlignment(.center)
+        .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 8)
         .background(tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(name) \(text)")

@@ -78,7 +78,7 @@ struct ProgressPhotoCompareView: View {
                             .foregroundStyle(change <= 0 ? .green : .orange)
                     }
                     Text("Same spot, same light and same time of day make the change easiest to see.")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -105,10 +105,10 @@ struct ProgressPhotoCompareView: View {
                 }
             } label: {
                 VStack(spacing: 2) {
-                    Text(title).font(.caption).foregroundStyle(Color.secondary)
+                    Text(title).font(.footnote).foregroundStyle(Color.secondary)
                     if let entry {
                         Text(entry.date.formatted(date: .abbreviated, time: .omitted)).font(.subheadline.weight(.semibold))
-                        Text(units.weightString(kg: entry.weightKg)).font(.caption.monospacedDigit())
+                        Text(units.weightString(kg: entry.weightKg)).font(.footnote.monospacedDigit())
                     }
                 }
             }

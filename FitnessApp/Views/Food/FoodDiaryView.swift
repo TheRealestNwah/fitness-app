@@ -85,7 +85,7 @@ struct DiaryCalendarPane: View {
                                loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
                                onSelect: {})
             Label("Days with food logged", systemImage: "circle.fill")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
                 .labelStyle(DotLabelStyle())
                 .padding(.horizontal)
@@ -113,7 +113,7 @@ struct DiaryCalendarSheet: View {
                                    loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
                                    onSelect: { dismiss() })
                 Label("Days with food logged", systemImage: "circle.fill")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
                     .labelStyle(DotLabelStyle())
                     .padding(.horizontal)
@@ -230,7 +230,7 @@ struct DayDiaryView: View {
     @State private var photographing: MealType?
     @State private var editMode: EditMode = .inactive
     @State private var selection: Set<PersistentIdentifier> = []
-    @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 84
+    @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 104
 
     init(date: Date) {
         self.date = date
@@ -455,7 +455,7 @@ struct DayDiaryView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.foodName).foregroundStyle(Color.primary)
                 Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
             }
             Spacer()
@@ -519,7 +519,7 @@ struct DayDiaryView: View {
                         Text("Copy yesterday's \(meal.inSentence)")
                             .font(.subheadline.weight(.medium))
                         Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
                 } icon: {
@@ -532,7 +532,7 @@ struct DayDiaryView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     Text("Log again")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                         .accessibilityHidden(true)
                     ForEach(again) { entry in
@@ -540,7 +540,7 @@ struct DayDiaryView: View {
                             context.logAgain(entry, to: meal, on: date, undo: undoCenter)
                         } label: {
                             Label(entry.foodName, systemImage: "plus")
-                                .font(.caption.weight(.medium))
+                                .font(.footnote.weight(.medium))
                                 .lineLimit(1)
                         }
                         .buttonStyle(.bordered)
@@ -563,7 +563,7 @@ struct DayDiaryView: View {
             if let rated = checkIn(for: meal), rated.hunger != nil || rated.mood != nil {
                 Button { checkingIn = meal } label: {
                     Image(systemName: "face.smiling")
-                        .font(.caption)
+                        .font(.footnote)
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(MealCheckInSheet.summary(rated))
@@ -671,11 +671,12 @@ struct DayDiaryView: View {
                     VStack(spacing: 0) {
                         Text(Energy.number(consumed))
                             .font(.headline.monospacedDigit())
-                            .minimumScaleFactor(0.5)
+                            .minimumScaleFactor(0.85)
                         Text("of \(Energy.string(target))")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
-                            .minimumScaleFactor(0.5)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
                     }
                     .lineLimit(1)
                     .padding(10)
@@ -810,7 +811,7 @@ struct ServingsControl: View {
                     Text(metric.unit).foregroundStyle(Color.secondary)
                 }
                 Text("= \(servings.formatted(.number.precision(.fractionLength(0...2)))) servings")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             } else {
                 HStack {
@@ -824,7 +825,7 @@ struct ServingsControl: View {
                 }
                 if !description.isEmpty {
                     Text("1 serving = \(description)")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -879,7 +880,7 @@ struct SaveFavouriteMealSheet: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(e.foodName)
-                                Text(e.servingsLabel).font(.caption).foregroundStyle(Color.secondary)
+                                Text(e.servingsLabel).font(.footnote).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Int(e.calories.rounded()))")
@@ -953,7 +954,7 @@ struct ServingsMenu: View {
             }
         } label: {
             Text("\(servings.cleanString)×")
-                .font(.caption.monospacedDigit().weight(.semibold))
+                .font(.subheadline.monospacedDigit().weight(.semibold))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color(.tertiarySystemFill), in: Capsule())

@@ -49,7 +49,8 @@ struct SentenceLogSheet: View {
                         .accessibilityIdentifier("sentenceField")
                     HStack {
                         Button("Find foods", action: findFoods)
-                            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || dictation.isListening)
+                            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                      || dictation.isListening || dictation.status == .preparing)
                         Spacer()
                         Button {
                             editing = false
@@ -64,9 +65,12 @@ struct SentenceLogSheet: View {
                         .tint(dictation.isListening ? .red : .accentColor)
                         .accessibilityLabel(dictation.isListening ? "Stop listening" : "Say what you ate")
                         .accessibilityIdentifier("dictateButton")
+                        .disabled(dictation.status == .preparing)
                     }
                 } footer: {
                     switch dictation.status {
+                    case .preparing:
+                        Text("Starting the microphone…")
                     case .listening:
                         Text("Listening… say what you ate, like “two eggs and a slice of toast”, then tap Stop.")
                     case .denied:
@@ -117,13 +121,16 @@ struct SentenceLogSheet: View {
             }
             .onAppear { editing = true }
             .onChange(of: dictation.transcript) { _, spoken in
-                if dictation.isListening { text = spoken }
+                if !spoken.isEmpty {
+                    text = spoken
+                    if dictation.status == .idle { findFoods() }
+                }
             }
             .onChange(of: dictation.isListening) { wasListening, listening in
                 // Finished speaking: show what was found.
                 if wasListening, !listening {
                     if !dictation.transcript.isEmpty { text = dictation.transcript }
-                    if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { findFoods() }
+                    if dictation.status == .idle, !dictation.transcript.isEmpty { findFoods() }
                 }
             }
             .onDisappear { dictation.stop() }
@@ -146,7 +153,7 @@ struct SentenceLogSheet: View {
                             .foregroundStyle(value.food == nil ? Color.secondary : Color.primary)
                         Text(value.food == nil ? String(localized: "No match. Tap to search.")
                                                : String(localized: "From “\(value.item.name)”. Tap to change."))
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(value.food == nil ? Color.orange : Color.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -226,7 +233,7 @@ struct FoodPickerSheet: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(food.displayName).foregroundStyle(Color.primary)
-                                Text(food.servingDescription).font(.caption).foregroundStyle(Color.secondary)
+                                Text(food.servingDescription).font(.footnote).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Int(food.calories.rounded()))")

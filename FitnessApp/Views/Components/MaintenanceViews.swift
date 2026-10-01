@@ -42,10 +42,10 @@ struct MaintenanceBandView: View {
                 Spacer()
                 Text(units.weightString(kg: centerKg + bandKg))
             }
-            .font(.caption2.monospacedDigit())
+            .font(.footnote.monospacedDigit())
             .foregroundStyle(Color.secondary)
             Label(message, systemImage: status.isOutside ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(status.isOutside ? Color.orange : Color.secondary)
         }
         .accessibilityElement(children: .combine)

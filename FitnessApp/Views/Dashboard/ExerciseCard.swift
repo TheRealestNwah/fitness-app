@@ -60,7 +60,7 @@ struct ExerciseCard: View {
                 Text(earnBackPercent > 0
                      ? "+\(Energy.string(ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent))) added to today's budget (\(earnBackPercent)% of \(Energy.string(total)))."
                      : "Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings.")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
         }

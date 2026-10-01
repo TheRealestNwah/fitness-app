@@ -87,7 +87,7 @@ struct RecipeLibraryView: View {
                     } label: {
                         Label("Add recipe", systemImage: "plus")
                     }
-                    .font(.caption)
+                    .font(.footnote)
                 }
             }
         }
@@ -168,7 +168,7 @@ struct RecipeRow: View {
                     Text("·")
                     Text("\(recipe.prepMinutes) min")
                 }
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
             }
         }
@@ -210,7 +210,7 @@ struct RecipeDetailView: View {
                     HStack {
                         ForEach(recipe.tags, id: \.self) { tag in
                             Text(tag)
-                                .font(.caption)
+                                .font(.footnote)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(Color(.tertiarySystemFill), in: Capsule())
@@ -254,7 +254,7 @@ struct RecipeDetailView: View {
                     }
                     if servingsShown != recipe.servings {
                         Text("Scaled from \(recipe.servings) servings. Nutrition per serving is unchanged.")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
                 }
@@ -433,11 +433,11 @@ struct RecipeEditorView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(ing.name)
-                                Text(ing.amount).font(.caption).foregroundStyle(Color.secondary)
+                                Text(ing.amount).font(.subheadline).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Energy.string(ing.calories))")
-                                .font(.caption.monospacedDigit())
+                                .font(.subheadline.monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
                     }
@@ -738,7 +738,7 @@ struct ScanRecipeSheet: View {
         error = nil
         Task { @MainActor in
             defer { reading = false }
-            let lines = await LabelTextRecognizer.lines(in: image)
+            let lines = await LabelTextRecognizer.lines(in: image, correctingSpelling: true)
             if let recipe = RecipeTextParser.parse(lines: lines) {
                 imported = recipe
             } else {
