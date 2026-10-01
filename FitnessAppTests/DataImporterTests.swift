@@ -96,10 +96,7 @@ final class DataImporterTests: XCTestCase {
 
     @MainActor
     func testApplySkipsWhatIsAlreadyThere() throws {
-        let schema = Schema([UserProfile.self, WeightEntry.self, FoodItem.self, FoodLogEntry.self, VitalsEntry.self,
-                             WaterEntry.self, Recipe.self, MealPlanEntry.self, SavedMeal.self, FastingSession.self,
-                             ExerciseEntry.self])
-        let container = try ModelContainer(for: schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
+        let container = try ModelContainer(for: AppStore.schema, configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
         let context = container.mainContext
         let csv = "date,weight_kg\n2026-01-05T07:00:00Z,82.4\n2026-01-06T07:00:00Z,82.0"
         let first = DataImporter.withoutDuplicates(try DataImporter.preview(csv: csv), context: context)
