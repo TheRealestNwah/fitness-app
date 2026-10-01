@@ -25,8 +25,22 @@ struct RootView: View {
             }
         }
         .preferredColorScheme(appearance.colorScheme)
+        // preferredColorScheme doesn't reach a sheet that's already open (Settings, where the
+        // choice is made), so set the windows' style too; presented sheets inherit it at once.
+        .onChange(of: appearanceRaw, initial: true) { applyToWindows(appearance) }
         .task {
             SeedData.seedIfNeeded(context: context)
+        }
+    }
+
+    private func applyToWindows(_ appearance: Appearance) {
+        let style: UIUserInterfaceStyle = switch appearance {
+        case .system: .unspecified
+        case .light: .light
+        case .dark: .dark
+        }
+        for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
+            for window in scene.windows { window.overrideUserInterfaceStyle = style }
         }
     }
 
