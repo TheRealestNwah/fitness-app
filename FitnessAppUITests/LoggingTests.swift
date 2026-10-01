@@ -50,17 +50,18 @@ final class LoggingTests: XCTestCase {
     func testLoggingASearchedFoodAddsItToTheDiary() {
         let app = launch()
         openFoodSearch(in: app)
-        search("Apple", in: app)
-        let apple = button(beginningWith: "Apple, 1 medium", in: app)
-        XCTAssertTrue(apple.waitForExistence(timeout: 5))
-        apple.tap()
+        // Not in the demo diary for today, unlike the Apple at lunch.
+        search("Banana", in: app)
+        let banana = button(beginningWith: "Banana, 1 medium", in: app)
+        XCTAssertTrue(banana.waitForExistence(timeout: 5))
+        banana.tap()
         let log = app.buttons["Log"]
         XCTAssertTrue(log.waitForExistence(timeout: 5))
         log.tap()
         XCTAssertTrue(log.waitForNonExistence(timeout: 5))
         closeFoodSearch(in: app)
 
-        reveal(button(beginningWith: "Apple, ", in: app), in: app)
+        reveal(button(beginningWith: "Banana, 1 medium", in: app), in: app)
     }
 
     func testQuickAddAppearsInTheDiary() {
