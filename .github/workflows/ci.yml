@@ -96,7 +96,7 @@ jobs:
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log
 
-      - name: UI smoke tests
+      - name: UI tests
         run: |
           set -o pipefail
           xcodebuild test-without-building \
@@ -105,6 +105,7 @@ jobs:
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -only-testing:FitnessAppUITests/SmokeTests \
+            -only-testing:FitnessAppUITests/SettingsTests \
             -retry-tests-on-failure -test-iterations 3 \
             CODE_SIGNING_ALLOWED=NO \
             | tee uitest.log | grep -E "Test Case|error:|failed|passed|\*\*" || true

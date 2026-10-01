@@ -157,6 +157,7 @@ struct DashboardView: View {
                         Image(systemName: "gearshape")
                     }
                     .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("openSettings")
                 }
             }
             .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
