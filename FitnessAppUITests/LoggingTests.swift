@@ -67,7 +67,8 @@ final class LoggingTests: XCTestCase {
         XCTAssertTrue(log.waitForNonExistence(timeout: 5))
         closeFoodSearch(in: app)
 
-        reveal(button(beginningWith: "Banana, 1 medium", in: app), in: app)
+        // The diary row reads "Banana, 1 × 1 medium (118 g)…".
+        reveal(button(beginningWith: "Banana, ", in: app), in: app)
     }
 
     func testQuickAddAppearsInTheDiary() {
