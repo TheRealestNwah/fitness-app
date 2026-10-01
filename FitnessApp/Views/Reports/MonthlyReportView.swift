@@ -152,7 +152,7 @@ struct MonthlyReportCard: View {
                 }
             }
             Text("Tracked with Stride")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
         }
     }

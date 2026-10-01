@@ -4,7 +4,7 @@ import Vision
 /// On-device text recognition for nutrition label photos. Returns the text as rows, top to
 /// bottom, joining pieces that sit on the same line so table columns stay together.
 enum LabelTextRecognizer {
-    static func lines(in image: UIImage) async -> [String] {
+    static func lines(in image: UIImage, correctingSpelling: Bool = false) async -> [String] {
         guard let cgImage = image.cgImage else { return [] }
         let orientation = CGImagePropertyOrientation(image.imageOrientation)
         return await withCheckedContinuation { continuation in
@@ -17,7 +17,8 @@ enum LabelTextRecognizer {
                 continuation.resume(returning: rows(pieces))
             }
             request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = false
+            request.usesLanguageCorrection = correctingSpelling
+            if correctingSpelling { request.recognitionLanguages = ["en-US"] }
             let handler = VNImageRequestHandler(cgImage: cgImage, orientation: orientation)
             do { try handler.perform([request]) } catch { continuation.resume(returning: []) }
         }

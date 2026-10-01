@@ -224,7 +224,7 @@ struct OnboardingView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(level.label).foregroundStyle(Color.primary)
-                                Text(level.detail).font(.caption).foregroundStyle(Color.secondary)
+                                Text(level.detail).font(.footnote).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             if activity == level {

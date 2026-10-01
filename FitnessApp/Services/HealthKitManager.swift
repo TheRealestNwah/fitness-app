@@ -385,17 +385,17 @@ final class HealthKitManager {
         }
 
         // Workouts become exercise entries (active energy only, like the app's own estimates).
-        let existingWorkouts = Set(try context.fetch(FetchDescriptor<ExerciseEntry>()).compactMap(\.sourceID))
         let workoutPredicate = HKQuery.predicateForSamples(withStart: since, end: nil, options: .strictStartDate)
-        let workouts = try await HKSampleQueryDescriptor(predicates: [.workout(workoutPredicate)],
-                                                         sortDescriptors: [SortDescriptor(\.startDate)]).result(for: store)
-        for workout in workouts where !existingWorkouts.contains(workout.uuid.uuidString) {
-            let kcal = workout.statistics(for: HKQuantityType(.activeEnergyBurned))?.sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
-            let entry = ExerciseEntry(date: workout.startDate, activity: HealthImportRules.workoutName(workout.workoutActivityType.rawValue),
-                                      minutes: (workout.duration / 60).rounded(), calories: kcal.rounded())
-            entry.sourceID = workout.uuid.uuidString
-            context.insert(entry)
-            summary.workouts += 1
+        summary.workouts = try await HealthWorkoutImporter.importSamples(into: context) {
+            let workouts = try await HKSampleQueryDescriptor(predicates: [.workout(workoutPredicate)],
+                                                             sortDescriptors: [SortDescriptor(\.startDate)]).result(for: self.store)
+            return workouts.map { workout in
+                HealthWorkoutSample(id: workout.uuid, date: workout.startDate,
+                                    activity: HealthImportRules.workoutName(workout.workoutActivityType.rawValue),
+                                    duration: workout.duration,
+                                    activeCalories: workout.statistics(for: HKQuantityType(.activeEnergyBurned))?
+                                        .sumQuantity()?.doubleValue(for: .kilocalorie()))
+            }
         }
 
         try context.save()

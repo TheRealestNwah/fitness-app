@@ -10,6 +10,7 @@ struct FastingCard: View {
     @State private var customHours: Double = 16
     @State private var showCustom = false
     @State private var confirmEnd = false
+    @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 104
 
     private func fast(_ session: FastingSession) -> FastingCalculator.Fast {
         .init(start: session.start, end: session.end, targetHours: session.targetHours)
@@ -34,18 +35,18 @@ struct FastingCard: View {
             let fast = fast(session)
             let progress = FastingCalculator.progress(fast, now: timeline.date)
             let elapsed = FastingCalculator.elapsedHours(fast, now: timeline.date)
-            HStack(spacing: 16) {
+            AdaptiveStack(spacing: 16) {
                 ZStack {
                     ProgressRing(progress: min(progress, 1), lineWidth: 10, color: progress >= 1 ? .green : .indigo)
                     VStack(spacing: 0) {
                         Text("\(Int(elapsed))h \(Int((elapsed * 60).truncatingRemainder(dividingBy: 60)))m")
                             .font(.headline.monospacedDigit())
                         Text("of \(session.targetHours.cleanString)h")
-                            .font(.caption2)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
                 }
-                .frame(width: 96, height: 96)
+                .frame(width: ringSize, height: ringSize)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Fast progress")
                 .accessibilityValue("\(Int(elapsed)) hours \(Int((elapsed * 60).truncatingRemainder(dividingBy: 60))) minutes of \(session.targetHours.cleanString) hours")
@@ -53,7 +54,7 @@ struct FastingCard: View {
                     Text(progress >= 1 ? "Target reached" : "Ends \(FastingCalculator.targetEnd(fast).formatted(date: .omitted, time: .shortened))")
                         .font(.subheadline.weight(.semibold))
                     Text("Started \(session.start.formatted(date: .omitted, time: .shortened))")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                     Button(progress >= 1 ? "End fast" : "End early") {
                         if progress >= 1 { end(session) } else { confirmEnd = true }

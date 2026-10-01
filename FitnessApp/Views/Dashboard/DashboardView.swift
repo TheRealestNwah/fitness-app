@@ -239,7 +239,7 @@ struct DashboardView: View {
                     Label("\(streak) days", systemImage: "flame.fill")
                     if usedGraceThisWeek {
                         Image(systemName: "bandage.fill")
-                            .font(.caption)
+                            .font(.footnote)
                             .accessibilityLabel("Grace day used this week")
                     }
                 }
@@ -261,10 +261,10 @@ struct DashboardView: View {
                     VStack(spacing: 2) {
                         Text(Energy.number(abs(remaining)))
                             .font(.title.bold().monospacedDigit())
-                            .minimumScaleFactor(0.5)
+                            .minimumScaleFactor(0.85)
                             .lineLimit(1)
                         Text(remaining >= 0 ? "left" : "over")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundStyle(Color.secondary)
                     }
                     .padding(14)
@@ -284,7 +284,7 @@ struct DashboardView: View {
                     LabeledContent("Budget", value: activeCredit > 0 ? "\(Energy.number(baseTarget)) + \(Energy.string(activeCredit))" : Energy.string(calorieTarget))
                     if let note = budgetNote {
                         Text(note)
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
                     Divider()
@@ -293,7 +293,7 @@ struct DashboardView: View {
                     MacroBar(name: "Fat", consumed: fat, target: macroTargets.fat, color: .pink)
                     if proteinStreak >= 2 {
                         Label("Protein goal hit \(proteinStreak) days running", systemImage: "bolt.heart.fill")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(.blue)
                     }
                 }
@@ -431,7 +431,7 @@ struct DashboardView: View {
             Spacer()
             if let days = daysSinceWeighIn, days > 0 {
                 Text(days == 1 ? "Yesterday" : "\(days) days ago")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
         }
@@ -460,16 +460,16 @@ struct DashboardView: View {
                     Text("ETA \(projected.shortDateLabel())")
                 }
             }
-            .font(.caption)
+            .font(.footnote)
             .foregroundStyle(Color.secondary)
             if remaining > 0, let forecast {
                 Label("At your current pace, around \(forecast.goalDate.shortDateLabel())",
                       systemImage: "chart.line.downtrend.xyaxis")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             } else if remaining > 0, !forecastProgress.isReady {
                 Label("Pace forecast: \(forecastProgress.summary.lowercased())", systemImage: "hourglass")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
         }
@@ -480,7 +480,7 @@ struct DashboardView: View {
             Label("You've reached your goal", systemImage: "party.popper.fill")
                 .font(.subheadline.weight(.semibold))
             Text("Switch to maintenance: your target becomes your maintenance calories, and you'll hold \(units.weightString(kg: profile.goalWeightKg)) within ± \(units.weightString(kg: MaintenanceCalculator.defaultBandKg)).")
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Button("Switch to maintenance") {
@@ -500,7 +500,7 @@ struct DashboardView: View {
                     .font(.headline)
                 Spacer()
                 Text("Apple Health")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
             AdaptiveStack(spacing: 12) {
@@ -510,7 +510,7 @@ struct DashboardView: View {
                          systemImage: "flame.fill", tint: .orange)
             }
             if let error = health.lastError {
-                Text(error).font(.caption).foregroundStyle(.orange)
+                Text(error).font(.footnote).foregroundStyle(.orange)
             }
         }
         .card()
@@ -577,7 +577,7 @@ struct DashboardView: View {
                     .font(.headline)
                 Spacer()
                 Text("\(review.daysLogged)/7 days logged")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
             AdaptiveStack(spacing: 12) {
@@ -596,7 +596,7 @@ struct DashboardView: View {
             }
             if review.completedFasts > 0 {
                 Label("\(review.completedFasts) fasts completed", systemImage: "timer")
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
         }
@@ -629,7 +629,7 @@ struct DashboardView: View {
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(glasses) of \(max(goalGlasses, 1)) glasses")
-                            .font(.caption)
+                            .font(.footnote)
                             .foregroundStyle(Color.secondary)
                         ProgressView(value: Double(min(glasses, goalGlasses)), total: Double(max(goalGlasses, 1)))
                             .tint(.cyan)
@@ -667,7 +667,7 @@ struct DashboardView: View {
                         .font(.headline)
                     Spacer()
                     Text("\(Energy.string(planned)) planned")
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(Color.secondary)
                 }
                 ForEach(todaysPlan.sorted { $0.mealType.order < $1.mealType.order }) { entry in
@@ -770,7 +770,7 @@ struct QuickActionButton: View {
                     .background(tint.opacity(0.15), in: Circle())
                     .foregroundStyle(tint)
                 Text(title)
-                    .font(.caption)
+                    .font(.footnote)
                     .foregroundStyle(Color.primary)
             }
             .frame(maxWidth: .infinity)

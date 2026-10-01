@@ -48,7 +48,7 @@ struct ProgressRing: View {
     }
 }
 
-/// Side by side normally, stacked at accessibility text sizes so nothing gets squeezed.
+/// Side by side normally, stacked at larger text sizes so nothing gets squeezed.
 struct AdaptiveStack<Content: View>: View {
     var spacing: CGFloat
     @ViewBuilder var content: Content
@@ -56,21 +56,21 @@ struct AdaptiveStack<Content: View>: View {
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        let layout = typeSize.isAccessibilitySize
+        let layout = typeSize >= .xxLarge
             ? AnyLayout(VStackLayout(spacing: spacing))
             : AnyLayout(HStackLayout(spacing: spacing))
         layout { content }
     }
 }
 
-/// Stat tiles two to a row, or one to a row at accessibility text sizes.
+/// Stat tiles two to a row, or one to a row at larger text sizes.
 struct StatGrid<Content: View>: View {
     @ViewBuilder var content: Content
 
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        let count = typeSize.isAccessibilitySize ? 1 : 2
+        let count = typeSize >= .xxLarge ? 1 : 2
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: count), spacing: 12) { content }
     }
 }
@@ -87,14 +87,23 @@ struct MacroBar: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(name)
-                    .font(.caption)
-                    .foregroundStyle(Color.secondary)
-                Spacer()
-                Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
-                    .font(.caption.monospacedDigit())
+            ViewThatFits(in: .horizontal) {
+                HStack {
+                    Text(name).foregroundStyle(Color.secondary).fixedSize()
+                    Spacer(minLength: 8)
+                    Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
+                        .monospacedDigit()
+                        .fixedSize()
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(name).foregroundStyle(Color.secondary)
+                    Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
+                        .monospacedDigit()
+                }
             }
+            .font(.subheadline)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
                     Capsule().fill(color.opacity(0.15))
@@ -121,11 +130,7 @@ struct StatTile: View {
     var systemImage: String? = nil
     var tint: Color = .accentColor
 
-    @Environment(\.dynamicTypeSize) private var typeSize
-
     var body: some View {
-        // At accessibility sizes the tile has the full width, so let text wrap rather than truncate.
-        let lines: Int? = typeSize.isAccessibilitySize ? nil : 1
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
                 if let systemImage {
@@ -133,18 +138,17 @@ struct StatTile: View {
                         .foregroundStyle(tint)
                 }
                 Text(title)
-                    .font(.caption)
+                    .font(.subheadline)
                     .foregroundStyle(Color.secondary)
             }
             Text(value)
                 .font(.title3.weight(.semibold).monospacedDigit())
-                .lineLimit(lines)
-                .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
             if let subtitle {
                 Text(subtitle)
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(Color.secondary)
-                    .lineLimit(lines)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -181,12 +185,12 @@ struct MacroSummary: View {
     var fat: Double
 
     var body: some View {
-        HStack(spacing: 10) {
+        AdaptiveStack(spacing: 10) {
             Label("\(Int(protein.rounded()))g", systemImage: "p.circle.fill").foregroundStyle(.blue)
             Label("\(Int(carbs.rounded()))g", systemImage: "c.circle.fill").foregroundStyle(.orange)
             Label("\(Int(fat.rounded()))g", systemImage: "f.circle.fill").foregroundStyle(.pink)
         }
-        .font(.caption.monospacedDigit())
+        .font(.subheadline.monospacedDigit())
         .labelStyle(.titleAndIcon)
     }
 }
@@ -198,7 +202,7 @@ struct DayStepper: View {
 
     var body: some View {
         HStack {
-            Button { date = date.adding(days: -1) } label: {
+            Button { withAnimation { date = date.adding(days: -1) } } label: {
                 Image(systemName: "chevron.left")
                     .frame(width: 32, height: 32)
             }
@@ -208,12 +212,12 @@ struct DayStepper: View {
                 Text(date.relativeDayLabel)
                     .font(.headline)
                 if !date.isToday {
-                    Button("Back to today") { date = .now }
-                        .font(.caption)
+                    Button("Back to today") { withAnimation { date = .now } }
+                        .font(.subheadline)
                 }
             }
             Spacer()
-            Button { date = date.adding(days: 1) } label: {
+            Button { withAnimation { date = date.adding(days: 1) } } label: {
                 Image(systemName: "chevron.right")
                     .frame(width: 32, height: 32)
             }
@@ -292,7 +296,7 @@ struct TrendProgressView: View {
                 .accessibilityLabel(Text(title))
                 .accessibilityValue(progress.summary)
             Text(progress.summary)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(Color.secondary)
                 .accessibilityHidden(true)
             if progress.needsWeighIns, let logWeighIn {

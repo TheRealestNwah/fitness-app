@@ -46,7 +46,7 @@ struct SuggestionsCard: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(pick.name).font(.subheadline.weight(.semibold)).lineLimit(1)
                             Text("\(pick.detail) · \(Energy.string(pick.macros.kcal)) · \(Int(pick.macros.protein.rounded())) g protein")
-                                .font(.caption)
+                                .font(.footnote)
                                 .foregroundStyle(Color.secondary)
                                 .lineLimit(1)
                         }

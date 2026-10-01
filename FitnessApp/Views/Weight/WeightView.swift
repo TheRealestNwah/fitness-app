@@ -219,7 +219,7 @@ struct WeightView: View {
                         .foregroundStyle(.purple.opacity(0.6))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
                         .annotation(position: .top, alignment: .leading) {
-                            Text("Goal").font(.caption2).foregroundStyle(.purple)
+                            Text("Goal").font(.footnote).foregroundStyle(.purple)
                         }
                     ForEach(visible) { entry in
                         PointMark(x: .value("Date", entry.date),
@@ -248,7 +248,7 @@ struct WeightView: View {
                         Label("Likely water retention", systemImage: "square.fill").foregroundStyle(.pink.opacity(0.5))
                     }
                 }
-                .font(.caption)
+                .font(.footnote)
             }
         }
         .card()
@@ -373,14 +373,14 @@ struct WeightView: View {
                                 }
                             }
                             if !entry.note.isEmpty {
-                                Text(entry.note).font(.caption).foregroundStyle(Color.secondary)
+                                Text(entry.note).font(.footnote).foregroundStyle(Color.secondary)
                             }
                         }
                         Spacer()
                         if let previous {
                             let delta = entry.weightKg - previous
                             Text(units.weightString(kg: delta, signed: true))
-                                .font(.caption.monospacedDigit())
+                                .font(.subheadline.monospacedDigit())
                                 .foregroundStyle(delta <= 0 ? .green : .orange)
                         }
                         Text(units.weightString(kg: entry.weightKg))
