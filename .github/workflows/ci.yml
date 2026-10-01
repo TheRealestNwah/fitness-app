@@ -96,7 +96,7 @@ jobs:
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log
 
-      - name: UI smoke tests
+      - name: UI tests
         run: |
           set -o pipefail
           xcodebuild test-without-building \
@@ -104,8 +104,11 @@ jobs:
             -scheme FitnessApp \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
-            -only-testing:FitnessAppUITests/SmokeTests \
+            -only-testing:FitnessAppUITests \
+            -skip-testing:FitnessAppUITests/ScreenshotTests \
+            -skip-testing:FitnessAppUITests/IPadScreenshotTests \
             -retry-tests-on-failure -test-iterations 3 \
+            -resultBundlePath uitest.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             | tee uitest.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log
@@ -119,3 +122,4 @@ jobs:
             build.log
             test.log
             uitest.log
+            uitest.xcresult

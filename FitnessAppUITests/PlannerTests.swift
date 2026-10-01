@@ -27,10 +27,14 @@ final class PlannerTests: XCTestCase {
         // Two weeks ahead is past anything the demo data planned.
         for _ in 0..<2 { app.buttons["Next week"].firstMatch.tap() }
 
-        let autoPlan = app.buttons.matching(NSPredicate(format: "label BEGINSWITH 'Auto-plan '")).firstMatch
-        XCTAssertTrue(autoPlan.waitForExistence(timeout: 5), "An empty week should offer Auto-plan")
+        XCTAssertTrue(app.staticTexts["Nothing planned this week"].waitForExistence(timeout: 5), "Two weeks out should be empty")
         XCTAssertEqual(logButtons(in: app).count, 0)
+        let autoPlan = app.buttons["Auto-plan"]
+        XCTAssertTrue(autoPlan.exists, "The day should offer Auto-plan")
         autoPlan.tap()
+        let fill = app.buttons["Fill empty meals"]
+        XCTAssertTrue(fill.waitForExistence(timeout: 5))
+        fill.tap()
 
         XCTAssertTrue(logButtons(in: app).firstMatch.waitForExistence(timeout: 5), "Auto-plan should add meals to log")
         XCTAssertFalse(app.staticTexts["Nothing planned this week"].exists)
@@ -40,13 +44,12 @@ final class PlannerTests: XCTestCase {
         let app = openPlan()
         let logs = logButtons(in: app)
         XCTAssertTrue(logs.firstMatch.waitForExistence(timeout: 5), "Demo data should plan today")
-        let before = logs.count
+        // The list is lazy, so the number of Log buttons on screen isn't a reliable count.
+        let ticks = app.descendants(matching: .any).matching(NSPredicate(format: "label == 'Logged'"))
+        let before = ticks.count
         logs.firstMatch.tap()
-
-        let fewer = NSPredicate(format: "count == %d", before - 1)
-        expectation(for: fewer, evaluatedWith: logs)
+        expectation(for: NSPredicate(format: "count > %d", before), evaluatedWith: ticks)
         waitForExpectations(timeout: 5)
-        XCTAssertTrue(app.images["Logged"].firstMatch.exists || app.staticTexts["Logged"].firstMatch.exists)
     }
 
     func testGroceryListShowsThisWeeksIngredients() {
