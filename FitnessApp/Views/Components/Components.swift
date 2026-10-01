@@ -235,13 +235,17 @@ struct DecimalField: View {
     var body: some View {
         HStack {
             Text(title)
+                .accessibilityHidden(true)
             Spacer()
             TextField("—", value: $value, format: .number.precision(.fractionLength(0...1)))
                 .keyboardType(.decimalPad)
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
+                .accessibilityLabel(title)
+                .accessibilityHint(unit.isEmpty ? "" : "In \(unit)")
             if !unit.isEmpty {
                 Text(unit).foregroundStyle(Color.secondary)
+                    .accessibilityHidden(true)
             }
         }
     }
@@ -255,13 +259,17 @@ struct IntField: View {
     var body: some View {
         HStack {
             Text(title)
+                .accessibilityHidden(true)
             Spacer()
             TextField("—", value: $value, format: .number)
                 .keyboardType(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
+                .accessibilityLabel(title)
+                .accessibilityHint(unit.isEmpty ? "" : "In \(unit)")
             if !unit.isEmpty {
                 Text(unit).foregroundStyle(Color.secondary)
+                    .accessibilityHidden(true)
             }
         }
     }
