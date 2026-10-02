@@ -6,6 +6,21 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 > Claude, an AI model from Anthropic, directed and tested by the maintainer.
 > See [AI disclosure](#ai-disclosure).
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/10-today.png" width="180" alt="Today"><br><sub>Today</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/12-food-diary.png" width="180" alt="Food diary"><br><sub>Food diary</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/14-weight.png" width="180" alt="Weight"><br><sub>Weight</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/16-vitals.png" width="180" alt="Vitals"><br><sub>Vitals</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/18-meal-planner.png" width="180" alt="Meal plan"><br><sub>Meal plan</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/30-dark-today.png" width="180" alt="Dark mode"><br><sub>Dark mode</sub></td>
+  </tr>
+</table>
+
+<sub>Captured from the demo data by the nightly [Screenshots workflow](.github/workflows/screenshots.yml), so they track `main`. More (iPad, accessibility sizes) are on the [`screenshots` branch](https://github.com/TheRealestNwah/fitness-app/tree/screenshots).</sub>
+
 ## Features
 
 **Today dashboard**
