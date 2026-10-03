@@ -94,15 +94,15 @@ FitnessApp/
   Services/                 Pure calculators (nutrition, budget, fasting, progress…), HealthKit, sync, export
   Views/
     Onboarding/  Dashboard/  Weight/  Food/  Vitals/  MealPlan/  Settings/  Components/
-FitnessAppTests/            XCTest coverage for the calculation engine, units, recipes, sync
-FitnessAppUITests/          Screenshot suite
+FitnessAppTests/            Unit tests, one file per service
+FitnessAppUITests/          UI tests, plus the iPhone/iPad screenshot tests
 StrideWidgets/              WidgetKit extension (iOS widgets; also built for watchOS complications)
 StrideWatch/                watchOS app
 ```
 
 ## Requirements
 
-- Xcode 16 or newer (the project uses folder-synchronised groups)
+- Xcode 26 or newer (the project uses folder-synchronised groups; CI builds with Xcode 26)
 - iOS 17.0+ (SwiftData, Swift Charts, `@Observable`)
 
 Open `FitnessApp.xcodeproj`, pick a simulator, and run. Tests: ⌘U.
@@ -122,9 +122,9 @@ Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and loa
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` lints the Swift sources with SwiftLint (`swiftlint lint --strict`, configured in `.swiftlint.yml`), builds the app (with its widget and watch targets) and runs the unit tests on an iOS simulator (macOS runner, Xcode 16) for every pull request and push to `main`. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
+`.github/workflows/ci.yml` lints the Swift sources with SwiftLint (`swiftlint lint --strict`, configured in `.swiftlint.yml`), builds the app (with its widget and watch targets), then runs the unit tests and the UI tests on an iOS simulator (macOS runner, Xcode 26) for every pull request and push to `main`. Pull requests that only touch docs skip the build. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
 
-`.github/workflows/screenshots.yml` runs the `FitnessAppUITests` screenshot suite on a simulator and publishes the PNGs to the `screenshots` branch (and as a workflow artifact).
+`.github/workflows/screenshots.yml` runs nightly (and on demand) on iPhone and iPad simulators and publishes the PNGs to the `screenshots` branch (and as a workflow artifact). The README screenshots come from there.
 
 ## AI disclosure
 
