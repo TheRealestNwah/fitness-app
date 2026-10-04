@@ -1,4 +1,8 @@
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 
 /// A quick diary entry from a photo and a rough portion size, filled in properly later.
 enum PhotoMeal {
@@ -42,16 +46,29 @@ enum PhotoMeal {
     }
 
     /// A JPEG no larger than `maxDimension` on its long side, to keep the store small.
-    static func jpeg(from image: UIImage, maxDimension: CGFloat = 1024, quality: CGFloat = 0.7) -> Data? {
+    static func jpeg(from image: PlatformImage, maxDimension: CGFloat = 1024, quality: CGFloat = 0.7) -> Data? {
         let longest = max(image.size.width, image.size.height)
         guard longest > 0 else { return nil }
         let scale = min(1, maxDimension / longest)
         let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        #if os(macOS)
+        guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width),
+                                            pixelsHigh: Int(size.height), bitsPerSample: 8, samplesPerPixel: 3,
+                                            hasAlpha: false, isPlanar: false, colorSpaceName: .deviceRGB,
+                                            bytesPerRow: 0, bitsPerPixel: 0),
+              let graphics = NSGraphicsContext(bitmapImageRep: bitmap) else { return nil }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = graphics
+        image.draw(in: CGRect(origin: .zero, size: size))
+        NSGraphicsContext.restoreGraphicsState()
+        return bitmap.representation(using: .jpeg, properties: [.compressionFactor: quality])
+        #else
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         let resized = UIGraphicsImageRenderer(size: size, format: format).image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }
         return resized.jpegData(compressionQuality: quality)
+        #endif
     }
 }

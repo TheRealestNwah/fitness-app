@@ -14,7 +14,7 @@ struct SettingsPageView: View {
         content
             .readableWidth()
             .navigationTitle(page.title)
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .onDisappear { try? context.save() }
     }
 
@@ -361,7 +361,7 @@ private struct HealthDataSettingsPage: View {
         } message: {
             Text("Every weigh-in, food log, vitals reading, meal plan, recipe and setting will be deleted from this device and you'll start setup again. This can't be undone.")
         }
-        .sheet(isPresented: $showExport) {
+        .strideSheet(isPresented: $showExport) {
             ExportSheet(urls: exportURLs)
         }
         .onChange(of: healthEnabled) { _, on in

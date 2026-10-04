@@ -78,10 +78,10 @@ enum PhoneWorkoutRules {
     }
 }
 
-#if compiler(>=6.2)
+#if os(iOS) && compiler(>=6.2)
 /// Runs one HealthKit workout session on iPhone. On finish the workout is saved to Health
 /// and added to the exercise log with the Health workout's id, so the importer skips it.
-@available(iOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, *)
 @MainActor
 @Observable
 final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {

@@ -53,9 +53,9 @@ struct BodyTrendsView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.strideBackground)
         .navigationTitle("Body trends")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 
     private var measurementsCard: some View {

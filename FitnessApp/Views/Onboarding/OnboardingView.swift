@@ -45,6 +45,18 @@ struct OnboardingView: View {
                 .padding(.horizontal)
                 .padding(.top)
 
+            #if os(macOS)
+            Group {
+                switch step {
+                case 0: welcome
+                case 1: aboutYou
+                case 2: weights
+                case 3: lifestyle
+                default: summary
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            #else
             TabView(selection: $step) {
                 welcome.tag(0)
                 aboutYou.tag(1)
@@ -54,6 +66,7 @@ struct OnboardingView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             .animation(.easeInOut, value: step)
+            #endif
 
             HStack {
                 if step > 0 {
@@ -153,7 +166,7 @@ struct OnboardingView: View {
                 if unitSystem == .metric {
                     HStack {
                         TextField("Height", value: $heightCm, format: .number)
-                            .keyboardType(.decimalPad)
+                            .strideKeyboard(.decimalPad)
                         Text("cm").foregroundStyle(Color.secondary)
                     }
                 } else {
@@ -180,7 +193,7 @@ struct OnboardingView: View {
                     Text("Current weight")
                     Spacer()
                     TextField("Weight", value: $currentWeight, format: .number.precision(.fractionLength(0...1)))
-                        .keyboardType(.decimalPad)
+                        .strideKeyboard(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
@@ -191,7 +204,7 @@ struct OnboardingView: View {
                     Text("Goal weight")
                     Spacer()
                     TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
-                        .keyboardType(.decimalPad)
+                        .strideKeyboard(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
                     Text(units.weightUnit).foregroundStyle(Color.secondary)

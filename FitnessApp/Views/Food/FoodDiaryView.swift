@@ -1,10 +1,14 @@
 import SwiftUI
 import SwiftData
 import TipKit
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 
 struct FoodDiaryView: View {
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
     @State private var date = Date.now
     @State private var showCalendar = false
     /// The diary day per window, restored on relaunch (SceneStorage can't hold a Date).
@@ -26,10 +30,10 @@ struct FoodDiaryView: View {
                 }
             }
             .navigationTitle("Food")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 if sizeClass != .regular {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(placement: .primaryAction) {
                         Button { showCalendar = true } label: {
                             Image(systemName: "calendar")
                         }
@@ -37,7 +41,7 @@ struct FoodDiaryView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showCalendar) {
+            .strideSheet(isPresented: $showCalendar) {
                 DiaryCalendarSheet(date: $date)
             }
             .onAppear {
@@ -96,7 +100,7 @@ struct DiaryCalendarPane: View {
             Spacer()
         }
         .padding(.top, 8)
-        .background(Color(.systemGroupedBackground))
+        .background(Color.strideBackground)
     }
 }
 
@@ -120,7 +124,7 @@ struct DiaryCalendarSheet: View {
                 Spacer()
             }
             .navigationTitle("Choose a day")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -142,6 +146,7 @@ private struct DotLabelStyle: LabelStyle {
 }
 
 /// UICalendarView, because SwiftUI's DatePicker can't decorate individual days.
+#if os(iOS)
 struct LoggedDaysCalendar: UIViewRepresentable {
     @Binding var selection: Date
     var loggedDays: Set<Date>
@@ -205,6 +210,8 @@ struct LoggedDaysCalendar: UIViewRepresentable {
         }
     }
 }
+
+#endif
 
 struct DayDiaryView: View {
     let date: Date
@@ -408,16 +415,16 @@ struct DayDiaryView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
+        .strideListStyle()
         .environment(\.editMode, $editMode)
         .toolbar { selectionToolbar }
         .onChange(of: entries.isEmpty) { _, empty in
             if empty { endSelecting() }
         }
-        .sheet(item: $addingTo) { meal in
+        .strideSheet(item: $addingTo) { meal in
             FoodSearchView(date: date, mealType: meal)
         }
-        .sheet(item: $relocating) { relocation in
+        .strideSheet(item: $relocating) { relocation in
             RelocateEntrySheet(entries: relocation.entries, copying: relocation.copying) { meal, day in
                 if relocation.copying {
                     context.copyDiaryEntries(relocation.entries, to: meal, on: day, undo: undoCenter)
@@ -427,20 +434,20 @@ struct DayDiaryView: View {
                 endSelecting()
             }
         }
-        .sheet(item: $editing) { entry in
+        .strideSheet(item: $editing) { entry in
             if entry.photo != nil || entry.isEstimate {
                 PhotoMealDetailSheet(entry: entry)
             } else {
                 EditLogEntrySheet(entry: entry)
             }
         }
-        .sheet(item: $photographing) { meal in
+        .strideSheet(item: $photographing) { meal in
             PhotoMealSheet(date: date, mealType: meal, dailyTarget: profile.calorieTarget(currentWeightKg: currentKg))
         }
-        .sheet(item: $checkingIn) { meal in
+        .strideSheet(item: $checkingIn) { meal in
             MealCheckInSheet(day: date, mealType: meal, existing: checkIn(for: meal))
         }
-        .sheet(item: $savingFavourite) { meal in
+        .strideSheet(item: $savingFavourite) { meal in
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
         .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
@@ -610,7 +617,7 @@ struct DayDiaryView: View {
 
     @ToolbarContentBuilder
     private var selectionToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+        ToolbarItem(placement: .navigation) {
             if isSelecting {
                 Button("Done") { endSelecting() }
             } else if !entries.isEmpty {
@@ -618,7 +625,7 @@ struct DayDiaryView: View {
             }
         }
         if isSelecting {
-            ToolbarItemGroup(placement: .bottomBar) {
+            ToolbarItemGroup(placement: .strideBottomBar) {
                 let chosen = selectedEntries
                 Menu {
                     ForEach(MealType.allCases) { meal in
@@ -749,7 +756,7 @@ struct EditLogEntrySheet: View {
                 }
             }
             .navigationTitle("Edit entry")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -805,7 +812,7 @@ struct ServingsControl: View {
                     Text(metric.unit == "g" ? "Weight" : "Volume")
                     Spacer()
                     TextField(metric.unit, value: weightBinding(metric), format: .number.precision(.fractionLength(0)))
-                        .keyboardType(.numberPad)
+                        .strideKeyboard(.numberPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 90)
                     Text(metric.unit).foregroundStyle(Color.secondary)
@@ -818,7 +825,7 @@ struct ServingsControl: View {
                     Text("Servings")
                     Spacer()
                     TextField("Servings", value: $servings, format: .number.precision(.fractionLength(0...2)))
-                        .keyboardType(.decimalPad)
+                        .strideKeyboard(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 80)
                     Stepper("", value: $servings, in: 0.25...50, step: 0.25).labelsHidden()
@@ -891,7 +898,7 @@ struct SaveFavouriteMealSheet: View {
                 }
             }
             .navigationTitle("Save favourite")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -957,7 +964,7 @@ struct ServingsMenu: View {
                 .font(.subheadline.monospacedDigit().weight(.semibold))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Color(.tertiarySystemFill), in: Capsule())
+                .background(Color.strideFill, in: Capsule())
         }
         .accessibilityLabel("Servings")
         .accessibilityValue(servings.cleanString)
@@ -994,7 +1001,7 @@ struct RelocateEntrySheet: View {
                 }
             }
             .navigationTitle(copying ? "Copy to" : "Move to")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

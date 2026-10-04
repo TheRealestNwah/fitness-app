@@ -1,10 +1,13 @@
+#if os(iOS)
 import ActivityKit
+#endif
 import AppIntents
 import Foundation
 import SwiftData
 
 /// A running fast on the Lock Screen and in the Dynamic Island. The widget extension declares
 /// an identical type (StrideWidgets/FastingLiveActivity.swift); ActivityKit matches them by name.
+#if os(iOS)
 struct FastingActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var targetEnd: Date
@@ -14,6 +17,8 @@ struct FastingActivityAttributes: ActivityAttributes {
     var start: Date
     var targetHours: Double
 }
+
+#endif
 
 /// What to do with Live Activities so exactly the running fast has one.
 enum FastingActivityPlan {
@@ -40,6 +45,7 @@ enum FastingActivityPlan {
 enum FastingActivityManager {
     /// Starts or ends Live Activities to match the fast in the store.
     static func sync(context: ModelContext) {
+        #if os(iOS)
         let open = (try? context.fetch(FetchDescriptor<FastingSession>(predicate: #Predicate { $0.end == nil },
                                                                        sortBy: [SortDescriptor(\.start, order: .reverse)]))) ?? []
         let running = open.first.map { FastingActivityPlan.Running(id: $0.uuid.uuidString, start: $0.start, targetHours: $0.targetHours) }
@@ -55,11 +61,13 @@ enum FastingActivityManager {
             _ = try? Activity.request(attributes: attributes,
                                       content: ActivityContent(state: .init(targetEnd: targetEnd), staleDate: nil))
         }
+        #endif
     }
 }
 
 /// The Live Activity's End fast button. Runs in the app, which owns the store; the widget
 /// extension has a matching declaration so the button can refer to it.
+#if os(iOS)
 struct EndFastIntent: LiveActivityIntent {
     static var title: LocalizedStringResource = "End Fast"
     static var isDiscoverable = false
@@ -86,3 +94,4 @@ struct EndFastIntent: LiveActivityIntent {
         return .result()
     }
 }
+#endif

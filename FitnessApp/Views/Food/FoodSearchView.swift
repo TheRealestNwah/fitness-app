@@ -264,20 +264,20 @@ struct FoodSearchView: View {
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
             .onSubmit(of: .search) { rememberSearch() }
             .navigationTitle("Log food")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
-            .sheet(item: $selected) { food in
+            .strideSheet(item: $selected) { food in
                 LogFoodSheet(food: food, date: date, mealType: mealType)
             }
-            .sheet(item: $photoMeal) { meal in
+            .strideSheet(item: $photoMeal) { meal in
                 SavedMealPhotoSheet(meal: meal)
             }
-            .sheet(item: $selectedRecipe) { recipe in
+            .strideSheet(item: $selectedRecipe) { recipe in
                 LogRecipeSheet(recipe: recipe, date: date, mealType: mealType)
             }
-            .sheet(isPresented: $showCreate) {
+            .strideSheet(isPresented: $showCreate) {
                 CreateFoodSheet(initialName: query.isEmpty ? "" : search) { created in
                     // Wait for the create sheet to finish dismissing before presenting the log sheet.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -285,7 +285,7 @@ struct FoodSearchView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showScanner) {
+            .strideSheet(isPresented: $showScanner) {
                 BarcodeScanSheet(onFound: { food in
                     showScanner = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { selected = food }
@@ -294,15 +294,15 @@ struct FoodSearchView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { unknownBarcode = UnknownBarcode(code: code) }
                 })
             }
-            .sheet(item: $unknownBarcode) { unknown in
+            .strideSheet(item: $unknownBarcode) { unknown in
                 CreateFoodSheet(initialName: "", barcode: unknown.code) { created in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { selected = created }
                 }
             }
-            .sheet(isPresented: $showQuickAdd) {
+            .strideSheet(isPresented: $showQuickAdd) {
                 QuickAddSheet(date: date, mealType: mealType)
             }
-            .sheet(isPresented: $showSentence) {
+            .strideSheet(isPresented: $showSentence) {
                 SentenceLogSheet(date: date, mealType: mealType) {
                     // Everything's logged: close search too once the sheet has gone.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { dismiss() }
@@ -390,7 +390,7 @@ struct LogFoodSheet: View {
                 }
             }
             .navigationTitle("Add to \(meal.inSentence)")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -439,7 +439,7 @@ struct LogRecipeSheet: View {
                 }
             }
             .navigationTitle("Log recipe")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -494,7 +494,7 @@ struct QuickAddSheet: View {
                 }
             }
             .navigationTitle("Quick add")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -553,7 +553,7 @@ struct CreateFoodSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    if CameraPicker.isAvailable {
                         Button { showCamera = true } label: {
                             Label("Photograph the nutrition label", systemImage: "text.viewfinder")
                         }
@@ -616,14 +616,14 @@ struct CreateFoodSheet: View {
                 }
             }
             .navigationTitle("New food")
-            .navigationBarTitleDisplayMode(.inline)
-            .fullScreenCover(isPresented: $showCamera) {
+            .inlineNavigationTitle()
+            .cameraPresentation(isPresented: $showCamera) {
                 CameraPicker { image in readLabel(image) }.ignoresSafeArea()
             }
             .onChange(of: labelPhoto) { _, item in
                 guard let item else { return }
                 Task {
-                    if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    if let data = try? await item.loadTransferable(type: Data.self), let image = PlatformImage(data: data) {
                         readLabel(image)
                     }
                     labelPhoto = nil
@@ -672,7 +672,7 @@ struct CreateFoodSheet: View {
         }
     }
 
-    private func readLabel(_ image: UIImage) {
+    private func readLabel(_ image: PlatformImage) {
         scanning = true
         Task { @MainActor in
             let label = NutritionLabelParser.parse(await LabelTextRecognizer.lines(in: image))

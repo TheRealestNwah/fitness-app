@@ -38,7 +38,7 @@ struct MealPlanView: View {
                 .background(.bar)
             }
             .navigationTitle("Meal plan")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .navigationDestination(for: Recipe.self) { recipe in
                 RecipeDetailView(recipe: recipe)
             }
@@ -157,8 +157,8 @@ struct PlannerView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
-        .sheet(item: $pickingFor) { meal in
+        .strideListStyle()
+        .strideSheet(item: $pickingFor) { meal in
             PlanItemPicker(day: selectedDay, mealType: meal)
         }
         .confirmationDialog("Replace everything planned for \(selectedDay.relativeDayLabel)?", isPresented: $showAutoFillConfirm, titleVisibility: .visible) {
@@ -197,7 +197,7 @@ struct PlannerView: View {
                     }
                 }
                 .buttonStyle(.plain)
-                .hoverEffect(.highlight)
+                .strideHoverEffect()
                 // A recipe dropped on a day goes into its own meal slot.
                 .foodDropDestination { references in
                     references.map { $0.plan(on: day, as: nil, context: context) }.contains(true)
@@ -444,7 +444,7 @@ struct PlanItemPicker: View {
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always))
             .navigationTitle("Plan \(mealType.inSentence)")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
             }
@@ -592,7 +592,7 @@ struct GroceryListView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
+        .strideListStyle()
         .alert("Reminders", isPresented: Binding(get: { sendResult != nil }, set: { if !$0 { sendResult = nil } })) {
             Button("OK", role: .cancel) {}
         } message: {

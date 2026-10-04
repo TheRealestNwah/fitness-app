@@ -53,7 +53,7 @@ struct MedicationCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .card()
-            .sheet(isPresented: $logging) { LogDoseSheet() }
+            .strideSheet(isPresented: $logging) { LogDoseSheet() }
         }
     }
 }
@@ -103,7 +103,7 @@ struct MedicationView: View {
                 for index in offsets { context.delete(doses[index]) }
                 try? context.save()
             }
-            if #available(iOS 26.0, *), HealthSettings.isEnabled, HealthKitManager.isAvailable {
+            if #available(iOS 26.0, macOS 26.0, *), HealthSettings.isEnabled, HealthKitManager.isAvailable {
                 Section {
                     Button {
                         importFromHealth()
@@ -123,12 +123,12 @@ struct MedicationView: View {
                     .accessibilityLabel("Log dose")
             }
         }
-        .sheet(isPresented: $logging) { LogDoseSheet() }
+        .strideSheet(isPresented: $logging) { LogDoseSheet() }
     }
 
     private func importFromHealth() {
-        #if compiler(>=6.2)
-        guard #available(iOS 26.0, *) else { return }
+        #if os(iOS) && compiler(>=6.2)
+        guard #available(iOS 26.0, macOS 26.0, *) else { return }
         importing = true
         Task { @MainActor in
             defer { importing = false }
@@ -215,7 +215,7 @@ struct LogDoseSheet: View {
                 }
             }
             .navigationTitle("Log dose")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

@@ -31,15 +31,15 @@ struct PhotoMealSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    if let photo, let image = UIImage(data: photo) {
-                        Image(uiImage: image)
+                    if let photo, let image = PlatformImage(data: photo) {
+                        Image(platformImage: image)
                             .resizable()
                             .scaledToFill()
                             .frame(height: 200)
                             .clipped()
                             .listRowInsets(EdgeInsets())
                     }
-                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    if CameraPicker.isAvailable {
                         Button { showCamera = true } label: {
                             Label(photo == nil ? "Take photo" : "Retake photo", systemImage: "camera")
                         }
@@ -66,7 +66,7 @@ struct PhotoMealSheet: View {
                 }
             }
             .navigationTitle("Photo meal")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -74,13 +74,13 @@ struct PhotoMealSheet: View {
                         .disabled(photo == nil)
                 }
             }
-            .fullScreenCover(isPresented: $showCamera) {
+            .cameraPresentation(isPresented: $showCamera) {
                 CameraPicker { image in photo = PhotoMeal.jpeg(from: image) }
                     .ignoresSafeArea()
             }
             .onChange(of: libraryItem) { _, item in
                 Task {
-                    if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    if let data = try? await item?.loadTransferable(type: Data.self), let image = PlatformImage(data: data) {
                         photo = PhotoMeal.jpeg(from: image)
                     }
                 }
@@ -138,7 +138,7 @@ struct PhotoMealSheet: View {
     private func recognise(_ data: Data?) {
         suggestions = []
         chosen = []
-        guard let data, let image = UIImage(data: data) else { return }
+        guard let data, let image = PlatformImage(data: data) else { return }
         recognising = true
         Task { @MainActor in
             let found = await PhotoFoodRecognizer.suggestions(for: image, foods: foods)
@@ -189,9 +189,9 @@ struct PhotoMealDetailSheet: View {
     var body: some View {
         NavigationStack {
             Form {
-                if let data = entry.photo, let image = UIImage(data: data) {
+                if let data = entry.photo, let image = PlatformImage(data: data) {
                     Section {
-                        Image(uiImage: image)
+                        Image(platformImage: image)
                             .resizable()
                             .scaledToFit()
                             .listRowInsets(EdgeInsets())
@@ -218,7 +218,7 @@ struct PhotoMealDetailSheet: View {
                 }
             }
             .navigationTitle(entry.isEstimate ? "Photo meal" : "Edit entry")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -258,8 +258,8 @@ struct EntryThumbnail: View {
     let data: Data
 
     var body: some View {
-        if let image = UIImage(data: data) {
-            Image(uiImage: image)
+        if let image = PlatformImage(data: data) {
+            Image(platformImage: image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: 36, height: 36)
@@ -270,7 +270,9 @@ struct EntryThumbnail: View {
 }
 
 /// The system camera, returning the captured image.
+#if os(iOS)
 struct CameraPicker: UIViewControllerRepresentable {
+    static var isAvailable: Bool { UIImagePickerController.isSourceTypeAvailable(.camera) }
     var onCapture: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
 
@@ -301,6 +303,14 @@ struct CameraPicker: UIViewControllerRepresentable {
     }
 }
 
+#else
+struct CameraPicker: View {
+    static let isAvailable = false
+    var onCapture: (PlatformImage) -> Void
+    var body: some View { Text("Choose a photo from your library or drag an image here.") }
+}
+#endif
+
 /// Add, replace or remove a meal photo from the camera, the library or a drop.
 struct MealPhotoSection: View {
     @Binding var photo: Data?
@@ -309,8 +319,8 @@ struct MealPhotoSection: View {
 
     var body: some View {
         Section("Photo") {
-            if let photo, let image = UIImage(data: photo) {
-                Image(uiImage: image)
+            if let photo, let image = PlatformImage(data: photo) {
+                Image(platformImage: image)
                     .resizable()
                     .scaledToFill()
                     .frame(height: 160)
@@ -318,11 +328,11 @@ struct MealPhotoSection: View {
                     .listRowInsets(EdgeInsets())
                     .accessibilityLabel("Meal photo")
             }
-            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            if CameraPicker.isAvailable {
                 Button { showCamera = true } label: {
                     Label(photo == nil ? "Take photo" : "Retake photo", systemImage: "camera")
                 }
-                .fullScreenCover(isPresented: $showCamera) {
+                .cameraPresentation(isPresented: $showCamera) {
                     CameraPicker { image in photo = PhotoMeal.jpeg(from: image) }
                         .ignoresSafeArea()
                 }
@@ -333,7 +343,7 @@ struct MealPhotoSection: View {
             }
             .onChange(of: libraryItem) { _, item in
                 Task {
-                    if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                    if let data = try? await item?.loadTransferable(type: Data.self), let image = PlatformImage(data: data) {
                         photo = PhotoMeal.jpeg(from: image)
                     }
                 }
@@ -354,8 +364,8 @@ struct MealThumbnail: View {
     var size: CGFloat = 44
 
     var body: some View {
-        if let image = UIImage(data: data) {
-            Image(uiImage: image)
+        if let image = PlatformImage(data: data) {
+            Image(platformImage: image)
                 .resizable()
                 .scaledToFill()
                 .frame(width: size, height: size)
@@ -384,7 +394,7 @@ struct SavedMealPhotoSheet: View {
         NavigationStack {
             Form { MealPhotoSection(photo: $photo) }
                 .navigationTitle(meal.name)
-                .navigationBarTitleDisplayMode(.inline)
+                .inlineNavigationTitle()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) {

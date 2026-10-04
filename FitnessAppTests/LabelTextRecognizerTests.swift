@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 import XCTest
 @testable import FitnessApp
@@ -38,3 +39,4 @@ final class LabelTextRecognizerTests: XCTestCase {
         }
     }
 }
+#endif

@@ -1,4 +1,6 @@
+#if os(iOS)
 import BackgroundTasks
+#endif
 import Foundation
 import SwiftData
 
@@ -19,9 +21,11 @@ enum BackgroundRefresh {
 
     /// Asks iOS for the next run; it decides when, no earlier than `earliestBegin`.
     static func schedule(now: Date = .now) {
+        #if os(iOS)
         let request = BGAppRefreshTaskRequest(identifier: identifier)
         request.earliestBeginDate = earliestBegin(after: now)
         try? BGTaskScheduler.shared.submit(request)
+        #endif
     }
 
     @MainActor

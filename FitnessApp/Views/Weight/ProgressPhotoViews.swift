@@ -10,19 +10,19 @@ struct ProgressPhotoPicker: View {
     @State private var libraryItem: PhotosPickerItem?
 
     var body: some View {
-        if let photo, let image = UIImage(data: photo) {
-            Image(uiImage: image)
+        if let photo, let image = PlatformImage(data: photo) {
+            Image(platformImage: image)
                 .resizable()
                 .scaledToFit()
                 .frame(maxHeight: 220)
                 .frame(maxWidth: .infinity)
                 .accessibilityLabel("Progress photo")
         }
-        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+        if CameraPicker.isAvailable {
             Button { showCamera = true } label: {
                 Label(photo == nil ? "Take progress photo" : "Retake photo", systemImage: "camera")
             }
-            .fullScreenCover(isPresented: $showCamera) {
+            .cameraPresentation(isPresented: $showCamera) {
                 CameraPicker { image in photo = PhotoMeal.jpeg(from: image, maxDimension: 1600) }
                     .ignoresSafeArea()
             }
@@ -33,7 +33,7 @@ struct ProgressPhotoPicker: View {
         .imageDropDestination { image in photo = PhotoMeal.jpeg(from: image, maxDimension: 1600) }
         .onChange(of: libraryItem) { _, item in
             Task {
-                if let data = try? await item?.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                if let data = try? await item?.loadTransferable(type: Data.self), let image = PlatformImage(data: data) {
                     photo = PhotoMeal.jpeg(from: image, maxDimension: 1600)
                 }
             }
@@ -85,13 +85,13 @@ struct ProgressPhotoCompareView: View {
             .padding()
         }
         .navigationTitle("Compare photos")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 
     private func column(_ title: String, selection: Binding<UUID?>, entry: WeightEntry?) -> some View {
         VStack(spacing: 6) {
-            if let data = entry?.photo, let image = UIImage(data: data) {
-                Image(uiImage: image)
+            if let data = entry?.photo, let image = PlatformImage(data: data) {
+                Image(platformImage: image)
                     .resizable()
                     .scaledToFit()
                     .clipShape(RoundedRectangle(cornerRadius: 10))

@@ -53,9 +53,9 @@ struct MonthlyReportView: View {
                 .frame(maxWidth: 700)
                 .frame(maxWidth: .infinity)
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.strideBackground)
             .navigationTitle("Monthly report")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
                 ToolbarItem(placement: .primaryAction) {
@@ -94,7 +94,7 @@ struct MonthlyReportView: View {
         let renderer = ImageRenderer(content: MonthlyReportCard(report: report, units: units)
             .padding(24)
             .frame(width: 400)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.strideBackground)
             .environment(\.colorScheme, .light))
         renderer.scale = 3
         guard let data = renderer.uiImage?.pngData() else { shareURL = nil; return }

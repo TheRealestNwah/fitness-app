@@ -123,3 +123,67 @@ jobs:
             test.log
             uitest.log
             uitest.xcresult
+
+  ipad:
+    name: Test (iPadOS)
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+      - name: Pick an iPad simulator
+        id: sim
+        run: |
+          UDID=$(xcrun simctl list devices available -j | jq -r '[.devices | to_entries
+            | map(select(.key | test("iOS-[0-9]+")))
+            | sort_by(.key | capture("iOS-(?<v>[0-9]+)").v | tonumber) | reverse
+            | .[].value[] | select(.name | startswith("iPad"))][0].udid')
+          test "$UDID" != null
+          echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+      - name: Test iPad navigation and compact windows
+        run: |
+          set -o pipefail
+          xcodebuild test -project FitnessApp.xcodeproj -scheme FitnessApp \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
+            -only-testing:FitnessAppUITests/IPadSupportTests \
+            -parallel-testing-enabled NO -resultBundlePath ipad.xcresult \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" > ipad.log 2>&1 || {
+              tail -100 ipad.log; exit 1;
+            }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ipad-results
+          path: |
+            ipad.log
+            ipad.xcresult
+
+  macos:
+    name: Build & test (native macOS)
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+      - name: Build and test native Mac app
+        run: |
+          set -o pipefail
+          xcodebuild test -project FitnessApp.xcodeproj -scheme StrideMac \
+            -destination 'platform=macOS' -parallel-testing-enabled NO \
+            -resultBundlePath macos.xcresult CODE_SIGNING_ALLOWED=NO \
+            > macos.log 2>&1 || { tail -120 macos.log; exit 1; }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-results
+          path: |
+            macos.log
+            macos.xcresult

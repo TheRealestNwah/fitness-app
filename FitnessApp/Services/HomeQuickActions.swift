@@ -1,6 +1,10 @@
 import SwiftUI
 import SwiftData
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 
 /// The actions offered when the app icon is long-pressed on the Home Screen.
 enum HomeQuickAction: String, CaseIterable {
@@ -9,9 +13,11 @@ enum HomeQuickAction: String, CaseIterable {
     case logWater = "com.stride.FitnessApp.logWater"
     case toggleFast = "com.stride.FitnessApp.toggleFast"
 
+    #if os(iOS)
     init?(_ item: UIApplicationShortcutItem) {
         self.init(rawValue: item.type)
     }
+    #endif
 
     /// The fast action reads Start or End depending on whether one is running.
     func title(fastRunning: Bool) -> String {
@@ -33,6 +39,7 @@ enum HomeQuickAction: String, CaseIterable {
         }
     }
 
+    #if os(iOS)
     static func items(fastRunning: Bool) -> [UIApplicationShortcutItem] {
         allCases.map {
             UIApplicationShortcutItem(type: $0.rawValue, localizedTitle: $0.title(fastRunning: fastRunning),
@@ -40,6 +47,7 @@ enum HomeQuickAction: String, CaseIterable {
                                       icon: UIApplicationShortcutIcon(systemImageName: $0.systemImage))
         }
     }
+    #endif
 }
 
 /// Hands a chosen quick action from UIKit to the SwiftUI view that performs it.
@@ -51,16 +59,19 @@ final class HomeQuickActionCenter {
 
     /// Refreshes the Home Screen menu. Offered only once setup is done, since every action needs a profile.
     static func publish(context: ModelContext) {
+        #if os(iOS)
         guard QuickLog.profile(in: context) != nil else {
             UIApplication.shared.shortcutItems = []
             return
         }
         UIApplication.shared.shortcutItems = HomeQuickAction.items(fastRunning: QuickLog.activeFast(context: context) != nil)
+        #endif
     }
 }
 
 /// Receives quick actions: at launch through the scene's connection options, and while running
 /// through the scene delegate.
+#if os(iOS)
 final class StrideAppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -81,3 +92,4 @@ final class StrideSceneDelegate: NSObject, UIWindowSceneDelegate {
         completionHandler(true)
     }
 }
+#endif

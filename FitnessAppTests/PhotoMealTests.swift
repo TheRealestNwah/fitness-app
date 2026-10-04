@@ -1,3 +1,4 @@
+#if os(iOS)
 import XCTest
 import UIKit
 @testable import FitnessApp
@@ -34,3 +35,4 @@ final class PhotoMealTests: XCTestCase {
         XCTAssertNil(SavedMeal.firstPhoto(in: [plain]))
     }
 }
+#endif

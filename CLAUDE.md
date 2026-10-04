@@ -1,6 +1,6 @@
 # Stride (fitness-app)
 
-SwiftUI weight-loss companion for iPhone, iPad and Apple Watch. Data lives on-device in SwiftData, with optional CloudKit sync and HealthKit read/write.
+SwiftUI weight-loss companion for iPhone, iPad, Mac and Apple Watch. Data lives on-device in SwiftData, with optional CloudKit sync and HealthKit read/write on supported devices.
 
 ## Layout
 
@@ -10,6 +10,8 @@ SwiftUI weight-loss companion for iPhone, iPad and Apple Watch. Data lives on-de
   - `Views/` – SwiftUI screens
   - `Intents/` – App Intents / Shortcuts
 - `StrideWatch/` – watchOS app
+- `StrideMac/` – native macOS entitlements; the `StrideMac` target shares `FitnessApp/` sources
+- `StrideMacUITests/` – native Mac navigation, keyboard and onboarding tests
 - `StrideWidgets/` – widgets, Live Activity and Control Center controls
 - `FitnessAppTests/` – unit tests (one `*Tests.swift` per service)
 - `FitnessAppUITests/` – one XCUITest class per area (`SmokeTests`, `SettingsTests`, `LoggingTests`, `PlannerTests`…), all run in CI, plus iPhone/iPad screenshot tests that aren't
@@ -32,6 +34,8 @@ CI builds with Xcode 26 (iOS 26 SDK; local Xcode is newer, so check that APIs ex
 CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then every UI test class except `ScreenshotTests`/`IPadScreenshotTests` on an iPhone simulator. New UI test classes are picked up without editing the workflow. UI tests launch with `-demoData` (Sam's profile, six weeks of weigh-ins, a week of food logs, a meal plan for today and tomorrow) or `-resetData` (onboarding). The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
 
 Screenshots (`.github/workflows/screenshots.yml`) run nightly, on pushes to `claude/**` branches, and on demand (Actions → Screenshots → Run workflow). They publish to the `screenshots` branch.
+
+CI also runs `IPadSupportTests` on an iPad simulator and the `StrideMac` scheme on macOS. All three platform jobs must pass before merging. See [docs/PLATFORMS.md](docs/PLATFORMS.md) for platform differences and Mac signing setup. macOS deployment is 14; include `macOS 26` in availability checks for new shared APIs. Keep UIKit/AppKit adaptation in the platform helpers and guard mobile-only services with `#if os(iOS)`.
 
 ## Conventions
 

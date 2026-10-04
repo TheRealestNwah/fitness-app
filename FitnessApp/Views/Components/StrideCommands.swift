@@ -38,6 +38,7 @@ extension FocusedValues {
 
 /// Menu bar commands (iPadOS menu bar and the ⌘-hold overlay on a hardware keyboard).
 struct StrideCommands: Commands {
+    @Environment(\.openWindow) private var openWindow
     @FocusedValue(\.sceneActions) private var actions
     @FocusedValue(\.diaryDayActions) private var diary
 
@@ -45,7 +46,10 @@ struct StrideCommands: Commands {
 
     var body: some Commands {
         // ⌘N logs food rather than opening a new window.
-        CommandGroup(replacing: .newItem) {}
+        CommandGroup(replacing: .newItem) {
+            Button("New Window") { openWindow(id: "main") }
+                .keyboardShortcut("n", modifiers: [.command, .shift])
+        }
         CommandGroup(replacing: .appSettings) {
             Button("Settings…") { actions?.openSettings() }
                 .keyboardShortcut(",")

@@ -1,7 +1,9 @@
 import SwiftUI
 import SwiftData
 import Vision
+#if os(iOS)
 import VisionKit
+#endif
 
 /// Wraps an unknown barcode so it can drive `sheet(item:)`.
 struct UnknownBarcode: Identifiable {
@@ -10,6 +12,7 @@ struct UnknownBarcode: Identifiable {
 }
 
 /// Live camera barcode reader. Falls back to nothing on devices (and the simulator) without support.
+#if os(iOS)
 struct BarcodeScannerView: UIViewControllerRepresentable {
     var onScan: (String) -> Void
 
@@ -55,6 +58,14 @@ struct BarcodeScannerView: UIViewControllerRepresentable {
         }
     }
 }
+
+#else
+struct BarcodeScannerView: View {
+    static let isSupported = false
+    var onScan: (String) -> Void
+    var body: some View { EmptyView() }
+}
+#endif
 
 /// Scans (or accepts a typed) barcode, looks it up, and hands back a cached `FoodItem` or the unknown code.
 struct BarcodeScanSheet: View {
@@ -117,7 +128,7 @@ struct BarcodeScanSheet: View {
                         }
                         HStack {
                             TextField("Barcode number", text: $manualCode)
-                                .keyboardType(.numberPad)
+                                .strideKeyboard(.numberPad)
                                 .accessibilityIdentifier("barcodeField")
                             Button("Look up") { lookup(manualCode) }
                                 .buttonStyle(.borderedProminent)
@@ -149,7 +160,7 @@ struct BarcodeScanSheet: View {
                 }
             }
             .navigationTitle("Scan barcode")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }

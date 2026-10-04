@@ -125,7 +125,7 @@ private struct FoodDrop: ViewModifier {
 }
 
 private struct ImageDrop: ViewModifier {
-    var perform: (UIImage) -> Void
+    var perform: (PlatformImage) -> Void
     @State private var isTargeted = false
 
     func body(content: Content) -> some View {
@@ -134,7 +134,7 @@ private struct ImageDrop: ViewModifier {
                 guard let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.image.identifier) })
                 else { return false }
                 _ = provider.loadDataRepresentation(for: .image) { data, _ in
-                    guard let data, let image = UIImage(data: data) else { return }
+                    guard let data, let image = PlatformImage(data: data) else { return }
                     DispatchQueue.main.async { perform(image) }
                 }
                 return true
@@ -150,14 +150,14 @@ extension View {
     }
 
     /// Accepts an image dragged in from Photos, Files or another app.
-    func imageDropDestination(perform: @escaping (UIImage) -> Void) -> some View {
+    func imageDropDestination(perform: @escaping (PlatformImage) -> Void) -> some View {
         modifier(ImageDrop(perform: perform))
     }
 
     /// A card that does something when tapped: highlighted under the pointer on iPad.
     func tappableCard() -> some View {
         card()
-            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .hoverEffect(.highlight)
+            .contentShape(.interaction, RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .strideHoverEffect()
     }
 }

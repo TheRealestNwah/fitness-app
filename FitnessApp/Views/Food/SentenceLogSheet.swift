@@ -101,14 +101,14 @@ struct SentenceLogSheet: View {
                 }
             }
             .navigationTitle("Describe what you ate")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") { log() }.disabled(toLog.isEmpty)
                 }
             }
-            .sheet(item: Binding(get: { choosingFor.flatMap { id in lines.first { $0.id == id } } },
+            .strideSheet(item: Binding(get: { choosingFor.flatMap { id in lines.first { $0.id == id } } },
                                  set: { choosingFor = $0?.id })) { line in
                 FoodPickerSheet(initialQuery: line.item.name) { food in
                     guard let index = lines.firstIndex(where: { $0.id == line.id }) else { return }
@@ -245,7 +245,7 @@ struct FoodPickerSheet: View {
             }
             .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
             .navigationTitle("Choose a food")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
