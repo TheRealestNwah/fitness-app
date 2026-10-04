@@ -261,7 +261,7 @@ struct FoodSearchView: View {
                     ForEach(filtered) { food in foodRow(food) }
                 }
             }
-            .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
+            .searchable(text: $search, placement: .strideSearch, prompt: "Search foods")
             .onSubmit(of: .search) { rememberSearch() }
             .navigationTitle("Log food")
             .inlineNavigationTitle()

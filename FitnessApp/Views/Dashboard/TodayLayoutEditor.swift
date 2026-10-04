@@ -36,7 +36,7 @@ struct TodayLayoutEditor: View {
                         .disabled(layout.isDefault)
                 }
             }
-            .environment(\.editMode, .constant(.active))
+            .diarySelectionMode(.constant(true))
             .navigationTitle("Customise Today")
             .inlineNavigationTitle()
             .toolbar {

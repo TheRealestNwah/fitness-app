@@ -442,7 +442,7 @@ struct PlanItemPicker: View {
                     }
                 }
             }
-            .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always))
+            .searchable(text: $search, placement: .strideSearch)
             .navigationTitle("Plan \(mealType.inSentence)")
             .inlineNavigationTitle()
             .toolbar {

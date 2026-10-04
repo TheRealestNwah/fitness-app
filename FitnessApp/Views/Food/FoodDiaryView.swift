@@ -235,7 +235,7 @@ struct DayDiaryView: View {
     @State private var checkingIn: MealType?
     @Query private var checkIns: [MealCheckIn]
     @State private var photographing: MealType?
-    @State private var editMode: EditMode = .inactive
+    @State private var isSelecting = false
     @State private var selection: Set<PersistentIdentifier> = []
     @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 104
 
@@ -257,7 +257,6 @@ struct DayDiaryView: View {
                          sort: \FoodLogEntry.date, order: .reverse)
     }
 
-    private var isSelecting: Bool { editMode.isEditing }
 
     private var selectedEntries: [FoodLogEntry] {
         entries.filter { selection.contains($0.persistentModelID) }
@@ -265,7 +264,7 @@ struct DayDiaryView: View {
 
     private func endSelecting() {
         withAnimation {
-            editMode = .inactive
+            isSelecting = false
             selection = []
         }
     }
@@ -416,7 +415,7 @@ struct DayDiaryView: View {
             }
         }
         .strideListStyle()
-        .environment(\.editMode, $editMode)
+        .diarySelectionMode($isSelecting)
         .toolbar { selectionToolbar }
         .onChange(of: entries.isEmpty) { _, empty in
             if empty { endSelecting() }
@@ -621,7 +620,7 @@ struct DayDiaryView: View {
             if isSelecting {
                 Button("Done") { endSelecting() }
             } else if !entries.isEmpty {
-                Button("Select") { withAnimation { editMode = .active } }
+                Button("Select") { withAnimation { isSelecting = true } }
             }
         }
         if isSelecting {

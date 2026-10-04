@@ -243,7 +243,7 @@ struct FoodPickerSheet: View {
                     }
                 }
             }
-            .searchable(text: $search, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search foods")
+            .searchable(text: $search, placement: .strideSearch, prompt: "Search foods")
             .navigationTitle("Choose a food")
             .inlineNavigationTitle()
             .toolbar {

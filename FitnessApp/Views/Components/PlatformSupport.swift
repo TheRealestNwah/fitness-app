@@ -68,6 +68,16 @@ extension EnvironmentValues {
 
 enum StrideKeyboard { case decimalPad, numberPad, URL }
 
+extension SearchFieldPlacement {
+    static var strideSearch: SearchFieldPlacement {
+        #if os(macOS)
+        .toolbar
+        #else
+        .navigationBarDrawer(displayMode: .always)
+        #endif
+    }
+}
+
 extension ToolbarItemPlacement {
     static var strideBottomBar: ToolbarItemPlacement {
         #if os(macOS)
@@ -79,6 +89,16 @@ extension ToolbarItemPlacement {
 }
 
 extension View {
+    @ViewBuilder
+    func diarySelectionMode(_ selecting: Binding<Bool>) -> some View {
+        #if os(iOS)
+        environment(\.editMode, Binding(get: { selecting.wrappedValue ? .active : .inactive },
+                                       set: { selecting.wrappedValue = $0.isEditing }))
+        #else
+        self
+        #endif
+    }
+
     @ViewBuilder
     func platformWindow() -> some View {
         #if os(macOS)
@@ -161,7 +181,7 @@ extension View {
     }
 
     func strideSheet<Item: Identifiable, Content: View>(item: Binding<Item?>,
-                                                       @ViewBuilder content: @escaping (Item) -> Content) -> some View {
+                                                      @ViewBuilder content: @escaping (Item) -> Content) -> some View {
         sheet(item: item) { content($0).platformSheetSize() }
     }
 }
