@@ -42,9 +42,9 @@ enum DemoData {
         try? context.save()
     }
 
-    static func load(context: ModelContext) {
+    static func load(context: ModelContext, now: Date = .now) {
         let cal = Calendar.current
-        let today = Date.now.startOfDay
+        let today = now.startOfDay
         func day(_ offset: Int, hour: Int = 8) -> Date {
             cal.date(byAdding: .hour, value: hour, to: today.adding(days: offset)) ?? today
         }
@@ -67,7 +67,8 @@ enum DemoData {
         for offset in stride(from: -42, through: 0, by: 1) {
             if offset % 7 == 3 { continue } // an occasional missed day
             let noise = [0.4, -0.3, 0.2, -0.5, 0.1, -0.2, 0.3][abs(offset) % 7]
-            let entry = WeightEntry(date: day(offset, hour: 7), weightKg: (weight + noise * 0.6).rounded(toPlaces: 1))
+            // Recorded measurements must precede anything the user logs after launch, even before 7 am.
+            let entry = WeightEntry(date: min(day(offset, hour: 7), now), weightKg: (weight + noise * 0.6).rounded(toPlaces: 1))
             context.insert(entry)
             weight -= 0.5 / 7
         }
@@ -125,7 +126,7 @@ enum DemoData {
             (121, 78, 65, 31.2, 84.5, 7.6),
         ]
         for (i, v) in bp.enumerated() {
-            let entry = VitalsEntry(date: day(-42 + i * 7, hour: 7))
+            let entry = VitalsEntry(date: min(day(-42 + i * 7, hour: 7), now))
             entry.systolic = v.0
             entry.diastolic = v.1
             entry.restingHeartRate = v.2
