@@ -48,6 +48,10 @@ final class FavouritesTests: XCTestCase {
 
     func testSavedFavouriteCanBeLoggedFromSearch() {
         let app = openDiary()
+        let oats = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Overnight oats with berries"))
+        let coffee = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Coffee, black"))
+        XCTAssertEqual(oats.count, 1)
+        XCTAssertEqual(coffee.count, 1)
         app.buttons["Breakfast options"].tap()
         let save = app.buttons["Save as favourite meal"]
         XCTAssertTrue(save.waitForExistence(timeout: 5))
@@ -67,11 +71,18 @@ final class FavouritesTests: XCTestCase {
         reveal(add, in: app)
         add.tap()
         XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 5))
+        app.segmentedControls.buttons["Breakfast"].tap()
         let favourite = button(beginningWith: "UI test breakfast", in: app)
         reveal(favourite, in: app)
         favourite.tap()
 
-        let logged = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Logged “UI test breakfast”")).firstMatch
-        XCTAssertTrue(logged.waitForExistence(timeout: 5), "Tapping a favourite should log it")
+        // The confirmation lasts only 1.2 seconds; XCTest may wait for it to disappear
+        // before returning from tap(). Verify both persisted diary lines instead.
+        XCTAssertTrue(app.navigationBars["Log food"].waitForNonExistence(timeout: 10))
+        let hasTwoEntries = NSPredicate(format: "count == 2")
+        let loggedOats = XCTNSPredicateExpectation(predicate: hasTwoEntries, object: oats)
+        let loggedCoffee = XCTNSPredicateExpectation(predicate: hasTwoEntries, object: coffee)
+        XCTAssertEqual(XCTWaiter.wait(for: [loggedOats, loggedCoffee], timeout: 10), .completed,
+                       "Logging the favourite should add each saved item exactly once")
     }
 }
