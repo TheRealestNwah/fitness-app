@@ -107,6 +107,7 @@ extension View {
         }
         .frame(minWidth: 760, minHeight: 560)
         .formStyle(.grouped)
+        .menuStyle(.borderlessButton)
         #else
         self
         #endif
@@ -171,6 +172,7 @@ extension View {
         #if os(macOS)
         frame(minWidth: 500, idealWidth: 580, minHeight: 440, idealHeight: 650)
             .formStyle(.grouped)
+            .menuStyle(.borderlessButton)
         #else
         self
         #endif

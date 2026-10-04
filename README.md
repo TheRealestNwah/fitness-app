@@ -1,4 +1,4 @@
-# Stride — iOS weight-loss companion
+# Stride — weight-loss companion for iPhone, iPad and Mac
 
 A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-device (SwiftData), no account required.
 

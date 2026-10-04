@@ -2,7 +2,7 @@
 import SwiftUI
 import AppKit
 
-/// Removes protected content (including sheets) while locked. Each window authenticates separately.
+/// Removes protected content, including sheets, while locked or inactive.
 struct AppLockGate: ViewModifier {
     @AppStorage(AppLock.enabledKey) private var enabled = false
     @AppStorage(AppLock.graceKey) private var graceRaw = AppLock.Grace.immediately.rawValue
@@ -13,14 +13,11 @@ struct AppLockGate: ViewModifier {
 
     func body(content: Content) -> some View {
         ZStack {
-            if enabled && locked {
-                LockCover(locked: true, unlock: unlock)
+            if enabled && (locked || inactive) {
+                LockCover(locked: locked && !inactive, unlock: unlock)
             } else {
                 content
                     .privacySensitive(enabled)
-            }
-            if enabled && inactive {
-                Rectangle().fill(.ultraThickMaterial).ignoresSafeArea()
             }
         }
         .environment(\.isAppLocked, enabled && locked)

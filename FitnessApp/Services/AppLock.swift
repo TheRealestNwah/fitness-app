@@ -247,8 +247,13 @@ struct AppLockSection: View {
         } header: {
             Text("Privacy")
         } footer: {
+            #if os(macOS)
+            Text(failed ? "Couldn't confirm it's you. Set an account password to use the lock."
+                        : "Uses Touch ID or your account password to unlock Stride. Switching away hides your data and closes open sheets; save edits first.")
+            #else
             Text(failed ? "Couldn't confirm it's you. Set a passcode on this device to use the lock."
                         : "Asks for \(AppLock.methodName) or your passcode when Stride opens, and hides it in the app switcher.")
+            #endif
         }
     }
 }

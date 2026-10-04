@@ -23,7 +23,7 @@ final class MacSupportTests: XCTestCase {
         for (section, control) in [("Food", "Add food"), ("Weight", "Weigh in"),
                                    ("Vitals", "Add reading"), ("Plan", "Recipes")] {
             select(section, in: app)
-            XCTAssertTrue(app.buttons[control].firstMatch.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.descendants(matching: .any)[control].firstMatch.waitForExistence(timeout: 5))
             let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
             attachment.name = "mac-\(section.lowercased())"
             attachment.lifetime = .keepAlways
@@ -49,7 +49,7 @@ final class MacSupportTests: XCTestCase {
         let banana = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Banana, 1 medium")).firstMatch
         XCTAssertTrue(banana.waitForExistence(timeout: 5))
         banana.click()
-        let log = app.buttons["Log"].firstMatch
+        let log = app.sheets.buttons["Log"].firstMatch
         XCTAssertTrue(log.waitForExistence(timeout: 5))
         log.click()
         XCTAssertTrue(log.waitForNonExistence(timeout: 5))

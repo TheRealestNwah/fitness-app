@@ -16,7 +16,7 @@ The sidebar stays available as the window resizes. Wider windows show the diary 
 - Mac photos use the Photos picker or image drag and drop. Barcode lookup accepts typed codes; live camera scanning and camera capture remain on supported iOS devices.
 - Apple Health and live workout recording require a supported iPhone/iPad. Health-derived records already imported into Stride can sync through Stride's optional iCloud sync.
 - Apple Watch pairing, iOS widgets, Live Activities, and iOS background refresh stay in the existing mobile targets. The native Mac target does not embed those extensions.
-- The Mac app lock uses Touch ID or the account password. Locking removes protected screens and closes their sheets; save edits before switching away when immediate locking is enabled.
+- The Mac app lock uses Touch ID or the account password. When enabled, switching away removes protected screens and closes their sheets, including during the grace period; save edits before switching away. Returning within the grace period does not require another authentication.
 
 ## Validation
 

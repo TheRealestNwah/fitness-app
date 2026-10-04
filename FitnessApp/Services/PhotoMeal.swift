@@ -53,12 +53,14 @@ enum PhotoMeal {
         let size = CGSize(width: image.size.width * scale, height: image.size.height * scale)
         #if os(macOS)
         guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width),
-                                            pixelsHigh: Int(size.height), bitsPerSample: 8, samplesPerPixel: 3,
-                                            hasAlpha: false, isPlanar: false, colorSpaceName: .deviceRGB,
+                                            pixelsHigh: Int(size.height), bitsPerSample: 8, samplesPerPixel: 4,
+                                            hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB,
                                             bytesPerRow: 0, bitsPerPixel: 0),
               let graphics = NSGraphicsContext(bitmapImageRep: bitmap) else { return nil }
         NSGraphicsContext.saveGraphicsState()
         NSGraphicsContext.current = graphics
+        NSColor.white.setFill()
+        CGRect(origin: .zero, size: size).fill()
         image.draw(in: CGRect(origin: .zero, size: size))
         NSGraphicsContext.restoreGraphicsState()
         return bitmap.representation(using: .jpeg, properties: [.compressionFactor: quality])
