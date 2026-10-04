@@ -180,6 +180,12 @@ jobs:
             -destination 'platform=macOS' -parallel-testing-enabled NO \
             -resultBundlePath macos.xcresult CODE_SIGNING_ALLOWED=NO \
             > macos.log 2>&1 || { tail -120 macos.log; exit 1; }
+      - name: Export Mac UI screenshots
+        if: always()
+        run: |
+          if [ -d macos.xcresult ]; then
+            xcrun xcresulttool export attachments --path macos.xcresult --output-path macos-screenshots
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -187,3 +193,4 @@ jobs:
           path: |
             macos.log
             macos.xcresult
+            macos-screenshots

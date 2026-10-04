@@ -42,8 +42,25 @@ final class MacSupportTests: XCTestCase {
         let app = launch()
         select("Today", in: app)
         app.typeKey("n", modifierFlags: .command)
-        XCTAssertTrue(app.searchFields["Search foods"].waitForExistence(timeout: 10))
+        let search = app.searchFields["Search foods"]
+        XCTAssertTrue(search.waitForExistence(timeout: 10))
+        search.click()
+        search.typeText("Banana")
+        let banana = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Banana, 1 medium")).firstMatch
+        XCTAssertTrue(banana.waitForExistence(timeout: 5))
+        banana.click()
+        let log = app.buttons["Log"].firstMatch
+        XCTAssertTrue(log.waitForExistence(timeout: 5))
+        log.click()
+        XCTAssertTrue(log.waitForNonExistence(timeout: 5))
+        // End search before dismissing the food sheet.
+        search.click()
+        search.typeKey("a", modifierFlags: .command)
+        search.typeKey(XCUIKeyboardKey.delete.rawValue, modifierFlags: [])
         app.buttons["Done"].firstMatch.click()
+        app.typeKey("2", modifierFlags: .command)
+        let entry = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Banana, ")).firstMatch
+        XCTAssertTrue(entry.waitForExistence(timeout: 5))
         app.typeKey("n", modifierFlags: [.command, .shift])
         let windows = app.windows
         expectation(for: NSPredicate(format: "count >= 2"), evaluatedWith: windows)
