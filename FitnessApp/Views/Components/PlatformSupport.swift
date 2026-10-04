@@ -180,8 +180,7 @@ extension View {
         sheet(isPresented: isPresented) { content().platformSheetSize() }
     }
 
-    func strideSheet<Item: Identifiable, Content: View>(item: Binding<Item?>,
-                                                      @ViewBuilder content: @escaping (Item) -> Content) -> some View {
+    func strideSheet<Item: Identifiable, Content: View>(item: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> some View {
         sheet(item: item) { content($0).platformSheetSize() }
     }
 }

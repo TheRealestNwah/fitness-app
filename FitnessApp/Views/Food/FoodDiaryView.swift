@@ -257,7 +257,6 @@ struct DayDiaryView: View {
                          sort: \FoodLogEntry.date, order: .reverse)
     }
 
-
     private var selectedEntries: [FoodLogEntry] {
         entries.filter { selection.contains($0.persistentModelID) }
     }

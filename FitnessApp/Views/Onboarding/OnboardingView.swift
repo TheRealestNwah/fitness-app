@@ -178,7 +178,11 @@ struct OnboardingView: View {
                             ForEach(0..<12, id: \.self) { Text("\($0) in").tag($0) }
                         }
                     }
+                    #if os(macOS)
+                    .pickerStyle(.menu)
+                    #else
                     .pickerStyle(.wheel)
+                    #endif
                     .frame(height: 120)
                 }
             }

@@ -97,7 +97,15 @@ struct MonthlyReportView: View {
             .background(Color.strideBackground)
             .environment(\.colorScheme, .light))
         renderer.scale = 3
+        #if os(macOS)
+        guard let tiff = renderer.nsImage?.tiffRepresentation,
+              let data = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) else {
+            shareURL = nil
+            return
+        }
+        #else
         guard let data = renderer.uiImage?.pngData() else { shareURL = nil; return }
+        #endif
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("monthly-report.png")
         shareURL = (try? data.write(to: url)).map { url }
     }

@@ -20,9 +20,16 @@ final class MacSupportTests: XCTestCase {
 
     func testSidebarAndSettings() {
         let app = launch()
-        for section in ["Food", "Weight", "Vitals", "Plan", "Settings", "Today"] {
+        for (section, control) in [("Food", "Add food"), ("Weight", "Weigh in"),
+                                   ("Vitals", "Add reading"), ("Plan", "Recipes")] {
             select(section, in: app)
+            XCTAssertTrue(app.buttons[control].firstMatch.waitForExistence(timeout: 5))
+            let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+            attachment.name = "mac-\(section.lowercased())"
+            attachment.lifetime = .keepAlways
+            add(attachment)
         }
+        select("Today", in: app)
         app.typeKey(",", modifierFlags: .command)
         XCTAssertTrue(app.searchFields["Search settings"].waitForExistence(timeout: 5))
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
