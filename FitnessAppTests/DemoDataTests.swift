@@ -31,7 +31,7 @@ final class DemoDataTests: XCTestCase {
             XCTAssertEqual(weights.map(\.date).max(), now)
             XCTAssertEqual(vitals.map(\.date).max(), now)
             let plans = try container.mainContext.fetch(FetchDescriptor<MealPlanEntry>())
-            XCTAssertTrue(plans.contains { $0.date.startOfDay > now.startOfDay }, "Tomorrow's plan must stay in the future")
+            XCTAssertTrue(plans.contains { $0.day.startOfDay > now.startOfDay }, "Tomorrow's plan must stay in the future")
         }
     }
 
