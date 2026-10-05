@@ -2,9 +2,9 @@ import Foundation
 import HealthKit
 
 // The HealthKit Medications API needs the iOS 26 SDK (Xcode 26, Swift 6.2).
-#if compiler(>=6.2)
+#if os(iOS) && compiler(>=6.2)
 /// Reads GLP-1 doses people logged in the Health app's Medications section.
-@available(iOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, *)
 enum MedicationHealthImport {
     struct Dose: Equatable {
         var id: UUID

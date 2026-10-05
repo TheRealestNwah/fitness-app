@@ -4,7 +4,7 @@ import SwiftData
 
 struct RecipeLibraryView: View {
     @Environment(\.modelContext) private var context
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
     @Environment(\.openWindow) private var openWindow
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Query(sort: \Recipe.name) private var recipes: [Recipe]
@@ -91,11 +91,11 @@ struct RecipeLibraryView: View {
                 }
             }
         }
-        .listStyle(.insetGrouped)
+        .strideListStyle()
         .searchable(text: $search, prompt: "Search recipes or tags")
-        .sheet(isPresented: $showEditor) { RecipeEditorView() }
-        .sheet(isPresented: $showImport) { ImportRecipeSheet() }
-        .sheet(isPresented: $showScan) { ScanRecipeSheet() }
+        .strideSheet(isPresented: $showEditor) { RecipeEditorView() }
+        .strideSheet(isPresented: $showImport) { ImportRecipeSheet() }
+        .strideSheet(isPresented: $showScan) { ScanRecipeSheet() }
     }
 
     /// Pushes the recipe on iPhone; selects it for the side-by-side detail on iPad.
@@ -138,7 +138,7 @@ struct FilterChip: View {
                 .font(.subheadline.weight(.medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isOn ? Color.accentColor : Color(.tertiarySystemFill), in: Capsule())
+                .background(isOn ? Color.accentColor : Color.strideFill, in: Capsule())
                 .foregroundStyle(isOn ? Color.white : Color.primary)
         }
         .buttonStyle(.plain)
@@ -213,7 +213,7 @@ struct RecipeDetailView: View {
                                 .font(.footnote)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color(.tertiarySystemFill), in: Capsule())
+                                .background(Color.strideFill, in: Capsule())
                         }
                     }
                 }
@@ -273,11 +273,11 @@ struct RecipeDetailView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.strideBackground)
         .navigationTitle(recipe.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button { showBatch = true } label: {
                         Label("Start a meal-prep batch", systemImage: "takeoutbag.and.cup.and.straw")
@@ -295,16 +295,16 @@ struct RecipeDetailView: View {
                 .accessibilityLabel("More")
             }
         }
-        .sheet(isPresented: $showLog) {
+        .strideSheet(isPresented: $showLog) {
             LogRecipeSheet(recipe: recipe, date: .now, mealType: recipe.mealType)
         }
-        .sheet(isPresented: $showPlan) {
+        .strideSheet(isPresented: $showPlan) {
             AddToPlanSheet(recipe: recipe)
         }
-        .sheet(isPresented: $showEditor) {
+        .strideSheet(isPresented: $showEditor) {
             RecipeEditorView(recipe: recipe)
         }
-        .sheet(isPresented: $showBatch) {
+        .strideSheet(isPresented: $showBatch) {
             StartBatchSheet(recipe: recipe)
         }
     }
@@ -337,7 +337,7 @@ struct StartBatchSheet: View {
                 }
             }
             .navigationTitle("Meal-prep batch")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -373,7 +373,7 @@ struct AddToPlanSheet: View {
                 ServingsControl(servings: $servings, description: "1 serving of recipe")
             }
             .navigationTitle("Add to plan")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -458,7 +458,7 @@ struct RecipeEditorView: View {
                 }
             }
             .navigationTitle(recipe == nil ? "New recipe" : "Edit recipe")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -466,7 +466,7 @@ struct RecipeEditorView: View {
                         .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || ingredients.isEmpty)
                 }
             }
-            .sheet(isPresented: $showIngredientSheet) {
+            .strideSheet(isPresented: $showIngredientSheet) {
                 IngredientEditor { ingredients.append($0) }
             }
             .onAppear {
@@ -590,7 +590,7 @@ struct IngredientEditor: View {
                 }
             }
             .navigationTitle("Add ingredient")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -638,8 +638,8 @@ struct ImportRecipeSheet: View {
                 Form {
                     Section {
                         TextField("https://", text: $address)
-                            .keyboardType(.URL)
-                            .textInputAutocapitalization(.never)
+                            .strideKeyboard(.URL)
+                            .withoutAutocapitalization()
                             .autocorrectionDisabled()
                     } footer: {
                         Text("Works with most recipe sites. Ingredients come in without nutrition unless the page lists it; edit them in the recipe to add it from your food list.")
@@ -652,7 +652,7 @@ struct ImportRecipeSheet: View {
                     }
                 }
                 .navigationTitle("Import recipe")
-                .navigationBarTitleDisplayMode(.inline)
+                .inlineNavigationTitle()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                     ToolbarItem(placement: .confirmationAction) {
@@ -694,7 +694,7 @@ struct ScanRecipeSheet: View {
             NavigationStack {
                 Form {
                     Section {
-                        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        if CameraPicker.isAvailable {
                             Button { showCamera = true } label: {
                                 Label("Photograph the page", systemImage: "camera")
                             }
@@ -713,17 +713,17 @@ struct ScanRecipeSheet: View {
                     }
                 }
                 .navigationTitle("Scan recipe")
-                .navigationBarTitleDisplayMode(.inline)
+                .inlineNavigationTitle()
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 }
-                .fullScreenCover(isPresented: $showCamera) {
+                .cameraPresentation(isPresented: $showCamera) {
                     CameraPicker { image in read(image) }.ignoresSafeArea()
                 }
                 .onChange(of: libraryItem) { _, item in
                     guard let item else { return }
                     Task {
-                        if let data = try? await item.loadTransferable(type: Data.self), let image = UIImage(data: data) {
+                        if let data = try? await item.loadTransferable(type: Data.self), let image = PlatformImage(data: data) {
                             read(image)
                         }
                         libraryItem = nil
@@ -733,7 +733,7 @@ struct ScanRecipeSheet: View {
         }
     }
 
-    private func read(_ image: UIImage) {
+    private func read(_ image: PlatformImage) {
         reading = true
         error = nil
         Task { @MainActor in

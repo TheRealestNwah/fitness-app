@@ -35,7 +35,7 @@ struct MealCheckInSheet: View {
                 }
             }
             .navigationTitle(mealType.label)
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

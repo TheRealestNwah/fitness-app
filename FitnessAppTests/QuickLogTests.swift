@@ -99,9 +99,11 @@ final class QuickLogTests: XCTestCase {
         XCTAssertEqual(try QuickLog.toggleFast(context: context, now: noon).targetHours, 16)
     }
 
+    #if os(iOS)
     func testHomeQuickActionsRoundTripAndFollowTheFast() {
         let idle = HomeQuickAction.items(fastRunning: false)
         XCTAssertEqual(idle.compactMap { HomeQuickAction($0) }, HomeQuickAction.allCases)
         XCTAssertNotEqual(idle.last?.localizedTitle, HomeQuickAction.items(fastRunning: true).last?.localizedTitle)
     }
+    #endif
 }

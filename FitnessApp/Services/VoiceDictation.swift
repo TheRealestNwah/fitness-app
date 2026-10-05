@@ -89,9 +89,11 @@ final class VoiceDictation {
             return
         }
         do {
+            #if os(iOS)
             let audioSession = AVAudioSession.sharedInstance()
             try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+            #endif
 
             let request = SFSpeechAudioBufferRecognitionRequest()
             request.shouldReportPartialResults = true
@@ -148,7 +150,9 @@ final class VoiceDictation {
         }
         request?.endAudio()
         request = nil
+        #if os(iOS)
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        #endif
     }
 
     private static func authorize() async -> Bool {
@@ -156,6 +160,10 @@ final class VoiceDictation {
             SFSpeechRecognizer.requestAuthorization { continuation.resume(returning: $0 == .authorized) }
         }
         guard speech else { return false }
+        #if os(macOS)
+        return await AVCaptureDevice.requestAccess(for: .audio)
+        #else
         return await AVAudioApplication.requestRecordPermission()
+        #endif
     }
 }

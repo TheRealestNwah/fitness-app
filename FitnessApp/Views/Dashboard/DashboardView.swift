@@ -8,7 +8,7 @@ struct DashboardView: View {
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
 
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query(sort: \VitalsEntry.date, order: .reverse) private var vitals: [VitalsEntry]
@@ -147,10 +147,10 @@ struct DashboardView: View {
                 }
                 .padding()
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.strideBackground)
             .navigationTitle("Today")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button {
                         if let openSettings { openSettings() } else { showSettings = true }
                     } label: {
@@ -160,11 +160,11 @@ struct DashboardView: View {
                     .accessibilityIdentifier("openSettings")
                 }
             }
-            .sheet(isPresented: $showAddWeight) { AddWeightSheet() }
+            .strideSheet(isPresented: $showAddWeight) { AddWeightSheet() }
             .task { await HealthKitManager.shared.refreshCycle() }
-            .sheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
-            .sheet(isPresented: $showAddVitals) { AddVitalsSheet() }
-            .sheet(isPresented: $showSettings) { SettingsView() }
+            .strideSheet(isPresented: $showAddFood) { FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current()) }
+            .strideSheet(isPresented: $showAddVitals) { AddVitalsSheet() }
+            .strideSheet(isPresented: $showSettings) { SettingsView() }
             .modifier(TodayHaptics(foodCount: todaysFood.count, weighIns: weights.count,
                                    waterMl: waterMl, waterGoalMl: profile.waterGoalMl, streak: streak))
         }
@@ -223,7 +223,7 @@ struct DashboardView: View {
         }
         .buttonStyle(.bordered)
         .padding(.top, 4)
-        .sheet(isPresented: $showLayoutEditor) { TodayLayoutEditor() }
+        .strideSheet(isPresented: $showLayoutEditor) { TodayLayoutEditor() }
     }
 
     private var header: some View {
@@ -314,7 +314,7 @@ struct DashboardView: View {
         }
         .card()
         // Kept on the card rather than the body, which is near the type checker's limit.
-        .sheet(isPresented: $showQuickAdd) {
+        .strideSheet(isPresented: $showQuickAdd) {
             QuickAddSheet(date: Date.now.startOfDay, mealType: MealType.current())
         }
     }
@@ -409,7 +409,7 @@ struct DashboardView: View {
                 }
             }
             .buttonStyle(.plain)
-            .hoverEffect(.highlight)
+            .strideHoverEffect()
             if MaintenanceCalculator.shouldOffer(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays),
                                                  goalKg: profile.goalWeightKg,
                                                  isMaintaining: profile.isMaintaining) {
@@ -775,10 +775,10 @@ struct QuickActionButton: View {
                     .foregroundStyle(Color.primary)
             }
             .frame(maxWidth: .infinity)
-            .contentShape(.hoverEffect, RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .contentShape(.interaction, RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
-        .hoverEffect(.highlight)
+        .strideHoverEffect()
     }
 }
 

@@ -1,5 +1,9 @@
 import Foundation
+#if os(iOS)
 import UIKit
+#else
+import AppKit
+#endif
 import Vision
 #if canImport(FoundationModels)
 import FoundationModels
@@ -18,11 +22,11 @@ enum PhotoFoodRecognizer {
         var source: String
     }
 
-    static func suggestions(for image: UIImage, foods: [FoodItem]) async -> [Suggestion] {
+    static func suggestions(for image: PlatformImage, foods: [FoodItem]) async -> [Suggestion] {
         let labels = await classify(image)
         var names = PhotoFoodSuggester.candidates(labels)
         #if canImport(FoundationModels)
-        if #available(iOS 26.0, *), !names.isEmpty, let described = await PlateDescriber.foods(from: names) {
+        if #available(iOS 26.0, macOS 26.0, *), !names.isEmpty, let described = await PlateDescriber.foods(from: names) {
             names = described + names
         }
         #endif
@@ -30,7 +34,7 @@ enum PhotoFoodRecognizer {
     }
 
     /// Vision's labels for the image with their confidence.
-    static func classify(_ image: UIImage) async -> [(label: String, confidence: Float)] {
+    static func classify(_ image: PlatformImage) async -> [(label: String, confidence: Float)] {
         guard let cgImage = image.cgImage else { return [] }
         return await Task.detached(priority: .userInitiated) {
             let request = VNClassifyImageRequest()
@@ -82,14 +86,14 @@ enum PhotoFoodSuggester {
 }
 
 #if canImport(FoundationModels)
-@available(iOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, *)
 @Generable
 struct PlateGuess {
     @Guide(description: "The foods most likely on the plate, most prominent first, each as a short everyday name with a typical single-person amount, such as \"2 eggs\", \"1 cup rice\" or \"1 slice pizza\". At most five.")
     var foods: [String]
 }
 
-@available(iOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, *)
 enum PlateDescriber {
     /// Likely foods with amounts for the image labels, or nil when the model isn't available.
     static func foods(from labels: [String]) async -> [String]? {

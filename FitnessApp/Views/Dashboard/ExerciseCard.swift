@@ -33,8 +33,8 @@ struct ExerciseCard: View {
                 }
                 .buttonStyle(.bordered)
             }
-            #if compiler(>=6.2)
-            if #available(iOS 26.0, *), healthEnabled, HealthKitManager.isAvailable {
+            #if os(iOS) && compiler(>=6.2)
+            if #available(iOS 26.0, macOS 26.0, *), healthEnabled, HealthKitManager.isAvailable {
                 PhoneWorkoutPanel(weightKg: weightKg)
             }
             #endif
@@ -72,13 +72,13 @@ struct ExerciseCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .card()
-        .sheet(isPresented: $showLog) { LogExerciseSheet(weightKg: weightKg) }
+        .strideSheet(isPresented: $showLog) { LogExerciseSheet(weightKg: weightKg) }
     }
 }
 
-#if compiler(>=6.2)
+#if os(iOS) && compiler(>=6.2)
 /// Start, pause and finish a workout recorded on this iPhone.
-@available(iOS 26.0, *)
+@available(iOS 26.0, macOS 26.0, *)
 private struct PhoneWorkoutPanel: View {
     var weightKg: Double
 
@@ -202,7 +202,7 @@ struct LogExerciseSheet: View {
                 }
             }
             .navigationTitle("Log exercise")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

@@ -6,7 +6,7 @@ struct WeightView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
     /// iPad: the weigh-in shown beside the history.
     @State private var selectedEntry: WeightEntry?
     @Query(sort: \WeightEntry.date, order: .reverse) private var entries: [WeightEntry]
@@ -160,23 +160,23 @@ struct WeightView: View {
                     }
                 }
             }
-            .background(Color(.systemGroupedBackground))
+            .background(Color.strideBackground)
             .navigationTitle("Weight")
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button { showMonthly = true } label: { Image(systemName: "calendar.badge.checkmark") }
                         .accessibilityLabel("Monthly report")
                 }
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Weigh in")
                         .accessibilityIdentifier("addWeighIn")
                 }
             }
-            .sheet(isPresented: $showAdd) { AddWeightSheet() }
-            .sheet(isPresented: $showMonthly) { MonthlyReportView() }
+            .strideSheet(isPresented: $showAdd) { AddWeightSheet() }
+            .strideSheet(isPresented: $showMonthly) { MonthlyReportView() }
             .task { await HealthKitManager.shared.refreshCycle() }
-            .sheet(item: $editing) { AddWeightSheet(entry: $0) }
+            .strideSheet(item: $editing) { AddWeightSheet(entry: $0) }
             .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
         }
     }
@@ -423,8 +423,8 @@ struct WeighInDetailCard: View {
             if !entry.note.isEmpty {
                 Text(entry.note)
             }
-            if let data = entry.photo, let image = UIImage(data: data) {
-                Image(uiImage: image)
+            if let data = entry.photo, let image = PlatformImage(data: data) {
+                Image(platformImage: image)
                     .resizable()
                     .scaledToFit()
                     .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -467,7 +467,7 @@ struct AddWeightSheet: View {
                         Text("Weight")
                         Spacer()
                         TextField("Weight", value: $weight, format: .number.precision(.fractionLength(0...1)))
-                            .keyboardType(.decimalPad)
+                            .strideKeyboard(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .font(.title2.monospacedDigit())
                         Text(units.weightUnit).foregroundStyle(Color.secondary)
@@ -506,7 +506,7 @@ struct AddWeightSheet: View {
                 }
             }
             .navigationTitle(entry == nil ? "Weigh in" : "Edit weigh-in")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

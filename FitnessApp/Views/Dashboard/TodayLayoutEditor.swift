@@ -36,9 +36,9 @@ struct TodayLayoutEditor: View {
                         .disabled(layout.isDefault)
                 }
             }
-            .environment(\.editMode, .constant(.active))
+            .diarySelectionMode(.constant(true))
             .navigationTitle("Customise Today")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }

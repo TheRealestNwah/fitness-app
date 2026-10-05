@@ -1,4 +1,4 @@
-# Stride — iOS weight-loss companion
+# Stride — weight-loss companion for iPhone, iPad and Mac
 
 A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-device (SwiftData), no account required.
 
@@ -82,7 +82,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 **Everywhere else**
 - Home Screen and Lock Screen widgets: calories left, water, latest weight and streak
 - Apple Watch app with one-tap water logging, plus calories-left complications
-- Optional iCloud sync across iPhone and iPad (Settings → iCloud)
+- Optional iCloud sync across iPhone, iPad and Mac (Settings → iCloud)
 
 ## Project layout
 
@@ -145,3 +145,7 @@ never expected.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Native Mac app
+
+Select the **StrideMac** scheme in Xcode to run the native macOS 14+ app. It shares Stride’s models and SwiftUI screens, with a persistent sidebar, keyboard commands, multiple windows and native photo handling. See [platform support](docs/PLATFORMS.md) for setup, supported features and validation. CI also checks iPad navigation and compact windows on every code PR.

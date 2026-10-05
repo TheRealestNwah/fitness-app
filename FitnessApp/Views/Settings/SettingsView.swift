@@ -40,7 +40,7 @@ struct SettingsView: View {
             .searchable(text: $query, prompt: "Search settings")
             .readableWidth()
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .navigationDestination(for: SettingsPage.self) { page in
                 SettingsPageView(page: page) {
                     if isSheet { dismiss() }
@@ -93,7 +93,7 @@ struct ExportSheet: View {
                 }
             }
             .navigationTitle("Export")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
             }
@@ -150,7 +150,7 @@ struct ProfileEditorView: View {
                         Text("Height")
                         Spacer()
                         TextField("Height", value: $height, format: .number)
-                            .keyboardType(.decimalPad)
+                            .strideKeyboard(.decimalPad)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 100)
                         Text("cm").foregroundStyle(Color.secondary)
@@ -172,7 +172,7 @@ struct ProfileEditorView: View {
                     Text("Starting weight")
                     Spacer()
                     TextField("Start", value: $startWeight, format: .number.precision(.fractionLength(0...1)))
-                        .keyboardType(.decimalPad)
+                        .strideKeyboard(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
@@ -181,7 +181,7 @@ struct ProfileEditorView: View {
                     Text("Goal weight")
                     Spacer()
                     TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
-                        .keyboardType(.decimalPad)
+                        .strideKeyboard(.decimalPad)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
@@ -195,7 +195,7 @@ struct ProfileEditorView: View {
         }
         .readableWidth()
         .navigationTitle("Body & goals")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button("Save") { save() }

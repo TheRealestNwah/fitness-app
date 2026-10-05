@@ -37,7 +37,12 @@ enum AppLock {
         case .faceID: return String(localized: "Face ID")
         case .touchID: return String(localized: "Touch ID")
         case .opticID: return String(localized: "Optic ID")
-        default: return String(localized: "Passcode")
+        default:
+            #if os(macOS)
+            return String(localized: "Password")
+            #else
+            return String(localized: "Passcode")
+            #endif
         }
     }
 
@@ -50,6 +55,7 @@ enum AppLock {
 }
 
 /// Covers the app while locked, and blurs it in the app switcher when the lock is on.
+#if os(iOS)
 struct AppLockGate: ViewModifier {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(AppLock.enabledKey) private var enabled = false
@@ -112,7 +118,9 @@ struct AppLockGate: ViewModifier {
     }
 }
 
-private struct LockCover: View {
+#endif
+
+struct LockCover: View {
     var locked: Bool
     var unlock: () -> Void
 
@@ -135,6 +143,7 @@ private struct LockCover: View {
 }
 
 /// A window above everything else in the scene, sheets included, that holds the lock cover.
+#if os(iOS)
 @MainActor
 private final class LockWindow {
     private var window: UIWindow?
@@ -192,6 +201,8 @@ private struct WindowSceneReader: UIViewRepresentable {
     }
 }
 
+#endif
+
 extension View {
     func appLockGate() -> some View { modifier(AppLockGate()) }
 }
@@ -236,8 +247,13 @@ struct AppLockSection: View {
         } header: {
             Text("Privacy")
         } footer: {
+            #if os(macOS)
+            Text(failed ? "Couldn't confirm it's you. Set an account password to use the lock."
+                        : "Uses Touch ID or your account password to unlock Stride. Switching away hides your data and closes open sheets; save edits first.")
+            #else
             Text(failed ? "Couldn't confirm it's you. Set a passcode on this device to use the lock."
                         : "Asks for \(AppLock.methodName) or your passcode when Stride opens, and hides it in the app switcher.")
+            #endif
         }
     }
 }

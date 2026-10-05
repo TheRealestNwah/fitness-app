@@ -62,9 +62,9 @@ struct CorrelationsView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.strideBackground)
         .navigationTitle("Patterns")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 
     private var sleepSummary: String? {

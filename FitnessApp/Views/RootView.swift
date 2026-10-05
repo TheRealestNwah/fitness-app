@@ -34,6 +34,9 @@ struct RootView: View {
     }
 
     private func applyToWindows(_ appearance: Appearance) {
+        #if os(macOS)
+        NSApp.appearance = appearance == .system ? nil : NSAppearance(named: appearance == .dark ? .darkAqua : .aqua)
+        #else
         let style: UIUserInterfaceStyle = switch appearance {
         case .system: .unspecified
         case .light: .light
@@ -42,12 +45,15 @@ struct RootView: View {
         for case let scene as UIWindowScene in UIApplication.shared.connectedScenes {
             for window in scene.windows { window.overrideUserInterfaceStyle = style }
         }
+        #endif
     }
 
     private func resetAllData() async {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         SpotlightIndex.removeAll()
+        #if os(iOS)
         UIApplication.shared.shortcutItems = []
+        #endif
         // Let the Settings sheet finish dismissing and keep the progress visible long enough to read.
         try? await Task.sleep(for: .milliseconds(600))
         DemoData.wipe(context: context)
@@ -94,7 +100,7 @@ struct MainTabView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
     /// Per window, and restored when the app relaunches.
     @SceneStorage("section") private var selection: Tab = .today
     @State private var undoCenter = UndoCenter()
@@ -139,6 +145,14 @@ struct MainTabView: View {
         case settings
     }
 
+    private var usesSidebar: Bool {
+        #if os(macOS)
+        true
+        #else
+        sizeClass == .regular
+        #endif
+    }
+
     private var sidebarSelection: Binding<SidebarItem?> {
         Binding {
             showsSettings ? .settings : .section(selection)
@@ -166,7 +180,7 @@ struct MainTabView: View {
         switch tab {
         case .today:
             DashboardView(day: today, selectTab: select,
-                          openSettings: sizeClass == .regular ? { showsSettings = true } : nil)
+                          openSettings: usesSidebar ? { showsSettings = true } : nil)
                 .id(today)
         case .food: FoodDiaryView()
         case .weight: WeightView()
@@ -177,7 +191,7 @@ struct MainTabView: View {
 
     var body: some View {
         Group {
-            if sizeClass == .regular {
+            if usesSidebar {
                 // iPad and wide windows: a sidebar instead of the tab bar.
                 NavigationSplitView(columnVisibility: $columns) {
                     List(selection: sidebarSelection) {
@@ -193,6 +207,7 @@ struct MainTabView: View {
                         }
                     }
                     .navigationTitle("Stride")
+                    .navigationSplitViewColumnWidth(min: 170, ideal: 210, max: 280)
                 } detail: {
                     if showsSettings {
                         SettingsView(isSheet: false)
@@ -216,10 +231,10 @@ struct MainTabView: View {
         .overlay(alignment: .bottom) {
             UndoToastView()
                 .environment(undoCenter)
-                .padding(.bottom, sizeClass == .regular ? 16 : 58)   // clear of the tab bar
+                .padding(.bottom, usesSidebar ? 16 : 58)   // clear of the tab bar
         }
         .animation(.snappy, value: undoCenter.toast)
-        .sheet(item: $quickSheet) { sheet in
+        .strideSheet(item: $quickSheet) { sheet in
             switch sheet {
             case .food: FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current())
             case .weight: AddWeightSheet()
@@ -274,7 +289,7 @@ struct MainTabView: View {
                      logWeight: { quickSheet = .weight },
                      logWater: { _ = try? QuickLog.water(ml: nil, context: context) },
                      openSettings: {
-                         if sizeClass == .regular { showsSettings = true } else { quickSheet = .settings }
+                         if usesSidebar { showsSettings = true } else { quickSheet = .settings }
                      })
     }
 

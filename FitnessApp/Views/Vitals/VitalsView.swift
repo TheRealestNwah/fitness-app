@@ -7,7 +7,7 @@ struct VitalsView: View {
     @Environment(\.modelContext) private var context
     @Query(sort: \VitalsEntry.date, order: .reverse) private var entries: [VitalsEntry]
 
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    @Environment(\.strideSizeClass) private var sizeClass
     @State private var showAdd = false
     @State private var editing: VitalsEntry?
     /// The vital shown beside the list on iPad; the first one with a reading until one is picked.
@@ -39,7 +39,7 @@ struct VitalsView: View {
                             VitalDetailView(kind: kind, embedded: true)
                                 .id(kind)
                         } else {
-                            Color(.systemGroupedBackground)
+                            Color.strideBackground
                         }
                     }
                 } else {
@@ -51,13 +51,13 @@ struct VitalsView: View {
                 VitalDetailView(kind: kind)
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Add reading")
                 }
             }
-            .sheet(isPresented: $showAdd) { AddVitalsSheet() }
-            .sheet(item: $editing) { AddVitalsSheet(entry: $0) }
+            .strideSheet(isPresented: $showAdd) { AddVitalsSheet() }
+            .strideSheet(item: $editing) { AddVitalsSheet(entry: $0) }
         }
     }
 
@@ -70,7 +70,7 @@ struct VitalsView: View {
                     .contentShape(Rectangle())
             }
             .listRowBackground(kind == shownKind ? Color.accentColor.opacity(0.15)
-                                                 : Color(.secondarySystemGroupedBackground))
+                                                 : Color.strideCardBackground)
             .accessibilityAddTraits(kind == shownKind ? .isSelected : [])
             .accessibilityIdentifier("vitalRow")
         } else {
@@ -313,7 +313,7 @@ struct VitalDetailView: View {
         } else {
             content
                 .navigationTitle(kind.label)
-                .navigationBarTitleDisplayMode(.inline)
+                .inlineNavigationTitle()
         }
     }
 
@@ -395,7 +395,7 @@ struct VitalDetailView: View {
             }
             .padding()
         }
-        .background(Color(.systemGroupedBackground))
+        .background(Color.strideBackground)
     }
 }
 
@@ -465,7 +465,7 @@ struct AddVitalsSheet: View {
                 }
             }
             .navigationTitle(entry == nil ? "Log vitals" : "Edit vitals")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

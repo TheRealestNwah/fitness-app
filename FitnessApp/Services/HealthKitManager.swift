@@ -176,7 +176,7 @@ enum HealthImportRules {
 final class HealthKitManager {
     static let shared = HealthKitManager()
 
-    private let store = HKHealthStore()
+    @ObservationIgnored private lazy var store = HKHealthStore()
 
     var todaySteps: Int = 0
     var todayActiveEnergyKcal: Double = 0

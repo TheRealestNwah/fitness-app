@@ -1,6 +1,8 @@
 import Foundation
 import SwiftData
+#if os(iOS)
 import WatchConnectivity
+#endif
 
 /// A glass of water logged on the watch. The watch sends it as a WatchConnectivity user info
 /// dictionary (see StrideWatch/WatchStore.swift) and the phone turns it into a `WaterEntry`.
@@ -113,7 +115,7 @@ struct WatchQuickFood: Codable, Equatable {
 /// Keeps the watch app in step with the phone: sends today's snapshot and quick foods to the
 /// watch, and records water and food logged there.
 @MainActor
-final class WatchSync: NSObject, WCSessionDelegate {
+final class WatchSync: NSObject {
     static let shared = WatchSync()
 
     private var container: ModelContainer?
@@ -122,9 +124,11 @@ final class WatchSync: NSObject, WCSessionDelegate {
 
     func start(container: ModelContainer) {
         self.container = container
+        #if os(iOS)
         guard WCSession.isSupported() else { return }
         WCSession.default.delegate = self
         WCSession.default.activate()
+        #endif
     }
 
     /// Sends the latest snapshot as the application context, which the watch reads whenever it
@@ -137,12 +141,14 @@ final class WatchSync: NSObject, WCSessionDelegate {
     }
 
     private func pushSnapshot() {
+        #if os(iOS)
         guard let snapshot = lastSnapshot, WCSession.isSupported() else { return }
         let session = WCSession.default
         guard session.activationState == .activated, session.isPaired, session.isWatchAppInstalled else { return }
         var context: [String: Any] = ["snapshot": snapshot]
         if let lastQuickFoods { context["quickFoods"] = lastQuickFoods }
         try? session.updateApplicationContext(context)
+        #endif
     }
 
     /// The quick foods for the watch, from the phone's favourites and recent foods.
@@ -204,6 +210,10 @@ final class WatchSync: NSObject, WCSessionDelegate {
         }
     }
 
+}
+
+#if os(iOS)
+extension WatchSync: WCSessionDelegate {
     nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState,
                              error: Error?) {
         Task { @MainActor in self.pushSnapshot() }
@@ -228,3 +238,4 @@ final class WatchSync: NSObject, WCSessionDelegate {
         }
     }
 }
+#endif

@@ -6,7 +6,7 @@ struct CardBackground: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(16)
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .background(Color.strideCardBackground, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
 
@@ -18,7 +18,7 @@ extension View {
     func readableWidth(_ maxWidth: CGFloat = 700) -> some View {
         frame(maxWidth: maxWidth)
             .frame(maxWidth: .infinity)
-            .background(Color(.systemGroupedBackground))
+            .background(Color.strideBackground)
     }
 }
 
@@ -153,7 +153,7 @@ struct StatTile: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(Color.strideCardBackground, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }
 
@@ -242,7 +242,7 @@ struct DecimalField: View {
                 .accessibilityHidden(true)
             Spacer()
             TextField("—", value: $value, format: .number.precision(.fractionLength(0...1)))
-                .keyboardType(.decimalPad)
+                .strideKeyboard(.decimalPad)
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
                 .accessibilityLabel(title)
@@ -266,7 +266,7 @@ struct IntField: View {
                 .accessibilityHidden(true)
             Spacer()
             TextField("—", value: $value, format: .number)
-                .keyboardType(.numberPad)
+                .strideKeyboard(.numberPad)
                 .multilineTextAlignment(.trailing)
                 .frame(maxWidth: 110)
                 .accessibilityLabel(title)
@@ -316,7 +316,7 @@ extension View {
     @ViewBuilder
     func floatingBackground<S: Shape>(_ material: Material = .thickMaterial, in shape: S) -> some View {
         #if compiler(>=6.2)
-        if #available(iOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, *) {
             glassEffect(.regular, in: shape)
         } else {
             background(material, in: shape)

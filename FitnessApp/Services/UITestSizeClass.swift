@@ -3,6 +3,7 @@ import SwiftUI
 /// Lets UI tests put the app in a compact-width window, as in Split View or Slide Over, and
 /// switch width mid-session, which a simulator can't be told to do. Only active with the
 /// launch arguments `-compactWidth` (start compact) and `-flipWidthAfter <seconds>`.
+#if os(iOS)
 struct UITestSizeClass: ViewModifier {
     @Environment(\.horizontalSizeClass) private var system
     @State private var override: UserInterfaceSizeClass? = Self.startsCompact ? .compact : nil
@@ -26,6 +27,15 @@ struct UITestSizeClass: ViewModifier {
     }
 }
 
+#endif
+
 extension View {
-    func uiTestSizeClass() -> some View { modifier(UITestSizeClass()) }
+    @ViewBuilder
+    func uiTestSizeClass() -> some View {
+        #if os(iOS)
+        modifier(UITestSizeClass())
+        #else
+        self
+        #endif
+    }
 }

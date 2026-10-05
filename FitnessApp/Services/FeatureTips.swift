@@ -4,8 +4,20 @@ import TipKit
 /// One-time pointers to features that are easy to miss. Each is invalidated once the
 /// feature is used, and TipKit remembers a dismissed tip across launches.
 struct BarcodeTip: Tip {
-    var title: Text { Text("Scan instead of typing") }
-    var message: Text? { Text("Point the camera at a barcode to find packaged food and its nutrition label.") }
+    var title: Text {
+        #if os(macOS)
+        Text("Look up a barcode")
+        #else
+        Text("Scan instead of typing")
+        #endif
+    }
+    var message: Text? {
+        #if os(macOS)
+        Text("Enter the barcode on a package to find its food and nutrition label.")
+        #else
+        Text("Point the camera at a barcode to find packaged food and its nutrition label.")
+        #endif
+    }
     var image: Image? { Image(systemName: "barcode.viewfinder") }
 }
 

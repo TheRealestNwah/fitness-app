@@ -115,13 +115,13 @@ struct SpotlightSupport: ViewModifier {
                       let target = SpotlightIndex.Target(identifier: identifier) else { return }
                 open(target)
             }
-            .sheet(item: $food) { food in
+            .strideSheet(item: $food) { food in
                 LogFoodSheet(food: food, date: Date.now.startOfDay, mealType: MealType.current())
             }
-            .sheet(item: $recipe) { recipe in
+            .strideSheet(item: $recipe) { recipe in
                 SpotlightRecipeSheet(recipe: recipe)
             }
-            .sheet(isPresented: $showMeals) {
+            .strideSheet(isPresented: $showMeals) {
                 FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current())
             }
     }

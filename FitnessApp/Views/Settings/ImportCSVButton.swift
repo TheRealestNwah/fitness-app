@@ -35,7 +35,7 @@ struct ImportCSVButton: View {
             }
             return true
         }
-        .sheet(isPresented: Binding(get: { preview != nil }, set: { if !$0 { preview = nil } })) {
+        .strideSheet(isPresented: Binding(get: { preview != nil }, set: { if !$0 { preview = nil } })) {
             if let preview {
                 ImportPreviewSheet(preview: preview) {
                     try? DataImporter.apply(preview, context: context)
@@ -125,7 +125,7 @@ private struct ImportPreviewSheet: View {
                 }
             }
             .navigationTitle("Import")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }

@@ -7,7 +7,12 @@ enum ReportRenderer {
     static func weeklySummaryImage(review: WeeklyReview, streak: Int, units: Units) -> URL? {
         let renderer = ImageRenderer(content: WeeklySummaryImage(review: review, streak: streak, units: units))
         renderer.scale = 3
+        #if os(macOS)
+        guard let image = renderer.nsImage, let tiff = image.tiffRepresentation,
+              let data = NSBitmapImageRep(data: tiff)?.representation(using: .png, properties: [:]) else { return nil }
+        #else
         guard let image = renderer.uiImage, let data = image.pngData() else { return nil }
+        #endif
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("weekly-summary.png")
         return (try? data.write(to: url)).map { url }
     }

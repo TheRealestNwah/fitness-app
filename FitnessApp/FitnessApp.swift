@@ -3,7 +3,9 @@ import SwiftData
 
 @main
 struct FitnessApp: App {
+    #if os(iOS)
     @UIApplicationDelegateAdaptor(StrideAppDelegate.self) private var appDelegate
+    #endif
     let container: ModelContainer
 
     init() {
@@ -15,20 +17,26 @@ struct FitnessApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        WindowGroup("Stride", id: "main") {
             RootView()
+                .platformWindow()
                 .uiTestSizeClass()
                 .appLockGate()
         }
         .modelContainer(container)
         .commands { StrideCommands() }
+        #if os(iOS)
         .backgroundTask(.appRefresh(BackgroundRefresh.identifier)) {
             await BackgroundRefresh.run()
         }
+        #else
+        .defaultSize(width: 1150, height: 800)
+        #endif
 
         // A recipe opened in its own window from the recipe library (iPad, Stage Manager).
         WindowGroup("Recipe", id: RecipeWindow.id, for: UUID.self) { $recipeID in
             RecipeWindow(recipeID: recipeID)
+                .platformWindow()
                 .appLockGate()
         }
         .modelContainer(container)
