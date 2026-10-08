@@ -103,7 +103,9 @@ StrideWatch/                watchOS app
 ## Requirements
 
 - Xcode 26 or newer (the project uses folder-synchronised groups; CI builds with Xcode 26)
-- iOS 17.0+ (SwiftData, Swift Charts, `@Observable`)
+- iOS and iPadOS 17.0+ (SwiftData, Swift Charts, `@Observable`)
+- macOS 14.0+ for the native Mac app
+- watchOS 10.0+ for the Apple Watch app
 
 Open `FitnessApp.xcodeproj`, pick a simulator, and run. Tests: ⌘U.
 
