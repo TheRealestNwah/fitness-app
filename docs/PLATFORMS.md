@@ -6,6 +6,8 @@ Stride supports iOS/iPadOS 17 or later. The `StrideMac` scheme builds a separate
 
 Open `FitnessApp.xcodeproj` in Xcode 26 or later, select **StrideMac**, then **My Mac**. Set your signing team on StrideMac and register `com.stride.StrideMac` with access to the existing `iCloud.com.stride.FitnessApp` container and `group.com.stride.FitnessApp` app group if you want signed iCloud builds. The Mac target has its own sandbox entitlements, including network access, user-selected files, microphone input, and Reminders.
 
+To build an installer package instead, run `scripts/build-mac-installer.sh`. It writes `dist/Stride-<version>.pkg`, which installs the same build into /Applications. The app is signed with a personal development certificate, so the package works on your own Macs only; sharing it needs a paid team with Developer ID signing and notarization.
+
 The Mac scheme starts with a normal persistent store. Add `-demoData` to the scheme's launch arguments only for disposable previews: it replaces the local store contents with demo records. CI passes this argument explicitly for UI tests.
 
 The sidebar stays available as the window resizes. Wider windows show the diary calendar and two-column dashboards; narrower windows use single-column detail screens. Settings opens in the sidebar detail. Command-N opens food logging, Shift-Command-N opens another window, Command-comma opens Settings, and Command-1 through Command-5 switch sections. Recipe windows share the same store.
