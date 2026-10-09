@@ -25,7 +25,7 @@ struct SettingsPageView: View {
         case .nutrition: NutritionSettingsPage()
         case .reminders: ReminderSettingsPage()
         case .healthData: HealthDataSettingsPage(resetAllData: resetAllData)
-        case .privacy: Form { AppLockSection() }
+        case .privacy: Form { AppLockSection(); OnlineFoodSearchSection() }
         case .about: AboutSettingsPage()
         }
     }
@@ -452,6 +452,29 @@ private struct AboutSettingsPage: View {
             } header: {
                 Text("About Stride")
             }
+        }
+    }
+}
+
+// MARK: - Online food search
+
+private struct OnlineFoodSearchSection: View {
+    @AppStorage(OnlineFoodSearch.enabledKey) private var enabled = true
+    @AppStorage(OnlineFoodSearch.usdaKeyKey) private var usdaKey = ""
+
+    var body: some View {
+        Section {
+            Toggle("Search food databases online", isOn: $enabled)
+            if enabled {
+                TextField("USDA API key (optional)", text: $usdaKey)
+                    .withoutAutocapitalization()
+                    .autocorrectionDisabled()
+                Link("Get a free USDA key", destination: FoodDataCentralClient.signupURL)
+            }
+        } header: {
+            Text("Online food search")
+        } footer: {
+            Text("When a food isn't saved on your device, Stride can look it up on USDA FoodData Central and Open Food Facts. The words you search for are sent to those services, nothing else. Without your own USDA key, a shared one is used and may run out at busy times.")
         }
     }
 }
