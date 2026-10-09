@@ -112,7 +112,11 @@ enum OpenFoodFactsClient {
         }
         let status = (root["status"] as? Int) ?? (Int((root["status"] as? String) ?? "") ?? 0)
         guard status == 1, let product = root["product"] as? [String: Any] else { return nil }
+        return parseProduct(product, barcode: barcode)
+    }
 
+    /// Converts one product object, as found in a lookup or a search result, to a diary-ready product.
+    static func parseProduct(_ product: [String: Any], barcode: String) -> ScannedProduct? {
         let nutriments = product["nutriments"] as? [String: Any] ?? [:]
         func number(_ key: String) -> Double? {
             if let d = nutriments[key] as? Double { return d }
@@ -192,5 +196,47 @@ enum OpenFoodFactsClient {
                               cholesterol: (number("cholesterol_100g") ?? 0) * 1000 * factor,
                               alcohol: alcoholG(millilitres: 100) * factor,
                               caffeine: (number("caffeine_100g") ?? 0) * 1000 * factor)
+    }
+
+    // MARK: - Text search
+
+    static let searchFields = "code,product_name,brands,serving_size,serving_quantity,nutriments"
+
+    static func searchURL(for query: String, limit: Int) -> URL {
+        var comps = URLComponents(string: "https://world.openfoodfacts.org/cgi/search.pl")!
+        comps.queryItems = [
+            URLQueryItem(name: "search_terms", value: query),
+            URLQueryItem(name: "search_simple", value: "1"),
+            URLQueryItem(name: "action", value: "process"),
+            URLQueryItem(name: "json", value: "1"),
+            URLQueryItem(name: "page_size", value: String(limit)),
+            URLQueryItem(name: "fields", value: searchFields)
+        ]
+        return comps.url!
+    }
+
+    /// Free-text product search. Products without a name or energy value are dropped.
+    static func search(_ query: String, limit: Int = 15, session: URLSession = .shared) async throws -> [ScannedProduct] {
+        var request = URLRequest(url: searchURL(for: query, limit: limit))
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
+        request.timeoutInterval = 15
+        let data: Data
+        do {
+            (data, _) = try await session.data(for: request)
+        } catch {
+            throw OpenFoodFactsError.network(error)
+        }
+        return try parseSearch(data)
+    }
+
+    static func parseSearch(_ data: Data) throws -> [ScannedProduct] {
+        guard let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let products = root["products"] as? [[String: Any]] else {
+            throw OpenFoodFactsError.badResponse
+        }
+        return products.compactMap { product in
+            guard let code = product["code"] as? String, let barcode = normalise(code) else { return nil }
+            return parseProduct(product, barcode: barcode)
+        }
     }
 }

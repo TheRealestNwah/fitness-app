@@ -27,6 +27,12 @@ struct FoodSearchView: View {
     @State private var showScanner = false
     @State private var unknownBarcode: UnknownBarcode?
     @State private var photoMeal: SavedMeal?
+    @AppStorage(OnlineFoodSearch.enabledKey) private var onlineEnabled = true
+    @AppStorage(OnlineFoodSearch.usdaKeyKey) private var usdaKey = ""
+    @State private var online = OnlineSearchResult()
+    @State private var isSearchingOnline = false
+    /// The query the person asked to search online for, when the local results alone were enough.
+    @State private var manualOnlineQuery = ""
 
     init(date: Date, mealType: MealType) {
         self.date = date
@@ -46,6 +52,48 @@ struct FoodSearchView: View {
     private var filteredRecipes: [Recipe] {
         guard !query.isEmpty else { return [] }
         return FoodSearchRanking.rank(recipes, query: query) { .init(name: $0.name, isFavorite: $0.isFavorite) }
+    }
+
+    private var canSearchOnline: Bool {
+        OnlineFoodSearch.isAvailable(enabled: onlineEnabled) && query.count >= OnlineFoodSearch.minimumQueryLength
+    }
+
+    /// Few on-device matches: search online straight away. Plenty: wait to be asked.
+    private var searchesOnlineAutomatically: Bool {
+        canSearchOnline && (filtered.count < OnlineFoodSearch.autoSearchBelow || manualOnlineQuery == query)
+    }
+
+    /// Changes whenever a different online search should start (empty means none).
+    private var onlineSearchID: String { searchesOnlineAutomatically ? query : "" }
+
+    private func runOnlineSearch(for term: String) async {
+        guard !term.isEmpty else {
+            online = OnlineSearchResult()
+            isSearchingOnline = false
+            return
+        }
+        isSearchingOnline = true
+        online = OnlineSearchResult()
+        // Let typing settle, unless the person tapped the button.
+        if manualOnlineQuery != term { try? await Task.sleep(for: .milliseconds(600)) }
+        guard !Task.isCancelled else { return }
+        let found = await OnlineFoodSearch.search(term, usdaKey: usdaKey)
+        guard !Task.isCancelled else { return }
+        online = found
+        isSearchingOnline = false
+    }
+
+    /// Saves an online result as a food on the device (reusing one already saved) and opens it to log.
+    private func choose(_ result: OnlineFood) {
+        rememberSearch()
+        let item = result.makeFoodItem()
+        if let existing = foods.first(where: { $0.name == item.name && $0.brand == item.brand && $0.servingDescription == item.servingDescription }) {
+            selected = existing
+            return
+        }
+        context.insert(item)
+        try? context.save()
+        selected = item
     }
 
     private var recent: [FoodItem] {
@@ -253,14 +301,18 @@ struct FoodSearchView: View {
                 Section(query.isEmpty ? "All foods" : "Results") {
                     if filtered.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("No match for “\(search)”.")
+                            Text(canSearchOnline ? "Nothing saved on this device matches “\(search)”." : "No match for “\(search)”.")
                                 .foregroundStyle(Color.secondary)
                             Button("Create “\(search)” as a custom food") { showCreate = true }
                         }
                     }
                     ForEach(filtered) { food in foodRow(food) }
                 }
+                if canSearchOnline {
+                    onlineSection
+                }
             }
+            .task(id: onlineSearchID) { await runOnlineSearch(for: onlineSearchID) }
             .searchable(text: $search, placement: .strideSearch, prompt: "Search foods")
             .onSubmit(of: .search) { rememberSearch() }
             .navigationTitle("Log food")
@@ -306,6 +358,65 @@ struct FoodSearchView: View {
                 SentenceLogSheet(date: date, mealType: mealType) {
                     // Everything's logged: close search too once the sheet has gone.
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { dismiss() }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var onlineSection: some View {
+        Section {
+            if !searchesOnlineAutomatically {
+                Button { manualOnlineQuery = query } label: {
+                    Label("Search USDA and Open Food Facts", systemImage: "globe")
+                }
+                .accessibilityIdentifier("searchOnline")
+            } else if isSearchingOnline {
+                HStack(spacing: 8) {
+                    ProgressView()
+                    Text("Searching online…").foregroundStyle(Color.secondary)
+                }
+            } else {
+                ForEach(online.foods) { result in onlineRow(result) }
+                ForEach(online.failures, id: \.source) { failure in
+                    Text(failure.message).font(.footnote).foregroundStyle(Color.secondary)
+                }
+                if online.foods.isEmpty, online.failures.isEmpty {
+                    Text("No online results for “\(search)”.").foregroundStyle(Color.secondary)
+                }
+                if !online.failures.isEmpty {
+                    Button("Try again") {
+                        let term = query
+                        manualOnlineQuery = term
+                        Task { await runOnlineSearch(for: term) }
+                    }
+                }
+            }
+        } header: {
+            Text("Online results")
+        } footer: {
+            Text("Nutrition data from USDA FoodData Central and Open Food Facts (ODbL). Your search words are sent to those services; turn this off in Settings → Privacy & security.")
+        }
+    }
+
+    private func onlineRow(_ result: OnlineFood) -> some View {
+        let product = result.product
+        return Button { choose(result) } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(product.brand.isEmpty ? product.name : "\(product.name) (\(product.brand))")
+                        .foregroundStyle(Color.primary)
+                    Text("\(product.servingDescription) · \(result.source.rawValue)")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(Int(product.calories.rounded()))")
+                        .font(.body.monospacedDigit())
+                    Text("P\(Int(product.protein)) C\(Int(product.carbs)) F\(Int(product.fat))")
+                        .font(.footnote.monospacedDigit())
+                        .foregroundStyle(Color.secondary)
                 }
             }
         }

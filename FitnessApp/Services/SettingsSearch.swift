@@ -75,6 +75,9 @@ enum SettingsSearch {
 
         Entry(title: "App lock", page: .privacy, keywords: ["Face ID", "Touch ID", "passcode", "privacy"]),
 
+        Entry(title: "Online food search", page: .privacy,
+              keywords: ["USDA", "Open Food Facts", "food database", "API key", "lookup", "internet"]),
+
         Entry(title: "Show feature tips again", page: .about, keywords: ["tips", "help"]),
         Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical"]),
     ]
