@@ -8,6 +8,8 @@ Open `FitnessApp.xcodeproj` in Xcode 26 or later, select **StrideMac**, then **M
 
 To install a Mac build with only a personal Apple team, run `scripts/install-mac.sh`. It signs with the team already set on the iOS targets (or one you pass) and leaves out the iCloud, Push and app-group entitlements that personal teams can't sign, so that install keeps its data on the Mac without iCloud sync.
 
+To build an installer package instead, run `scripts/build-mac-installer.sh`. It writes `dist/Stride-<version>.pkg`, which installs the same build into /Applications. The app is signed with a personal development certificate, so the package works on your own Macs only; sharing it needs a paid team with Developer ID signing and notarization.
+
 The Mac scheme starts with a normal persistent store. Add `-demoData` to the scheme's launch arguments only for disposable previews: it replaces the local store contents with demo records. CI passes this argument explicitly for UI tests.
 
 The sidebar stays available as the window resizes. Wider windows show the diary calendar and two-column dashboards; narrower windows use single-column detail screens. Settings opens in the sidebar detail. Command-N opens food logging, Shift-Command-N opens another window, Command-comma opens Settings, and Command-1 through Command-5 switch sections. Recipe windows share the same store.
