@@ -421,6 +421,11 @@ private struct HealthDataSettingsPage: View {
 
 // MARK: - About
 
+enum AboutLinks {
+    static let repository = URL(string: "https://github.com/TheRealestNwah/fitness-app")!
+    static let tipJar = URL(string: "https://ko-fi.com/morrowheat23")!
+}
+
 private struct AboutSettingsPage: View {
     @State private var tipsWillReset = UserDefaults.standard.bool(forKey: FeatureTips.resetOnLaunchKey)
 
@@ -433,6 +438,21 @@ private struct AboutSettingsPage: View {
 
     var body: some View {
         Form {
+            Section {
+                Text("Stride is a free weight-loss companion that keeps your food diary, weigh-ins and goals on your device. It's open source, so you can read the code, report a problem or suggest a change.")
+                Link(destination: AboutLinks.repository) {
+                    Label("Source code on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
+                Link(destination: AboutLinks.tipJar) {
+                    Label("Buy me a coffee", systemImage: "cup.and.saucer")
+                }
+                .accessibilityIdentifier("buyMeACoffee")
+            } header: {
+                Text("What is Stride?")
+            } footer: {
+                Text("Stride is free and has no ads or paywall. Buying me a coffee is optional and opens Ko-fi in your browser.")
+            }
+
             Section {
                 Button {
                     FeatureTips.resetOnNextLaunch()
