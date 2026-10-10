@@ -25,7 +25,14 @@ struct SettingsPageView: View {
         case .nutrition: NutritionSettingsPage()
         case .reminders: ReminderSettingsPage()
         case .healthData: HealthDataSettingsPage(resetAllData: resetAllData)
-        case .privacy: Form { AppLockSection(); OnlineFoodSearchSection() }
+        case .privacy:
+            Form {
+                AppLockSection()
+                OnlineFoodSearchSection()
+                #if os(macOS)
+                MenuBarSettingsSection()
+                #endif
+            }
         case .about: AboutSettingsPage()
         }
     }
