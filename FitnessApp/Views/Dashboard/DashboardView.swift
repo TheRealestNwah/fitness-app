@@ -275,7 +275,9 @@ struct DashboardView: View {
                 .contextMenu { ringActions }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Calories today")
-                .accessibilityValue(remaining >= 0
+                .accessibilityValue(NumberPrivacy.shared.isOn
+                    ? "Numbers hidden"
+                    : remaining >= 0
                     ? "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int(remaining.rounded())) left"
                     : "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int((-remaining).rounded())) over")
                 .accessibilityHint("Touch and hold for quick actions")
@@ -563,6 +565,7 @@ struct DashboardView: View {
         let intakeSubtitle: String = {
             guard let over = review.overBudget else { return "budget \(review.budget)" }
             if abs(over) < 25 { return "on budget" }
+            if NumberPrivacy.shared.isOn { return over > 0 ? "over budget" : "under budget" }
             return over > 0 ? "\(Int(over.rounded())) over budget" : "\(Int((-over).rounded())) under budget"
         }()
         let weightValue = review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—"
@@ -682,7 +685,7 @@ struct DashboardView: View {
                         if entry.isLogged {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                         } else {
-                            Text("\(Int(entry.totalCalories.rounded()))")
+                            Text(NumberPrivacy.hide("\(Int(entry.totalCalories.rounded()))"))
                                 .foregroundStyle(Color.secondary)
                         }
                     }
