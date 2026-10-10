@@ -55,7 +55,7 @@ final class DataImporterTests: XCTestCase {
         """
         let food = try DataImporter.preview(csv: csv).food
         XCTAssertEqual(food.map(\.meal), [.breakfast, .snack])
-        XCTAssertEqual(food.map(\.name), ["Breakfast (imported)", "Snack (imported)"])
+        XCTAssertEqual(food.map(\.name), ["Breakfast (imported)", "Snacks (imported)"])
         XCTAssertEqual(food.first?.calories, 1050)
         XCTAssertEqual(food.first?.fat, 12)
         XCTAssertEqual(food.first?.sodiumMg, 300)
