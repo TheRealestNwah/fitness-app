@@ -43,6 +43,7 @@ enum NotificationManager {
                                                 proteinHour: profile.proteinReminderEnabled ? proteinHour : nil,
                                                 weighInHour: profile.weighInReminderEnabled ? profile.weighInReminderHour : nil,
                                                 pause: pause)
+        settings.hideNumbers = NumberPrivacy.shared.isOn
         if profile.medicationEnabled, profile.medicationReminderEnabled {
             settings.medicationDue = nextMedicationDose(profile)
             settings.medicationHour = profile.medicationReminderHour

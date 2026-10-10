@@ -21,6 +21,11 @@ final class SettingsSearchTests: XCTestCase {
         XCTAssertEqual(SettingsSearch.search("face id").first?.page, .privacy)
     }
 
+    func testFindsTheTipLinkInAbout() {
+        XCTAssertEqual(SettingsSearch.search("coffee").first?.page, .about)
+        XCTAssertEqual(SettingsSearch.search("open source").first?.page, .about)
+    }
+
     func testIgnoresCaseAndAccents() {
         XCTAssertEqual(titles("ICLOUD"), titles("icloud"))
         XCTAssertEqual(titles("fibré"), titles("fibre"))

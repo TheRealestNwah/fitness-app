@@ -25,7 +25,14 @@ struct SettingsPageView: View {
         case .nutrition: NutritionSettingsPage()
         case .reminders: ReminderSettingsPage()
         case .healthData: HealthDataSettingsPage(resetAllData: resetAllData)
-        case .privacy: Form { AppLockSection(); OnlineFoodSearchSection() }
+        case .privacy:
+            Form {
+                AppLockSection()
+                OnlineFoodSearchSection()
+                #if os(macOS)
+                MenuBarSettingsSection()
+                #endif
+            }
         case .about: AboutSettingsPage()
         }
     }
@@ -161,7 +168,20 @@ private struct NutritionSettingsPage: View {
 
             BudgetSection(profile: profile)
 
+            TrainingDaysSection(profile: profile)
+
             ExerciseSection()
+
+            Section {
+                NavigationLink {
+                    MealsEditor()
+                } label: {
+                    LabeledContent("Meals", value: "\(MealSlots.shared.slots.count)")
+                }
+                .accessibilityIdentifier("mealsLink")
+            } footer: {
+                Text("Rename, reorder, add or remove the meals in your diary.")
+            }
         }
     }
 
@@ -289,6 +309,7 @@ private struct HealthDataSettingsPage: View {
 
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
     @AppStorage(HealthSettings.creditPercentKey) private var healthCreditPercent = 0
+    @AppStorage(ActivityTrend.stepGoalKey) private var stepGoal = 0
     @AppStorage(CycleCalculator.enabledKey) private var cycleAware = false
     @State private var healthStatus: String?
     @State private var healthBusy = false
@@ -311,6 +332,9 @@ private struct HealthDataSettingsPage: View {
                             Text("Off").tag(0)
                             Text("Half").tag(50)
                             Text("All").tag(100)
+                        }
+                        Stepper(value: $stepGoal, in: 0...ActivityTrend.maxStepGoal, step: ActivityTrend.stepGoalStep) {
+                            LabeledContent("Daily step goal", value: stepGoal == 0 ? "Off" : stepGoal.formatted())
                         }
                         Button {
                             runHealthImport(force: true)
@@ -339,6 +363,8 @@ private struct HealthDataSettingsPage: View {
                 Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice. Cycle-aware weight reads your cycle from Health to mark likely water-retention days on the weight chart and leave them out of plateau checks.")
             }
 
+            ReviewSummarySection()
+
             ICloudSyncSection()
 
             Section("Data") {
@@ -348,6 +374,7 @@ private struct HealthDataSettingsPage: View {
                     Label("Export and share", systemImage: "square.and.arrow.up")
                 }
                 ImportCSVButton()
+                BackupRestoreButtons()
                 Button(role: .destructive) {
                     showResetConfirm = true
                 } label: {
@@ -421,6 +448,11 @@ private struct HealthDataSettingsPage: View {
 
 // MARK: - About
 
+enum AboutLinks {
+    static let repository = URL(string: "https://github.com/TheRealestNwah/fitness-app")!
+    static let tipJar = URL(string: "https://ko-fi.com/morrowheat23")!
+}
+
 private struct AboutSettingsPage: View {
     @State private var tipsWillReset = UserDefaults.standard.bool(forKey: FeatureTips.resetOnLaunchKey)
 
@@ -433,6 +465,21 @@ private struct AboutSettingsPage: View {
 
     var body: some View {
         Form {
+            Section {
+                Text("Stride is a free weight-loss companion that keeps your food diary, weigh-ins and goals on your device. It's open source, so you can read the code, report a problem or suggest a change.")
+                Link(destination: AboutLinks.repository) {
+                    Label("Source code on GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                }
+                Link(destination: AboutLinks.tipJar) {
+                    Label("Buy me a coffee", systemImage: "cup.and.saucer")
+                }
+                .accessibilityIdentifier("buyMeACoffee")
+            } header: {
+                Text("What is Stride?")
+            } footer: {
+                Text("Stride is free and has no ads or paywall. Buying me a coffee is optional and opens Ko-fi in your browser.")
+            }
+
             Section {
                 Button {
                     FeatureTips.resetOnNextLaunch()
@@ -453,6 +500,24 @@ private struct AboutSettingsPage: View {
                 Text("About Stride")
             }
         }
+    }
+}
+
+// MARK: - Hide numbers
+
+private struct HideNumbersSection: View {
+    @Environment(UserProfile.self) private var profile
+    @State private var privacy = NumberPrivacy.shared
+
+    var body: some View {
+        Section {
+            Toggle("Hide calorie and weight numbers", isOn: $privacy.manual)
+        } header: {
+            Text("Numbers")
+        } footer: {
+            Text("Shows progress without calorie or weight numbers, and pauses protein reminders. A Focus can turn this on too: add the Stride filter in Settings → Focus.")
+        }
+        .onChange(of: privacy.isOn) { NotificationManager.sync(with: profile) }
     }
 }
 

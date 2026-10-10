@@ -72,3 +72,31 @@ struct StrideShortcuts: AppShortcutsProvider {
                     shortTitle: "Calories Left", systemImageName: "flame.fill")
     }
 }
+
+/// Lets a Focus hide calorie and weight numbers while it's on. When the Focus ends the system runs the
+/// filter again with the default (off) value, which turns the mode back off.
+struct HideNumbersFocusFilter: SetFocusFilterIntent {
+    static var title: LocalizedStringResource = "Hide calorie and weight numbers"
+    static var description = IntentDescription("Hides calorie and weight numbers in Stride while this Focus is on.")
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "Hide calorie and weight numbers")
+    }
+
+    @Parameter(title: "Hide numbers", default: false)
+    var hideNumbers: Bool
+
+    static var parameterSummary: some ParameterSummary {
+        Summary("Hide numbers: \(\.$hideNumbers)")
+    }
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        NumberPrivacy.shared.focus = hideNumbers
+        let context = AppStore.container.mainContext
+        if let profile = QuickLog.profile(in: context) {
+            NotificationManager.sync(with: profile)
+        }
+        return .result()
+    }
+}

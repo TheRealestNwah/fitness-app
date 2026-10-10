@@ -280,9 +280,14 @@ struct DayDiaryView: View {
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
+    private var dayType: DayType? { profile.dayType(on: date, hasWorkout: !exercise.isEmpty) }
+    /// The budget moved for a training or rest day, never below the safety floor.
+    private func forDayType(_ base: Int) -> Int {
+        max(base + profile.dayOffset(dayType), min(NutritionCalculator.calorieFloor(for: profile.sex), base))
+    }
     private var target: Int {
         let daily = profile.calorieTarget(currentWeightKg: currentKg)
-        guard date.isToday else { return daily }
+        guard date.isToday else { return forDayType(daily) }
         var base = daily
         if profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining, profile.customCalorieTarget == nil {
             var byDay: [Date: Double] = [:]
@@ -290,12 +295,12 @@ struct DayDiaryView: View {
             base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: byDay,
                                                          floor: NutritionCalculator.calorieFloor(for: profile.sex))
         }
-        return base + ExerciseCatalog.combinedCredit(
+        return forDayType(base) + ExerciseCatalog.combinedCredit(
             health: HealthKitManager.shared.activeEnergyCredit,
             exercise: ExerciseCatalog.earnBack(exerciseKcal: exercise.reduce(0) { $0 + $1.calories },
                                                percent: ExerciseSettings.earnBackPercent))
     }
-    private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
+    private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg, dayType: dayType) }
 
     private var consumed: Double { entries.reduce(0) { $0 + $1.calories } }
     private var protein: Double { entries.reduce(0) { $0 + $1.protein } }
@@ -466,7 +471,7 @@ struct DayDiaryView: View {
             }
             Spacer()
         }
-        let kcal = Text("\(Int(entry.calories.rounded()))")
+        let kcal = Text(NumberPrivacy.hide("\(Int(entry.calories.rounded()))"))
             .font(.body.monospacedDigit())
             .foregroundStyle(Color.secondary)
         if isSelecting {
@@ -690,7 +695,7 @@ struct DayDiaryView: View {
                 .frame(width: ringSize, height: ringSize)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Calories")
-                .accessibilityValue("\(Int(consumed.rounded())) of \(target)")
+                .accessibilityValue(NumberPrivacy.shared.isOn ? "Numbers hidden" : "\(Int(consumed.rounded())) of \(target)")
                 VStack(spacing: 8) {
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
@@ -898,7 +903,7 @@ struct SaveFavouriteMealSheet: View {
                                 Text(e.servingsLabel).font(.footnote).foregroundStyle(Color.secondary)
                             }
                             Spacer()
-                            Text("\(Int(e.calories.rounded()))")
+                            Text(NumberPrivacy.hide("\(Int(e.calories.rounded()))"))
                                 .font(.body.monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }

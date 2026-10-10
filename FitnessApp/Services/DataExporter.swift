@@ -34,7 +34,8 @@ enum DataExporter {
                      + "saturated_fat_g,potassium_mg,cholesterol_mg,alcohol_g,caffeine_mg,"
                      + Micronutrient.allCases.map(\.csvColumn).joined(separator: ",")]
         for e in entries.sorted(by: { $0.date < $1.date }) {
-            lines.append(([isoFormatter.string(from: e.date), e.mealType.rawValue, escape(e.foodName),
+            lines.append(([isoFormatter.string(from: e.date), escape(MealSlots.shared.exportName(for: e.mealType)),
+                           escape(e.foodName),
                           String(e.servings), String(e.calories), String(e.protein), String(e.carbs), String(e.fat),
                           String(e.fiber), String(e.sugar), String(e.sodium),
                           String(e.saturatedFat), String(e.potassium), String(e.cholesterol),
