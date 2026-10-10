@@ -119,6 +119,8 @@ struct OnboardingView: View {
                 .foregroundStyle(Color.secondary)
                 .padding(.horizontal, 32)
             Spacer()
+            RestoreBackupButton()
+                .buttonStyle(.bordered)
             Text("Your data stays on this device.")
                 .font(.footnote)
                 .foregroundStyle(.tertiary)

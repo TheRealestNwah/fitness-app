@@ -22,6 +22,7 @@ struct FitnessApp: App {
                 .platformWindow()
                 .uiTestSizeClass()
                 .appLockGate()
+                .backupRestorePrompt()
         }
         .modelContainer(container)
         .commands { StrideCommands() }
