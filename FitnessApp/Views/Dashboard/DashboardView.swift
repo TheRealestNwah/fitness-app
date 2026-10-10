@@ -600,6 +600,7 @@ struct DashboardView: View {
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
+            ReviewSummaryView(review: review, units: units)
         }
         .card()
     }
