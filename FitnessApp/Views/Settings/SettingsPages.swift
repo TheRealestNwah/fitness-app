@@ -348,6 +348,7 @@ private struct HealthDataSettingsPage: View {
                     Label("Export and share", systemImage: "square.and.arrow.up")
                 }
                 ImportCSVButton()
+                BackupRestoreButtons()
                 Button(role: .destructive) {
                     showResetConfirm = true
                 } label: {

@@ -6,12 +6,44 @@
 	<array>
 		<dict>
 			<key>UTTypeIdentifier</key>
+			<string>com.stride.FitnessApp.backup</string>
+			<key>UTTypeDescription</key>
+			<string>Stride backup</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>stridebackup</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
 			<string>com.stride.FitnessApp.food-reference</string>
 			<key>UTTypeDescription</key>
 			<string>Stride food or recipe</string>
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>public.data</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Stride backup</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.stride.FitnessApp.backup</string>
 			</array>
 		</dict>
 	</array>
