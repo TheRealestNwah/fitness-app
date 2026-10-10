@@ -24,6 +24,8 @@ enum ReminderPlanner {
         var medicationDue: Date? = nil
         var medicationHour: Int? = nil
         var medicationName = ""
+        /// Hide numbers mode: no protein check, and no wording about calories.
+        var hideNumbers = false
     }
 
     struct Today {
@@ -107,6 +109,7 @@ enum ReminderPlanner {
                         id: "meal.\(key).\(slot.meal.rawValue)", date: date,
                         title: nothingYet ? String(localized: "Nothing logged yet today") : String(localized: "Log your \(slot.meal.inSentence)"),
                         body: nothingYet ? String(localized: "A quick log of breakfast and lunch keeps today's numbers useful.")
+                                         : settings.hideNumbers ? String(localized: "Logging right after you eat keeps your day honest.")
                                          : String(localized: "Logging right after you eat keeps your calorie count honest.")))
                 }
             }
@@ -125,7 +128,7 @@ enum ReminderPlanner {
             }
         }
         // Protein is only known for today; later days are planned when the app is next opened.
-        if let hour = settings.proteinHour, today.proteinShortG >= proteinNudgeMinimumG,
+        if let hour = settings.proteinHour, !settings.hideNumbers, today.proteinShortG >= proteinNudgeMinimumG,
            !isPaused(start, settings.pause, calendar: calendar),
            let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: start), date > now {
             let short = Int(today.proteinShortG.rounded())
