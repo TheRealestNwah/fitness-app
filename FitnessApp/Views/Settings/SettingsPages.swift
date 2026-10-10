@@ -339,6 +339,8 @@ private struct HealthDataSettingsPage: View {
                 Text("Reads weight, steps, active energy, resting heart rate and sleep; writes your weigh-ins, water, and logged calories, macros, fibre, sugar and sodium. Counting active energy adds a share of what your watch reports to the daily budget. Watches tend to overestimate, so Half is the safer choice. Cycle-aware weight reads your cycle from Health to mark likely water-retention days on the weight chart and leave them out of plateau checks.")
             }
 
+            ReviewSummarySection()
+
             ICloudSyncSection()
 
             Section("Data") {
