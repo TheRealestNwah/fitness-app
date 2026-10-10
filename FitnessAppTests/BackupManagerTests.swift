@@ -4,9 +4,18 @@ import XCTest
 
 @MainActor
 final class BackupManagerTests: XCTestCase {
+    /// A context only weakly references its container, so keep each one alive until the test ends.
+    private var containers: [ModelContainer] = []
+
+    override func tearDown() async throws {
+        containers.removeAll()
+        try await super.tearDown()
+    }
+
     private func makeContext() throws -> ModelContext {
         let container = try ModelContainer(for: AppStore.schema,
                                            configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
+        containers.append(container)
         return container.mainContext
     }
 
