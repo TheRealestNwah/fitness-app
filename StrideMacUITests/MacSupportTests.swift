@@ -74,4 +74,19 @@ final class MacSupportTests: XCTestCase {
         XCTAssertTrue(app.buttons["Back"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)["sidebar-Today"].exists)
     }
+
+    func testMenuBarExtraCanBeTurnedOffInSettings() {
+        let app = launch()
+        select("Today", in: app)
+        app.typeKey(",", modifierFlags: .command)
+        let search = app.searchFields["Search settings"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.click()
+        search.typeText("menu bar")
+        let result = app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS 'Menu bar'")).firstMatch
+        XCTAssertTrue(result.waitForExistence(timeout: 5))
+        result.click()
+        let toggle = app.descendants(matching: .any)["Show Stride in the menu bar"].firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+    }
 }
