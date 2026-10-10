@@ -71,8 +71,15 @@ struct DashboardView: View {
             exercise: ExerciseCatalog.earnBack(exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
                                                percent: ExerciseSettings.earnBackPercent))
     }
-    private var calorieTarget: Int { baseTarget + activeCredit }
-    private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
+    /// Training or rest day, when the user has separate targets for them.
+    private var dayType: DayType? { profile.dayType(hasWorkout: !todaysExercise.isEmpty) }
+    private var calorieTarget: Int {
+        let floor = NutritionCalculator.calorieFloor(for: profile.sex)
+        return max(baseTarget + profile.dayOffset(dayType), min(floor, baseTarget)) + activeCredit
+    }
+    private var macroTargets: MacroTargets {
+        profile.macroTargets(currentWeightKg: currentKg, dayType: dayType, baseCalories: baseTarget)
+    }
 
     private var consumed: Double { todaysFood.reduce(0) { $0 + $1.calories } }
     private var protein: Double { todaysFood.reduce(0) { $0 + $1.protein } }
@@ -108,7 +115,7 @@ struct DashboardView: View {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
-            budget: calorieTarget,
+            budget: baseTarget + activeCredit,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
     }
@@ -283,6 +290,9 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: Energy.string(consumed))
                     LabeledContent("Budget", value: activeCredit > 0 ? "\(Energy.number(baseTarget)) + \(Energy.string(activeCredit))" : Energy.string(calorieTarget))
+                    if let dayType {
+                        DayTypeMenu(profile: profile, current: dayType)
+                    }
                     if let note = budgetNote {
                         Text(note)
                             .font(.footnote)
@@ -817,4 +827,28 @@ struct TodayHaptics: ViewModifier {
     private static func grew(_ old: Int, _ new: Int) -> Bool { new > old }
     private static func rose(_ old: Double, _ new: Double) -> Bool { new > old }
     private static func becameTrue(_ old: Bool, _ new: Bool) -> Bool { !old && new }
+}
+
+/// Shows whether today is a training or rest day, and lets the user switch it for today only.
+struct DayTypeMenu: View {
+    @Bindable var profile: UserProfile
+    let current: DayType
+
+    var body: some View {
+        Menu {
+            Button { set(.training) } label: { Label("Training day", systemImage: DayType.training.systemImage) }
+            Button { set(.rest) } label: { Label("Rest day", systemImage: DayType.rest.systemImage) }
+            Button("Automatic") { profile.dayTypeOverrideDay = nil }
+        } label: {
+            Label(current.label, systemImage: current.systemImage)
+                .font(.footnote.weight(.semibold))
+        }
+        .accessibilityIdentifier("dayTypeMenu")
+        .accessibilityHint("Switch today between a training day and a rest day")
+    }
+
+    private func set(_ type: DayType) {
+        profile.dayTypeOverrideDay = Date.now.startOfDay
+        profile.dayTypeOverrideIsTraining = type == .training
+    }
 }
