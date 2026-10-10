@@ -39,7 +39,9 @@ enum SettingsSearch {
         var id: String { "\(page.rawValue).\(title)" }
     }
 
-    static let entries: [Entry] = [
+    static let entries: [Entry] = shared + platformSpecific
+
+    private static let shared: [Entry] = [
         Entry(title: "Body & goals", page: .profile,
               keywords: ["name", "sex", "age", "birthday", "height", "weight", "goal weight", "starting weight", "activity", "weekly loss"]),
         Entry(title: "Units", page: .profile, keywords: ["metric", "imperial", "kg", "lb", "stone", "kcal", "kJ", "energy"]),
@@ -81,6 +83,15 @@ enum SettingsSearch {
         Entry(title: "Show feature tips again", page: .about, keywords: ["tips", "help"]),
         Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical"]),
     ]
+
+    /// Settings that exist on one platform only.
+    private static let platformSpecific: [Entry] = {
+        #if os(macOS)
+        [Entry(title: "Menu bar", page: .privacy, keywords: ["menu bar extra", "mac", "quick log", "status item"])]
+        #else
+        []
+        #endif
+    }()
 
     /// Settings whose title or keywords contain every word of `query`, ignoring case and accents.
     /// Title matches come first; an empty query finds nothing.
