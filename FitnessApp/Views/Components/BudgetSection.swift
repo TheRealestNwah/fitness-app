@@ -75,3 +75,60 @@ struct UnitPreferenceRows: View {
         }
     }
 }
+
+/// Settings for separate calorie and carb targets on training and rest days.
+struct TrainingDaysSection: View {
+    @Bindable var profile: UserProfile
+
+    private var plan: TrainingPlan { profile.trainingPlan }
+
+    var body: some View {
+        Section {
+            Toggle("Training and rest day targets", isOn: $profile.trainingDaysEnabled)
+                .accessibilityIdentifier("trainingDaysToggle")
+            if profile.trainingDaysEnabled {
+                HStack {
+                    ForEach(orderedWeekdays, id: \.self) { weekday in
+                        let on = plan.weekdays.contains(weekday)
+                        Button {
+                            toggle(weekday)
+                        } label: {
+                            Text(Calendar.current.veryShortWeekdaySymbols[weekday - 1])
+                                .font(.subheadline.weight(.semibold))
+                                .frame(maxWidth: .infinity, minHeight: 36)
+                                .background(on ? Color.accentColor : Color.secondary.opacity(0.15), in: Circle())
+                                .foregroundStyle(on ? Color.white : Color.primary)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(Calendar.current.weekdaySymbols[weekday - 1])
+                        .accessibilityValue(on ? "Training day" : "Rest day")
+                    }
+                }
+                Toggle("Count logged or imported workouts", isOn: $profile.trainingFromWorkouts)
+                Stepper(value: $profile.trainingBonusKcal, in: TrainingPlan.bonusRange, step: 50) {
+                    LabeledContent("Training days", value: "+\(Energy.string(Double(plan.bonusKcal)))")
+                }
+                LabeledContent("Rest days", value: "−\(Energy.string(Double(DayTargets.restCutKcal(plan))))")
+                Stepper(value: $profile.trainingCarbShift, in: TrainingPlan.carbShiftRange, step: 5) {
+                    LabeledContent("Carbs on training days", value: "+\(plan.carbShiftPercent)% of calories")
+                }
+            }
+        } header: {
+            Text("Training days")
+        } footer: {
+            Text("Eat more on days you train and less on rest days. The rest-day cut is sized so a normal week averages out to your daily target, so your goal date doesn't change. Carbs move from fat on training days and back on rest days. If you also add exercise calories back, keep the training bonus small. You can switch today's type from the Today screen.")
+        }
+    }
+
+    /// Weekdays starting from the calendar's first day.
+    private var orderedWeekdays: [Int] {
+        let first = Calendar.current.firstWeekday
+        return (0..<7).map { (first - 1 + $0) % 7 + 1 }
+    }
+
+    private func toggle(_ weekday: Int) {
+        var copy = plan
+        if copy.weekdays.contains(weekday) { copy.weekdays.remove(weekday) } else { copy.weekdays.insert(weekday) }
+        profile.trainingWeekdayMask = DayTargets.weekdayMask(copy.weekdays)
+    }
+}
