@@ -79,7 +79,7 @@ enum SettingsSearch {
               keywords: ["USDA", "Open Food Facts", "food database", "API key", "lookup", "internet"]),
 
         Entry(title: "Show feature tips again", page: .about, keywords: ["tips", "help"]),
-        Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical"]),
+        Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical", "open source", "github", "tip", "coffee", "ko-fi", "donate", "support"]),
     ]
 
     /// Settings whose title or keywords contain every word of `query`, ignoring case and accents.
