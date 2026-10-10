@@ -74,9 +74,9 @@ enum FoodDataCentralClient {
 
         var values: [Int: Double] = [:]
         for nutrient in food["foodNutrients"] as? [[String: Any]] ?? [] {
-            guard let nutrientID = nutrient["nutrientId"] as? Int else { continue }
-            if let v = nutrient["value"] as? Double { values[nutrientID] = v }
-            else if let v = nutrient["value"] as? Int { values[nutrientID] = Double(v) }
+            // Any JSON number shape: an ID can arrive as 1008 or 1008.0, a value as 23 or 23.0.
+            guard let nutrientID = (nutrient["nutrientId"] as? NSNumber)?.intValue else { continue }
+            if let v = (nutrient["value"] as? NSNumber)?.doubleValue { values[nutrientID] = v }
         }
         // 1008 is energy in kcal; Foundation foods often give the Atwater factors (2047, 2048) instead.
         guard let per100 = values[1008] ?? values[2047] ?? values[2048] ?? values[1062].map({ $0 / 4.184 }) else {
@@ -95,18 +95,20 @@ enum FoodDataCentralClient {
             serving = household.isEmpty ? amount : "\(household) (\(amount))"
         }
 
-        func value(_ ids: Int...) -> Double {
+        func value(_ ids: [Int]) -> Double {
             (ids.compactMap { values[$0] }.first ?? 0) * factor
         }
+        var micros = Micronutrients()
+        for n in Micronutrient.allCases { micros[n] = value(n.foodDataCentralIDs) }
         let brand = ((food["brandName"] as? String) ?? (food["brandOwner"] as? String) ?? "")
             .trimmingCharacters(in: .whitespaces)
         let barcode = (food["gtinUpc"] as? String).flatMap(OpenFoodFactsClient.normalise) ?? ""
         return ScannedProduct(barcode: barcode, name: tidy(rawName), brand: tidy(brand), servingDescription: serving,
                               calories: per100 * factor,
-                              protein: value(1003), carbs: value(1005), fat: value(1004), fiber: value(1079),
-                              sugar: value(2000, 1063), sodium: value(1093),
-                              saturatedFat: value(1258), potassium: value(1092), cholesterol: value(1253),
-                              alcohol: value(1018), caffeine: value(1057))
+                              protein: value([1003]), carbs: value([1005]), fat: value([1004]), fiber: value([1079]),
+                              sugar: value([2000, 1063]), sodium: value([1093]),
+                              saturatedFat: value([1258]), potassium: value([1092]), cholesterol: value([1253]),
+                              alcohol: value([1018]), caffeine: value([1057]), micros: micros)
     }
 
     /// Branded entries arrive in capitals ("KIND BARS"); everything else is left as written.

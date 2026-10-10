@@ -39,6 +39,7 @@ final class BackupManagerTests: XCTestCase {
                             carbs: 27, fat: 3, fiber: 4, sugar: 1, sodium: 10, isCustom: true)
         food.potassium = 120
         food.isFavorite = true
+        food.micros.calcium = 50
         food.barcode = "123"
         food.servingPresets = [ServingPreset(label: "cup", servings: 2)]
         context.insert(food)
@@ -47,6 +48,7 @@ final class BackupManagerTests: XCTestCase {
                                foodName: "Oats", servings: 1.5, servingDescription: "40 g", calories: 225,
                                protein: 7, carbs: 40, fat: 4, foodItemID: food.uuid, fiber: 6)
         log.caffeine = 12
+        log.micros.iron = 3
         log.isEstimate = true
         log.photo = Data([9])
         context.insert(log)
@@ -126,6 +128,8 @@ final class BackupManagerTests: XCTestCase {
         XCTAssertEqual(restored.weights.first?.photo, Data([1, 2, 3]))
         XCTAssertEqual(restored.foods.first?.servingPresets.count, 1)
         XCTAssertEqual(restored.foodLogs.first?.caffeine, 12)
+        XCTAssertEqual(restored.foodLogs.first?.micros?.iron, 3)
+        XCTAssertEqual(restored.foods.first?.micros?.calcium, 50)
         XCTAssertEqual(restored.vitals.count, 1)
         XCTAssertEqual(restored.water.count, 1)
         XCTAssertEqual(restored.recipes.first?.ingredients.count, 1)

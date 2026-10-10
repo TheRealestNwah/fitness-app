@@ -23,6 +23,7 @@ struct ScannedProduct: Equatable, Codable {
     var alcohol: Double = 0
     /// Milligrams.
     var caffeine: Double = 0
+    var micros: Micronutrients = Micronutrients()
 
     func makeFoodItem() -> FoodItem {
         let item = FoodItem(name: name, brand: brand, servingDescription: servingDescription,
@@ -34,6 +35,7 @@ struct ScannedProduct: Equatable, Codable {
         item.cholesterol = cholesterol
         item.alcohol = alcohol
         item.caffeine = caffeine
+        item.micros = micros
         return item
     }
 }
@@ -145,6 +147,20 @@ enum OpenFoodFactsClient {
             return Alcohol.grams(percentABV: abv, millilitres: millilitres)
         }
 
+        // Vitamins and minerals arrive in grams; use the per-serving figure, else scale per-100 g.
+        func micros(serving: Bool, factor: Double) -> Micronutrients {
+            var result = Micronutrients()
+            for n in Micronutrient.allCases {
+                let perUnit = 1 / n.gramsPerUnit
+                if serving, let v = number("\(n.openFoodFactsKey)_serving") {
+                    result[n] = v * perUnit
+                } else if let v = number("\(n.openFoodFactsKey)_100g") {
+                    result[n] = v * perUnit * factor
+                }
+            }
+            return result
+        }
+
         let name = (product["product_name"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let brand = ((product["brands"] as? String) ?? "")
             .split(separator: ",").first.map { $0.trimmingCharacters(in: .whitespaces) } ?? ""
@@ -170,7 +186,8 @@ enum OpenFoodFactsClient {
                                   potassium: (number("potassium_serving") ?? 0) * 1000,
                                   cholesterol: (number("cholesterol_serving") ?? 0) * 1000,
                                   alcohol: alcoholG(millilitres: servingQuantity ?? 0),
-                                  caffeine: (number("caffeine_serving") ?? 0) * 1000)
+                                  caffeine: (number("caffeine_serving") ?? 0) * 1000,
+                                  micros: micros(serving: true, factor: (servingQuantity ?? 0) / 100))
         }
         guard let per100 = kcal("_100g") else { return nil }
         let factor: Double
@@ -195,7 +212,8 @@ enum OpenFoodFactsClient {
                               potassium: (number("potassium_100g") ?? 0) * 1000 * factor,
                               cholesterol: (number("cholesterol_100g") ?? 0) * 1000 * factor,
                               alcohol: alcoholG(millilitres: 100) * factor,
-                              caffeine: (number("caffeine_100g") ?? 0) * 1000 * factor)
+                              caffeine: (number("caffeine_100g") ?? 0) * 1000 * factor,
+                              micros: micros(serving: false, factor: factor))
     }
 
     // MARK: - Text search

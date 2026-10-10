@@ -29,10 +29,12 @@ final class HealthExportTests: XCTestCase {
     }
 
     func testEveryWrittenTypeIsDeletable() {
+        var micros = Micronutrients()
+        for nutrient in Micronutrient.allCases { micros[nutrient] = 1 }
         let written = HealthImportRules.dietaryValues(calories: 1, protein: 1, carbs: 1, fat: 1,
                                                       fiber: 1, sugar: 1, sodiumMg: 1, saturatedFat: 1,
                                                       potassiumMg: 1, cholesterolMg: 1,
-                                                      alcoholG: 1, caffeineMg: 1).map(\.type)
+                                                      alcoholG: 1, caffeineMg: 1, micros: micros).map(\.type)
         XCTAssertEqual(Set(written), Set(HealthImportRules.dietaryTypes))
     }
 

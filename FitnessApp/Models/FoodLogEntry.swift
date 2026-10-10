@@ -28,6 +28,8 @@ final class FoodLogEntry {
     var alcohol: Double = 0
     /// Milligrams.
     var caffeine: Double = 0
+    /// Vitamins and minerals for this line; zero means not recorded.
+    var micros: Micronutrients = Micronutrients()
     var foodItemID: UUID?
     /// A photo of the meal, stored outside the database file.
     @Attribute(.externalStorage) var photo: Data?
@@ -84,6 +86,7 @@ final class FoodLogEntry {
         cholesterol *= ratio
         alcohol *= ratio
         caffeine *= ratio
+        micros = micros.scaled(by: ratio)
         servings = newServings
     }
 
@@ -103,6 +106,7 @@ extension FoodLogEntry {
         cholesterol = other.cholesterol * scale
         alcohol = other.alcohol * scale
         caffeine = other.caffeine * scale
+        micros = other.micros.scaled(by: scale)
         return self
     }
 
@@ -114,6 +118,7 @@ extension FoodLogEntry {
         cholesterol = food.cholesterol * servings
         alcohol = food.alcohol * servings
         caffeine = food.caffeine * servings
+        micros = food.micros.scaled(by: servings)
         return self
     }
 }

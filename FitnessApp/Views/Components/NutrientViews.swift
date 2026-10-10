@@ -101,6 +101,7 @@ struct NutrientPill: View {
 struct NutrientGoalsSection: View {
     @Bindable var profile: UserProfile
     @AppStorage(ExtraNutrients.storageKey) private var showExtras = false
+    @AppStorage(MicronutrientSettings.storageKey) private var trackMicronutrients = false
 
     var body: some View {
         Section {
@@ -113,10 +114,12 @@ struct NutrientGoalsSection: View {
                 goal("Potassium goal", value: $profile.potassiumTargetMg, suggested: 3500, range: 1000...6000, step: 100, unit: "mg")
                 goal("Cholesterol limit", value: $profile.cholesterolLimitMg, suggested: 300, range: 100...600, step: 25, unit: "mg")
             }
+            Toggle("Vitamins and minerals", isOn: $trackMicronutrients)
+                .accessibilityIdentifier("micronutrientsToggle")
         } header: {
             Text("Other nutrients")
         } footer: {
-            Text("Shown in the food diary for foods that list them. Common guidance is at least 30 g of fibre, under 50 g of sugar and under 2,300 mg of sodium a day, and, if you track them, under about 20 g of saturated fat and 300 mg of cholesterol with around 3,500 mg of potassium; ask your doctor if you're managing blood pressure, cholesterol or glucose.")
+            Text("Shown in the food diary for foods that list them. Common guidance is at least 30 g of fibre, under 50 g of sugar and under 2,300 mg of sodium a day, and, if you track them, under about 20 g of saturated fat and 300 mg of cholesterol with around 3,500 mg of potassium; ask your doctor if you're managing blood pressure, cholesterol or glucose. Vitamins and minerals add calcium, iron, magnesium, zinc and vitamins D, B12, C, A and folate, filled in for foods that list them.")
         }
     }
 
