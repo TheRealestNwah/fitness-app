@@ -39,7 +39,9 @@ enum SettingsSearch {
         var id: String { "\(page.rawValue).\(title)" }
     }
 
-    static let entries: [Entry] = [
+    static let entries: [Entry] = shared + platformSpecific
+
+    private static let shared: [Entry] = [
         Entry(title: "Body & goals", page: .profile,
               keywords: ["name", "sex", "age", "birthday", "height", "weight", "goal weight", "starting weight", "activity", "weekly loss"]),
         Entry(title: "Units", page: .profile, keywords: ["metric", "imperial", "kg", "lb", "stone", "kcal", "kJ", "energy"]),
@@ -58,6 +60,8 @@ enum SettingsSearch {
         Entry(title: "Maintenance mode", page: .nutrition, keywords: ["hold weight", "band"]),
         Entry(title: "Flexible budget", page: .nutrition, keywords: ["weekly budget", "diet break"]),
         Entry(title: "Meals", page: .nutrition, keywords: ["breakfast", "lunch", "dinner", "snacks", "rename", "add meal", "meal times"]),
+        Entry(title: "Training and rest day targets", page: .nutrition,
+              keywords: ["training days", "rest days", "workout", "carb cycling", "gym"]),
         Entry(title: "Exercise calories", page: .nutrition, keywords: ["earn back", "workout"]),
 
         Entry(title: "Morning weigh-in", page: .reminders, keywords: ["notifications", "scale"]),
@@ -67,7 +71,7 @@ enum SettingsSearch {
         Entry(title: "Evening check-in", page: .reminders, keywords: ["notifications", "day close"]),
         Entry(title: "Pause during diet breaks", page: .reminders, keywords: ["notifications", "diet break", "reminders"]),
 
-        Entry(title: "Apple Health", page: .healthData, keywords: ["HealthKit", "sync", "steps", "active energy", "import"]),
+        Entry(title: "Apple Health", page: .healthData, keywords: ["HealthKit", "sync", "steps", "step goal", "active energy", "import"]),
         Entry(title: "Cycle-aware weight", page: .healthData, keywords: ["period", "menstrual", "water retention"]),
         Entry(title: "iCloud sync", page: .healthData, keywords: ["backup", "devices", "iPad"]),
         Entry(title: "Export and share", page: .healthData, keywords: ["CSV", "PDF", "doctor", "report", "spreadsheet"]),
@@ -76,12 +80,23 @@ enum SettingsSearch {
 
         Entry(title: "App lock", page: .privacy, keywords: ["Face ID", "Touch ID", "passcode", "privacy"]),
 
+        Entry(title: "Hide calorie and weight numbers", page: .privacy,
+              keywords: ["focus", "numbers", "disordered eating", "break", "calories", "weight", "stress"]),
         Entry(title: "Online food search", page: .privacy,
               keywords: ["USDA", "Open Food Facts", "food database", "API key", "lookup", "internet"]),
 
         Entry(title: "Show feature tips again", page: .about, keywords: ["tips", "help"]),
-        Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical"]),
+        Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical", "open source", "github", "tip", "coffee", "ko-fi", "donate", "support"]),
     ]
+
+    /// Settings that exist on one platform only.
+    private static let platformSpecific: [Entry] = {
+        #if os(macOS)
+        [Entry(title: "Menu bar", page: .privacy, keywords: ["menu bar extra", "mac", "quick log", "status item"])]
+        #else
+        []
+        #endif
+    }()
 
     /// Settings whose title or keywords contain every word of `query`, ignoring case and accents.
     /// Title matches come first; an empty query finds nothing.

@@ -7,6 +7,9 @@ struct FitnessApp: App {
     @UIApplicationDelegateAdaptor(StrideAppDelegate.self) private var appDelegate
     #endif
     let container: ModelContainer
+    #if os(macOS)
+    @AppStorage(MenuBarSummary.enabledKey) private var menuBarEnabled = true
+    #endif
 
     init() {
         container = AppStore.container
@@ -40,6 +43,14 @@ struct FitnessApp: App {
                 .appLockGate()
         }
         .modelContainer(container)
+
+        #if os(macOS)
+        MenuBarExtra("Stride", systemImage: "fork.knife", isInserted: $menuBarEnabled) {
+            MenuBarExtraContent()
+        }
+        .menuBarExtraStyle(.window)
+        .modelContainer(container)
+        #endif
     }
 }
 

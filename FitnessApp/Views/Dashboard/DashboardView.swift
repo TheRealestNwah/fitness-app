@@ -21,6 +21,8 @@ struct DashboardView: View {
     @Query(sort: \FastingSession.start, order: .reverse) private var fasts: [FastingSession]
 
     @State private var showAddWeight = false
+    @State private var showsActivityTrend = false
+    @AppStorage(ActivityTrend.stepGoalKey) private var stepGoal = 0
     @State private var showAddFood = false
     @State private var showAddVitals = false
     @State private var showSettings = false
@@ -71,8 +73,15 @@ struct DashboardView: View {
             exercise: ExerciseCatalog.earnBack(exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
                                                percent: ExerciseSettings.earnBackPercent))
     }
-    private var calorieTarget: Int { baseTarget + activeCredit }
-    private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg) }
+    /// Training or rest day, when the user has separate targets for them.
+    private var dayType: DayType? { profile.dayType(hasWorkout: !todaysExercise.isEmpty) }
+    private var calorieTarget: Int {
+        let floor = NutritionCalculator.calorieFloor(for: profile.sex)
+        return max(baseTarget + profile.dayOffset(dayType), min(floor, baseTarget)) + activeCredit
+    }
+    private var macroTargets: MacroTargets {
+        profile.macroTargets(currentWeightKg: currentKg, dayType: dayType, baseCalories: baseTarget)
+    }
 
     private var consumed: Double { todaysFood.reduce(0) { $0 + $1.calories } }
     private var protein: Double { todaysFood.reduce(0) { $0 + $1.protein } }
@@ -108,7 +117,7 @@ struct DashboardView: View {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
-            budget: calorieTarget,
+            budget: baseTarget + activeCredit,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
     }
@@ -275,7 +284,9 @@ struct DashboardView: View {
                 .contextMenu { ringActions }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Calories today")
-                .accessibilityValue(remaining >= 0
+                .accessibilityValue(NumberPrivacy.shared.isOn
+                    ? "Numbers hidden"
+                    : remaining >= 0
                     ? "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int(remaining.rounded())) left"
                     : "\(Int(consumed.rounded())) eaten of \(calorieTarget), \(Int((-remaining).rounded())) over")
                 .accessibilityHint("Touch and hold for quick actions")
@@ -283,6 +294,9 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Eaten", value: Energy.string(consumed))
                     LabeledContent("Budget", value: activeCredit > 0 ? "\(Energy.number(baseTarget)) + \(Energy.string(activeCredit))" : Energy.string(calorieTarget))
+                    if let dayType {
+                        DayTypeMenu(profile: profile, current: dayType)
+                    }
                     if let note = budgetNote {
                         Text(note)
                             .font(.footnote)
@@ -500,21 +514,30 @@ struct DashboardView: View {
                 Label("Activity", systemImage: "figure.walk")
                     .font(.headline)
                 Spacer()
-                Text("Apple Health")
+                Button("Trends") { showsActivityTrend = true }
                     .font(.footnote)
-                    .foregroundStyle(Color.secondary)
+                    .accessibilityIdentifier("activityTrendButton")
             }
             AdaptiveStack(spacing: 12) {
-                StatTile(title: "Steps", value: health.todaySteps.formatted(), subtitle: "today", systemImage: "shoeprints.fill", tint: .green)
+                StatTile(title: "Steps", value: health.todaySteps.formatted(),
+                         subtitle: stepGoal > 0 ? "of \(stepGoal.formatted()) today" : "today",
+                         systemImage: "shoeprints.fill", tint: .green)
                 StatTile(title: "Active energy", value: "\(Energy.string(health.todayActiveEnergyKcal))",
                          subtitle: activeCredit > 0 ? "+\(Energy.string(activeCredit)) to budget" : "not added to budget",
                          systemImage: "flame.fill", tint: .orange)
+            }
+            if stepGoal > 0 {
+                ProgressView(value: ActivityTrend.progress(steps: health.todaySteps, goal: stepGoal))
+                    .tint(.green)
+                    .accessibilityLabel("Step goal")
+                    .accessibilityValue("\(Int(ActivityTrend.progress(steps: health.todaySteps, goal: stepGoal) * 100)) percent")
             }
             if let error = health.lastError {
                 Text(error).font(.footnote).foregroundStyle(.orange)
             }
         }
         .card()
+        .sheet(isPresented: $showsActivityTrend) { ActivityTrendView() }
     }
 
     private func milestoneCard(_ milestone: Milestone) -> some View {
@@ -563,6 +586,7 @@ struct DashboardView: View {
         let intakeSubtitle: String = {
             guard let over = review.overBudget else { return "budget \(review.budget)" }
             if abs(over) < 25 { return "on budget" }
+            if NumberPrivacy.shared.isOn { return over > 0 ? "over budget" : "under budget" }
             return over > 0 ? "\(Int(over.rounded())) over budget" : "\(Int((-over).rounded())) under budget"
         }()
         let weightValue = review.weightChangeKg.map { units.weightString(kg: $0, signed: true) } ?? "—"
@@ -600,6 +624,7 @@ struct DashboardView: View {
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
             }
+            ReviewSummaryView(review: review, units: units)
         }
         .card()
     }
@@ -682,7 +707,7 @@ struct DashboardView: View {
                         if entry.isLogged {
                             Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
                         } else {
-                            Text("\(Int(entry.totalCalories.rounded()))")
+                            Text(NumberPrivacy.hide("\(Int(entry.totalCalories.rounded()))"))
                                 .foregroundStyle(Color.secondary)
                         }
                     }
@@ -806,4 +831,28 @@ struct TodayHaptics: ViewModifier {
     private static func grew(_ old: Int, _ new: Int) -> Bool { new > old }
     private static func rose(_ old: Double, _ new: Double) -> Bool { new > old }
     private static func becameTrue(_ old: Bool, _ new: Bool) -> Bool { !old && new }
+}
+
+/// Shows whether today is a training or rest day, and lets the user switch it for today only.
+struct DayTypeMenu: View {
+    @Bindable var profile: UserProfile
+    let current: DayType
+
+    var body: some View {
+        Menu {
+            Button { set(.training) } label: { Label("Training day", systemImage: DayType.training.systemImage) }
+            Button { set(.rest) } label: { Label("Rest day", systemImage: DayType.rest.systemImage) }
+            Button("Automatic") { profile.dayTypeOverrideDay = nil }
+        } label: {
+            Label(current.label, systemImage: current.systemImage)
+                .font(.footnote.weight(.semibold))
+        }
+        .accessibilityIdentifier("dayTypeMenu")
+        .accessibilityHint("Switch today between a training day and a rest day")
+    }
+
+    private func set(_ type: DayType) {
+        profile.dayTypeOverrideDay = Date.now.startOfDay
+        profile.dayTypeOverrideIsTraining = type == .training
+    }
 }

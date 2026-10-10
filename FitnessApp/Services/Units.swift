@@ -39,6 +39,7 @@ struct Units {
 
     /// Stones read as "12 st 4.5 lb"; a change under a stone reads in pounds ("-3.2 lb").
     func weightString(kg: Double, decimals: Int = 1, signed: Bool = false) -> String {
+        if NumberPrivacy.shared.isOn { return NumberPrivacy.mask }
         if weight == .st {
             let pounds = kg * Units.lbPerKg
             let sign = pounds < 0 ? "-" : (signed ? "+" : "")
@@ -176,7 +177,9 @@ enum EnergyUnit: String, CaseIterable, Identifiable {
 
     func value(kcal: Double) -> Double { self == .kcal ? kcal : kcal * Self.kJPerKcal }
 
-    func string(kcal: Double) -> String { "\(Int(value(kcal: kcal).rounded())) \(rawValue)" }
+    func string(kcal: Double) -> String {
+        NumberPrivacy.shared.isOn ? NumberPrivacy.mask : "\(Int(value(kcal: kcal).rounded())) \(rawValue)"
+    }
 }
 
 /// Formats energy in the user's chosen unit.
@@ -185,6 +188,8 @@ enum Energy {
     static func string(_ kcal: Double) -> String { EnergyUnit.current.string(kcal: kcal) }
     static func string(_ kcal: Int) -> String { string(Double(kcal)) }
     /// Just the number, for places that show the unit separately.
-    static func number(_ kcal: Double) -> String { "\(Int(EnergyUnit.current.value(kcal: kcal).rounded()))" }
+    static func number(_ kcal: Double) -> String {
+        NumberPrivacy.shared.isOn ? NumberPrivacy.mask : "\(Int(EnergyUnit.current.value(kcal: kcal).rounded()))"
+    }
     static func number(_ kcal: Int) -> String { number(Double(kcal)) }
 }
