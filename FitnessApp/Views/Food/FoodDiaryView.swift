@@ -218,6 +218,7 @@ struct DayDiaryView: View {
 
     @Environment(UserProfile.self) private var profile
     @AppStorage(ExtraNutrients.storageKey) private var showExtraNutrients = false
+    @AppStorage(MicronutrientSettings.storageKey) private var trackMicronutrients = false
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
     @Query private var entries: [FoodLogEntry]
@@ -710,6 +711,15 @@ struct DayDiaryView: View {
             let caffeine = entries.reduce(0) { $0 + $1.caffeine }
             if alcohol > 0 || caffeine > 0 {
                 DrinksNutrientRow(alcohol: alcohol, caffeine: caffeine)
+            }
+            if trackMicronutrients {
+                NavigationLink {
+                    MicronutrientsView(date: date)
+                } label: {
+                    Label("Vitamins and minerals", systemImage: "pills")
+                        .font(.subheadline)
+                }
+                .accessibilityIdentifier("micronutrientsLink")
             }
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Energy.string(remaining)) remaining" : "\(Energy.string((-remaining))) over budget")

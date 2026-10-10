@@ -21,6 +21,7 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
     var cholesterol: Double?
     var alcohol: Double?
     var caffeine: Double?
+    var micros: Micronutrients?
 
     init(foodName: String, servings: Double, servingDescription: String,
          calories: Double, protein: Double, carbs: Double, fat: Double, foodItemID: UUID? = nil) {
@@ -47,6 +48,7 @@ struct SavedMealItem: Codable, Hashable, Identifiable {
         cholesterol = entry.cholesterol
         alcohol = entry.alcohol
         caffeine = entry.caffeine
+        micros = entry.micros.hasData ? entry.micros : nil
     }
 }
 
@@ -105,6 +107,7 @@ final class SavedMeal {
             entry.cholesterol = item.cholesterol ?? 0
             entry.alcohol = item.alcohol ?? 0
             entry.caffeine = item.caffeine ?? 0
+            entry.micros = item.micros ?? Micronutrients()
             return entry
         }
         for e in entries { context.insertDiaryEntry(e) }

@@ -31,6 +31,8 @@ final class FoodItem {
     var alcohol: Double = 0
     /// Milligrams.
     var caffeine: Double = 0
+    /// Vitamins and minerals per serving; zero means not recorded.
+    var micros: Micronutrients = Micronutrients()
     var isFavorite: Bool = false
     var isCustom: Bool = false
     var lastUsed: Date?

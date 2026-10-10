@@ -652,6 +652,8 @@ struct CreateFoodSheet: View {
     @State private var alcohol: Double?
     @State private var caffeine: Double?
     @State private var showDrinkFields = false
+    @State private var microValues: [Micronutrient: Double] = [:]
+    @AppStorage(MicronutrientSettings.storageKey) private var trackMicronutrients = false
     @AppStorage(ExtraNutrients.storageKey) private var showExtras = false
     @State private var per100g = false
     @State private var servingGrams: Double?
@@ -720,6 +722,16 @@ struct CreateFoodSheet: View {
                         DecimalField(title: "Potassium", value: $potassium, unit: "mg")
                         DecimalField(title: "Cholesterol", value: $cholesterol, unit: "mg")
                     }
+                    if trackMicronutrients {
+                        DisclosureGroup("Vitamins and minerals") {
+                            ForEach(Micronutrient.allCases) { nutrient in
+                                DecimalField(title: nutrient.name,
+                                             value: Binding(get: { microValues[nutrient] },
+                                                            set: { microValues[nutrient] = $0 }),
+                                             unit: nutrient.unit)
+                            }
+                        }
+                    }
                     DisclosureGroup("Alcohol and caffeine", isExpanded: $showDrinkFields) {
                         DecimalField(title: "Alcohol", value: $alcohol, unit: "g")
                         DecimalField(title: "Caffeine", value: $caffeine, unit: "mg")
@@ -763,6 +775,7 @@ struct CreateFoodSheet: View {
                         item.cholesterol = n(cholesterol)
                         item.alcohol = n(alcohol)
                         item.caffeine = n(caffeine)
+                        for nutrient in Micronutrient.allCases { item.micros[nutrient] = n(microValues[nutrient]) }
                         let label = measureName.trimmingCharacters(in: .whitespaces)
                         if !label.isEmpty, let amount = measureServings, amount > 0 {
                             item.servingPresets = [ServingPreset(label: label, servings: amount)]
@@ -805,6 +818,9 @@ struct CreateFoodSheet: View {
             saturatedFat = label.saturatedFat ?? saturatedFat
             potassium = label.potassiumMg ?? potassium
             cholesterol = label.cholesterolMg ?? cholesterol
+            for nutrient in Micronutrient.allCases where label.micros[nutrient] > 0 {
+                microValues[nutrient] = label.micros[nutrient]
+            }
             scanNote = "Filled from the label. Check the numbers before saving."
         }
     }

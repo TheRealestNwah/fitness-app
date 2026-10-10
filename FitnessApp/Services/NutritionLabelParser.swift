@@ -18,6 +18,10 @@ enum NutritionLabelParser {
         var saturatedFat: Double?
         var potassiumMg: Double?
         var cholesterolMg: Double?
+        /// Vitamins and minerals found on the label, in each nutrient's own unit.
+        var micros = Micronutrients()
+
+        var hasMicros: Bool { micros.hasData }
 
         var isEmpty: Bool { calories == nil && protein == nil && carbs == nil && fat == nil }
     }
@@ -35,6 +39,29 @@ enum NutritionLabelParser {
         }
     }
 
+    /// The amount on a vitamin or mineral line, converted to the nutrient's unit ("Calcium 260mg 20%").
+    /// Lines that only give IU, or only a percentage, are ignored.
+    static func microAmount(in line: String, for nutrient: Micronutrient) -> Double? {
+        let cleaned = line.replacingOccurrences(of: #"\d+(?:[.,]\d+)?\s*%"#, with: "", options: .regularExpression)
+        let pattern = #"(\d+(?:[.,]\d+)?)\s*(mcg|µg|μg|ug|mg|g|iu)?"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return nil }
+        let ns = cleaned as NSString
+        for m in regex.matches(in: cleaned, range: NSRange(location: 0, length: ns.length)) {
+            guard let value = Double(ns.substring(with: m.range(at: 1)).replacingOccurrences(of: ",", with: ".")) else { continue }
+            let unit = m.range(at: 2).location == NSNotFound ? "" : ns.substring(with: m.range(at: 2)).lowercased()
+            let grams: Double
+            switch unit {
+            case "mg": grams = value / 1000
+            case "g": grams = value
+            case "mcg", "µg", "μg", "ug": grams = value / 1_000_000
+            case "iu": continue
+            default: return value
+            }
+            return grams / nutrient.gramsPerUnit
+        }
+        return nil
+    }
+
     static func parse(_ lines: [String]) -> Label {
         var label = Label()
         let lower = lines.map { $0.lowercased() }
@@ -50,6 +77,11 @@ enum NutritionLabelParser {
         }
 
         for (i, line) in lower.enumerated() {
+            for nutrient in Micronutrient.allCases where label.micros[nutrient] == 0 {
+                guard nutrient.labelWords.contains(where: { line.hasPrefix($0) }),
+                      let amount = microAmount(in: line, for: nutrient), amount > 0 else { continue }
+                label.micros[nutrient] = (amount * 100).rounded() / 100
+            }
             let next = i + 1 < lower.count ? lower[i + 1] : ""
             if label.servingDescription == nil, line.contains("serving size") || line.hasPrefix("per serving") {
                 let original = lines[i]

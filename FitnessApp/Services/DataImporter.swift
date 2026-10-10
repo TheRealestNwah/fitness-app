@@ -27,6 +27,7 @@ enum DataImporter {
         var cholesterolMg: Double = 0
         var alcoholG: Double = 0
         var caffeineMg: Double = 0
+        var micros = Micronutrients()
     }
 
     struct Preview: Equatable {
@@ -167,6 +168,11 @@ enum DataImporter {
                       let when = date(value(dateCol) ?? "", defaultHour: mealHour(mealType)) else { preview.skipped += 1; continue }
                 let name = value(column("food", "foodname", "name", "item", "description"))?
                     .trimmingCharacters(in: .whitespaces)
+                var micros = Micronutrients()
+                for n in Micronutrient.allCases {
+                    let key = n.csvColumn.replacingOccurrences(of: "_", with: "")
+                    micros[n] = number(value(column(key))) ?? 0
+                }
                 preview.food.append(Food(
                     date: when, meal: mealType,
                     name: (name?.isEmpty ?? true) ? "\(mealType.rawValue.capitalized) (imported)" : name!,
@@ -182,7 +188,8 @@ enum DataImporter {
                     potassiumMg: number(value(column("potassiummg", "potassium"))) ?? 0,
                     cholesterolMg: number(value(column("cholesterolmg", "cholesterol"))) ?? 0,
                     alcoholG: number(value(column("alcoholg", "alcohol"))) ?? 0,
-                    caffeineMg: number(value(column("caffeinemg", "caffeine"))) ?? 0))
+                    caffeineMg: number(value(column("caffeinemg", "caffeine"))) ?? 0,
+                    micros: micros))
             }
         }
         return preview
@@ -225,6 +232,7 @@ enum DataImporter {
             entry.cholesterol = f.cholesterolMg
             entry.alcohol = f.alcoholG
             entry.caffeine = f.caffeineMg
+            entry.micros = f.micros
             context.insert(entry)
         }
         try context.save()

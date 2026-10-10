@@ -86,6 +86,7 @@ enum HealthImportRules {
                                                            .dietaryFatTotal, .dietaryFiber, .dietarySugar, .dietarySodium,
                                                            .dietaryFatSaturated, .dietaryPotassium, .dietaryCholesterol,
                                                            .dietaryCaffeine, .numberOfAlcoholicBeverages]
+        + Micronutrient.allCases.map(\.healthIdentifier)
 
     /// What a diary entry is written to Health as. Energy and macros are always written;
     /// fibre, sugar and sodium only when recorded, since zero usually means unknown.
@@ -93,7 +94,8 @@ enum HealthImportRules {
                               fiber: Double, sugar: Double, sodiumMg: Double,
                               saturatedFat: Double = 0, potassiumMg: Double = 0,
                               cholesterolMg: Double = 0, alcoholG: Double = 0,
-                              caffeineMg: Double = 0) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
+                              caffeineMg: Double = 0,
+                              micros: Micronutrients = Micronutrients()) -> [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] {
         var values: [(type: HKQuantityTypeIdentifier, value: Double, unit: HKUnit)] = [
             (.dietaryEnergyConsumed, max(calories, 0), .kilocalorie()),
             (.dietaryProtein, max(protein, 0), .gram()),
@@ -107,6 +109,10 @@ enum HealthImportRules {
         if potassiumMg > 0 { values.append((.dietaryPotassium, potassiumMg, .gramUnit(with: .milli))) }
         if cholesterolMg > 0 { values.append((.dietaryCholesterol, cholesterolMg, .gramUnit(with: .milli))) }
         if caffeineMg > 0 { values.append((.dietaryCaffeine, caffeineMg, .gramUnit(with: .milli))) }
+        for nutrient in Micronutrient.allCases where micros[nutrient] > 0 {
+            values.append((nutrient.healthIdentifier, micros[nutrient],
+                           .gramUnit(with: nutrient.unit == "mg" ? .milli : .micro)))
+        }
         // Health counts alcohol as standard drinks rather than grams.
         if alcoholG > 0 { values.append((.numberOfAlcoholicBeverages, Alcohol.standardDrinks(grams: alcoholG), .count())) }
         return values
@@ -439,7 +445,7 @@ final class HealthKitManager {
                                                fat: entry.fat, fiber: entry.fiber, sugar: entry.sugar, sodiumMg: entry.sodium,
                                                saturatedFat: entry.saturatedFat, potassiumMg: entry.potassium,
                                                cholesterolMg: entry.cholesterol, alcoholG: entry.alcohol,
-                                               caffeineMg: entry.caffeine)
+                                               caffeineMg: entry.caffeine, micros: entry.micros)
             .map { HKQuantitySample(type: HKQuantityType($0.type), quantity: HKQuantity(unit: $0.unit, doubleValue: $0.value),
                                     start: entry.date, end: entry.date, metadata: metadata) }
     }

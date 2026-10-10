@@ -95,18 +95,20 @@ enum FoodDataCentralClient {
             serving = household.isEmpty ? amount : "\(household) (\(amount))"
         }
 
-        func value(_ ids: Int...) -> Double {
+        func value(_ ids: [Int]) -> Double {
             (ids.compactMap { values[$0] }.first ?? 0) * factor
         }
+        var micros = Micronutrients()
+        for n in Micronutrient.allCases { micros[n] = value(n.foodDataCentralIDs) }
         let brand = ((food["brandName"] as? String) ?? (food["brandOwner"] as? String) ?? "")
             .trimmingCharacters(in: .whitespaces)
         let barcode = (food["gtinUpc"] as? String).flatMap(OpenFoodFactsClient.normalise) ?? ""
         return ScannedProduct(barcode: barcode, name: tidy(rawName), brand: tidy(brand), servingDescription: serving,
                               calories: per100 * factor,
-                              protein: value(1003), carbs: value(1005), fat: value(1004), fiber: value(1079),
-                              sugar: value(2000, 1063), sodium: value(1093),
-                              saturatedFat: value(1258), potassium: value(1092), cholesterol: value(1253),
-                              alcohol: value(1018), caffeine: value(1057))
+                              protein: value([1003]), carbs: value([1005]), fat: value([1004]), fiber: value([1079]),
+                              sugar: value([2000, 1063]), sodium: value([1093]),
+                              saturatedFat: value([1258]), potassium: value([1092]), cholesterol: value([1253]),
+                              alcohol: value([1018]), caffeine: value([1057]), micros: micros)
     }
 
     /// Branded entries arrive in capitals ("KIND BARS"); everything else is left as written.
