@@ -75,6 +75,8 @@ enum SettingsSearch {
 
         Entry(title: "App lock", page: .privacy, keywords: ["Face ID", "Touch ID", "passcode", "privacy"]),
 
+        Entry(title: "Hide calorie and weight numbers", page: .privacy,
+              keywords: ["focus", "numbers", "disordered eating", "break", "calories", "weight", "stress"]),
         Entry(title: "Online food search", page: .privacy,
               keywords: ["USDA", "Open Food Facts", "food database", "API key", "lookup", "internet"]),
 

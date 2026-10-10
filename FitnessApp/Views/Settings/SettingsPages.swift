@@ -456,6 +456,24 @@ private struct AboutSettingsPage: View {
     }
 }
 
+// MARK: - Hide numbers
+
+private struct HideNumbersSection: View {
+    @Environment(UserProfile.self) private var profile
+    @State private var privacy = NumberPrivacy.shared
+
+    var body: some View {
+        Section {
+            Toggle("Hide calorie and weight numbers", isOn: $privacy.manual)
+        } header: {
+            Text("Numbers")
+        } footer: {
+            Text("Shows progress without calorie or weight numbers, and pauses protein reminders. A Focus can turn this on too: add the Stride filter in Settings → Focus.")
+        }
+        .onChange(of: privacy.isOn) { NotificationManager.sync(with: profile) }
+    }
+}
+
 // MARK: - Online food search
 
 private struct OnlineFoodSearchSection: View {

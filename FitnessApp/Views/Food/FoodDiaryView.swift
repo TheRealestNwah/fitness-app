@@ -465,7 +465,7 @@ struct DayDiaryView: View {
             }
             Spacer()
         }
-        let kcal = Text("\(Int(entry.calories.rounded()))")
+        let kcal = Text(NumberPrivacy.hide("\(Int(entry.calories.rounded()))"))
             .font(.body.monospacedDigit())
             .foregroundStyle(Color.secondary)
         if isSelecting {
@@ -689,7 +689,7 @@ struct DayDiaryView: View {
                 .frame(width: ringSize, height: ringSize)
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Calories")
-                .accessibilityValue("\(Int(consumed.rounded())) of \(target)")
+                .accessibilityValue(NumberPrivacy.shared.isOn ? "Numbers hidden" : "\(Int(consumed.rounded())) of \(target)")
                 VStack(spacing: 8) {
                     MacroBar(name: "Protein", consumed: protein, target: macroTargets.protein, color: .blue)
                     MacroBar(name: "Carbs", consumed: carbs, target: macroTargets.carbs, color: .orange)
@@ -888,7 +888,7 @@ struct SaveFavouriteMealSheet: View {
                                 Text(e.servingsLabel).font(.footnote).foregroundStyle(Color.secondary)
                             }
                             Spacer()
-                            Text("\(Int(e.calories.rounded()))")
+                            Text(NumberPrivacy.hide("\(Int(e.calories.rounded()))"))
                                 .font(.body.monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
