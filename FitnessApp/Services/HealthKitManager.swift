@@ -305,6 +305,35 @@ final class HealthKitManager {
         }
     }
 
+    /// Steps and active energy for each of the last `days` days, oldest first, today included.
+    func dailyActivity(days: Int) async -> [ActivityDay] {
+        guard HealthSettings.isEnabled, Self.isAvailable else { return [] }
+        let calendar = Calendar.current
+        let end = calendar.startOfDay(for: .now)
+        guard let start = calendar.date(byAdding: .day, value: -(days - 1), to: end),
+              let tomorrow = calendar.date(byAdding: .day, value: 1, to: end) else { return [] }
+        async let steps = dailySums(.stepCount, unit: .count(), from: start, to: tomorrow)
+        async let energy = dailySums(.activeEnergyBurned, unit: .kilocalorie(), from: start, to: tomorrow)
+        let (stepSums, energySums) = await (steps, energy)
+        return (0..<days).compactMap { offset in
+            guard let day = calendar.date(byAdding: .day, value: offset, to: start) else { return nil }
+            return ActivityDay(date: day, steps: Int((stepSums[day] ?? 0).rounded()), activeKcal: energySums[day] ?? 0)
+        }
+    }
+
+    private func dailySums(_ identifier: HKQuantityTypeIdentifier, unit: HKUnit, from start: Date, to end: Date) async -> [Date: Double] {
+        let predicate = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictStartDate)
+        let descriptor = HKStatisticsCollectionQueryDescriptor(
+            predicate: .quantitySample(type: HKQuantityType(identifier), predicate: predicate),
+            options: .cumulativeSum, anchorDate: start, intervalComponents: DateComponents(day: 1))
+        guard let collection = try? await descriptor.result(for: store) else { return [:] }
+        var sums: [Date: Double] = [:]
+        collection.enumerateStatistics(from: start, to: end) { stats, _ in
+            sums[stats.startDate] = stats.sumQuantity()?.doubleValue(for: unit) ?? 0
+        }
+        return sums
+    }
+
     // MARK: Cycle
 
     func requestCycleAccess() async throws {

@@ -289,6 +289,7 @@ private struct HealthDataSettingsPage: View {
 
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
     @AppStorage(HealthSettings.creditPercentKey) private var healthCreditPercent = 0
+    @AppStorage(ActivityTrend.stepGoalKey) private var stepGoal = 0
     @AppStorage(CycleCalculator.enabledKey) private var cycleAware = false
     @State private var healthStatus: String?
     @State private var healthBusy = false
@@ -311,6 +312,9 @@ private struct HealthDataSettingsPage: View {
                             Text("Off").tag(0)
                             Text("Half").tag(50)
                             Text("All").tag(100)
+                        }
+                        Stepper(value: $stepGoal, in: 0...ActivityTrend.maxStepGoal, step: ActivityTrend.stepGoalStep) {
+                            LabeledContent("Daily step goal", value: stepGoal == 0 ? "Off" : stepGoal.formatted())
                         }
                         Button {
                             runHealthImport(force: true)
