@@ -72,6 +72,14 @@ final class SettingsTests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Profile & goals"].waitForExistence(timeout: 5))
     }
 
+    func testAboutOffersTheTipLink() {
+        let app = openSettings()
+        openPage("About", in: app)
+        XCTAssertTrue(app.staticTexts["What is Stride?"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Source code on GitHub"].exists || app.links["Source code on GitHub"].exists)
+        XCTAssertTrue(app.buttons["Buy me a coffee"].exists || app.links["Buy me a coffee"].exists)
+    }
+
     func testAppearanceSwitchesImmediately() {
         let app = openSettings()
         openPage("Profile & goals", in: app)
