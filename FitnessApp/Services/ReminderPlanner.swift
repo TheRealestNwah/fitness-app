@@ -56,7 +56,10 @@ enum ReminderPlanner {
     }
 
     static let waterHours = Array(stride(from: 9, through: 21, by: 2))
-    static let mealTimes: [(meal: MealType, hour: Int, minute: Int)] = [(.breakfast, 8, 30), (.lunch, 13, 30), (.dinner, 19, 30)]
+    /// The meals the user wants reminders for, half an hour after each one's usual time.
+    static var mealTimes: [(meal: MealType, hour: Int, minute: Int)] {
+        MealSlots.shared.slots.filter(\.reminds).sorted { $0.hour < $1.hour }.map { (MealType(id: $0.id), $0.hour, 30) }
+    }
     /// Scheduled ahead so reminders still arrive on days the app isn't opened.
     /// iOS keeps at most 64 pending requests; this plans at most 50.
     static let daysAhead = 4
@@ -98,11 +101,12 @@ enum ReminderPlanner {
             }
 
             if settings.mealsEnabled, !paused {
-                for slot in mealTimes {
+                let slots = mealTimes
+                for (index, slot) in slots.enumerated() {
                     guard let date = calendar.date(bySettingHour: slot.hour, minute: slot.minute, second: 0, of: day),
                           date > now else { continue }
                     if isToday, today.loggedMeals.contains(slot.meal) { continue }
-                    let nothingYet = isToday && slot.meal == .lunch && today.loggedMeals.isEmpty
+                    let nothingYet = isToday && index == min(1, slots.count - 1) && today.loggedMeals.isEmpty
                     reminders.append(Reminder(
                         id: "meal.\(key).\(slot.meal.rawValue)", date: date,
                         title: nothingYet ? String(localized: "Nothing logged yet today") : String(localized: "Log your \(slot.meal.inSentence)"),
@@ -111,17 +115,18 @@ enum ReminderPlanner {
                 }
             }
 
+            let closing = mealTimes.last?.meal ?? .dinner
             if let hour = settings.dayCloseHour, !paused,
                let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now,
-               !(isToday && today.loggedMeals.contains(.dinner)),
-               // A dinner reminder in the hour before would say the same thing.
-               !reminders.contains(where: { $0.id == "meal.\(key).dinner" && date.timeIntervalSince($0.date) <= 3600 }) {
+               !(isToday && today.loggedMeals.contains(closing)),
+               // A reminder for the last meal in the hour before would say the same thing.
+               !reminders.contains(where: { $0.id == "meal.\(key).\(closing.rawValue)" && date.timeIntervalSince($0.date) <= 3600 }) {
                 let nothing = isToday && today.loggedMeals.isEmpty
                 reminders.append(Reminder(
                     id: "dayclose.\(key)", date: date,
                     title: String(localized: "Finish today's log"),
                     body: nothing ? String(localized: "Nothing's logged today yet. A rough entry for each meal still keeps your week on track.")
-                                  : String(localized: "Dinner isn't logged yet. A quick entry keeps today's numbers right.")))
+                                  : String(localized: "\(closing.label) isn't logged yet. A quick entry keeps today's numbers right.")))
             }
         }
         // Protein is only known for today; later days are planned when the app is next opened.
