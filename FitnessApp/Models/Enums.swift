@@ -63,61 +63,67 @@ enum UnitSystem: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-enum MealType: String, Codable, CaseIterable, Identifiable {
-    case breakfast
-    case lunch
-    case dinner
-    case snack
+/// One of the user's meal slots. The four defaults (`breakfast`, `lunch`, `dinner`, `snack`) keep their
+/// ids; slots the user adds get their own. Names, icons, order and times come from `MealSlots`.
+struct MealType: RawRepresentable, Codable, Hashable, Identifiable {
+    let rawValue: String
+
+    static let breakfast = MealType(id: "breakfast")
+    static let lunch = MealType(id: "lunch")
+    static let dinner = MealType(id: "dinner")
+    static let snack = MealType(id: "snack")
+
+    init(id: String) { rawValue = id }
+
+    /// Nil when the user has no slot with this id (it was removed, or the data came from elsewhere).
+    init?(rawValue: String) {
+        guard MealSlots.shared.slots.contains(where: { $0.id == rawValue }) else { return nil }
+        self.rawValue = rawValue
+    }
+
+    init(from decoder: Decoder) throws {
+        rawValue = try decoder.singleValueContainer().decode(String.self)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
 
     var id: String { rawValue }
 
-    var label: String {
-        switch self {
-        case .breakfast: return String(localized: "Breakfast")
-        case .lunch: return String(localized: "Lunch")
-        case .dinner: return String(localized: "Dinner")
-        case .snack: return String(localized: "Snacks")
-        }
+    /// The user's meals, in the order they chose.
+    static var allCases: [MealType] { MealSlots.shared.slots.map { MealType(id: $0.id) } }
+
+    private var slot: MealSlot {
+        MealSlots.shared.slots.first { $0.id == rawValue }
+            ?? MealSlots.defaults.first { $0.id == rawValue }
+            ?? MealSlots.defaults[3]
     }
 
-    /// The meal's name inside a sentence ("Log breakfast"). Languages that capitalise nouns keep the capital.
-    var inSentence: String {
-        switch self {
-        case .breakfast: String(localized: "breakfast", comment: "Meal name inside a sentence")
-        case .lunch: String(localized: "lunch", comment: "Meal name inside a sentence")
-        case .dinner: String(localized: "dinner", comment: "Meal name inside a sentence")
-        case .snack: String(localized: "snacks", comment: "Meal name inside a sentence")
-        }
-    }
+    var label: String { slot.name }
 
-    var systemImage: String {
-        switch self {
-        case .breakfast: return "sunrise.fill"
-        case .lunch: return "sun.max.fill"
-        case .dinner: return "moon.stars.fill"
-        case .snack: return "carrot.fill"
-        }
-    }
+    /// The meal's name inside a sentence ("Log breakfast").
+    var inSentence: String { slot.name.lowercased() }
+
+    var systemImage: String { slot.icon }
 
     /// Share of the daily calorie budget typically given to this meal.
     var budgetShare: Double {
-        switch self {
-        case .breakfast: return 0.25
-        case .lunch: return 0.35
-        case .dinner: return 0.30
-        case .snack: return 0.10
-        }
+        let slots = MealSlots.shared.slots
+        let total = slots.reduce(0) { $0 + $1.share }
+        guard total > 0 else { return 1 / Double(max(slots.count, 1)) }
+        return slot.share / total
     }
 
     /// Hour of day used when logging to a day other than today.
-    var typicalHour: Int {
-        switch self {
-        case .breakfast: return 8
-        case .lunch: return 13
-        case .dinner: return 19
-        case .snack: return 16
-        }
-    }
+    var typicalHour: Int { slot.hour }
+
+    /// Whether the user wants a reminder to log this meal.
+    var reminds: Bool { slot.reminds }
+
+    /// Position in the user's list, for sorting.
+    var order: Int { MealSlots.shared.slots.firstIndex { $0.id == rawValue } ?? Int.max }
 
     /// Timestamp for a new diary entry: now when logging today, otherwise a sensible hour on that day.
     func logDate(on day: Date) -> Date {
@@ -128,12 +134,19 @@ enum MealType: String, Codable, CaseIterable, Identifiable {
     /// The meal a user is most likely logging right now.
     static func current(at date: Date = .now) -> MealType {
         let hour = Calendar.current.component(.hour, from: date)
-        switch hour {
-        case 4..<11: return .breakfast
-        case 11..<15: return .lunch
-        case 17..<22: return .dinner
-        default: return .snack
+        let slots = MealSlots.shared.slots
+        if slots == MealSlots.defaults {
+            switch hour {
+            case 4..<11: return .breakfast
+            case 11..<15: return .lunch
+            case 17..<22: return .dinner
+            default: return .snack
+            }
         }
+        // The latest meal whose time has come; before the first one, the last meal of the day.
+        let sorted = slots.sorted { $0.hour < $1.hour }
+        let slot = sorted.last { $0.hour <= hour } ?? sorted.last ?? MealSlots.defaults[3]
+        return MealType(id: slot.id)
     }
 }
 

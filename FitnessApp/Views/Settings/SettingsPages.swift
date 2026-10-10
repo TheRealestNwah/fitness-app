@@ -171,6 +171,17 @@ private struct NutritionSettingsPage: View {
             TrainingDaysSection(profile: profile)
 
             ExerciseSection()
+
+            Section {
+                NavigationLink {
+                    MealsEditor()
+                } label: {
+                    LabeledContent("Meals", value: "\(MealSlots.shared.slots.count)")
+                }
+                .accessibilityIdentifier("mealsLink")
+            } footer: {
+                Text("Rename, reorder, add or remove the meals in your diary.")
+            }
         }
     }
 

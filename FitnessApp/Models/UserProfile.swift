@@ -21,6 +21,8 @@ final class UserProfile {
     var maintenanceBandKg: Double = 1.5
     /// Budget the week as a whole: lighter days bank calories for later ones.
     var weeklyBudgetEnabled: Bool = false
+    /// The user's meals as JSON (`MealSlots`); empty means the four defaults.
+    var mealSlotsJSON: String = ""
     /// Separate calorie and carb targets for training and rest days (`DayTargets`).
     var trainingDaysEnabled: Bool = false
     /// Weekdays that count as training days, one bit per `Calendar` weekday (bit 0 = Sunday).

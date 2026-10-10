@@ -59,6 +59,7 @@ enum SettingsSearch {
                          "alcohol", "caffeine"]),
         Entry(title: "Maintenance mode", page: .nutrition, keywords: ["hold weight", "band"]),
         Entry(title: "Flexible budget", page: .nutrition, keywords: ["weekly budget", "diet break"]),
+        Entry(title: "Meals", page: .nutrition, keywords: ["breakfast", "lunch", "dinner", "snacks", "rename", "add meal", "meal times"]),
         Entry(title: "Training and rest day targets", page: .nutrition,
               keywords: ["training days", "rest days", "workout", "carb cycling", "gym"]),
         Entry(title: "Exercise calories", page: .nutrition, keywords: ["earn back", "workout"]),
