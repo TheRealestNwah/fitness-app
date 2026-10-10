@@ -84,6 +84,8 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 - Apple Watch app with one-tap water logging, plus calories-left complications
 - Optional iCloud sync across iPhone, iPad and Mac (Settings → iCloud)
 
+Widgets, the Apple Watch app and iCloud sync need a paid Apple developer account to sign, so they aren't in 1.0. See [docs/PAID-ACCOUNT.md](docs/PAID-ACCOUNT.md).
+
 ## Project layout
 
 ```

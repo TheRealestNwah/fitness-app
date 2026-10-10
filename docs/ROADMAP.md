@@ -16,6 +16,10 @@ Stride already covers the core of a weight-loss journey:
 
 Nothing right now.
 
+## Not in 1.0
+
+Features that need a paid Apple developer account to build and test (iCloud sync, widgets, Live Activity, controls, the Watch app, and partner sharing) are listed in [PAID-ACCOUNT.md](PAID-ACCOUNT.md).
+
 ## Next
 
 To be planned. New ideas start as [issues](https://github.com/TheRealestNwah/fitness-app/issues/new) and land here once they're prioritised.
