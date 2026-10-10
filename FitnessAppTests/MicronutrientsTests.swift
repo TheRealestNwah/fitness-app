@@ -98,6 +98,7 @@ final class MicronutrientsTests: XCTestCase {
         XCTAssertEqual(label.micros.vitaminA, 150)
         XCTAssertEqual(NutritionLabelParser.microAmount(in: "vitamin d 10 µg", for: .vitaminD), 10)
         XCTAssertNil(NutritionLabelParser.microAmount(in: "vitamin a 500 iu", for: .vitaminA))
+        XCTAssertEqual(NutritionLabelParser.microAmount(in: "vitamin b12 2.4mcg 100%", for: .vitaminB12), 2.4)
     }
 
     func testHealthValuesIncludeRecordedMicros() {

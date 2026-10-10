@@ -74,9 +74,9 @@ enum FoodDataCentralClient {
 
         var values: [Int: Double] = [:]
         for nutrient in food["foodNutrients"] as? [[String: Any]] ?? [] {
-            guard let nutrientID = nutrient["nutrientId"] as? Int else { continue }
-            if let v = nutrient["value"] as? Double { values[nutrientID] = v }
-            else if let v = nutrient["value"] as? Int { values[nutrientID] = Double(v) }
+            // Any JSON number shape: an ID can arrive as 1008 or 1008.0, a value as 23 or 23.0.
+            guard let nutrientID = (nutrient["nutrientId"] as? NSNumber)?.intValue else { continue }
+            if let v = (nutrient["value"] as? NSNumber)?.doubleValue { values[nutrientID] = v }
         }
         // 1008 is energy in kcal; Foundation foods often give the Atwater factors (2047, 2048) instead.
         guard let per100 = values[1008] ?? values[2047] ?? values[2048] ?? values[1062].map({ $0 / 4.184 }) else {

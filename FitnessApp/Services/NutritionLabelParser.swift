@@ -42,7 +42,11 @@ enum NutritionLabelParser {
     /// The amount on a vitamin or mineral line, converted to the nutrient's unit ("Calcium 260mg 20%").
     /// Lines that only give IU, or only a percentage, are ignored.
     static func microAmount(in line: String, for nutrient: Micronutrient) -> Double? {
-        let cleaned = line.replacingOccurrences(of: #"\d+(?:[.,]\d+)?\s*%"#, with: "", options: .regularExpression)
+        var cleaned = line.replacingOccurrences(of: #"\d+(?:[.,]\d+)?\s*%"#, with: "", options: .regularExpression)
+        // Drop the nutrient's name so the digits in "Vitamin B12" aren't read as the amount.
+        for word in nutrient.labelWords {
+            if let range = cleaned.range(of: word, options: .caseInsensitive) { cleaned.removeSubrange(range); break }
+        }
         let pattern = #"(\d+(?:[.,]\d+)?)\s*(mcg|µg|μg|ug|mg|g|iu)?"#
         guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) else { return nil }
         let ns = cleaned as NSString
@@ -57,7 +61,8 @@ enum NutritionLabelParser {
             case "iu": continue
             default: return value
             }
-            return grams / nutrient.gramsPerUnit
+            // Round off the floating-point noise of the unit conversion (10 µg → 10.000000000000002).
+            return (grams / nutrient.gramsPerUnit * 100).rounded() / 100
         }
         return nil
     }
@@ -80,7 +85,7 @@ enum NutritionLabelParser {
             for nutrient in Micronutrient.allCases where label.micros[nutrient] == 0 {
                 guard nutrient.labelWords.contains(where: { line.hasPrefix($0) }),
                       let amount = microAmount(in: line, for: nutrient), amount > 0 else { continue }
-                label.micros[nutrient] = (amount * 100).rounded() / 100
+                label.micros[nutrient] = amount
             }
             let next = i + 1 < lower.count ? lower[i + 1] : ""
             if label.servingDescription == nil, line.contains("serving size") || line.hasPrefix("per serving") {
