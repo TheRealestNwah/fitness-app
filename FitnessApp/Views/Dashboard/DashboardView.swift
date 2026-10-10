@@ -21,6 +21,8 @@ struct DashboardView: View {
     @Query(sort: \FastingSession.start, order: .reverse) private var fasts: [FastingSession]
 
     @State private var showAddWeight = false
+    @State private var showsActivityTrend = false
+    @AppStorage(ActivityTrend.stepGoalKey) private var stepGoal = 0
     @State private var showAddFood = false
     @State private var showAddVitals = false
     @State private var showSettings = false
@@ -500,21 +502,30 @@ struct DashboardView: View {
                 Label("Activity", systemImage: "figure.walk")
                     .font(.headline)
                 Spacer()
-                Text("Apple Health")
+                Button("Trends") { showsActivityTrend = true }
                     .font(.footnote)
-                    .foregroundStyle(Color.secondary)
+                    .accessibilityIdentifier("activityTrendButton")
             }
             AdaptiveStack(spacing: 12) {
-                StatTile(title: "Steps", value: health.todaySteps.formatted(), subtitle: "today", systemImage: "shoeprints.fill", tint: .green)
+                StatTile(title: "Steps", value: health.todaySteps.formatted(),
+                         subtitle: stepGoal > 0 ? "of \(stepGoal.formatted()) today" : "today",
+                         systemImage: "shoeprints.fill", tint: .green)
                 StatTile(title: "Active energy", value: "\(Energy.string(health.todayActiveEnergyKcal))",
                          subtitle: activeCredit > 0 ? "+\(Energy.string(activeCredit)) to budget" : "not added to budget",
                          systemImage: "flame.fill", tint: .orange)
+            }
+            if stepGoal > 0 {
+                ProgressView(value: ActivityTrend.progress(steps: health.todaySteps, goal: stepGoal))
+                    .tint(.green)
+                    .accessibilityLabel("Step goal")
+                    .accessibilityValue("\(Int(ActivityTrend.progress(steps: health.todaySteps, goal: stepGoal) * 100)) percent")
             }
             if let error = health.lastError {
                 Text(error).font(.footnote).foregroundStyle(.orange)
             }
         }
         .card()
+        .sheet(isPresented: $showsActivityTrend) { ActivityTrendView() }
     }
 
     private func milestoneCard(_ milestone: Milestone) -> some View {
