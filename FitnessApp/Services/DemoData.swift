@@ -83,13 +83,7 @@ enum DemoData {
             (.snack, String(localized: "Almonds"), 1, 164, 6, 6, 14, String(localized: "1 oz (28 g, ~23 nuts)")),
         ]
         for (meal, name, servings, kcal, p, c, f, serving) in meals {
-            let hour: Int
-            switch meal {
-            case .breakfast: hour = 8
-            case .lunch: hour = 13
-            case .dinner: hour = 19
-            case .snack: hour = 16
-            }
+            let hour = meal.typicalHour
             context.insert(FoodLogEntry(date: day(0, hour: hour), mealType: meal, foodName: name, servings: servings,
                                         servingDescription: serving, calories: kcal, protein: p, carbs: c, fat: f))
         }

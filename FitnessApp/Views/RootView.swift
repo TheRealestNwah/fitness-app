@@ -28,6 +28,7 @@ struct RootView: View {
         // that's already open (Settings, where the choice is made), and alongside this override it
         // re-applies the previous choice, leaving the sheet one step behind.
         .onChange(of: appearanceRaw, initial: true) { applyToWindows(appearance) }
+        .onChange(of: profiles.first?.mealSlotsJSON, initial: true) { MealSlots.shared.apply(json: profiles.first?.mealSlotsJSON ?? "") }
         .task {
             SeedData.seedIfNeeded(context: context)
         }

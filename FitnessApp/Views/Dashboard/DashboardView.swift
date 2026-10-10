@@ -782,17 +782,6 @@ struct QuickActionButton: View {
     }
 }
 
-extension MealType {
-    var order: Int {
-        switch self {
-        case .breakfast: return 0
-        case .lunch: return 1
-        case .dinner: return 2
-        case .snack: return 3
-        }
-    }
-}
-
 /// Haptics follow the data rather than the buttons, so they fire however an entry
 /// was added. The system's own haptics setting still applies.
 struct TodayHaptics: ViewModifier {

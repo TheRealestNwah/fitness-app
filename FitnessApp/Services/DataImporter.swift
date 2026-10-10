@@ -115,20 +115,12 @@ enum DataImporter {
     }
 
     static func meal(_ text: String) -> MealType {
-        let k = key(text)
-        if k.hasPrefix("breakfast") { return .breakfast }
-        if k.hasPrefix("lunch") { return .lunch }
-        if k.hasPrefix("dinner") || k.hasPrefix("supper") { return .dinner }
-        return .snack
+        MealSlots.shared.closest(to: key(text))
     }
 
     private static func mealHour(_ meal: MealType) -> Int {
-        switch meal {
-        case .breakfast: 8
-        case .lunch: 12
-        case .dinner: 19
-        case .snack: 15
-        }
+        // Lunch is a little earlier than the diary's usual hour, which is what imports have always used.
+        meal == .lunch ? 12 : meal == .snack ? 15 : meal.typicalHour
     }
 
     // MARK: Parse
@@ -169,7 +161,7 @@ enum DataImporter {
                     .trimmingCharacters(in: .whitespaces)
                 preview.food.append(Food(
                     date: when, meal: mealType,
-                    name: (name?.isEmpty ?? true) ? "\(mealType.rawValue.capitalized) (imported)" : name!,
+                    name: (name?.isEmpty ?? true) ? "\(mealType.label) (imported)" : name!,
                     servings: number(value(column("servings", "quantity"))) ?? 1,
                     calories: calories,
                     protein: number(value(column("proteing", "protein"))) ?? 0,

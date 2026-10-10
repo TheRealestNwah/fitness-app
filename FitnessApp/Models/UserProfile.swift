@@ -21,6 +21,8 @@ final class UserProfile {
     var maintenanceBandKg: Double = 1.5
     /// Budget the week as a whole: lighter days bank calories for later ones.
     var weeklyBudgetEnabled: Bool = false
+    /// The user's meals as JSON (`MealSlots`); empty means the four defaults.
+    var mealSlotsJSON: String = ""
     /// A planned stretch at maintenance; the end day is not included.
     var dietBreakStart: Date?
     var dietBreakEnd: Date?
