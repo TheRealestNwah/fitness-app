@@ -66,7 +66,7 @@ enum SettingsSearch {
         Entry(title: "Evening check-in", page: .reminders, keywords: ["notifications", "day close"]),
         Entry(title: "Pause during diet breaks", page: .reminders, keywords: ["notifications", "diet break", "reminders"]),
 
-        Entry(title: "Apple Health", page: .healthData, keywords: ["HealthKit", "sync", "steps", "active energy", "import"]),
+        Entry(title: "Apple Health", page: .healthData, keywords: ["HealthKit", "sync", "steps", "step goal", "active energy", "import"]),
         Entry(title: "Cycle-aware weight", page: .healthData, keywords: ["period", "menstrual", "water retention"]),
         Entry(title: "iCloud sync", page: .healthData, keywords: ["backup", "devices", "iPad"]),
         Entry(title: "Export and share", page: .healthData, keywords: ["CSV", "PDF", "doctor", "report", "spreadsheet"]),
