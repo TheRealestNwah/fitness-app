@@ -347,6 +347,8 @@ struct FoodRecord: BackupRecord {
     var cholesterol: Double
     var alcohol: Double
     var caffeine: Double
+    /// Optional so backups made before vitamins and minerals were tracked still restore.
+    var micros: Micronutrients?
     var isFavorite: Bool
     var isCustom: Bool
     var lastUsed: Date?
@@ -360,6 +362,7 @@ struct FoodRecord: BackupRecord {
         calories = f.calories; protein = f.protein; carbs = f.carbs; fat = f.fat
         fiber = f.fiber; sugar = f.sugar; sodium = f.sodium; saturatedFat = f.saturatedFat
         potassium = f.potassium; cholesterol = f.cholesterol; alcohol = f.alcohol; caffeine = f.caffeine
+        micros = f.micros.hasData ? f.micros : nil
         isFavorite = f.isFavorite; isCustom = f.isCustom; lastUsed = f.lastUsed; useCount = f.useCount
         barcode = f.barcode; servingPresets = f.servingPresets; lastServings = f.lastServings
     }
@@ -371,7 +374,7 @@ struct FoodRecord: BackupRecord {
         f.uuid = uuid; f.saturatedFat = saturatedFat; f.potassium = potassium; f.cholesterol = cholesterol
         f.alcohol = alcohol; f.caffeine = caffeine; f.isFavorite = isFavorite; f.lastUsed = lastUsed
         f.useCount = useCount; f.barcode = barcode; f.servingPresets = servingPresets
-        f.lastServings = lastServings
+        f.lastServings = lastServings; f.micros = micros ?? Micronutrients()
         return f
     }
 }
@@ -395,6 +398,8 @@ struct FoodLogRecord: BackupRecord {
     var cholesterol: Double
     var alcohol: Double
     var caffeine: Double
+    /// Optional so backups made before vitamins and minerals were tracked still restore.
+    var micros: Micronutrients?
     var foodItemID: UUID?
     var photo: Data?
     var isEstimate: Bool
@@ -405,6 +410,7 @@ struct FoodLogRecord: BackupRecord {
         calories = e.calories; protein = e.protein; carbs = e.carbs; fat = e.fat
         fiber = e.fiber; sugar = e.sugar; sodium = e.sodium; saturatedFat = e.saturatedFat
         potassium = e.potassium; cholesterol = e.cholesterol; alcohol = e.alcohol; caffeine = e.caffeine
+        micros = e.micros.hasData ? e.micros : nil
         foodItemID = e.foodItemID; photo = e.photo; isEstimate = e.isEstimate
     }
 
@@ -415,7 +421,7 @@ struct FoodLogRecord: BackupRecord {
                              sodium: sodium)
         e.uuid = uuid; e.mealTypeRaw = mealTypeRaw; e.saturatedFat = saturatedFat; e.potassium = potassium
         e.cholesterol = cholesterol; e.alcohol = alcohol; e.caffeine = caffeine
-        e.photo = photo; e.isEstimate = isEstimate
+        e.photo = photo; e.isEstimate = isEstimate; e.micros = micros ?? Micronutrients()
         return e
     }
 }
