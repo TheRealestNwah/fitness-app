@@ -168,6 +168,8 @@ private struct NutritionSettingsPage: View {
 
             BudgetSection(profile: profile)
 
+            TrainingDaysSection(profile: profile)
+
             ExerciseSection()
         }
     }

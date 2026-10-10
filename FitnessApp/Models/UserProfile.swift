@@ -21,6 +21,15 @@ final class UserProfile {
     var maintenanceBandKg: Double = 1.5
     /// Budget the week as a whole: lighter days bank calories for later ones.
     var weeklyBudgetEnabled: Bool = false
+    /// Separate calorie and carb targets for training and rest days (`DayTargets`).
+    var trainingDaysEnabled: Bool = false
+    /// Weekdays that count as training days, one bit per `Calendar` weekday (bit 0 = Sunday).
+    var trainingWeekdayMask: Int = 42
+    var trainingFromWorkouts: Bool = false
+    var trainingBonusKcal: Int = 250
+    var trainingCarbShift: Int = 10
+    var dayTypeOverrideDay: Date?
+    var dayTypeOverrideIsTraining: Bool = false
     /// A planned stretch at maintenance; the end day is not included.
     var dietBreakStart: Date?
     var dietBreakEnd: Date?
@@ -144,5 +153,44 @@ final class UserProfile {
                                        proteinPercent: proteinPercent,
                                        carbsPercent: carbsPercent,
                                        fatPercent: fatPercent)
+    }
+
+    var trainingPlan: TrainingPlan {
+        get {
+            TrainingPlan(enabled: trainingDaysEnabled, weekdays: DayTargets.weekdays(fromMask: trainingWeekdayMask),
+                         fromWorkouts: trainingFromWorkouts, bonusKcal: trainingBonusKcal,
+                         carbShiftPercent: trainingCarbShift, overrideDay: dayTypeOverrideDay,
+                         overrideIsTraining: dayTypeOverrideIsTraining)
+        }
+        set {
+            trainingDaysEnabled = newValue.enabled
+            trainingWeekdayMask = DayTargets.weekdayMask(newValue.weekdays)
+            trainingFromWorkouts = newValue.fromWorkouts
+            trainingBonusKcal = newValue.bonusKcal
+            trainingCarbShift = newValue.carbShiftPercent
+            dayTypeOverrideDay = newValue.overrideDay
+            dayTypeOverrideIsTraining = newValue.overrideIsTraining
+        }
+    }
+
+    /// What kind of day this is, or nil when training days are off or the target is held flat
+    /// (a diet break).
+    func dayType(on date: Date = .now, hasWorkout: Bool) -> DayType? {
+        guard !isOnDietBreak else { return nil }
+        return DayTargets.dayType(on: date, plan: trainingPlan, hasWorkout: hasWorkout)
+    }
+
+    /// Calories to add to the day's budget for its type.
+    func dayOffset(_ type: DayType?) -> Int { DayTargets.calorieOffset(type, plan: trainingPlan) }
+
+    /// Macro targets for a day type: the day's calories and the carb-shifted split.
+    func macroTargets(currentWeightKg: Double, dayType type: DayType?, baseCalories: Int? = nil) -> MacroTargets {
+        let base = baseCalories ?? calorieTarget(currentWeightKg: currentWeightKg)
+        let calories = DayTargets.calorieTarget(base: base, type: type, plan: trainingPlan,
+                                                floor: NutritionCalculator.calorieFloor(for: sex))
+        let split = DayTargets.split(protein: proteinPercent, carbs: carbsPercent, fat: fatPercent,
+                                     type: type, plan: trainingPlan)
+        return NutritionCalculator.macroGrams(calories: calories, proteinPercent: split.protein,
+                                              carbsPercent: split.carbs, fatPercent: split.fat)
     }
 }
