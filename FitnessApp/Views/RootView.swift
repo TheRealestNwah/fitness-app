@@ -252,6 +252,7 @@ struct MainTabView: View {
             HomeQuickActionCenter.publish(context: context)
         }
         .task { await refreshHealth() }
+        .task { await PhoneWorkoutRecovery.run() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { BackgroundRefresh.schedule() }
             if phase == .active {
