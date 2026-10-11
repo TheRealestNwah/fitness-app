@@ -6,6 +6,7 @@ struct ExerciseCard: View {
     var weightKg: Double
 
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query private var today: [ExerciseEntry]
     @AppStorage(ExerciseSettings.earnBackPercentKey) private var earnBackPercent = 0
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
@@ -58,8 +59,7 @@ struct ExerciseCard: View {
                     .font(.subheadline)
                     .contextMenu {
                         Button(role: .destructive) {
-                            context.deleteExerciseEntry(entry)
-                            try? context.save()
+                            context.deleteExerciseEntries([entry], undo: undoCenter)
                         } label: { Label("Delete", systemImage: "trash") }
                     }
                 }
