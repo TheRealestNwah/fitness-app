@@ -33,6 +33,8 @@ CI builds with Xcode 26 (iOS 26 SDK; local Xcode is newer, so check that APIs ex
 
 CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then every UI test class except `ScreenshotTests`/`IPadScreenshotTests` on an iPhone simulator. New UI test classes are picked up without editing the workflow. UI tests launch with `-demoData` (Sam's profile, six weeks of weigh-ins, a week of food logs, a meal plan for today and tomorrow) or `-resetData` (onboarding). The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
 
+Online food search uses Stride's own USDA FoodData Central key, passed at build time as the `USDA_API_KEY` build setting (e.g. `xcodebuild ... USDA_API_KEY=xxxx`) and read from `USDAAPIKey` in `FitnessApp/Info.plist`. Never commit the key. Builds without it fall back to USDA's rate-limited `DEMO_KEY`, which is fine for development but not for App Store builds.
+
 Screenshots (`.github/workflows/screenshots.yml`) run nightly, on pushes to `claude/**` branches, and on demand (Actions → Screenshots → Run workflow). They publish to the `screenshots` branch.
 
 CI also runs `IPadSupportTests` on an iPad simulator and the `StrideMac` scheme on macOS. All three platform jobs must pass before merging. See [docs/PLATFORMS.md](docs/PLATFORMS.md) for platform differences and Mac signing setup. macOS deployment is 14; include `macOS 26` in availability checks for new shared APIs. Keep UIKit/AppKit adaptation in the platform helpers and guard mobile-only services with `#if os(iOS)`.

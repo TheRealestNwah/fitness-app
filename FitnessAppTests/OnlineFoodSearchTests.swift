@@ -65,7 +65,14 @@ final class OnlineFoodSearchTests: XCTestCase {
         XCTAssertThrowsError(try FoodDataCentralClient.parse(Data("nope".utf8)))
     }
 
-    func testUSDASearchURLUsesTheDemoKeyWhenNoneIsSet() {
+    func testUSDAKeyPrefersThePersonsKeyThenStridesThenTheDemoKey() {
+        XCTAssertEqual(FoodDataCentralClient.resolvedKey(userKey: " mine ", bundledKey: "stride"), "mine")
+        XCTAssertEqual(FoodDataCentralClient.resolvedKey(userKey: "", bundledKey: "stride"), "stride")
+        XCTAssertEqual(FoodDataCentralClient.resolvedKey(userKey: "", bundledKey: ""), "DEMO_KEY")
+    }
+
+    func testUSDASearchURLUsesTheDemoKeyWhenNoneIsSet() throws {
+        try XCTSkipUnless(FoodDataCentralClient.bundledKey.isEmpty, "This build has its own USDA key.")
         let url = FoodDataCentralClient.searchURL(for: "rice", apiKey: "", limit: 5).absoluteString
         XCTAssertTrue(url.contains("api_key=DEMO_KEY"))
         XCTAssertTrue(url.contains("query=rice"))
