@@ -755,7 +755,7 @@ struct RecipeWindow: View {
     let recipeID: UUID?
 
     @Query private var recipes: [Recipe]
-    @Query private var profiles: [UserProfile]
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
 
     private var recipe: Recipe? { recipes.first { $0.uuid == recipeID } }
