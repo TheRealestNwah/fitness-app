@@ -4,7 +4,9 @@ import UserNotifications
 
 struct RootView: View {
     @Environment(\.modelContext) private var context
-    @Query private var profiles: [UserProfile]
+    @Environment(\.scenePhase) private var scenePhase
+    /// Oldest first, so if iCloud briefly holds two profiles every device shows the same one.
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
     @State private var isResetting = false
 
@@ -31,6 +33,11 @@ struct RootView: View {
         .onChange(of: profiles.first?.mealSlotsJSON, initial: true) { MealSlots.shared.apply(json: profiles.first?.mealSlotsJSON ?? "") }
         .task {
             SeedData.seedIfNeeded(context: context)
+            if CloudSync.isActive { SyncDeduplicator.run(context: context) }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Copies from another device arrive while the app runs, so check again on return.
+            if phase == .active, CloudSync.isActive { SyncDeduplicator.run(context: context) }
         }
     }
 

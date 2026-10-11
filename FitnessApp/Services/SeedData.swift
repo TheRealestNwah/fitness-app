@@ -10,15 +10,21 @@ enum SeedData {
     static let drinksVersion = 1
     static let drinksVersionKey = "drinksVersion"
 
+    /// Built-in foods get the same uuid on every device, so iCloud copies can be matched up.
+    private static func withStableID(_ food: FoodItem) -> FoodItem {
+        food.uuid = SyncDeduplicator.stableID(SyncDeduplicator.seedKey(food: food))
+        return food
+    }
+
     static func seedIfNeeded(context: ModelContext, defaults: UserDefaults = .standard) {
         let foodCount = (try? context.fetchCount(FetchDescriptor<FoodItem>())) ?? 0
         if foodCount == 0 {
-            for f in foods + restaurantFoods { context.insert(f) }
+            for f in foods + restaurantFoods { context.insert(withStableID(f)) }
         } else if defaults.integer(forKey: restaurantFoodsVersionKey) < restaurantFoodsVersion {
             // Existing install: add the chain items it doesn't have yet. Done once per version,
             // so items the user deletes don't come back on the next launch.
             let existing = Set(((try? context.fetch(FetchDescriptor<FoodItem>())) ?? []).map { "\($0.name)|\($0.brand)" })
-            for f in restaurantFoods where !existing.contains("\(f.name)|\(f.brand)") { context.insert(f) }
+            for f in restaurantFoods where !existing.contains("\(f.name)|\(f.brand)") { context.insert(withStableID(f)) }
         }
         defaults.set(restaurantFoodsVersion, forKey: restaurantFoodsVersionKey)
         if foodCount > 0, defaults.integer(forKey: drinksVersionKey) < drinksVersion {
@@ -27,7 +33,10 @@ enum SeedData {
         defaults.set(drinksVersion, forKey: drinksVersionKey)
         let recipeCount = (try? context.fetchCount(FetchDescriptor<Recipe>())) ?? 0
         if recipeCount == 0 {
-            for r in recipes { context.insert(r) }
+            for r in recipes {
+                r.uuid = SyncDeduplicator.stableID(SyncDeduplicator.seedKey(recipe: r))
+                context.insert(r)
+            }
         }
         try? context.save()
     }
