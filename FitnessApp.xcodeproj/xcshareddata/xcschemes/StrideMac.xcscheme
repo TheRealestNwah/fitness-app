@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FB0000000000000000000100"
-               BuildableName = "StrideMac.app"
+               BuildableName = "Stride.app"
                BlueprintName = "StrideMac"
                ReferencedContainer = "container:FitnessApp.xcodeproj">
             </BuildableReference>
@@ -68,7 +68,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "FB0000000000000000000100"
-            BuildableName = "StrideMac.app"
+            BuildableName = "Stride.app"
             BlueprintName = "StrideMac"
             ReferencedContainer = "container:FitnessApp.xcodeproj">
          </BuildableReference>
@@ -85,7 +85,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "FB0000000000000000000100"
-            BuildableName = "StrideMac.app"
+            BuildableName = "Stride.app"
             BlueprintName = "StrideMac"
             ReferencedContainer = "container:FitnessApp.xcodeproj">
          </BuildableReference>
