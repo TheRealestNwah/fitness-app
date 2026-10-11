@@ -116,8 +116,7 @@ final class BackupManagerTests: XCTestCase {
         try BackupManager.restore(decoded, mode: .replace, context: target)
 
         let restored = try BackupManager.makeBackup(context: target)
-        XCTAssertEqual(try BackupManager.encode(restored).count, data.count)
-        // Compare everything except the timestamp.
+        // Compare everything except the timestamp, whose encoded length varies from run to run.
         var a = original, b = restored
         a.createdAt = .distantPast
         b.createdAt = .distantPast
