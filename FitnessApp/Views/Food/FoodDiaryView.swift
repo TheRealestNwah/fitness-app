@@ -249,6 +249,8 @@ struct DayDiaryView: View {
     @State private var checkingIn: MealType?
     @Query private var checkIns: [MealCheckIn]
     @State private var photographing: MealType?
+    @State private var loggingExercise = false
+    @State private var editingExercise: ExerciseEntry?
     @State private var isSelecting = false
     @State private var selection: Set<PersistentIdentifier> = []
     @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 104
@@ -421,6 +423,9 @@ struct DayDiaryView: View {
                     mealHeader(meal, items: items)
                 }
             }
+            if !isSelecting {
+                exerciseSection
+            }
         }
         .strideListStyle()
         .diarySelectionMode($isSelecting)
@@ -457,7 +462,27 @@ struct DayDiaryView: View {
         .strideSheet(item: $savingFavourite) { meal in
             SaveFavouriteMealSheet(mealType: meal, entries: entries(for: meal))
         }
+        .strideSheet(isPresented: $loggingExercise) { LogExerciseSheet(weightKg: currentKg, day: date) }
+        .strideSheet(item: $editingExercise) { LogExerciseSheet(weightKg: currentKg, entry: $0) }
         .sensoryFeedback(.success, trigger: entries.count) { old, new in new > old }
+    }
+
+    /// The day's workouts, which count towards its budget, with a way to add or fix one.
+    private var exerciseSection: some View {
+        let workouts = exercise.sorted { $0.date < $1.date }
+        return Section("Exercise") {
+            ForEach(workouts) { entry in
+                Button { editingExercise = entry } label: { ExerciseRow(entry: entry) }
+                    .buttonStyle(.plain)
+                    .accessibilityHint("Edits this workout")
+            }
+            .onDelete { offsets in
+                context.deleteExerciseEntries(offsets.map { workouts[$0] }, undo: undoCenter)
+            }
+            Button { loggingExercise = true } label: {
+                Label("Log exercise", systemImage: "plus")
+            }
+        }
     }
 
     /// A diary line: tap to edit, with an inline servings menu. Plain while selecting,
