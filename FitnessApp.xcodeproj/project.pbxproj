@@ -95,7 +95,7 @@
 		FA0000000000000000000032 /* StrideWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StrideWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000042 /* StrideWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StrideWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000052 /* StrideWatchWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StrideWatchWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		FB0000000000000000000101 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StrideMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB0000000000000000000101 = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stride.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB0000000000000000000201 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StrideMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB0000000000000000000301 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StrideMacUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -256,7 +256,7 @@
 				FA0000000000000000000002 /* FitnessApp.app */,
 				FB0000000000000000000301 /* StrideMacUITests.xctest */,
 				FB0000000000000000000201 /* StrideMacTests.xctest */,
-				FB0000000000000000000101 /* StrideMac.app */,
+				FB0000000000000000000101 /* Stride.app */,
 				FA0000000000000000000012 /* FitnessAppTests.xctest */,
 				FA0000000000000000000022 /* FitnessAppUITests.xctest */,
 				FA0000000000000000000032 /* StrideWidgets.appex */,
@@ -1080,7 +1080,7 @@
                 GENERATE_INFOPLIST_FILE = YES;
                 SWIFT_VERSION = 5.0;
                 PRODUCT_BUNDLE_IDENTIFIER = com.stride.StrideMac;
-                PRODUCT_NAME = "$(TARGET_NAME)";
+                PRODUCT_NAME = Stride;
                 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
                 PRODUCT_MODULE_NAME = FitnessApp;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1109,7 +1109,7 @@
                 GENERATE_INFOPLIST_FILE = YES;
                 SWIFT_VERSION = 5.0;
                 PRODUCT_BUNDLE_IDENTIFIER = com.stride.StrideMac;
-                PRODUCT_NAME = "$(TARGET_NAME)";
+                PRODUCT_NAME = Stride;
                 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
                 PRODUCT_MODULE_NAME = FitnessApp;
                 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1141,7 +1141,7 @@
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
                 BUNDLE_LOADER = "$(TEST_HOST)";
-                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StrideMac.app/Contents/MacOS/StrideMac";
+                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stride.app/Contents/MacOS/Stride";
             };
             name = Debug;
         };
@@ -1160,7 +1160,7 @@
                 PRODUCT_NAME = "$(TARGET_NAME)";
                 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
                 BUNDLE_LOADER = "$(TEST_HOST)";
-                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/StrideMac.app/Contents/MacOS/StrideMac";
+                TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stride.app/Contents/MacOS/Stride";
             };
             name = Release;
         };
