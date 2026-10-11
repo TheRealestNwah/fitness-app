@@ -116,6 +116,9 @@
         }
       }
     },
+    "%@ active energy" : {
+
+    },
     "%@ history" : {
 
     },
@@ -1687,6 +1690,12 @@
     "Couldn't import" : {
 
     },
+    "Couldn't save the workout: %@" : {
+
+    },
+    "Couldn't start the workout: %@" : {
+
+    },
     "Count active energy" : {
 
     },
@@ -1718,6 +1727,9 @@
 
     },
     "Cut vegetables into sticks and dip." : {
+
+    },
+    "Cycle" : {
 
     },
     "Cycle-aware weight" : {
@@ -1835,6 +1847,9 @@
     "Dinner isn't logged yet. A quick entry keeps today's numbers right." : {
 
     },
+    "Discard" : {
+
+    },
     "Done" : {
 
     },
@@ -1916,6 +1931,9 @@
     "Elliptical" : {
 
     },
+    "End" : {
+
+    },
     "End early" : {
 
     },
@@ -1926,6 +1944,9 @@
 
     },
     "End this fast before its target?" : {
+
+    },
+    "End workout?" : {
 
     },
     "Ends %@" : {
@@ -2247,6 +2268,9 @@
     "HIIT" : {
 
     },
+    "Hike" : {
+
+    },
     "Hiking" : {
 
     },
@@ -2413,7 +2437,7 @@
     "Keep easy high-protein snacks around so hunger never catches you unprepared." : {
 
     },
-    "Keeps your diary, weigh-ins, vitals and plans the same on every iPhone and iPad signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy." : {
+    "Keeps your diary, weigh-ins, vitals and plans the same on every iPhone, iPad and Mac signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy." : {
 
     },
     "Ketchup" : {
@@ -2865,6 +2889,9 @@
     "New recipe" : {
 
     },
+    "New Window" : {
+
+    },
     "Next day" : {
 
     },
@@ -3114,7 +3141,13 @@
     "Patterns" : {
 
     },
+    "Pause" : {
+
+    },
     "Pause during diet breaks" : {
+
+    },
+    "Paused" : {
 
     },
     "Peanut butter" : {
@@ -3343,6 +3376,9 @@
     "Results" : {
 
     },
+    "Resume" : {
+
+    },
     "Retake photo" : {
 
     },
@@ -3359,6 +3395,9 @@
 
     },
     "Rows skipped" : {
+
+    },
+    "Run" : {
 
     },
     "Running, easy" : {
@@ -3398,6 +3437,12 @@
 
     },
     "Save favourite" : {
+
+    },
+    "Save workout" : {
+
+    },
+    "Saved workouts go to Apple Health and today's exercise." : {
 
     },
     "Saving marks this as a normal entry. The photo stays with it." : {
@@ -3634,10 +3679,16 @@
     "Start with one meal a day. Favourite meals and copy-yesterday make it a two-tap habit." : {
 
     },
+    "Start workout" : {
+
+    },
     "Started" : {
 
     },
     "Started %@" : {
+
+    },
+    "Starting the microphone…" : {
 
     },
     "Starting weight" : {
@@ -3942,6 +3993,9 @@
 
     },
     "Waist, hips and chest measurements" : {
+
+    },
+    "Walk" : {
 
     },
     "Walking after meals helps blunt blood sugar spikes and adds up over a week." : {
