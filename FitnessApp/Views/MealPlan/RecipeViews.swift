@@ -180,7 +180,7 @@ struct RecipeRow: View {
                 HStack(spacing: 6) {
                     Text("\(Energy.string(recipe.caloriesPerServing))")
                     Text("·")
-                    Text("\(Int(recipe.proteinPerServing.rounded()))g protein")
+                    Text("\(NutrientText.grams(recipe.proteinPerServing)) g protein")
                     Text("·")
                     Text("\(recipe.prepMinutes) min")
                 }
