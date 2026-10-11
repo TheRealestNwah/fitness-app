@@ -157,7 +157,7 @@ struct VitalsView: View {
         if let h = entry.hipCm { parts.append("Hips \(units.lengthString(cm: h))") }
         if let c = entry.chestCm { parts.append("Chest \(units.lengthString(cm: c))") }
         if let s = entry.sleepHours { parts.append(String(format: "Sleep %.1f h", s)) }
-        if let g = entry.bloodGlucose { parts.append(String(format: "Glucose %.0f", g)) }
+        if let g = entry.bloodGlucose { parts.append("Glucose \(GlucoseUnit.current.string(mgdL: g))") }
         return parts.isEmpty ? "No readings" : parts.joined(separator: " · ")
     }
 }
@@ -218,13 +218,14 @@ extension VitalKind {
         case .bodyFat: return "%"
         case .waist, .hips, .chest: return units.lengthUnit
         case .sleep: return "h"
-        case .bloodGlucose: return "mg/dL"
+        case .bloodGlucose: return GlucoseUnit.current.label
         }
     }
 
     /// Value converted to display units for charting.
     func displayValue(_ entry: VitalsEntry, units: Units) -> Double? {
         guard let raw = entry.value(for: self) else { return nil }
+        if self == .bloodGlucose { return GlucoseUnit.current.value(mgdL: raw) }
         return usesLength ? units.lengthValue(cm: raw) : raw
     }
 
@@ -246,7 +247,7 @@ extension VitalKind {
         case .sleep:
             return entry.sleepHours.map { String(format: "%.1f h", $0) } ?? "—"
         case .bloodGlucose:
-            return entry.bloodGlucose.map { String(format: "%.0f mg/dL", $0) } ?? "—"
+            return entry.bloodGlucose.map { GlucoseUnit.current.string(mgdL: $0) } ?? "—"
         }
     }
 
@@ -419,7 +420,9 @@ struct AddVitalsSheet: View {
     @State private var hips: Double?
     @State private var chest: Double?
     @State private var sleep: Double?
+    /// In `glucoseUnit`; stored as mg/dL.
     @State private var glucose: Double?
+    @AppStorage(GlucoseUnit.storageKey) private var glucoseUnit = GlucoseUnit.regionDefault()
     @State private var note = ""
     @State private var loaded = false
 
@@ -455,7 +458,13 @@ struct AddVitalsSheet: View {
                 }
                 Section("Other") {
                     DecimalField(title: "Sleep last night", value: $sleep, unit: "h")
-                    DecimalField(title: "Fasting glucose", value: $glucose, unit: "mg/dL")
+                    DecimalField(title: "Fasting glucose", value: $glucose, unit: glucoseUnit.label)
+                    Picker("Glucose unit", selection: $glucoseUnit) {
+                        ForEach(GlucoseUnit.allCases) { Text($0.label).tag($0) }
+                    }
+                    .onChange(of: glucoseUnit) { old, new in
+                        glucose = glucose.map { new.value(mgdL: old.mgdL(from: $0)) }
+                    }
                     TextField("Note (optional)", text: $note)
                 }
                 if entry != nil {
@@ -490,7 +499,7 @@ struct AddVitalsSheet: View {
                 hips = entry.hipCm.map { units.lengthValue(cm: $0) }
                 chest = entry.chestCm.map { units.lengthValue(cm: $0) }
                 sleep = entry.sleepHours
-                glucose = entry.bloodGlucose
+                glucose = entry.bloodGlucose.map { glucoseUnit.value(mgdL: $0) }
                 note = entry.note
             }
         }
@@ -507,7 +516,7 @@ struct AddVitalsSheet: View {
         target.hipCm = hips.map { units.cm(fromDisplayLength: $0) }
         target.chestCm = chest.map { units.cm(fromDisplayLength: $0) }
         target.sleepHours = sleep
-        target.bloodGlucose = glucose
+        target.bloodGlucose = glucose.map { glucoseUnit.mgdL(from: $0) }
         target.note = note
         if entry == nil { context.insert(target) }
         try? context.save()

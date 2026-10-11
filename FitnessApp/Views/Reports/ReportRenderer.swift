@@ -134,7 +134,7 @@ struct DoctorReportPage: View {
                      NutritionCalculator.bloodPressureCategory(systolic: $0.systolic, diastolic: $0.diastolic).label
                  })
             fact("Avg resting HR", report.averageHeartRate.map { "\($0) bpm" } ?? "—", nil)
-            fact("Avg glucose", report.averageGlucose.map { "\(Int($0.rounded())) mg/dL" } ?? "—", nil)
+            fact("Avg glucose", report.averageGlucose.map { GlucoseUnit.current.string(mgdL: $0) } ?? "—", nil)
         }
     }
 
@@ -164,7 +164,7 @@ struct DoctorReportPage: View {
             if !rows.isEmpty {
                 Grid(alignment: .leading, horizontalSpacing: 18, verticalSpacing: 3) {
                     GridRow {
-                        ForEach([String(localized: "Date"), String(localized: "BP (mmHg)"), String(localized: "HR (bpm)"), String(localized: "Glucose"), String(localized: "Waist")], id: \.self) {
+                        ForEach([String(localized: "Date"), String(localized: "BP (mmHg)"), String(localized: "HR (bpm)"), String(localized: "Glucose (\(GlucoseUnit.current.label))"), String(localized: "Waist")], id: \.self) {
                             Text($0).font(.system(size: 9, weight: .semibold))
                         }
                     }
@@ -173,7 +173,7 @@ struct DoctorReportPage: View {
                             Text(r.date.formatted(date: .abbreviated, time: .shortened))
                             Text(r.systolic.flatMap { s in r.diastolic.map { "\(s)/\($0)" } } ?? "—")
                             Text(r.heartRate.map(String.init) ?? "—")
-                            Text(r.glucose.map { "\(Int($0.rounded()))" } ?? "—")
+                            Text(r.glucose.map { GlucoseUnit.current.number(mgdL: $0) } ?? "—")
                             Text(r.waistCm.map { units.lengthString(cm: $0) } ?? "—")
                         }
                         .font(.system(size: 9).monospacedDigit())
