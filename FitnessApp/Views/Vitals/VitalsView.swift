@@ -481,6 +481,7 @@ struct AddVitalsSheet: View {
             }
             .navigationTitle(entry == nil ? "Log vitals" : "Edit vitals")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([date, systolic, diastolic, heartRate, bodyFat, waist, hips, chest, sleep, glucose, note])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

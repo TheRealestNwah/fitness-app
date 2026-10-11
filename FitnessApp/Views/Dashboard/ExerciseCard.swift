@@ -242,6 +242,7 @@ struct LogExerciseSheet: View {
             }
             .navigationTitle("Log exercise")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([activity, minutes, calories, when])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

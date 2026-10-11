@@ -662,6 +662,7 @@ struct QuickAddSheet: View {
             }
             .navigationTitle("Quick add")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([name, calories, protein, carbs, fat])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -717,6 +718,15 @@ struct CreateFoodSheet: View {
     @State private var labelPhoto: PhotosPickerItem?
     @State private var scanning = false
     @State private var scanNote: String?
+
+    /// Everything typed so far, so a swipe can't throw it away.
+    private var draftFields: [AnyHashable] {
+        var fields: [AnyHashable] = [name, brand, serving, measureName, measureServings, per100g, servingGrams]
+        fields += [calories, protein, carbs, fat, fiber, sugar, sodium] as [AnyHashable]
+        fields += [saturatedFat, potassium, cholesterol, alcohol, caffeine] as [AnyHashable]
+        fields.append(microValues)
+        return fields
+    }
 
     var body: some View {
         NavigationStack {
@@ -808,6 +818,7 @@ struct CreateFoodSheet: View {
                     labelPhoto = nil
                 }
             }
+            .guardsUnsavedChanges(draftFields)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

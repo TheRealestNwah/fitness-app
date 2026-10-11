@@ -328,3 +328,33 @@ extension View {
         #endif
     }
 }
+
+// MARK: - Unsaved changes
+
+extension View {
+    /// Stops a swipe (or Escape on Mac) from closing a sheet once its fields differ from how they
+    /// started, so typed values aren't lost by accident. Cancel still closes it. Values a sheet
+    /// loads or defaults in onAppear count as the starting point.
+    func guardsUnsavedChanges(_ fields: [AnyHashable]) -> some View {
+        modifier(UnsavedChangesGuard(fields: fields))
+    }
+}
+
+private struct UnsavedChangesGuard: ViewModifier {
+    var fields: [AnyHashable]
+    @State private var baseline: [AnyHashable]?
+    @State private var current: [AnyHashable] = []
+
+    func body(content: Content) -> some View {
+        content
+            .interactiveDismissDisabled(baseline.map { $0 != fields } ?? false)
+            .onChange(of: fields, initial: true) { _, new in current = new }
+            .task {
+                guard baseline == nil else { return }
+                // Let defaults a sheet fills in from onAppear settle before they become the baseline.
+                try? await Task.sleep(for: .milliseconds(200))
+                guard !Task.isCancelled else { return }
+                baseline = current
+            }
+    }
+}
