@@ -9,7 +9,7 @@ A free personal Apple team can't sign the iCloud, Push or App Group capabilities
 | Fasting Live Activity | App Group | Ships in the widgets extension. |
 | Control Center controls (log a glass of water) | App Group | Ships in the widgets extension. |
 | Apple Watch app and complications | App Group | Shares data with the phone through the app group. |
-| Share progress with an accountability partner (#307) | CloudKit sharing (`CKShare`) | Approved, but parked until a paid account is available. |
+| Share progress with an accountability partner (#307) | CloudKit sharing (`CKShare`) | Approved, but parked until a paid account is available. Until then, Settings > Health & data > Share progress with a partner sends a chosen summary as text through the share sheet (#321). |
 
 Features that work with a personal team and stay in 1.0: Apple Health (HealthKit), on-device AI (Foundation Models), barcode and label scanning, notifications, Siri and Shortcuts, app lock, CSV import and export, and everything else that stores data on the device.
 

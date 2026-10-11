@@ -127,4 +127,27 @@ final class SettingsTests: XCTestCase {
                           "Export sheet is missing \(name)")
         }
     }
+
+    func testPartnerSummaryFollowsTheChosenSections() {
+        let app = openSettings()
+        openPage("Health & data", in: app)
+
+        let link = app.buttons["partnerShareLink"]
+        for _ in 0..<8 where !link.isHittable { app.swipeUp() }
+        link.tap()
+        XCTAssertTrue(app.navigationBars["Share progress"].waitForExistence(timeout: 5))
+
+        let preview = app.staticTexts["partnerSummaryPreview"]
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["partnerShareButton"].isEnabled)
+        let hadCalories = preview.label.contains("Daily calories")
+
+        // The choice is remembered between launches, so flip it and check the preview follows, then flip it back.
+        let toggle = app.switches["partnerDailyCaloriesToggle"]
+        XCTAssertTrue(toggle.waitForExistence(timeout: 5))
+        toggle.switches.firstMatch.tap()
+        XCTAssertNotEqual(preview.label.contains("Daily calories"), hadCalories)
+        toggle.switches.firstMatch.tap()
+        XCTAssertEqual(preview.label.contains("Daily calories"), hadCalories)
+    }
 }

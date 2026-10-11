@@ -373,6 +373,12 @@ private struct HealthDataSettingsPage: View {
                 } label: {
                     Label("Export and share", systemImage: "square.and.arrow.up")
                 }
+                NavigationLink {
+                    PartnerShareView()
+                } label: {
+                    Label("Share progress with a partner", systemImage: "person.2")
+                }
+                .accessibilityIdentifier("partnerShareLink")
                 ImportCSVButton()
                 BackupRestoreButtons()
                 Button(role: .destructive) {
