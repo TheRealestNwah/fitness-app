@@ -178,8 +178,7 @@ extension ModelContext {
         HealthDismissals.dismiss(healthIDs, kind: .workout, defaults: defaults)
         deleteRestorably(entries, snapshot: { ExerciseRecord($0) },
                          message: entries.count == 1 ? "Deleted \(entries[0].activity)" : "Deleted \(entries.count) workouts",
-                         undo: center) {
-            HealthDismissals.restore(healthIDs, kind: .workout, defaults: defaults)
-        }
+                         undo: center,
+                         restored: { HealthDismissals.restore(healthIDs, kind: .workout, defaults: defaults) })
     }
 }
