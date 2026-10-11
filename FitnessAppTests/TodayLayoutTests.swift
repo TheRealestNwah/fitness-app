@@ -52,4 +52,14 @@ final class TodayLayoutTests: XCTestCase {
         XCTAssertEqual(split.right, [.quickActions, .water])
         XCTAssertTrue(TodayLayout.columns([]).left.isEmpty)
     }
+
+    func testARequiredHiddenCardShowsFirst() {
+        var layout = TodayLayout.default
+        layout.setVisible(.exercise, false)
+        XCTAssertFalse(layout.visible.contains(.exercise))
+        XCTAssertEqual(layout.visible(alsoShowing: [.exercise]).first, .exercise)
+        XCTAssertEqual(layout.visible(alsoShowing: []), layout.visible)
+        // Already visible: kept in its place, not repeated.
+        XCTAssertEqual(TodayLayout.default.visible(alsoShowing: [.exercise]), TodayLayout.default.visible)
+    }
 }

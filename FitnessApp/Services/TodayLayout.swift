@@ -56,6 +56,12 @@ struct TodayLayout: Equatable {
     /// Cards to show, in order. Some also hide themselves when they have nothing to say.
     var visible: [TodayCard] { order.filter { !hidden.contains($0) } }
 
+    /// Visible cards, plus any hidden ones that have to show right now (such as Exercise while a
+    /// workout records), first so they're easy to find.
+    func visible(alsoShowing required: [TodayCard]) -> [TodayCard] {
+        required.filter { hidden.contains($0) } + visible
+    }
+
     var isDefault: Bool { self == .default }
 
     /// Two columns for wide layouts, alternating so each keeps the chosen order top to bottom.
