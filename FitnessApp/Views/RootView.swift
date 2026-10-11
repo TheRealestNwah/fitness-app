@@ -454,7 +454,7 @@ struct MacSettingsWindow: View {
     var body: some View {
         Group {
             if let profile = profiles.first {
-                SettingsView(isSheet: false)
+                MacSettingsView()
                     .environment(profile)
                     .environment(\.resetAllData, ResetAllDataAction {
                         NotificationCenter.default.post(name: ResetAllDataAction.requested, object: nil)
@@ -465,7 +465,7 @@ struct MacSettingsWindow: View {
                                        description: Text("Settings appear here once setup is done."))
             }
         }
-        .frame(minWidth: 620, idealWidth: 700, minHeight: 520, idealHeight: 640)
+        .frame(minWidth: 720, idealWidth: 800, minHeight: 520, idealHeight: 640)
         .formStyle(.grouped)
     }
 }
