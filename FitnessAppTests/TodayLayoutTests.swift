@@ -7,6 +7,12 @@ final class TodayLayoutTests: XCTestCase {
         XCTAssertEqual(TodayLayout.default.visible, TodayCard.allCases)
     }
 
+    func testStarterLayoutShowsOnlyTheEssentials() {
+        XCTAssertEqual(TodayLayout.starter.visible, [.calories, .quickActions, .weight, .exercise, .water])
+        XCTAssertTrue(TodayLayout.starter.hidden.contains(.fasting))
+        XCTAssertEqual(TodayLayout(storage: TodayLayout.starter.storage), .starter)
+    }
+
     func testStorageRoundTrips() {
         var layout = TodayLayout.default
         layout.move(fromOffsets: IndexSet(integer: layout.order.firstIndex(of: .tip)!), toOffset: 0)

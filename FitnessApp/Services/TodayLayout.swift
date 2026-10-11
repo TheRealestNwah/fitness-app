@@ -53,6 +53,12 @@ struct TodayLayout: Equatable {
 
     static let `default` = TodayLayout(order: TodayCard.allCases, hidden: [])
 
+    /// The cards a new profile starts with, so the first Today screen has one clear place to begin.
+    /// The rest stay a tap away in Customise Today. Existing profiles keep the full default.
+    static let starterCards: [TodayCard] = [.calories, .quickActions, .weight, .exercise, .water]
+    static let starter = TodayLayout(order: TodayCard.allCases,
+                                     hidden: Set(TodayCard.allCases).subtracting(starterCards))
+
     /// Cards to show, in order. Some also hide themselves when they have nothing to say.
     var visible: [TodayCard] { order.filter { !hidden.contains($0) } }
 
