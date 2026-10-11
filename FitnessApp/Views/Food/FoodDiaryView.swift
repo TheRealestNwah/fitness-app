@@ -280,27 +280,17 @@ struct DayDiaryView: View {
     }
 
     private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var dayType: DayType? { profile.dayType(on: date, hasWorkout: !exercise.isEmpty) }
-    /// The budget moved for a training or rest day, never below the safety floor.
-    private func forDayType(_ base: Int) -> Int {
-        max(base + profile.dayOffset(dayType), min(NutritionCalculator.calorieFloor(for: profile.sex), base))
+    /// The same targets Today shows for this day.
+    private var budget: DayBudget {
+        var byDay: [Date: Double] = [:]
+        for e in earlierThisWeek { byDay[e.date.startOfDay, default: 0] += e.calories }
+        return DayBudget.make(profile: profile, currentKg: currentKg, date: date, intakeByDay: byDay,
+                              exerciseKcal: exercise.reduce(0) { $0 + $1.calories }, hasWorkout: !exercise.isEmpty,
+                              healthCredit: HealthKitManager.shared.activeEnergyCredit,
+                              earnBackPercent: ExerciseSettings.earnBackPercent)
     }
-    private var target: Int {
-        let daily = profile.calorieTarget(currentWeightKg: currentKg)
-        guard date.isToday else { return forDayType(daily) }
-        var base = daily
-        if profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining, profile.customCalorieTarget == nil {
-            var byDay: [Date: Double] = [:]
-            for e in earlierThisWeek { byDay[e.date.startOfDay, default: 0] += e.calories }
-            base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: byDay,
-                                                         floor: NutritionCalculator.calorieFloor(for: profile.sex))
-        }
-        return forDayType(base) + ExerciseCatalog.combinedCredit(
-            health: HealthKitManager.shared.activeEnergyCredit,
-            exercise: ExerciseCatalog.earnBack(exerciseKcal: exercise.reduce(0) { $0 + $1.calories },
-                                               percent: ExerciseSettings.earnBackPercent))
-    }
-    private var macroTargets: MacroTargets { profile.macroTargets(currentWeightKg: currentKg, dayType: dayType) }
+    private var target: Int { budget.calories }
+    private var macroTargets: MacroTargets { budget.macros }
 
     private var consumed: Double { entries.reduce(0) { $0 + $1.calories } }
     private var protein: Double { entries.reduce(0) { $0 + $1.protein } }
