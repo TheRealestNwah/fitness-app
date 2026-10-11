@@ -42,6 +42,7 @@ enum SettingsSearch {
     static let entries: [Entry] = shared + platformSpecific
 
     private static let shared: [Entry] = [
+        Entry(title: "Goal", page: .profile, keywords: ["lose weight", "keep my weight steady", "maintain", "maintenance"]),
         Entry(title: "Body & goals", page: .profile,
               keywords: ["name", "sex", "age", "birthday", "height", "weight", "goal weight", "starting weight", "activity", "weekly loss"]),
         Entry(title: "Units", page: .profile, keywords: ["metric", "imperial", "kg", "lb", "stone", "kcal", "kJ", "energy"]),

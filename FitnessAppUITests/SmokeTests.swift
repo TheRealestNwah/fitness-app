@@ -27,7 +27,17 @@ final class SmokeTests: XCTestCase {
         let app = launch(["-resetData"])
         let next = app.buttons["Continue"]
         XCTAssertTrue(next.waitForExistence(timeout: 15))
-        for _ in 0..<4 { next.tap() }
+        next.tap()      // welcome
+        next.tap()      // about you
+        XCTAssertFalse(next.isEnabled, "nothing is chosen for the person, so they pick a goal first")
+        app.buttons["goal-lose"].tap()
+        let goal = app.textFields["goalWeightField"]
+        XCTAssertTrue(goal.waitForExistence(timeout: 5))
+        goal.tap()
+        goal.typeText("70")
+        next.tap()      // weights
+        next.tap()      // activity and pace
+        XCTAssertTrue(app.staticTexts["Daily gap"].waitForExistence(timeout: 5))
         let start = app.buttons["Start my journey"]
         XCTAssertTrue(start.waitForExistence(timeout: 5))
         start.tap()
@@ -35,6 +45,22 @@ final class SmokeTests: XCTestCase {
         // A new profile gets one clear next step and the short starter layout.
         XCTAssertTrue(app.buttons["logFirstMeal"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["Fasting"].exists)
+    }
+
+    func testOnboardingWithoutAWeightGoal() {
+        let app = launch(["-resetData"])
+        let next = app.buttons["Continue"]
+        XCTAssertTrue(next.waitForExistence(timeout: 15))
+        next.tap()      // welcome
+        next.tap()      // about you
+        app.buttons["goal-steady"].tap()
+        XCTAssertFalse(app.textFields["goalWeightField"].exists, "keeping steady doesn't ask for a goal weight")
+        next.tap()      // weights
+        next.tap()      // activity, with no pace to pick
+        XCTAssertTrue(app.staticTexts["Weight to hold"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Daily gap"].exists)
+        app.buttons["Start my journey"].tap()
+        XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
     }
 
     func testAddingAGlassUpdatesTodaysWater() {
