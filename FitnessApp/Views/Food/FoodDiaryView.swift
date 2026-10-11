@@ -13,15 +13,27 @@ struct FoodDiaryView: View {
     @State private var showCalendar = false
     /// The diary day per window, restored on relaunch (SceneStorage can't hold a Date).
     @SceneStorage("diaryDay") private var storedDay: Double = 0
+    /// Width available to the diary; nil until it's first measured.
+    @State private var width: CGFloat?
+
+    static let calendarPaneWidth: CGFloat = 340
+    /// Narrower than this and the day's list gets cramped, so the calendar moves to a toolbar button.
+    static let minimumDayWidth: CGFloat = 420
+
+    /// The month calendar stays beside the day only when there's room for both (wide iPad and Mac windows).
+    private var showsCalendarPane: Bool {
+        guard sizeClass == .regular else { return false }
+        guard let width else { return true }
+        return width >= Self.calendarPaneWidth + Self.minimumDayWidth
+    }
 
     var body: some View {
         NavigationStack {
             Group {
-                if sizeClass == .regular {
-                    // iPad: the month calendar stays beside the selected day.
+                if showsCalendarPane {
                     HStack(spacing: 0) {
                         DiaryCalendarPane(date: $date)
-                            .frame(width: 360)
+                            .frame(width: Self.calendarPaneWidth)
                         Divider()
                         day
                     }
@@ -29,10 +41,11 @@ struct FoodDiaryView: View {
                     day
                 }
             }
+            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             .navigationTitle("Food")
             .inlineNavigationTitle()
             .toolbar {
-                if sizeClass != .regular {
+                if !showsCalendarPane {
                     ToolbarItem(placement: .primaryAction) {
                         Button { showCalendar = true } label: {
                             Image(systemName: "calendar")
