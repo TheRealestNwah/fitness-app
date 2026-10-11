@@ -70,11 +70,7 @@ struct RecipeLibraryView: View {
                         .tint(.yellow)
                     }
                     .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            if selected == recipe { selected = nil }
-                            context.deleteRestorably([recipe], snapshot: { RecipeRecord($0) },
-                                                     message: "Deleted \(recipe.name)", undo: undoCenter)
-                        } label: { Label("Delete", systemImage: "trash") }
+                        Button(role: .destructive) { delete(recipe) } label: { Label("Delete", systemImage: "trash") }
                     }
                 }
             } header: {
@@ -109,13 +105,32 @@ struct RecipeLibraryView: View {
             .buttonStyle(.plain)
             .listRowBackground(selected == recipe ? Color.accentColor.opacity(0.15) : nil)
             .accessibilityIdentifier("recipeRow")
-            .contextMenu { newWindowButton(recipe) }
+            .contextMenu { recipeMenu(recipe) }
         } else {
             NavigationLink(value: recipe) {
                 RecipeRow(recipe: recipe)
             }
-            .contextMenu { newWindowButton(recipe) }
+            .contextMenu { recipeMenu(recipe) }
         }
+    }
+
+    /// The same actions as the row's swipes, for right-click and long-press.
+    @ViewBuilder
+    private func recipeMenu(_ recipe: Recipe) -> some View {
+        newWindowButton(recipe)
+        Button {
+            recipe.isFavorite.toggle()
+            try? context.save()
+        } label: {
+            Label(recipe.isFavorite ? "Unfavourite" : "Favourite", systemImage: recipe.isFavorite ? "star.slash" : "star")
+        }
+        Button(role: .destructive) { delete(recipe) } label: { Label("Delete", systemImage: "trash") }
+    }
+
+    private func delete(_ recipe: Recipe) {
+        if selected == recipe { selected = nil }
+        context.deleteRestorably([recipe], snapshot: { RecipeRecord($0) },
+                                 message: "Deleted \(recipe.name)", undo: undoCenter)
     }
 
     @ViewBuilder

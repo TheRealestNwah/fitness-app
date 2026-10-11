@@ -89,6 +89,16 @@ extension ToolbarItemPlacement {
 }
 
 extension View {
+    /// The Delete key (Edit › Delete) on Mac; nothing elsewhere, where swipes and menus cover it.
+    @ViewBuilder
+    func deleteCommand(perform action: (() -> Void)?) -> some View {
+        #if os(macOS)
+        onDeleteCommand(perform: action)
+        #else
+        self
+        #endif
+    }
+
     @ViewBuilder
     func diarySelectionMode(_ selecting: Binding<Bool>) -> some View {
         #if os(iOS)

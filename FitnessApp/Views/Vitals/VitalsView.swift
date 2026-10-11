@@ -55,6 +55,7 @@ struct VitalsView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }
                         .accessibilityLabel("Add reading")
+                        .help("Add reading")
                 }
             }
             .strideSheet(isPresented: $showAdd) { AddVitalsSheet() }
@@ -135,6 +136,13 @@ struct VitalsView: View {
                                     .font(.footnote)
                                     .foregroundStyle(Color.secondary)
                             }
+                        }
+                        .contextMenu {
+                            Button { editing = entry } label: { Label("Edit", systemImage: "pencil") }
+                            Button(role: .destructive) {
+                                context.deleteRestorably([entry], snapshot: { VitalsRecord($0) },
+                                                         message: "Deleted entry", undo: undoCenter)
+                            } label: { Label("Delete", systemImage: "trash") }
                         }
                     }
                     .onDelete { offsets in

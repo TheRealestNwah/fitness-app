@@ -31,6 +31,9 @@ struct RootView: View {
         // Set the windows' style rather than using preferredColorScheme: that doesn't reach a sheet
         // that's already open (Settings, where the choice is made), and alongside this override it
         // re-applies the previous choice, leaving the sheet one step behind.
+        .onReceive(NotificationCenter.default.publisher(for: ResetAllDataAction.requested)) { _ in
+            if !isResetting { isResetting = true }
+        }
         .onChange(of: appearanceRaw, initial: true) { applyToWindows(appearance) }
         .onChange(of: profiles.first?.mealSlotsJSON, initial: true) { MealSlots.shared.apply(json: profiles.first?.mealSlotsJSON ?? "") }
         .task {
@@ -151,6 +154,9 @@ struct StoreRecoveryView: View {
 
 /// Lets Settings ask the root view to wipe everything and return to onboarding.
 struct ResetAllDataAction {
+    /// Posted by the Mac Settings window, which isn't inside a root view.
+    static let requested = Notification.Name("StrideResetAllDataRequested")
+
     var action: () -> Void = {}
     func callAsFunction() { action() }
 }
@@ -176,6 +182,9 @@ struct MainTabView: View {
     @State private var undoCenter = UndoCenter()
     @Environment(\.undoManager) private var undoManager
     @State private var columns: NavigationSplitViewVisibility = .all
+    #if os(macOS)
+    @Environment(\.openSettings) private var openSettingsWindow
+    #endif
     /// Settings is showing in the detail column (sidebar layout only).
     @SceneStorage("showsSettings") private var showsSettings = false
     @State private var quickActions = HomeQuickActionCenter.shared
@@ -250,7 +259,7 @@ struct MainTabView: View {
         switch tab {
         case .today:
             DashboardView(day: today, selectTab: select,
-                          openSettings: usesSidebar ? { showsSettings = true } : nil)
+                          openSettings: usesSidebar ? openSettings : nil)
                 .id(today)
         case .food: FoodDiaryView()
         case .weight: WeightView()
@@ -270,11 +279,13 @@ struct MainTabView: View {
                                 .accessibilityIdentifier("sidebar-\(tab.title)")
                                 .tag(SidebarItem.section(tab))
                         }
+                        #if !os(macOS)
                         Section {
                             Label("Settings", systemImage: "gearshape")
                                 .accessibilityIdentifier("sidebar-Settings")
                                 .tag(SidebarItem.settings)
                         }
+                        #endif
                     }
                     .navigationTitle("Stride")
                     .navigationSplitViewColumnWidth(min: 170, ideal: 210, max: 280)
@@ -310,7 +321,13 @@ struct MainTabView: View {
             }
         }
         .focusedSceneValue(\.sceneActions, sceneActions)
-        .onAppear { undoCenter.undoManager = undoManager }
+        .onAppear {
+            undoCenter.undoManager = undoManager
+            #if os(macOS)
+            // Settings has its own window on Mac; don't restore an older session's sidebar Settings.
+            showsSettings = false
+            #endif
+        }
         .onChange(of: undoManager) { _, manager in undoCenter.undoManager = manager }
         .onChange(of: quickActions.pending, initial: true) { performQuickAction() }
         .onChange(of: isAppLocked) { performQuickAction() }
@@ -364,8 +381,17 @@ struct MainTabView: View {
                      logWeight: { quickSheet = .weight },
                      logWater: { _ = try? QuickLog.water(ml: nil, context: context) },
                      openSettings: {
-                         if usesSidebar { showsSettings = true } else { quickSheet = .settings }
+                         if usesSidebar { openSettings() } else { quickSheet = .settings }
                      })
+    }
+
+    /// The Settings window on Mac; the sidebar's detail column on iPad.
+    private func openSettings() {
+        #if os(macOS)
+        openSettingsWindow()
+        #else
+        showsSettings = true
+        #endif
     }
 
     private func select(_ tab: Tab) {
@@ -398,3 +424,29 @@ struct MainTabView: View {
         _ = await HealthKitManager.shared.importIfDue(into: context)
     }
 }
+
+#if os(macOS)
+/// The Mac Settings window (⌘,). It sits outside the main window, so it finds the profile itself
+/// and asks the main window to do a full reset.
+struct MacSettingsWindow: View {
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
+
+    var body: some View {
+        Group {
+            if let profile = profiles.first {
+                SettingsView(isSheet: false)
+                    .environment(profile)
+                    .environment(\.resetAllData, ResetAllDataAction {
+                        NotificationCenter.default.post(name: ResetAllDataAction.requested, object: nil)
+                        NSApp.keyWindow?.close()
+                    })
+            } else {
+                ContentUnavailableView("Finish setting up Stride first", systemImage: "gearshape",
+                                       description: Text("Settings appear here once setup is done."))
+            }
+        }
+        .frame(minWidth: 620, idealWidth: 700, minHeight: 520, idealHeight: 640)
+        .formStyle(.grouped)
+    }
+}
+#endif

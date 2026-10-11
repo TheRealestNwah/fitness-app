@@ -166,6 +166,7 @@ struct WeightView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Button { showMonthly = true } label: { Image(systemName: "calendar.badge.checkmark") }
                         .accessibilityLabel("Monthly report")
+                        .help("Monthly report")
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button { showAdd = true } label: { Image(systemName: "plus") }

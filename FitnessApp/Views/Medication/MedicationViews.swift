@@ -99,6 +99,12 @@ struct MedicationView: View {
                             .foregroundStyle(Color.secondary)
                     }
                 }
+                .contextMenu {
+                    Button(role: .destructive) {
+                        context.deleteRestorably([dose], snapshot: { DoseRecord($0) },
+                                                 message: "Deleted dose", undo: undoCenter)
+                    } label: { Label("Delete", systemImage: "trash") }
+                }
             }
             .onDelete { offsets in
                 let chosen = offsets.map { doses[$0] }
@@ -124,6 +130,7 @@ struct MedicationView: View {
             ToolbarItem(placement: .primaryAction) {
                 Button { logging = true } label: { Image(systemName: "plus") }
                     .accessibilityLabel("Log dose")
+                    .help("Log dose")
             }
         }
         .strideSheet(isPresented: $logging) { LogDoseSheet() }

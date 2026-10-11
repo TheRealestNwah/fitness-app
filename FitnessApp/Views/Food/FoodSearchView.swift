@@ -226,6 +226,9 @@ struct FoodSearchView: View {
                                 Button { photoMeal = meal } label: {
                                     Label(meal.photo == nil ? "Add photo" : "Change photo", systemImage: "camera")
                                 }
+                                Button(role: .destructive) { pendingDeletion = .meal(meal) } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
                             }
                         }
                     }
@@ -478,6 +481,17 @@ struct FoodSearchView: View {
                 Button(role: .destructive) {
                     pendingDeletion = .food(food)
                 } label: { Label("Delete", systemImage: "trash") }
+            }
+        }
+        .contextMenu {
+            Button {
+                food.isFavorite.toggle()
+                try? context.save()
+            } label: {
+                Label(food.isFavorite ? "Unfavourite" : "Favourite", systemImage: food.isFavorite ? "star.slash" : "star")
+            }
+            if food.isCustom {
+                Button(role: .destructive) { pendingDeletion = .food(food) } label: { Label("Delete", systemImage: "trash") }
             }
         }
         .draggable(FoodReference(food: food))
