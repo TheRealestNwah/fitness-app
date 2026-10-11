@@ -154,7 +154,7 @@ private struct NutritionSettingsPage: View {
                 MacroSlider(name: "Carbs", value: macroBinding(1), color: .orange)
                 MacroSlider(name: "Fat", value: macroBinding(2), color: .pink)
                 let m = profile.macroTargets(currentWeightKg: currentKg)
-                LabeledContent("Daily grams", value: "P \(Int(m.protein)) · C \(Int(m.carbs)) · F \(Int(m.fat))")
+                LabeledContent("Daily grams", value: "Protein \(NutrientText.grams(m.protein)) g · Carbs \(NutrientText.grams(m.carbs)) g · Fat \(NutrientText.grams(m.fat)) g")
             } header: {
                 Text("Macro split")
             } footer: {

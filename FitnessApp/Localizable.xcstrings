@@ -704,12 +704,6 @@
         }
       }
     },
-    "%lldg" : {
-
-    },
-    "%lldg protein" : {
-
-    },
     "%lldh %lldm" : {
       "localizations" : {
         "en" : {
@@ -1116,6 +1110,15 @@
     },
     "500 g" : {
       "shouldTranslate" : false
+    },
+    "%@, not listed for today's foods" : {
+
+    },
+    "%lld g protein" : {
+
+    },
+    "%lld g" : {
+
     },
     "A goal date from your actual pace needs two weeks of weigh-ins." : {
 

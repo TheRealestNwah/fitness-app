@@ -115,13 +115,13 @@ struct MacroBar: View {
                 HStack {
                     Text(name).foregroundStyle(Color.secondary).fixedSize()
                     Spacer(minLength: 8)
-                    Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
+                    Text("\(NutrientText.grams(consumed)) / \(NutrientText.grams(target)) g")
                         .monospacedDigit()
                         .fixedSize()
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name).foregroundStyle(Color.secondary)
-                    Text("\(Int(consumed.rounded())) / \(Int(target.rounded())) g")
+                    Text("\(NutrientText.grams(consumed)) / \(NutrientText.grams(target)) g")
                         .monospacedDigit()
                 }
             }
@@ -140,8 +140,8 @@ struct MacroBar: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(name)
         .accessibilityValue(target > 0
-            ? "\(Int(consumed.rounded())) of \(Int(target.rounded())) grams, \(Int((consumed / target * 100).rounded())) percent"
-            : "\(Int(consumed.rounded())) grams")
+            ? "\(NutrientText.grams(consumed)) of \(NutrientText.grams(target)) grams, \(Int((consumed / target * 100).rounded())) percent"
+            : "\(NutrientText.grams(consumed)) grams")
     }
 }
 
@@ -210,9 +210,10 @@ struct MacroSummary: View {
 
     var body: some View {
         AdaptiveStack(spacing: 10) {
-            Label("\(Int(protein.rounded()))g", systemImage: "p.circle.fill").foregroundStyle(.blue)
-            Label("\(Int(carbs.rounded()))g", systemImage: "c.circle.fill").foregroundStyle(.orange)
-            Label("\(Int(fat.rounded()))g", systemImage: "f.circle.fill").foregroundStyle(.pink)
+            // A no-break space keeps each value with its unit and matches "24 g" elsewhere.
+            Label("\(NutrientText.grams(protein))\u{00A0}g", systemImage: "p.circle.fill").foregroundStyle(.blue)
+            Label("\(NutrientText.grams(carbs))\u{00A0}g", systemImage: "c.circle.fill").foregroundStyle(.orange)
+            Label("\(NutrientText.grams(fat))\u{00A0}g", systemImage: "f.circle.fill").foregroundStyle(.pink)
         }
         .font(.subheadline.monospacedDigit())
         .labelStyle(.titleAndIcon)

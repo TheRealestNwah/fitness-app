@@ -279,6 +279,7 @@ struct OnboardingView: View {
         let bmr = NutritionCalculator.bmr(sex: sex, weightKg: currentKg, heightCm: resolvedHeightCm, age: age)
         let tdee = NutritionCalculator.tdee(bmr: bmr, activity: activity)
         let target = NutritionCalculator.dailyCalorieTarget(tdee: tdee, weeklyLossKg: rate.rawValue, sex: sex)
+        // The same split a new profile starts with, so these grams match Today's.
         let macros = NutritionCalculator.macroGrams(calories: target, proteinPercent: 30, carbsPercent: 40, fatPercent: 30)
         let goalDate = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: goalKg, weeklyLossKg: rate.rawValue)
         let atFloor = target == NutritionCalculator.calorieFloor(for: sex)
@@ -290,7 +291,7 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(spacing: 4) {
-                    Text("\(target)")
+                    Text(Energy.number(target))
                         .font(.system(size: targetSize, weight: .bold, design: .rounded).monospacedDigit())
                     Text("calories per day")
                         .foregroundStyle(Color.secondary)
@@ -301,8 +302,8 @@ struct OnboardingView: View {
                 StatGrid {
                     StatTile(title: "You use now", value: "\(Energy.string(tdee))", subtitle: "on a typical day", systemImage: "flame.fill", tint: .orange)
                     StatTile(title: "Daily gap", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: "less than you use", systemImage: "arrow.down.right", tint: .green)
-                    StatTile(title: "Protein", value: "\(Int(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
-                    StatTile(title: "Carbs · Fat", value: "\(Int(macros.carbs)) · \(Int(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
+                    StatTile(title: "Protein", value: "\(NutrientText.grams(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
+                    StatTile(title: "Carbs · Fat", value: "\(NutrientText.grams(macros.carbs)) · \(NutrientText.grams(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
                 }
 
                 if let goalDate {
