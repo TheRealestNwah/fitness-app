@@ -28,6 +28,18 @@ final class PhoneWorkoutTests: XCTestCase {
         XCTAssertEqual(PhoneWorkoutRules.elapsedString(-5), "0:00")
     }
 
+    func testShortRecordingsCanOnlyBeDiscarded() {
+        XCTAssertTrue(PhoneWorkoutRules.endMessage(seconds: 30).contains("only be discarded"))
+        XCTAssertFalse(PhoneWorkoutRules.endMessage(seconds: 600).contains("discarded"))
+    }
+
+    func testRecoveredSessionsMapBackToTheirKind() {
+        for kind in PhoneWorkoutKind.allCases {
+            XCTAssertEqual(PhoneWorkoutKind(activityType: kind.activityType), kind)
+        }
+        XCTAssertNil(PhoneWorkoutKind(activityType: .swimming))
+    }
+
     func testLogNamesMatchTheHealthImporter() {
         XCTAssertEqual(PhoneWorkoutKind.walking.logName, "Walking")
         XCTAssertEqual(PhoneWorkoutKind.running.logName, "Running")
