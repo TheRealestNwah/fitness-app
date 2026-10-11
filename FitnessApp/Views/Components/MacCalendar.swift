@@ -24,11 +24,13 @@ struct LoggedDaysCalendar: View {
             HStack {
                 Button { moveMonth(-1) } label: { Image(systemName: "chevron.left") }
                     .accessibilityLabel("Previous month")
+                    .help("Previous month")
                 Spacer()
                 Text(month, format: .dateTime.month(.wide).year()).font(.headline)
                 Spacer()
                 Button { moveMonth(1) } label: { Image(systemName: "chevron.right") }
                     .accessibilityLabel("Next month")
+                    .help("Next month")
                     .disabled(calendar.isDate(month, equalTo: .now, toGranularity: .month))
             }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 8) {

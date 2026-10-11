@@ -46,6 +46,12 @@ struct FitnessApp: App {
         .modelContainer(container)
 
         #if os(macOS)
+        Settings {
+            MacSettingsWindow()
+                .appLockGate()
+        }
+        .modelContainer(container)
+
         MenuBarExtra("Stride", systemImage: "fork.knife", isInserted: $menuBarEnabled) {
             MenuBarExtraContent()
         }

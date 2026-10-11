@@ -207,6 +207,7 @@ struct DayStepper: View {
                     .frame(width: 32, height: 32)
             }
             .accessibilityLabel("Previous day")
+            .help("Previous day")
             Spacer()
             VStack(spacing: 2) {
                 Text(date.relativeDayLabel)
@@ -222,6 +223,7 @@ struct DayStepper: View {
                     .frame(width: 32, height: 32)
             }
             .accessibilityLabel("Next day")
+            .help("Next day")
             .disabled(date.isToday || date > .now)
         }
         .buttonStyle(.bordered)

@@ -158,6 +158,7 @@ struct DashboardView: View {
                         Image(systemName: "gearshape")
                     }
                     .accessibilityLabel("Settings")
+                    .help("Settings")
                     .accessibilityIdentifier("openSettings")
                 }
             }
@@ -662,6 +663,7 @@ struct DashboardView: View {
                     Image(systemName: "minus.circle")
                 }
                 .accessibilityLabel("Remove last glass")
+                .help("Remove last glass")
                 .disabled(todaysWater.isEmpty)
                 Button {
                     addWater()

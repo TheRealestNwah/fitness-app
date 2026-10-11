@@ -62,6 +62,7 @@ struct MonthlyReportView: View {
                     if let shareURL {
                         ShareLink(item: shareURL) { Image(systemName: "square.and.arrow.up") }
                             .accessibilityLabel("Share")
+                            .help("Share")
                     }
                 }
             }
@@ -74,12 +75,14 @@ struct MonthlyReportView: View {
         HStack {
             Button { shift(-1) } label: { Image(systemName: "chevron.left") }
                 .accessibilityLabel("Previous month")
+                .help("Previous month")
             Spacer()
             Text(monthDay.formatted(.dateTime.month(.wide).year()))
                 .font(.headline)
             Spacer()
             Button { shift(1) } label: { Image(systemName: "chevron.right") }
                 .accessibilityLabel("Next month")
+                .help("Next month")
                 .disabled(!canGoForward)
         }
         .buttonStyle(.bordered)

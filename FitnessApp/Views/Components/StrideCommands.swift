@@ -50,11 +50,14 @@ struct StrideCommands: Commands {
             Button("New Window") { openWindow(id: "main") }
                 .keyboardShortcut("n", modifiers: [.command, .shift])
         }
+        #if !os(macOS)
+        // iPadOS shows Settings in the sidebar; the Mac uses its standard Settings window.
         CommandGroup(replacing: .appSettings) {
             Button("Settings…") { actions?.openSettings() }
                 .keyboardShortcut(",")
                 .disabled(actions == nil)
         }
+        #endif
         // ⌘Z is the system Edit › Undo: UndoCenter registers each delete with the window's UndoManager.
         CommandMenu("Log") {
             Group {

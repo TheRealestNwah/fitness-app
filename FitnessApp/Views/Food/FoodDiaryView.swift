@@ -51,6 +51,7 @@ struct FoodDiaryView: View {
                             Image(systemName: "calendar")
                         }
                         .accessibilityLabel("Choose a day")
+                        .help("Choose a day")
                     }
                 }
             }
@@ -423,6 +424,10 @@ struct DayDiaryView: View {
             }
         }
         .strideListStyle()
+        .deleteCommand(perform: selection.isEmpty ? nil : {
+            context.deleteDiaryEntries(selectedEntries, undo: undoCenter)
+            selection = []
+        })
         .diarySelectionMode($isSelecting)
         .toolbar { selectionToolbar }
         .onChange(of: entries.isEmpty) { _, empty in

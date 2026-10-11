@@ -174,6 +174,7 @@ struct PlannerView: View {
             // The strip is one List row; a default-style button there would fire with every tap on the row.
             .buttonStyle(.borderless)
             .accessibilityLabel("Previous week")
+            .help("Previous week")
             ForEach(weekDays, id: \.self) { day in
                 let isSelected = Calendar.current.isDate(day, inSameDayAs: selectedDay)
                 let kcal = calories(on: day)
@@ -208,6 +209,7 @@ struct PlannerView: View {
             }
             .buttonStyle(.borderless)
             .accessibilityLabel("Next week")
+            .help("Next week")
         }
     }
 
@@ -542,12 +544,14 @@ struct GroceryListView: View {
                 HStack {
                     Button { weekStart = weekStart.adding(days: -7) } label: { Image(systemName: "chevron.left") }
                         .accessibilityLabel("Previous week")
+                        .help("Previous week")
                     Spacer()
                     Text("\(weekStart.shortDateLabel()) – \(weekEnd.adding(days: -1).shortDateLabel())")
                         .font(.headline)
                     Spacer()
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
                         .accessibilityLabel("Next week")
+                        .help("Next week")
                 }
                 .buttonStyle(.bordered)
                 if !items.isEmpty {
