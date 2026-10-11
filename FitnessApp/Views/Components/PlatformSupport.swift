@@ -125,7 +125,13 @@ extension View {
     @ViewBuilder
     func strideKeyboard(_ keyboard: StrideKeyboard) -> some View {
         #if os(iOS)
-        keyboardType(keyboard == .decimalPad ? .decimalPad : keyboard == .numberPad ? .numberPad : .URL)
+        if keyboard == .URL {
+            keyboardType(.URL)
+        } else {
+            // Number pads have no return key, so they get a Done button above them.
+            keyboardType(keyboard == .decimalPad ? .decimalPad : .numberPad)
+                .modifier(NumberPadDoneButton())
+        }
         #else
         self
         #endif
@@ -179,10 +185,32 @@ extension View {
     }
 
     func strideSheet<Content: View>(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> some View {
-        sheet(isPresented: isPresented) { content().platformSheetSize() }
+        sheet(isPresented: isPresented) { content().platformSheetSize().scrollDismissesKeyboard(.interactively) }
     }
 
     func strideSheet<Item: Identifiable, Content: View>(item: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> some View {
-        sheet(item: item) { content($0).platformSheetSize() }
+        sheet(item: item) { content($0).platformSheetSize().scrollDismissesKeyboard(.interactively) }
     }
 }
+
+#if os(iOS)
+/// A Done button above the keyboard while this field is being edited. Each field shows its own
+/// only while focused, so a form with several number fields never stacks more than one.
+private struct NumberPadDoneButton: ViewModifier {
+    @FocusState private var focused: Bool
+
+    func body(content: Content) -> some View {
+        content
+            .focused($focused)
+            .toolbar {
+                if focused {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { focused = false }
+                            .fontWeight(.semibold)
+                    }
+                }
+            }
+    }
+}
+#endif
