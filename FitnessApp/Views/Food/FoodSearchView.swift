@@ -41,11 +41,16 @@ struct FoodSearchView: View {
 
     private var query: String { search.trimmingCharacters(in: .whitespaces).lowercased() }
 
+    /// Remembers the last ranking, since the body reads `filtered` several times per keystroke.
+    @State private var ranking = RankingCache()
+
     /// Best match first; favourites and recently used foods outrank generic ones.
     private var filtered: [FoodItem] {
         guard !query.isEmpty else { return foods }
-        return FoodSearchRanking.rank(foods, query: query) {
-            .init(name: $0.name, other: [$0.brand, $0.barcode ?? ""], isFavorite: $0.isFavorite, lastUsed: $0.lastUsed)
+        return ranking.results(for: query, in: foods) {
+            FoodSearchRanking.rank(foods, query: query) {
+                .init(name: $0.name, other: [$0.brand, $0.barcode ?? ""], isFavorite: $0.isFavorite, lastUsed: $0.lastUsed)
+            }
         }
     }
 
@@ -466,6 +471,22 @@ struct FoodSearchView: View {
             }
         }
         .draggable(FoodReference(food: food))
+    }
+}
+
+/// The last search ranking, reused until the query or the foods change.
+final class RankingCache {
+    private var key: String?
+    private var value: [FoodItem] = []
+
+    func results(for query: String, in foods: [FoodItem], rank: () -> [FoodItem]) -> [FoodItem] {
+        // Favourites and recent use change the order, so they're part of the key.
+        let key = "\(query)|\(foods.count)|\(foods.reduce(0) { $0 &+ $1.useCount &+ ($1.isFavorite ? 1 : 0) })"
+        if key != self.key {
+            value = rank()
+            self.key = key
+        }
+        return value
     }
 }
 
