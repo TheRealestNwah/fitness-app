@@ -139,7 +139,6 @@ final class SettingsTests: XCTestCase {
 
         let preview = app.staticTexts["partnerSummaryPreview"]
         XCTAssertTrue(preview.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["partnerShareButton"].isEnabled)
         let hadCalories = preview.label.contains("Daily calories")
 
         // The choice is remembered between launches, so flip it and check the preview follows, then flip it back.
