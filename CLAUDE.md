@@ -42,7 +42,7 @@ CI also runs `IPadSupportTests` on an iPad simulator and the `StrideMac` scheme 
 ## Conventions
 
 - Only `main` is branch-protected. Branch names use `feature/`, `fix/`, `chore/` or `docs/`.
-- Labels: `bug`, `enhancement`, `documentation`, `accessibility`, `chore`, `ci`, `refactor`.
+- Labels: `bug`, `enhancement`, `documentation`, `accessibility`, `chore`, `ci`, `refactor`, `parked` (blocked on something external, e.g. the paid developer account).
 - The data model is versioned (`StrideSchemaV1` and `StrideMigrationPlan` in `Services/CloudSync.swift`). Adding an optional property or a new model is a lightweight change; renaming, retyping or removing a property needs a new schema version and a migration stage. If the store can't be opened, the app shows `StoreRecoveryView` rather than crashing.
 - The UI is English only. There are no other localisations to keep in sync.
 - User-facing PR titles use plain sentences ("Track saturated fat, potassium and cholesterol").
