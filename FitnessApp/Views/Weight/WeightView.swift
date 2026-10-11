@@ -507,6 +507,7 @@ struct AddWeightSheet: View {
             }
             .navigationTitle(entry == nil ? "Weigh in" : "Edit weigh-in")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([date, weight, note, photo])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

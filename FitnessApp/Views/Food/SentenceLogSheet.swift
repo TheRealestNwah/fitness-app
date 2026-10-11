@@ -102,6 +102,7 @@ struct SentenceLogSheet: View {
             }
             .navigationTitle("Describe what you ate")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([text, lines.count])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

@@ -36,6 +36,7 @@ struct MealCheckInSheet: View {
             }
             .navigationTitle(mealType.label)
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([hunger, mood])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

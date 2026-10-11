@@ -67,6 +67,7 @@ struct PhotoMealSheet: View {
             }
             .navigationTitle("Photo meal")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([photo, name, portion, calories, chosen])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -219,6 +220,7 @@ struct PhotoMealDetailSheet: View {
             }
             .navigationTitle(entry.isEstimate ? "Photo meal" : "Edit entry")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([name, calories, protein, carbs, fat])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

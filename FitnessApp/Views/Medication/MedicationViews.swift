@@ -216,6 +216,7 @@ struct LogDoseSheet: View {
             }
             .navigationTitle("Log dose")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([date, name, doseMg, site, effects, note])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

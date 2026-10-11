@@ -770,6 +770,7 @@ struct EditLogEntrySheet: View {
             }
             .navigationTitle("Edit entry")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([servings, meal])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -912,6 +913,7 @@ struct SaveFavouriteMealSheet: View {
             }
             .navigationTitle("Save favourite")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([name, photo])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

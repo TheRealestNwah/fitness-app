@@ -459,6 +459,7 @@ struct RecipeEditorView: View {
             }
             .navigationTitle(recipe == nil ? "New recipe" : "Edit recipe")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([name, mealType, servings, prepMinutes, ingredients, instructions, tagsText])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
@@ -591,6 +592,7 @@ struct IngredientEditor: View {
             }
             .navigationTitle("Add ingredient")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([name, amount, calories, protein, carbs, fat, picked?.uuid, quantity])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {

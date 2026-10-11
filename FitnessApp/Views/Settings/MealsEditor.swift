@@ -147,6 +147,7 @@ private struct MealSlotForm: View {
             }
             .navigationTitle(isNew ? "New meal" : "Edit meal")
             .inlineNavigationTitle()
+            .guardsUnsavedChanges([slot])
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
