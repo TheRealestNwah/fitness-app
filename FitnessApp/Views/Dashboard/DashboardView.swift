@@ -59,29 +59,21 @@ struct DashboardView: View {
         return totals
     }
 
+    /// Today's targets, worked out the same way as the Food diary's.
+    private var budget: DayBudget {
+        DayBudget.make(profile: profile, currentKg: currentKg, date: .now, intakeByDay: intakeByDay,
+                       exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories }, hasWorkout: !todaysExercise.isEmpty,
+                       healthCredit: HealthKitManager.shared.activeEnergyCredit,
+                       earnBackPercent: ExerciseSettings.earnBackPercent)
+    }
     /// Today's share of the week when weekly budgeting is on (not during a break or maintenance).
-    private var baseTarget: Int {
-        guard profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining,
-              profile.customCalorieTarget == nil else { return dailyTarget }
-        return BudgetCalculator.weeklyAdjustedTarget(dailyTarget: dailyTarget, intakeByDay: intakeByDay,
-                                                     floor: NutritionCalculator.calorieFloor(for: profile.sex))
-    }
+    private var baseTarget: Int { budget.base }
     /// Calories added back from activity: Health active energy or logged exercise, whichever is larger.
-    private var activeCredit: Int {
-        ExerciseCatalog.combinedCredit(
-            health: HealthKitManager.shared.activeEnergyCredit,
-            exercise: ExerciseCatalog.earnBack(exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
-                                               percent: ExerciseSettings.earnBackPercent))
-    }
+    private var activeCredit: Int { budget.activeCredit }
     /// Training or rest day, when the user has separate targets for them.
-    private var dayType: DayType? { profile.dayType(hasWorkout: !todaysExercise.isEmpty) }
-    private var calorieTarget: Int {
-        let floor = NutritionCalculator.calorieFloor(for: profile.sex)
-        return max(baseTarget + profile.dayOffset(dayType), min(floor, baseTarget)) + activeCredit
-    }
-    private var macroTargets: MacroTargets {
-        profile.macroTargets(currentWeightKg: currentKg, dayType: dayType, baseCalories: baseTarget)
-    }
+    private var dayType: DayType? { budget.dayType }
+    private var calorieTarget: Int { budget.calories }
+    private var macroTargets: MacroTargets { budget.macros }
 
     private var consumed: Double { todaysFood.reduce(0) { $0 + $1.calories } }
     private var protein: Double { todaysFood.reduce(0) { $0 + $1.protein } }
