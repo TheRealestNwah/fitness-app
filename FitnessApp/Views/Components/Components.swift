@@ -63,6 +63,30 @@ struct AdaptiveStack<Content: View>: View {
     }
 }
 
+/// A leading and a trailing view side by side, stacked (leading first) when they don't fit on one line,
+/// as at accessibility text sizes, so neither is squeezed or truncated.
+struct ReflowRow<Leading: View, Trailing: View>: View {
+    var spacing: CGFloat = 8
+    var verticalAlignment: VerticalAlignment = .firstTextBaseline
+    @ViewBuilder var leading: Leading
+    @ViewBuilder var trailing: Trailing
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: verticalAlignment, spacing: spacing) {
+                leading.fixedSize()
+                Spacer(minLength: spacing)
+                trailing.fixedSize()
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                leading
+                trailing
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 /// Stat tiles two to a row, or one to a row at larger text sizes.
 struct StatGrid<Content: View>: View {
     @ViewBuilder var content: Content
