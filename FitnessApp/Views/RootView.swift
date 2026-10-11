@@ -279,10 +279,15 @@ struct MainTabView: View {
                     .navigationTitle("Stride")
                     .navigationSplitViewColumnWidth(min: 170, ideal: 210, max: 280)
                 } detail: {
-                    if showsSettings {
-                        SettingsView(isSheet: false)
-                    } else {
-                        screen(selection)
+                    Group {
+                        if showsSettings {
+                            SettingsView(isSheet: false)
+                        } else {
+                            screen(selection)
+                        }
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        if showsSettings || selection != .today { workoutBar }
                     }
                 }
                 .navigationSplitViewStyle(.balanced)
@@ -293,6 +298,9 @@ struct MainTabView: View {
                         screen(tab)
                             // Inside each tab, so the toast sits above the tab bar whatever its height.
                             .overlay(alignment: .bottom) { undoToast }
+                            .safeAreaInset(edge: .bottom) {
+                                if tab != .today { workoutBar }
+                            }
                             .tabItem { Label(tab.title, systemImage: tab.systemImage) }
                             .tag(tab)
                     }
@@ -349,6 +357,11 @@ struct MainTabView: View {
                 HomeQuickActionCenter.publish(context: context)
             }
         }
+    }
+
+    /// A recording workout, kept in reach on every screen but Today (which has the full controls).
+    private var workoutBar: some View {
+        ActiveWorkoutBar { select(.today) }
     }
 
     private var undoToast: some View {

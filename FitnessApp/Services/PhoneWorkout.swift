@@ -338,3 +338,13 @@ enum PhoneWorkoutRecovery {
         #endif
     }
 }
+
+/// Whether a workout is recording or waiting to be saved, so screens can keep its controls in reach.
+enum PhoneWorkoutStatus {
+    @MainActor static var isActive: Bool {
+        #if os(iOS) && compiler(>=6.2)
+        if #available(iOS 26.0, *) { return PhoneWorkoutRecorder.shared.isActive }
+        #endif
+        return false
+    }
+}

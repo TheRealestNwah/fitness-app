@@ -176,7 +176,9 @@ struct DashboardView: View {
     /// One column on iPhone; two side by side on iPad and other wide windows.
     @ViewBuilder
     private var cards: some View {
-        let visible = TodayLayout(storage: layoutStorage).visible
+        // A recording workout keeps its controls on screen even if the Exercise card is hidden.
+        let visible = TodayLayout(storage: layoutStorage)
+            .visible(alsoShowing: PhoneWorkoutStatus.isActive ? [.exercise] : [])
         if sizeClass == .regular {
             let split = TodayLayout.columns(visible)
             HStack(alignment: .top, spacing: 16) {

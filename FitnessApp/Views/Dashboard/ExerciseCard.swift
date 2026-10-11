@@ -35,7 +35,8 @@ struct ExerciseCard: View {
                 .buttonStyle(.bordered)
             }
             #if os(iOS) && compiler(>=6.2)
-            if #available(iOS 26.0, macOS 26.0, *), healthEnabled, HealthKitManager.isAvailable {
+            if #available(iOS 26.0, macOS 26.0, *),
+               (healthEnabled && HealthKitManager.isAvailable) || PhoneWorkoutStatus.isActive {
                 PhoneWorkoutPanel(weightKg: weightKg)
             }
             #endif
@@ -168,7 +169,8 @@ private struct PhoneWorkoutPanel: View {
                 .buttonStyle(.borderedProminent)
         }
         .buttonStyle(.bordered)
-        .font(.subheadline)
+        // Big enough to hit mid-run.
+        .controlSize(.large)
         .confirmationDialog("End workout?", isPresented: $confirmingEnd, titleVisibility: .visible) {
             if PhoneWorkoutRules.shouldSave(seconds: secondsAtEnd) {
                 Button("Save workout") {
@@ -198,7 +200,7 @@ private struct PhoneWorkoutPanel: View {
                 .buttonStyle(.borderedProminent)
         }
         .buttonStyle(.bordered)
-        .font(.subheadline)
+        .controlSize(.large)
     }
 }
 #endif
@@ -274,3 +276,69 @@ struct ExerciseSection: View {
         }
     }
 }
+
+/// Shown at the bottom of other screens while a workout records, so it can be paused or found
+/// from anywhere. Tapping it opens Today, where the workout is ended and saved.
+struct ActiveWorkoutBar: View {
+    var openToday: () -> Void
+
+    var body: some View {
+        #if os(iOS) && compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            RecordingBar(openToday: openToday)
+        }
+        #endif
+    }
+}
+
+#if os(iOS) && compiler(>=6.2)
+@available(iOS 26.0, *)
+private struct RecordingBar: View {
+    var openToday: () -> Void
+
+    @State private var recorder = PhoneWorkoutRecorder.shared
+
+    var body: some View {
+        if recorder.isActive {
+            let kind = recorder.kind ?? .walking
+            HStack(spacing: 12) {
+                Button(action: openToday) {
+                    HStack(spacing: 8) {
+                        Image(systemName: kind.systemImage)
+                        TimelineView(.periodic(from: .now, by: 1)) { timeline in
+                            Text(recorder.phase == .unsaved
+                                 ? String(localized: "Not saved")
+                                 : PhoneWorkoutRules.elapsedString(recorder.elapsed(at: timeline.date)))
+                                .monospacedDigit()
+                        }
+                        if recorder.phase == .paused {
+                            Text("Paused")
+                                .foregroundStyle(Color.secondary)
+                        }
+                    }
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(kind.name) workout")
+                .accessibilityHint("Opens Today to end or save it")
+                if recorder.phase == .running {
+                    Button { recorder.pause() } label: { Image(systemName: "pause.fill") }
+                        .accessibilityLabel("Pause")
+                } else if recorder.phase == .paused {
+                    Button { recorder.resume() } label: { Image(systemName: "play.fill") }
+                        .accessibilityLabel("Resume")
+                }
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
+            .floatingBackground(in: Capsule())
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+    }
+}
+#endif
