@@ -217,10 +217,13 @@ struct MainTabView: View {
                     }
                 }
                 .navigationSplitViewStyle(.balanced)
+                .overlay(alignment: .bottom) { undoToast }
             } else {
                 TabView(selection: $selection) {
                     ForEach(Tab.allCases, id: \.self) { tab in
                         screen(tab)
+                            // Inside each tab, so the toast sits above the tab bar whatever its height.
+                            .overlay(alignment: .bottom) { undoToast }
                             .tabItem { Label(tab.title, systemImage: tab.systemImage) }
                             .tag(tab)
                     }
@@ -229,11 +232,6 @@ struct MainTabView: View {
         }
         .environment(undoCenter)
         .spotlightSupport()
-        .overlay(alignment: .bottom) {
-            UndoToastView()
-                .environment(undoCenter)
-                .padding(.bottom, usesSidebar ? 16 : 58)   // clear of the tab bar
-        }
         .animation(.snappy, value: undoCenter.toast)
         .strideSheet(item: $quickSheet) { sheet in
             switch sheet {
@@ -281,6 +279,12 @@ struct MainTabView: View {
                 HomeQuickActionCenter.publish(context: context)
             }
         }
+    }
+
+    private var undoToast: some View {
+        UndoToastView()
+            .environment(undoCenter)
+            .padding(.bottom, 16)
     }
 
     /// For the menu bar and keyboard shortcuts.
