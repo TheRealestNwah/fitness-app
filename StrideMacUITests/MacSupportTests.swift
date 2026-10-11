@@ -7,8 +7,7 @@ final class MacSupportTests: XCTestCase {
 
     private func launch(_ arguments: [String] = ["-demoData"]) -> XCUIApplication {
         let app = XCUIApplication()
-        // Don't reopen windows left by an earlier test (such as the extra one from New Window).
-        app.launchArguments = arguments + ["-ApplePersistenceIgnoreState", "YES"]
+        app.launchArguments = arguments
         app.launch()
         return app
     }
@@ -70,9 +69,11 @@ final class MacSupportTests: XCTestCase {
 
     func testOnboardingOpensWithoutDemoData() {
         let app = launch(["-resetData"])
-        XCTAssertTrue(app.buttons["Continue"].waitForExistence(timeout: 15))
-        app.buttons["Continue"].click()
-        XCTAssertTrue(app.buttons["Back"].waitForExistence(timeout: 5))
+        // macOS can restore more than one window from an earlier test, each showing onboarding.
+        let next = app.buttons["Continue"].firstMatch
+        XCTAssertTrue(next.waitForExistence(timeout: 15))
+        next.click()
+        XCTAssertTrue(app.buttons["Back"].firstMatch.waitForExistence(timeout: 5))
         XCTAssertFalse(app.descendants(matching: .any)["sidebar-Today"].exists)
     }
 
