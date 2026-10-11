@@ -5,6 +5,7 @@ import Charts
 struct VitalsView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query(sort: \VitalsEntry.date, order: .reverse) private var entries: [VitalsEntry]
 
     @Environment(\.strideSizeClass) private var sizeClass
@@ -137,8 +138,10 @@ struct VitalsView: View {
                         }
                     }
                     .onDelete { offsets in
-                        for i in offsets { context.delete(entries[i]) }
-                        try? context.save()
+                        let chosen = offsets.map { entries[$0] }
+                        context.deleteRestorably(chosen, snapshot: { VitalsRecord($0) },
+                                                 message: chosen.count == 1 ? "Deleted entry" : "Deleted \(chosen.count) entries",
+                                                 undo: undoCenter)
                     }
                 }
             }
@@ -404,6 +407,7 @@ struct AddVitalsSheet: View {
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(\.dismiss) private var dismiss
 
     @State private var date = Date.now
@@ -457,8 +461,10 @@ struct AddVitalsSheet: View {
                 if entry != nil {
                     Section {
                         Button("Delete entry", role: .destructive) {
-                            if let entry { context.delete(entry) }
-                            try? context.save()
+                            if let entry {
+                                context.deleteRestorably([entry], snapshot: { VitalsRecord($0) },
+                                                         message: "Deleted entry", undo: undoCenter)
+                            }
                             dismiss()
                         }
                     }

@@ -61,6 +61,7 @@ struct MedicationCard: View {
 /// Every dose, newest first, with import from Apple Health.
 struct MedicationView: View {
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(UserProfile.self) private var profile
     @Query(sort: \MedicationDose.date, order: .reverse) private var doses: [MedicationDose]
     @State private var logging = false
@@ -100,8 +101,10 @@ struct MedicationView: View {
                 }
             }
             .onDelete { offsets in
-                for index in offsets { context.delete(doses[index]) }
-                try? context.save()
+                let chosen = offsets.map { doses[$0] }
+                context.deleteRestorably(chosen, snapshot: { DoseRecord($0) },
+                                         message: chosen.count == 1 ? "Deleted dose" : "Deleted \(chosen.count) doses",
+                                         undo: undoCenter)
             }
             if #available(iOS 26.0, macOS 26.0, *), HealthSettings.isEnabled, HealthKitManager.isAvailable {
                 Section {
