@@ -6,6 +6,7 @@ struct ExerciseCard: View {
     var weightKg: Double
 
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query private var today: [ExerciseEntry]
     @AppStorage(ExerciseSettings.earnBackPercentKey) private var earnBackPercent = 0
     @AppStorage(HealthSettings.enabledKey) private var healthEnabled = false
@@ -58,8 +59,7 @@ struct ExerciseCard: View {
                     .font(.subheadline)
                     .contextMenu {
                         Button(role: .destructive) {
-                            context.deleteExerciseEntry(entry)
-                            try? context.save()
+                            context.deleteExerciseEntries([entry], undo: undoCenter)
                         } label: { Label("Delete", systemImage: "trash") }
                     }
                 }
@@ -85,6 +85,8 @@ private struct PhoneWorkoutPanel: View {
     @Environment(\.modelContext) private var context
     @State private var recorder = PhoneWorkoutRecorder.shared
     @State private var confirmingEnd = false
+    /// Seconds recorded when End was tapped, which decides whether the dialog offers Save.
+    @State private var secondsAtEnd: TimeInterval = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -108,11 +110,23 @@ private struct PhoneWorkoutPanel: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             case .running, .paused:
                 recording
+            case .unsaved:
+                unsaved
             }
             if let error = recorder.lastError {
                 Text(error)
                     .font(.caption)
                     .foregroundStyle(.red)
+            }
+            if let notice = recorder.notice {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(notice)
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                    Spacer()
+                    Button("OK") { recorder.notice = nil }
+                        .font(.caption)
+                }
             }
         }
     }
@@ -147,21 +161,44 @@ private struct PhoneWorkoutPanel: View {
             } else {
                 Button { recorder.pause() } label: { Label("Pause", systemImage: "pause.fill") }
             }
-            Button { confirmingEnd = true } label: { Label("End", systemImage: "stop.fill") }
+            Button {
+                secondsAtEnd = recorder.elapsed(at: .now)
+                confirmingEnd = true
+            } label: { Label("End", systemImage: "stop.fill") }
                 .buttonStyle(.borderedProminent)
         }
         .buttonStyle(.bordered)
         .font(.subheadline)
         .confirmationDialog("End workout?", isPresented: $confirmingEnd, titleVisibility: .visible) {
-            Button("Save workout") {
-                Task { await recorder.finish(weightKg: weightKg, into: context) }
+            if PhoneWorkoutRules.shouldSave(seconds: secondsAtEnd) {
+                Button("Save workout") {
+                    Task { await recorder.finish(weightKg: weightKg, into: context) }
+                }
             }
             Button("Discard", role: .destructive) {
                 Task { await recorder.discard() }
             }
         } message: {
-            Text("Saved workouts go to Apple Health and today's exercise. Workouts under a minute aren't saved.")
+            Text(PhoneWorkoutRules.endMessage(seconds: secondsAtEnd))
         }
+    }
+
+    /// The workout ended but didn't save: try again or let it go.
+    @ViewBuilder private var unsaved: some View {
+        let kind = recorder.kind ?? .walking
+        Label("\(kind.name) not saved yet", systemImage: kind.systemImage)
+            .font(.subheadline.weight(.semibold))
+        HStack {
+            Button("Discard", role: .destructive) {
+                Task { await recorder.discard() }
+            }
+            Button {
+                Task { await recorder.retrySave(weightKg: weightKg, into: context) }
+            } label: { Label("Try again", systemImage: "arrow.clockwise") }
+                .buttonStyle(.borderedProminent)
+        }
+        .buttonStyle(.bordered)
+        .font(.subheadline)
     }
 }
 #endif

@@ -8,7 +8,7 @@ struct MenuBarExtraContent: View {
     @Environment(\.modelContext) private var context
     @Environment(\.openWindow) private var openWindow
     @AppStorage(AppLock.enabledKey) private var lockEnabled = false
-    @Query private var profiles: [UserProfile]
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
     @Query(filter: #Predicate<FoodItem> { $0.isFavorite || $0.useCount > 0 })
     private var foods: [FoodItem]
     @State private var snapshot: WidgetSnapshot?

@@ -4,6 +4,7 @@ import SwiftData
 
 struct RecipeLibraryView: View {
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(\.strideSizeClass) private var sizeClass
     @Environment(\.openWindow) private var openWindow
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
@@ -71,8 +72,8 @@ struct RecipeLibraryView: View {
                     .swipeActions(edge: .trailing) {
                         Button(role: .destructive) {
                             if selected == recipe { selected = nil }
-                            context.delete(recipe)
-                            try? context.save()
+                            context.deleteRestorably([recipe], snapshot: { RecipeRecord($0) },
+                                                     message: "Deleted \(recipe.name)", undo: undoCenter)
                         } label: { Label("Delete", systemImage: "trash") }
                     }
                 }
@@ -755,7 +756,7 @@ struct RecipeWindow: View {
     let recipeID: UUID?
 
     @Query private var recipes: [Recipe]
-    @Query private var profiles: [UserProfile]
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
 
     private var recipe: Recipe? { recipes.first { $0.uuid == recipeID } }

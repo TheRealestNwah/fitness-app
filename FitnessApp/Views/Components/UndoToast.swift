@@ -153,4 +153,32 @@ extension ModelContext {
             try? self.save()
         }
     }
+
+    /// Deletes records and offers to put them back, rebuilt from the same snapshot a backup takes
+    /// (so every field and photo comes back, with the same uuid).
+    @MainActor
+    func deleteRestorably<Record: BackupRecord>(_ models: [Record.Model], snapshot: (Record.Model) -> Record,
+                                                message: String, undo center: UndoCenter,
+                                                restored: @escaping () -> Void = {}) {
+        guard !models.isEmpty else { return }
+        let records = models.map(snapshot)
+        for model in models { delete(model) }
+        try? save()
+        center.offer(message) {
+            for record in records { self.insert(record.makeModel()) }
+            restored()
+            try? self.save()
+        }
+    }
+
+    @MainActor
+    func deleteExerciseEntries(_ entries: [ExerciseEntry], undo center: UndoCenter, defaults: UserDefaults = .standard) {
+        // Remember Health workouts so the next import doesn't bring them back.
+        let healthIDs = entries.compactMap(\.sourceID)
+        HealthDismissals.dismiss(healthIDs, kind: .workout, defaults: defaults)
+        deleteRestorably(entries, snapshot: { ExerciseRecord($0) },
+                         message: entries.count == 1 ? "Deleted \(entries[0].activity)" : "Deleted \(entries.count) workouts",
+                         undo: center,
+                         restored: { HealthDismissals.restore(healthIDs, kind: .workout, defaults: defaults) })
+    }
 }

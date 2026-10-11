@@ -19,8 +19,26 @@ enum FoodDataCentralError: LocalizedError {
 /// Searches USDA FoodData Central (https://fdc.nal.usda.gov), the US government's public-domain
 /// nutrient database: generic foods (Foundation, SR Legacy) and branded products.
 enum FoodDataCentralClient {
-    /// Shared, heavily rate-limited key USDA provides for trying the API.
+    /// Shared, heavily rate-limited key USDA provides for trying the API. Only used by builds
+    /// made without Stride's own key, such as local development builds.
     static let demoKey = "DEMO_KEY"
+    static let bundledKeyInfoKey = "USDAAPIKey"
+
+    /// Stride's own key, filled in at build time from the `USDA_API_KEY` build setting so it
+    /// stays out of the repository. Empty when the build didn't set one.
+    static var bundledKey: String {
+        let value = (Bundle.main.object(forInfoDictionaryKey: bundledKeyInfoKey) as? String ?? "")
+            .trimmingCharacters(in: .whitespaces)
+        // An undefined build setting can come through unexpanded.
+        return value.hasPrefix("$(") ? "" : value
+    }
+
+    /// The person's own key wins, then Stride's, then the shared demo key.
+    static func resolvedKey(userKey: String, bundledKey: String = FoodDataCentralClient.bundledKey) -> String {
+        let user = userKey.trimmingCharacters(in: .whitespaces)
+        if !user.isEmpty { return user }
+        return bundledKey.isEmpty ? demoKey : bundledKey
+    }
     static let signupURL = URL(string: "https://fdc.nal.usda.gov/api-key-signup")!
 
     static func searchURL(for query: String, apiKey: String, limit: Int) -> URL {
@@ -29,7 +47,7 @@ enum FoodDataCentralClient {
             URLQueryItem(name: "query", value: query),
             URLQueryItem(name: "pageSize", value: String(limit)),
             URLQueryItem(name: "dataType", value: "Foundation,SR Legacy,Branded"),
-            URLQueryItem(name: "api_key", value: apiKey.isEmpty ? demoKey : apiKey)
+            URLQueryItem(name: "api_key", value: resolvedKey(userKey: apiKey))
         ]
         return comps.url!
     }

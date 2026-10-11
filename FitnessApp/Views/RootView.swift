@@ -4,7 +4,9 @@ import UserNotifications
 
 struct RootView: View {
     @Environment(\.modelContext) private var context
-    @Query private var profiles: [UserProfile]
+    @Environment(\.scenePhase) private var scenePhase
+    /// Oldest first, so if iCloud briefly holds two profiles every device shows the same one.
+    @Query(sort: \UserProfile.startDate) private var profiles: [UserProfile]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
     @State private var isResetting = false
 
@@ -12,7 +14,9 @@ struct RootView: View {
 
     var body: some View {
         Group {
-            if isResetting {
+            if let failure = CloudSync.openFailure {
+                StoreRecoveryView(failure: failure)
+            } else if isResetting {
                 // Swapping the tabs out first means nothing on screen still reads the profile being deleted.
                 ResetProgressView()
                     .task { await resetAllData() }
@@ -31,6 +35,11 @@ struct RootView: View {
         .onChange(of: profiles.first?.mealSlotsJSON, initial: true) { MealSlots.shared.apply(json: profiles.first?.mealSlotsJSON ?? "") }
         .task {
             SeedData.seedIfNeeded(context: context)
+            if CloudSync.isActive { SyncDeduplicator.run(context: context) }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // Copies from another device arrive while the app runs, so check again on return.
+            if phase == .active, CloudSync.isActive { SyncDeduplicator.run(context: context) }
         }
     }
 
@@ -77,6 +86,66 @@ struct ResetProgressView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// Shown instead of the app when the data store couldn't be opened (for example a failed
+/// migration), so the app explains what happened rather than crashing on every launch.
+struct StoreRecoveryView: View {
+    let failure: String
+
+    @State private var confirming = false
+    @State private var movedAside = false
+    @State private var moveError: String?
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Label("Stride couldn't open your data", systemImage: "exclamationmark.triangle.fill")
+                    .font(.title2.bold())
+                    .foregroundStyle(Color.primary)
+                if movedAside {
+                    Text("Done. Your old data is kept on this device. Close Stride completely and open it again to start fresh, then restore a backup from Settings › Data if you have one.")
+                } else {
+                    Text("Nothing has been deleted. Updating Stride may fix this, so check the App Store first.")
+                    Text("If it keeps happening, you can start fresh. Stride keeps a copy of the old data on this device, and you can restore a backup file afterwards from Settings › Data.")
+                    Button("Start Fresh…") { confirming = true }
+                        .buttonStyle(.borderedProminent)
+                }
+                if let moveError {
+                    Text(moveError)
+                        .foregroundStyle(.red)
+                }
+                DisclosureGroup("Details") {
+                    Text(failure)
+                        .font(.footnote.monospaced())
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .frame(maxWidth: 520, alignment: .leading)
+            .padding()
+            .frame(maxWidth: .infinity)
+        }
+        .confirmationDialog("Start fresh?", isPresented: $confirming, titleVisibility: .visible) {
+            Button("Start Fresh", role: .destructive, action: moveAside)
+        } message: {
+            Text("Stride will set the current data aside and start with an empty diary next time it opens.")
+        }
+    }
+
+    private func moveAside() {
+        guard let url = CloudSync.storeURL else {
+            moveError = String(localized: "Couldn't find the data file.")
+            return
+        }
+        do {
+            try CloudSync.moveAside(storeAt: url, stamp: String(Int(Date.now.timeIntervalSince1970)))
+            movedAside = true
+            moveError = nil
+        } catch {
+            moveError = String(localized: "Couldn't set the data aside: \(error.localizedDescription)")
+        }
     }
 }
 
@@ -217,10 +286,13 @@ struct MainTabView: View {
                     }
                 }
                 .navigationSplitViewStyle(.balanced)
+                .overlay(alignment: .bottom) { undoToast }
             } else {
                 TabView(selection: $selection) {
                     ForEach(Tab.allCases, id: \.self) { tab in
                         screen(tab)
+                            // Inside each tab, so the toast sits above the tab bar whatever its height.
+                            .overlay(alignment: .bottom) { undoToast }
                             .tabItem { Label(tab.title, systemImage: tab.systemImage) }
                             .tag(tab)
                     }
@@ -229,11 +301,6 @@ struct MainTabView: View {
         }
         .environment(undoCenter)
         .spotlightSupport()
-        .overlay(alignment: .bottom) {
-            UndoToastView()
-                .environment(undoCenter)
-                .padding(.bottom, usesSidebar ? 16 : 58)   // clear of the tab bar
-        }
         .animation(.snappy, value: undoCenter.toast)
         .strideSheet(item: $quickSheet) { sheet in
             switch sheet {
@@ -252,6 +319,7 @@ struct MainTabView: View {
             HomeQuickActionCenter.publish(context: context)
         }
         .task { await refreshHealth() }
+        .task { await PhoneWorkoutRecovery.run() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .background { BackgroundRefresh.schedule() }
             if phase == .active {
@@ -284,6 +352,12 @@ struct MainTabView: View {
                 }
             }
         }
+    }
+
+    private var undoToast: some View {
+        UndoToastView()
+            .environment(undoCenter)
+            .padding(.bottom, 16)
     }
 
     /// For the menu bar and keyboard shortcuts.
