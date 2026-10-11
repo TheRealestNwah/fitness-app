@@ -341,12 +341,15 @@ struct MainTabView: View {
                 NotificationManager.sync(with: profile)
             }
         }
-        // Today's reminders depend on what's logged, so replan after every save.
+        // Today's reminders depend on what's logged, so replan after saves. A burst of saves, or the
+        // same save seen by several windows, is handled once.
         .onReceive(NotificationCenter.default.publisher(for: ModelContext.didSave)) { _ in
             Task { @MainActor in
-                NotificationManager.sync(with: profile)
-                WidgetSnapshot.publish(profile: profile)
-                HomeQuickActionCenter.publish(context: context)
+                SaveFollowUp.shared.schedule {
+                    NotificationManager.sync(with: profile)
+                    WidgetSnapshot.publish(profile: profile)
+                    HomeQuickActionCenter.publish(context: context)
+                }
             }
         }
     }
