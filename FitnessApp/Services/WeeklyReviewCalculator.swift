@@ -97,7 +97,7 @@ enum WeeklyReviewCalculator {
         let over = avg - Double(budget)
         if avg < Double(budget) * 0.6 {
             return (String(localized: "Logged intake looks incomplete"),
-                    String(localized: "Averaging \(Energy.string(avg)) a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something."))
+                    String(localized: "Averaging \(Energy.string(avg)) a day is well under any safe budget, so some meals may not be logged yet. Adding drinks and snacks too makes this review more useful."))
         }
         if over > Double(budget) * 0.10 {
             return (String(localized: "Averaging \(Energy.string(over)) over budget"),
@@ -122,7 +122,7 @@ enum WeeklyReviewCalculator {
         if change <= -(planned * 0.5) {
             let amount = String(format: "%.1f", abs(change))
             return (String(localized: "On track: down \(amount) kg this week"),
-                    String(localized: "Keep doing what you are doing. Plan next week's dinners now while motivation is high."))
+                    String(localized: "What you're doing is working. Keep the same routine next week."))
         }
         return (String(localized: "Intake on budget, scale moving slowly"),
                 String(localized: "Normal in weeks two to four. If it stays flat next week, trim 100 to 150 kcal or add a daily walk."))

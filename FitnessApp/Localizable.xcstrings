@@ -1120,22 +1120,25 @@
     "%lld g" : {
 
     },
-    "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week." : {
-
-    },
     "A goal date from your actual pace needs two weeks of weigh-ins." : {
 
     },
     "A little hungry" : {
 
     },
+    "A quick glass now counts towards today's water." : {
+
+    },
     "A quick log of breakfast and lunch keeps today's numbers useful." : {
 
     },
-    "A quick sip now keeps hunger and headaches away." : {
+    "A short walk counts. Ten minutes after a meal is an easy place to start." : {
 
     },
     "A single missed day won't break your logging streak, once a week. Two missed days in a row still start it over." : {
+
+    },
+    "A small, steady change you can keep up beats a big one you can't." : {
 
     },
     "Abdomen, left" : {
@@ -1229,9 +1232,6 @@
     "After 5 minutes" : {
 
     },
-    "Aggressive" : {
-
-    },
     "Alcohol and caffeine" : {
 
     },
@@ -1280,23 +1280,13 @@
     "Apple with peanut butter" : {
 
     },
+    "Around %@" : {
+
+    },
     "Asks for %@ or your passcode when Stride opens, and hides it in the app switcher." : {
 
     },
     "Asparagus" : {
-
-    },
-    "At your current pace of %@ a week, you'll get there around %@." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "At your current pace of %1$@ a week, you'll get there around %2$@."
-          }
-        }
-      }
-    },
-    "At your current pace, around %@" : {
 
     },
     "Athlete" : {
@@ -1317,7 +1307,7 @@
     "Average intake" : {
 
     },
-    "Averaging %@ a day is well under any safe budget, so meals are probably missing. Log everything, including drinks, so the review means something." : {
+    "Averaging %@ a day is well under any safe budget, so some meals may not be logged yet. Adding drinks and snacks too makes this review more useful." : {
 
     },
     "Averaging %@ gained per week over the last 4 weeks." : {
@@ -1637,7 +1627,7 @@
     "Continue" : {
 
     },
-    "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation." : {
+    "Cook once, eat twice. Leftovers make a busy evening easier." : {
 
     },
     "Copied %@ to %@" : {
@@ -1871,9 +1861,6 @@
     "Drag to reorder. Some cards also hide themselves when there's nothing to show, like Activity without Apple Health." : {
 
     },
-    "Drink a glass of water before meals. Thirst is often mistaken for hunger." : {
-
-    },
     "Due in %lld days" : {
 
     },
@@ -1890,6 +1877,9 @@
 
     },
     "Each portion" : {
+
+    },
+    "early %@" : {
 
     },
     "Earn back exercise calories" : {
@@ -1973,10 +1963,10 @@
     "Espresso" : {
 
     },
-    "ETA %@" : {
+    "Evening check-in" : {
 
     },
-    "Evening check-in" : {
+    "Every meal is worth logging, including the unplanned ones. A rough entry is fine." : {
 
     },
     "Every weigh-in, food log, vitals reading, meal plan, recipe and setting will be deleted from this device and you'll start setup again. This can't be undone." : {
@@ -2004,6 +1994,9 @@
 
     },
     "Faster is not always better. Keep protein high and do not skip meals; a slightly higher target is fine." : {
+
+    },
+    "Fastest, hardest to stick to" : {
 
     },
     "Fasting" : {
@@ -2040,9 +2033,6 @@
 
     },
     "Fibre" : {
-
-    },
-    "Fibre-rich vegetables add volume to meals for very few calories." : {
 
     },
     "Fill empty meals" : {
@@ -2343,8 +2333,21 @@
     "iCloud" : {
       "shouldTranslate" : false
     },
+    "If this pace holds, around %@" : {
+
+    },
     "If you've been dieting for months, a 1–2 week break at maintenance can make the next stretch easier." : {
 
+    },
+    "If your pace of %@ a week holds, you'll get there around %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "If your pace of %1$@ a week holds, you'll get there around %2$@."
+          }
+        }
+      }
     },
     "Immediately" : {
 
@@ -2434,10 +2437,10 @@
     "Kale, raw" : {
 
     },
-    "Keep doing what you are doing. Plan next week's dinners now while motivation is high." : {
+    "Keep a few easy snacks you enjoy around for when you're hungry between meals." : {
 
     },
-    "Keep easy high-protein snacks around so hunger never catches you unprepared." : {
+    "Keep a glass or bottle of water nearby. It's easier to drink when it's in reach." : {
 
     },
     "Keeps your diary, weigh-ins, vitals and plans the same on every iPhone, iPad and Mac signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy." : {
@@ -2482,6 +2485,9 @@
           }
         }
       }
+    },
+    "late %@" : {
+
     },
     "Latest" : {
 
@@ -2603,9 +2609,6 @@
     "Log recipe" : {
 
     },
-    "Log the slip-up meal too. Data, not guilt, is what moves the needle." : {
-
-    },
     "Log this food" : {
 
     },
@@ -2655,7 +2658,10 @@
     "Logged. That's %@ today." : {
 
     },
-    "Logging right after you eat keeps your calorie count honest." : {
+    "Logging right after you eat is easiest while you still remember." : {
+
+    },
+    "Logging right after you eat keeps your calorie count accurate." : {
 
     },
     "Logging streak" : {
@@ -2679,12 +2685,12 @@
     "Lookups use Open Food Facts, a free community database. Nutrition on labels can differ; check the numbers before logging." : {
 
     },
-    "Losing %@ at %@ a week." : {
+    "Losing %@ at about %@ a week. Real progress is rarely a straight line, and that's normal." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Losing %1$@ at %2$@ a week."
+            "value" : "Losing %1$@ at about %2$@ a week. Real progress is rarely a straight line, and that's normal."
           }
         }
       }
@@ -2729,6 +2735,9 @@
 
     },
     "Mango" : {
+
+    },
+    "Many people find meals with some protein keep them full for longer." : {
 
     },
     "Match system" : {
@@ -2792,6 +2801,9 @@
 
     },
     "Metric (kg, cm)" : {
+
+    },
+    "mid-%@" : {
 
     },
     "Milestones and plateaus" : {
@@ -3193,10 +3205,13 @@
     "Plan %@" : {
 
     },
-    "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones." : {
+    "Plan: around %@" : {
 
     },
     "Planner" : {
+
+    },
+    "Planning tomorrow's meals tonight means one less thing to decide when you're busy." : {
 
     },
     "Point the camera at a barcode to find packaged food and its nutrition label." : {
@@ -3250,9 +3265,6 @@
     "Progress photo (optional)" : {
 
     },
-    "Projected goal date" : {
-
-    },
     "Protein" : {
 
     },
@@ -3263,9 +3275,6 @@
 
     },
     "Protein goal hit %lld days running" : {
-
-    },
-    "Protein keeps you full longer. Aim to include a palm-sized portion in every meal." : {
 
     },
     "Protein shake, ready to drink" : {
@@ -3373,6 +3382,9 @@
     "Reset to default" : {
 
     },
+    "Rest counts too. A good night's sleep can make the next day easier." : {
+
+    },
     "Resting heart rate" : {
 
     },
@@ -3392,6 +3404,9 @@
 
     },
     "Rough estimate" : {
+
+    },
+    "Rough goal date" : {
 
     },
     "Rowing machine" : {
@@ -3576,6 +3591,9 @@
     "Sex" : {
 
     },
+    "Sex, age and height are only used to estimate how many calories your body uses." : {
+
+    },
     "Share" : {
 
     },
@@ -3595,9 +3613,6 @@
 
     },
     "Sleep" : {
-
-    },
-    "Sleep under 7 hours raises hunger hormones. Rest is part of the plan." : {
 
     },
     "Sleep, sodium and patterns" : {
@@ -3965,6 +3980,9 @@
     "Vegetable stock" : {
 
     },
+    "Vegetables add volume to meals for very few calories." : {
+
+    },
     "Veggie egg scramble on toast" : {
 
     },
@@ -3999,9 +4017,6 @@
 
     },
     "Walk" : {
-
-    },
-    "Walking after meals helps blunt blood sugar spikes and adds up over a week." : {
 
     },
     "Walking, brisk" : {
@@ -4076,7 +4091,7 @@
     "Weight down %@ kg, no meals logged" : {
 
     },
-    "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average." : {
+    "Weight goes up and down from day to day, mostly from water. The weekly average tells you more." : {
 
     },
     "Weight has held steady for %lld days" : {
@@ -4123,6 +4138,9 @@
 
     },
     "What was it? (optional)" : {
+
+    },
+    "What you're doing is working. Keep the same routine next week." : {
 
     },
     "When" : {

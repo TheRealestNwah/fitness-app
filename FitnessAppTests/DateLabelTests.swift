@@ -24,4 +24,18 @@ final class DateLabelTests: XCTestCase {
         XCTAssertTrue(date(2027, 1, 4).shortDateLabel(relativeTo: now).contains("2027"))
         XCTAssertTrue(date(2025, 12, 29).shortDateLabel(relativeTo: date(2026, 1, 2)).contains("2025"))
     }
+
+    func testApproximateLabelNamesThePartOfTheMonth() {
+        let now = date(2026, 9, 28)
+        XCTAssertTrue(date(2026, 11, 3).approximateDateLabel(relativeTo: now).hasPrefix("early "))
+        XCTAssertTrue(date(2026, 11, 15).approximateDateLabel(relativeTo: now).hasPrefix("mid-"))
+        XCTAssertTrue(date(2026, 11, 28).approximateDateLabel(relativeTo: now).hasPrefix("late "))
+    }
+
+    func testApproximateLabelShowsTheYearOnlyWhenItDiffers() {
+        let now = date(2026, 9, 28)
+        XCTAssertFalse(date(2026, 11, 15).approximateDateLabel(relativeTo: now).contains("2026"))
+        XCTAssertTrue(date(2027, 3, 15).approximateDateLabel(relativeTo: now).contains("2027"))
+        XCTAssertFalse(date(2027, 3, 15).approximateDateLabel(relativeTo: now).contains("15"))
+    }
 }
