@@ -98,8 +98,13 @@ struct PlannerView: View {
                     .listRowBackground(Color.clear)
             }
             Section {
-                // Auto-plan moves below the totals when both don't fit, rather than squeezing its label.
-                ReflowRow(spacing: 12, verticalAlignment: .center) {
+                // Side by side, with the totals keeping their room and Auto-plan shrinking to its icon
+                // if it must; stacked at accessibility sizes, where squeezing broke its label apart.
+                // (Stacking at every size pushed today's meals further down the lazy list.)
+                let stacked = dynamicTypeSize.isAccessibilitySize
+                let layout = stacked ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                                     : AnyLayout(HStackLayout(spacing: 8))
+                layout {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Energy.number(plannedCalories)) of \(Energy.string(target)) planned")
                             .font(.subheadline.weight(.medium))
@@ -107,7 +112,8 @@ struct PlannerView: View {
                                      carbs: dayEntries.reduce(0) { $0 + $1.totalCarbs },
                                      fat: dayEntries.reduce(0) { $0 + $1.totalFat })
                     }
-                } trailing: {
+                    .layoutPriority(1)
+                    if !stacked { Spacer(minLength: 0) }
                     Menu {
                         Button { autoFill(replace: false) } label: { Label("Fill empty meals", systemImage: "wand.and.stars") }
                         Button { showAutoFillConfirm = true } label: { Label("Replace whole day", systemImage: "arrow.clockwise") }
@@ -116,8 +122,12 @@ struct PlannerView: View {
                             Button(role: .destructive) { clearDay() } label: { Label("Clear day", systemImage: "trash") }
                         }
                     } label: {
-                        Label("Auto-plan", systemImage: "wand.and.stars")
-                            .font(.subheadline)
+                        ViewThatFits(in: .horizontal) {
+                            Label("Auto-plan", systemImage: "wand.and.stars")
+                            Image(systemName: "wand.and.stars")
+                                .accessibilityLabel("Auto-plan")
+                        }
+                        .font(.subheadline)
                     }
                     .buttonStyle(.bordered)
                 }
