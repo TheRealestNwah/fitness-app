@@ -7,7 +7,8 @@ final class MacSupportTests: XCTestCase {
 
     private func launch(_ arguments: [String] = ["-demoData"]) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = arguments
+        // Don't reopen windows left by an earlier test (such as the extra one from New Window).
+        app.launchArguments = arguments + ["-ApplePersistenceIgnoreState", "YES"]
         app.launch()
         return app
     }
