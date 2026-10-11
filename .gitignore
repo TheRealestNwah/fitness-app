@@ -21,3 +21,6 @@ __pycache__/
 
 # Installer packages built by scripts/build-mac-installer.sh
 dist/
+
+# Claude Code
+.claude/
