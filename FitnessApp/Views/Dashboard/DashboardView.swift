@@ -312,11 +312,13 @@ struct DashboardView: View {
             Button {
                 selectTab(.food)
             } label: {
-                HStack {
+                ReflowRow {
                     Text(todaysFood.isEmpty ? "Nothing logged yet" : "\(todaysFood.count) items logged")
-                    Spacer()
-                    Text("Open diary")
-                    Image(systemName: "chevron.right")
+                } trailing: {
+                    HStack {
+                        Text("Open diary")
+                        Image(systemName: "chevron.right")
+                    }
                 }
                 .font(.subheadline)
             }
@@ -432,13 +434,15 @@ struct DashboardView: View {
     private var weightHeadline: some View {
         let lost = profile.startWeightKg - currentKg
         let daysSinceWeighIn = weights.first.map { Calendar.current.dateComponents([.day], from: $0.date.startOfDay, to: Date.now.startOfDay).day ?? 0 }
-        return HStack(alignment: .firstTextBaseline) {
-            Text(units.weightString(kg: currentKg))
-                .font(.title.bold().monospacedDigit())
-            Text(units.weightString(kg: -lost, signed: true))
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(lost >= 0 ? .green : .orange)
-            Spacer()
+        return ReflowRow {
+            HStack(alignment: .firstTextBaseline) {
+                Text(units.weightString(kg: currentKg))
+                    .font(.title.bold().monospacedDigit())
+                Text(units.weightString(kg: -lost, signed: true))
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(lost >= 0 ? .green : .orange)
+            }
+        } trailing: {
             if let days = daysSinceWeighIn, days > 0 {
                 Text(days == 1 ? "Yesterday" : "\(days) days ago")
                     .font(.footnote)
@@ -461,9 +465,9 @@ struct DashboardView: View {
         return VStack(alignment: .leading, spacing: 12) {
             ProgressView(value: progress)
                 .tint(.indigo)
-            HStack {
+            ReflowRow {
                 Text("\(units.weightString(kg: remaining)) to go")
-                Spacer()
+            } trailing: {
                 if remaining == 0 {
                     Text("Goal reached!")
                 } else if let projected {

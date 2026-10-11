@@ -131,15 +131,17 @@ private struct PhoneWorkoutPanel: View {
 
     @ViewBuilder private var recording: some View {
         let kind = recorder.kind ?? .walking
-        HStack {
-            Label(kind.name, systemImage: kind.systemImage)
-                .font(.subheadline.weight(.semibold))
-            if recorder.phase == .paused {
-                Text("Paused")
-                    .font(.caption)
-                    .foregroundStyle(Color.secondary)
+        ReflowRow(verticalAlignment: .center) {
+            HStack {
+                Label(kind.name, systemImage: kind.systemImage)
+                    .font(.subheadline.weight(.semibold))
+                if recorder.phase == .paused {
+                    Text("Paused")
+                        .font(.caption)
+                        .foregroundStyle(Color.secondary)
+                }
             }
-            Spacer()
+        } trailing: {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
                 Text(PhoneWorkoutRules.elapsedString(recorder.elapsed(at: timeline.date)))
                     .font(.title3.weight(.semibold))
@@ -207,14 +209,16 @@ struct ExerciseRow: View {
     let entry: ExerciseEntry
 
     var body: some View {
-        HStack {
-            Text(entry.activity)
-                .foregroundStyle(Color.primary)
-            if entry.sourceID != nil {
-                Image(systemName: "heart.fill").font(.caption2).foregroundStyle(.pink)
-                    .accessibilityLabel("From Apple Health")
+        ReflowRow {
+            HStack {
+                Text(entry.activity)
+                    .foregroundStyle(Color.primary)
+                if entry.sourceID != nil {
+                    Image(systemName: "heart.fill").font(.caption2).foregroundStyle(.pink)
+                        .accessibilityLabel("From Apple Health")
+                }
             }
-            Spacer()
+        } trailing: {
             Text("\(Int(entry.minutes.rounded())) min · \(Energy.string(entry.calories))")
                 .foregroundStyle(Color.secondary)
                 .monospacedDigit()
