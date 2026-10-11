@@ -88,7 +88,7 @@ struct EndFastIntent: LiveActivityIntent {
            let session = try? context.fetch(FetchDescriptor<FastingSession>(predicate: #Predicate { $0.uuid == id })).first,
            session.end == nil {
             session.end = .now
-            try? context.save()
+            context.saveLoggingFailure()
         }
         FastingActivityManager.sync(context: context)
         return .result()

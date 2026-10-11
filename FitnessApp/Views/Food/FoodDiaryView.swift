@@ -336,7 +336,7 @@ struct DayDiaryView: View {
                                         protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
                                         fiber: e.fiber, sugar: e.sugar, sodium: e.sodium).withExtras(from: e))
         }
-        try? context.save()
+        context.saveReportingFailure()
     }
 
     /// Move or copy a diary line: other meals today, tomorrow, or any day.
@@ -370,11 +370,11 @@ struct DayDiaryView: View {
         let previous = entry.servings
         guard servings != previous else { return }
         entry.scale(toServings: servings)
-        try? context.save()
+        context.saveReportingFailure()
         HealthKitManager.shared.recordDiaryEntry(entry)
         undoCenter.offer(String(localized: "Changed \(entry.foodName) to \(servings.cleanString) servings")) {
             entry.scale(toServings: previous)
-            try? context.save()
+            context.saveReportingFailure()
             HealthKitManager.shared.recordDiaryEntry(entry)
         }
     }
@@ -810,7 +810,7 @@ struct EditLogEntrySheet: View {
                     Button("Save") {
                         entry.scale(toServings: servings)
                         entry.mealType = meal
-                        try? context.save()
+                        context.saveReportingFailure()
                         HealthKitManager.shared.recordDiaryEntry(entry)
                         dismiss()
                     }
@@ -956,7 +956,7 @@ struct SaveFavouriteMealSheet: View {
                                              items: entries.map(SavedMealItem.init(entry:)))
                         meal.photo = photo
                         context.insert(meal)
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty || entries.isEmpty)

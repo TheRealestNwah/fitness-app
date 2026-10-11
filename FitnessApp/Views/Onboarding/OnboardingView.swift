@@ -375,6 +375,6 @@ struct OnboardingView: View {
                                   unitSystem: unitSystem)
         context.insert(profile)
         context.insert(WeightEntry(date: .now, weightKg: currentKg, note: "Starting weight"))
-        try? context.save()
+        context.saveReportingFailure()
     }
 }

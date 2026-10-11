@@ -91,7 +91,7 @@ struct SuggestionsCard: View {
                                                   calories: recipe.caloriesPerServing, protein: recipe.proteinPerServing,
                                                   carbs: recipe.carbsPerServing, fat: recipe.fatPerServing))
         }
-        try? context.save()
+        context.saveReportingFailure()
         logged = pick.name
     }
 }

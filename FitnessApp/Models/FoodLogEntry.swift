@@ -143,12 +143,12 @@ extension ModelContext {
         guard previous.meal != meal || !Calendar.current.isDate(previous.date, inSameDayAs: target) else { return }
         entry.mealType = meal
         entry.date = target
-        try? save()
+        saveReportingFailure()
         HealthKitManager.shared.recordDiaryEntry(entry)
         center?.offer(String(localized: "Moved \(entry.foodName) to \(meal.inSentence)")) {
             entry.mealType = previous.meal
             entry.date = previous.date
-            try? self.save()
+            self.saveReportingFailure()
             HealthKitManager.shared.recordDiaryEntry(entry)
         }
     }
@@ -158,10 +158,10 @@ extension ModelContext {
     func copyDiaryEntry(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
         let copy = entry.copy(to: meal, on: day)
         insertDiaryEntry(copy)
-        try? save()
+        saveReportingFailure()
         center?.offer(String(localized: "Copied \(entry.foodName) to \(meal.inSentence)")) {
             self.deleteDiaryEntry(copy)
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -170,10 +170,10 @@ extension ModelContext {
     func logAgain(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
         let copy = entry.copy(to: meal, on: day)
         insertDiaryEntry(copy)
-        try? save()
+        saveReportingFailure()
         center?.offer(String(localized: "Logged \(entry.foodName)")) {
             self.deleteDiaryEntry(copy)
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -189,14 +189,14 @@ extension ModelContext {
             entry.date = target
             HealthKitManager.shared.recordDiaryEntry(entry)
         }
-        try? save()
+        saveReportingFailure()
         center?.offer(String(localized: "Moved \(entries.count) entries to \(meal.inSentence)")) {
             for old in previous {
                 old.entry.mealType = old.meal
                 old.entry.date = old.date
                 HealthKitManager.shared.recordDiaryEntry(old.entry)
             }
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -207,10 +207,10 @@ extension ModelContext {
         if entries.count == 1 { return copyDiaryEntry(entries[0], to: meal, on: day, undo: center) }
         let copies = entries.map { $0.copy(to: meal, on: day) }
         for copy in copies { insertDiaryEntry(copy) }
-        try? save()
+        saveReportingFailure()
         center?.offer(String(localized: "Copied \(entries.count) entries to \(meal.inSentence)")) {
             for copy in copies { self.deleteDiaryEntry(copy) }
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 }

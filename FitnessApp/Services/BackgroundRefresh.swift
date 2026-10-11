@@ -34,7 +34,7 @@ enum BackgroundRefresh {
         let context = AppStore.container.mainContext
         WidgetWaterQueue.drain(into: context)
         _ = await HealthKitManager.shared.importIfDue(into: context)
-        try? context.save()
+        context.saveLoggingFailure()
         FastingActivityManager.sync(context: context)
         if let profile = try? context.fetch(FetchDescriptor<UserProfile>()).first {
             WidgetSnapshot.publish(profile: profile)

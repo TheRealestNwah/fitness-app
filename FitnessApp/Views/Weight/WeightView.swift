@@ -329,7 +329,7 @@ struct WeightView: View {
                         .foregroundStyle(.green)
                     Button("Switch to maintenance") {
                         profile.startMaintenance(atKg: profile.goalWeightKg)
-                        try? context.save()
+                        context.saveReportingFailure()
                     }
                     .buttonStyle(.bordered)
                 }
@@ -554,12 +554,12 @@ struct AddWeightSheet: View {
                 Task { @MainActor in
                     if let id = try? await HealthKitManager.shared.saveWeight(kg: kg, date: date) {
                         entry.sourceID = id.uuidString
-                        try? context.save()
+                        context.saveReportingFailure()
                     }
                 }
             }
         }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

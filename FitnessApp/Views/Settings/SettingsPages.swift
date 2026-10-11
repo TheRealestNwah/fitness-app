@@ -15,7 +15,7 @@ struct SettingsPageView: View {
             .readableWidth()
             .navigationTitle(page.title)
             .inlineNavigationTitle()
-            .onDisappear { try? context.save() }
+            .onDisappear { context.saveReportingFailure() }
     }
 
     @ViewBuilder
@@ -205,7 +205,7 @@ private struct NutritionSettingsPage: View {
                     Button {
                         AdaptiveTargetTip().invalidate(reason: .actionPerformed)
                         profile.customCalorieTarget = suggested
-                        try? context.save()
+                        context.saveReportingFailure()
                     } label: {
                         Label("Use \(Energy.string(suggested)) as my target", systemImage: "checkmark.circle")
                     }

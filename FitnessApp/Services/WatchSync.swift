@@ -189,7 +189,7 @@ final class WatchSync: NSObject {
         // The watch's id, so a repeat delivery is recognised.
         entry.uuid = log.id
         context.insertDiaryEntry(entry)
-        try? context.save()
+        context.saveLoggingFailure()
         if let profile = try? context.fetch(FetchDescriptor<UserProfile>()).first {
             WidgetSnapshot.publish(profile: profile)
         }
@@ -204,7 +204,7 @@ final class WatchSync: NSObject {
         let entry = WaterEntry(date: log.date, amountMl: log.amountMl)
         entry.uuid = log.id
         context.insertWater(entry)
-        try? context.save()
+        context.saveLoggingFailure()
         if let profile = try? context.fetch(FetchDescriptor<UserProfile>()).first {
             WidgetSnapshot.publish(profile: profile)
         }

@@ -227,7 +227,7 @@ struct PlannerView: View {
            let batch = try? context.fetch(FetchDescriptor<MealPrepBatch>(predicate: #Predicate { $0.uuid == id })).first {
             batch.usePortion()
         }
-        try? context.save()
+        context.saveReportingFailure()
     }
 
     private func clearDay() {
@@ -242,7 +242,7 @@ struct PlannerView: View {
                                          carbsPerServing: e.carbsPerServing, fatPerServing: e.fatPerServing,
                                          recipeID: e.recipeID, foodItemID: e.foodItemID))
         }
-        try? context.save()
+        context.saveReportingFailure()
         selectedDay = tomorrow
     }
 
@@ -274,13 +274,13 @@ struct PlannerView: View {
                 added.append(entry)
             }
         }
-        try? context.save()
+        context.saveReportingFailure()
         guard !copies.isEmpty else { return }
         let inserted = added
         undoCenter.offer("Replaced the day's plan") {
             for entry in inserted { context.delete(entry) }
             for copy in copies { context.insert(copy) }
-            try? context.save()
+            context.saveReportingFailure()
         }
     }
 }
@@ -330,12 +330,12 @@ struct PlanEntryRow: View {
         .swipeActions(edge: .leading) {
             Button {
                 entry.servings = min(entry.servings + 0.5, 10)
-                try? context.save()
+                context.saveReportingFailure()
             } label: { Label("More", systemImage: "plus") }
             .tint(.green)
             Button {
                 entry.servings = max(entry.servings - 0.5, 0.5)
-                try? context.save()
+                context.saveReportingFailure()
             } label: { Label("Less", systemImage: "minus") }
             .tint(.orange)
         }
@@ -467,19 +467,19 @@ struct PlanItemPicker: View {
 
     private func add(_ recipe: Recipe) {
         context.insert(MealPlanEntry(recipe: recipe, day: day, mealType: mealType))
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 
     private func add(_ batch: MealPrepBatch) {
         context.insert(MealPlanEntry(batch: batch, day: day, mealType: mealType))
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 
     private func add(_ food: FoodItem) {
         context.insert(MealPlanEntry(food: food, day: day, mealType: mealType))
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

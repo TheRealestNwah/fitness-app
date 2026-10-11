@@ -36,7 +36,7 @@ enum WidgetWaterQueue {
             context.insertWater(entry)
             added += 1
         }
-        if added > 0 { try? context.save() }
+        if added > 0 { context.saveLoggingFailure() }
         return added
     }
 }
