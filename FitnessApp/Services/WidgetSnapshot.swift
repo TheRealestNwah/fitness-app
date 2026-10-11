@@ -18,6 +18,8 @@ struct WidgetSnapshot: Codable, Equatable {
     /// Protein eaten today and the daily target, in grams. Optional so older snapshots still decode.
     var proteinG: Double? = nil
     var proteinTargetG: Double? = nil
+    /// The person's volume unit ("ml" or "fl oz"). Optional so older snapshots still decode, as ml.
+    var waterUnit: String? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"
@@ -42,7 +44,8 @@ struct WidgetSnapshot: Codable, Equatable {
             energyUnit: EnergyUnit.current.rawValue,
             glassMl: profile.units.glassMl,
             proteinG: protein.filter { today($0.date) }.reduce(0) { $0 + $1.grams },
-            proteinTargetG: profile.macroTargets(currentWeightKg: currentKg).protein)
+            proteinTargetG: profile.macroTargets(currentWeightKg: currentKg).protein,
+            waterUnit: profile.units.volumeUnit)
     }
 
     /// Recomputes today's snapshot from the store, saves it for the widgets and asks them to reload.

@@ -17,8 +17,9 @@ struct WatchHomeView: View {
                             .foregroundStyle(.secondary)
                     }
                     HStack {
-                        waterButton(250)
-                        waterButton(500)
+                        ForEach(store.snapshot?.quickWaterMl ?? [250, 500], id: \.self) { ml in
+                            waterButton(ml)
+                        }
                     }
                     NavigationLink {
                         LogFoodView()
@@ -56,7 +57,7 @@ struct WatchHomeView: View {
 
     private func water(_ s: Snapshot) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label("\(Int(s.waterMl)) of \(Int(s.waterGoalMl)) ml", systemImage: "drop.fill")
+            Label("\(s.waterAmount(s.waterMl)) of \(s.waterAmount(s.waterGoalMl)) \(s.waterUnitLabel)", systemImage: "drop.fill")
                 .font(.footnote.monospacedDigit())
             ProgressView(value: min(s.waterProgress, 1))
                 .tint(.cyan)
@@ -67,11 +68,13 @@ struct WatchHomeView: View {
         Button {
             store.logWater(ml)
         } label: {
-            Text("+\(Int(ml))")
+            Text("+\(store.snapshot?.waterAmount(ml) ?? Int(ml))")
                 .font(.headline.monospacedDigit())
         }
         .tint(.cyan)
-        .accessibilityLabel("Log \(Int(ml)) millilitres of water")
+        .accessibilityLabel(store.snapshot?.usesFlOz == true
+            ? "Log \(store.snapshot?.waterAmount(ml) ?? 0) fluid ounces of water"
+            : "Log \(Int(ml)) millilitres of water")
     }
 }
 

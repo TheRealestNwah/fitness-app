@@ -13,6 +13,8 @@ struct Snapshot: Codable {
     var glassMl: Double? = nil
     var proteinG: Double? = nil
     var proteinTargetG: Double? = nil
+    /// The person's volume unit ("ml" or "fl oz"); absent in older snapshots, which mean ml.
+    var waterUnit: String? = nil
 
     static let appGroup = "group.com.stride.FitnessApp"
     static let key = "todaySnapshot"
@@ -41,6 +43,16 @@ struct Snapshot: Codable {
     var proteinProgress: Double {
         guard let proteinG, let proteinTargetG, proteinTargetG > 0 else { return 0 }
         return proteinG / proteinTargetG
+    }
+
+    var usesFlOz: Bool { waterUnit == "fl oz" }
+    var waterUnitLabel: String { usesFlOz ? "fl oz" : "ml" }
+    /// Quick-add amounts in ml: 250 and 500 ml, or 8 and 16 fl oz.
+    var quickWaterMl: [Double] { usesFlOz ? [236.6, 473.2] : [250, 500] }
+
+    /// `ml` in the person's unit, rounded for display.
+    func waterAmount(_ ml: Double) -> Int {
+        usesFlOz ? Int((ml * 0.033814).rounded()) : Int(ml.rounded())
     }
 
     func energy(_ kcal: Double) -> String {
