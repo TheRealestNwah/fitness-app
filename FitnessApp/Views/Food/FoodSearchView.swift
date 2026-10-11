@@ -27,6 +27,9 @@ struct FoodSearchView: View {
     @State private var showScanner = false
     @State private var unknownBarcode: UnknownBarcode?
     @State private var photoMeal: SavedMeal?
+    /// A custom food or saved meal waiting for the person to confirm its deletion. The undo toast
+    /// sits behind this sheet, so deletes here are confirmed instead.
+    @State private var pendingDeletion: FoodSearchDeletion?
     @AppStorage(OnlineFoodSearch.enabledKey) private var onlineEnabled = true
     @AppStorage(OnlineFoodSearch.usdaKeyKey) private var usdaKey = ""
     @State private var online = OnlineSearchResult()
@@ -212,8 +215,7 @@ struct FoodSearchView: View {
                             }
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
-                                    context.delete(meal)
-                                    try? context.save()
+                                    pendingDeletion = .meal(meal)
                                 } label: { Label("Delete", systemImage: "trash") }
                                 Button { photoMeal = meal } label: {
                                     Label(meal.photo == nil ? "Add photo" : "Photo", systemImage: "camera")
@@ -319,6 +321,20 @@ struct FoodSearchView: View {
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Done") { dismiss() } }
+            }
+            .confirmationDialog(pendingDeletion?.title ?? "", isPresented: Binding(
+                get: { pendingDeletion != nil }, set: { if !$0 { pendingDeletion = nil } }
+            ), titleVisibility: .visible, presenting: pendingDeletion) { pending in
+                Button("Delete", role: .destructive) {
+                    switch pending {
+                    case .food(let food): context.delete(food)
+                    case .meal(let meal): context.delete(meal)
+                    }
+                    try? context.save()
+                    pendingDeletion = nil
+                }
+            } message: { _ in
+                Text("This can't be undone. Entries you've already logged stay in your diary.")
             }
             .strideSheet(item: $selected) { food in
                 LogFoodSheet(food: food, date: date, mealType: mealType)
@@ -460,12 +476,31 @@ struct FoodSearchView: View {
         .swipeActions(edge: .trailing) {
             if food.isCustom {
                 Button(role: .destructive) {
-                    context.delete(food)
-                    try? context.save()
+                    pendingDeletion = .food(food)
                 } label: { Label("Delete", systemImage: "trash") }
             }
         }
         .draggable(FoodReference(food: food))
+    }
+}
+
+/// What the food search sheet is asking to delete.
+enum FoodSearchDeletion: Identifiable {
+    case food(FoodItem)
+    case meal(SavedMeal)
+
+    var id: UUID {
+        switch self {
+        case .food(let food): food.uuid
+        case .meal(let meal): meal.uuid
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .food(let food): String(localized: "Delete \(food.displayName)?")
+        case .meal(let meal): String(localized: "Delete \(meal.name)?")
+        }
     }
 }
 

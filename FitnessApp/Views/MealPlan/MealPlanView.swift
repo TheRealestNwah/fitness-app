@@ -247,7 +247,10 @@ struct PlannerView: View {
     /// Picks, for each meal, the recipe whose calories best match that meal's share of the daily budget.
     /// Recently used recipes on nearby days are avoided so the week has some variety.
     private func autoFill(replace: Bool) {
-        if replace { for e in dayEntries { context.delete(e) } }
+        let replaced = replace ? dayEntries : []
+        let copies = replaced.map { $0.restorableCopy() }
+        for e in replaced { context.delete(e) }
+        var added: [MealPlanEntry] = []
         let window = allEntries.filter { abs($0.day.timeIntervalSince(selectedDay)) < 3 * 86_400 }
         let recentlyUsed = Set(window.compactMap(\.recipeID))
         for meal in MealType.allCases {
@@ -259,15 +262,24 @@ struct PlannerView: View {
             let pool = fresh.isEmpty ? candidates : fresh
             let best = pool.min { abs($0.caloriesPerServing - mealTarget) < abs($1.caloriesPerServing - mealTarget) }
             if let best {
-                context.insert(MealPlanEntry(day: selectedDay, mealType: meal, title: best.name,
-                                             caloriesPerServing: best.caloriesPerServing,
-                                             proteinPerServing: best.proteinPerServing,
-                                             carbsPerServing: best.carbsPerServing,
-                                             fatPerServing: best.fatPerServing,
-                                             recipeID: best.uuid))
+                let entry = MealPlanEntry(day: selectedDay, mealType: meal, title: best.name,
+                                          caloriesPerServing: best.caloriesPerServing,
+                                          proteinPerServing: best.proteinPerServing,
+                                          carbsPerServing: best.carbsPerServing,
+                                          fatPerServing: best.fatPerServing,
+                                          recipeID: best.uuid)
+                context.insert(entry)
+                added.append(entry)
             }
         }
         try? context.save()
+        guard !copies.isEmpty else { return }
+        let inserted = added
+        undoCenter.offer("Replaced the day's plan") {
+            for entry in inserted { context.delete(entry) }
+            for copy in copies { context.insert(copy) }
+            try? context.save()
+        }
     }
 }
 

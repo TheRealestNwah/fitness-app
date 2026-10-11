@@ -36,6 +36,12 @@ enum PhoneWorkoutKind: String, CaseIterable, Identifiable {
         }
     }
 
+    /// The kind a recovered session was started as.
+    init?(activityType: HKWorkoutActivityType) {
+        guard let kind = Self.allCases.first(where: { $0.activityType == activityType }) else { return nil }
+        self = kind
+    }
+
     /// The exercise log name, the same one the Health importer gives this workout type.
     var logName: String { HealthImportRules.workoutName(activityType.rawValue) }
 
@@ -57,6 +63,13 @@ enum PhoneWorkoutRules {
 
     static func shouldSave(seconds: TimeInterval) -> Bool {
         seconds >= minimumSeconds
+    }
+
+    /// What the End dialog says: short recordings can only be discarded.
+    static func endMessage(seconds: TimeInterval) -> String {
+        shouldSave(seconds: seconds)
+            ? String(localized: "Saved workouts go to Apple Health and today's exercise.")
+            : String(localized: "Workouts under a minute aren't saved, so this one can only be discarded.")
     }
 
     static func minutes(seconds: TimeInterval) -> Double {
@@ -85,7 +98,8 @@ enum PhoneWorkoutRules {
 @MainActor
 @Observable
 final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
-    enum Phase: Equatable { case idle, starting, running, paused, saving }
+    /// `unsaved`: the workout has ended but saving it failed, so it can be retried or discarded.
+    enum Phase: Equatable { case idle, starting, running, paused, saving, unsaved }
 
     static let shared = PhoneWorkoutRecorder()
 
@@ -93,11 +107,24 @@ final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWork
     private(set) var kind: PhoneWorkoutKind?
     private(set) var activeKcal: Double = 0
     var lastError: String?
+    /// Something worth saying that isn't an error, such as a recording being picked up after a relaunch.
+    var notice: String?
+
+    /// How far saving an ended workout got, so a retry doesn't repeat finished steps.
+    private struct Ending {
+        var end: Date
+        var seconds: TimeInterval
+        var collected = false
+        var finished = false
+        var workoutID: String?
+        var entry: ExerciseEntry?
+    }
 
     @ObservationIgnored private let store = HKHealthStore()
     @ObservationIgnored private var session: HKWorkoutSession?
     @ObservationIgnored private var builder: HKLiveWorkoutBuilder?
     @ObservationIgnored private var startDate: Date?
+    @ObservationIgnored private var ending: Ending?
     @ObservationIgnored private var ended: CheckedContinuation<Void, Never>?
 
     private var shareTypes: Set<HKSampleType> {
@@ -151,39 +178,92 @@ final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWork
 
     func resume() { session?.resume() }
 
+    /// Picks up a workout that was still recording when the app quit or crashed. Call once at launch.
+    func recover() async {
+        guard phase == .idle, HKHealthStore.isHealthDataAvailable(),
+              let session = try? await store.recoverActiveWorkoutSession() else { return }
+        let builder = session.associatedWorkoutBuilder()
+        builder.dataSource = HKLiveWorkoutDataSource(healthStore: store, workoutConfiguration: session.workoutConfiguration)
+        session.delegate = self
+        builder.delegate = self
+        self.session = session
+        self.builder = builder
+        let kind = PhoneWorkoutKind(activityType: session.workoutConfiguration.activityType) ?? .walking
+        self.kind = kind
+        startDate = session.startDate ?? builder.startDate
+        activeKcal = builder.statistics(for: HKQuantityType(.activeEnergyBurned))?
+            .sumQuantity()?.doubleValue(for: .kilocalorie()) ?? 0
+        phase = session.state == .paused ? .paused : .running
+        notice = String(localized: "Your \(kind.name.lowercased()) was still recording when Stride closed, so it's been picked up again.")
+    }
+
     /// Ends the session, saves the workout to Health and logs it. Recordings under a minute are discarded.
     func finish(weightKg: Double, into context: ModelContext) async {
-        guard let builder, let kind, phase == .running || phase == .paused else { return }
+        guard let builder, phase == .running || phase == .paused else { return }
         phase = .saving
+        lastError = nil
         let end = Date.now
-        let seconds = builder.elapsedTime(at: end)
+        ending = Ending(end: end, seconds: builder.elapsedTime(at: end))
         await endSession()
+        await save(weightKg: weightKg, into: context)
+    }
+
+    /// Tries again to save a workout whose save failed.
+    func retrySave(weightKg: Double, into context: ModelContext) async {
+        guard phase == .unsaved else { return }
+        phase = .saving
+        lastError = nil
+        await save(weightKg: weightKg, into: context)
+    }
+
+    /// Runs the save steps that haven't succeeded yet. On failure the workout is kept for a retry.
+    private func save(weightKg: Double, into context: ModelContext) async {
+        guard let builder, let kind, var progress = ending else { return reset() }
         do {
-            try await builder.endCollection(at: end)
-            guard PhoneWorkoutRules.shouldSave(seconds: seconds) else {
-                builder.discardWorkout()
-                reset()
-                return
+            if !progress.collected {
+                try await builder.endCollection(at: progress.end)
+                progress.collected = true
             }
-            let workout = try await builder.finishWorkout()
-            let entry = ExerciseEntry(date: startDate ?? end, activity: kind.logName,
-                                      minutes: PhoneWorkoutRules.minutes(seconds: seconds),
-                                      calories: PhoneWorkoutRules.calories(activeKcal: activeKcal, kind: kind,
-                                                                           weightKg: weightKg, seconds: seconds))
-            entry.sourceID = workout?.uuid.uuidString
-            context.insert(entry)
+            guard PhoneWorkoutRules.shouldSave(seconds: progress.seconds) else {
+                builder.discardWorkout()
+                notice = String(localized: "Workouts under a minute aren't saved.")
+                return reset()
+            }
+            if !progress.finished {
+                progress.workoutID = try await builder.finishWorkout()?.uuid.uuidString
+                progress.finished = true
+            }
+            if progress.entry == nil {
+                let entry = ExerciseEntry(date: startDate ?? progress.end, activity: kind.logName,
+                                          minutes: PhoneWorkoutRules.minutes(seconds: progress.seconds),
+                                          calories: PhoneWorkoutRules.calories(activeKcal: activeKcal, kind: kind,
+                                                                               weightKg: weightKg, seconds: progress.seconds))
+                entry.sourceID = progress.workoutID
+                context.insert(entry)
+                progress.entry = entry
+            }
             try context.save()
+            reset()
         } catch {
+            ending = progress
             lastError = String(localized: "Couldn't save the workout: \(error.localizedDescription)")
+            phase = .unsaved
         }
-        reset()
     }
 
     func discard() async {
-        guard let builder, phase == .running || phase == .paused else { return }
+        guard let builder, phase == .running || phase == .paused || phase == .unsaved else { return }
+        let wasUnsaved = phase == .unsaved
         phase = .saving
-        await endSession()
-        builder.discardWorkout()
+        if wasUnsaved {
+            // Whatever already reached Health stays there; only the unsaved log entry is dropped.
+            if let entry = ending?.entry { entry.modelContext?.delete(entry) }
+            if ending?.finished != true { builder.discardWorkout() }
+        } else {
+            await endSession()
+            builder.discardWorkout()
+        }
+        lastError = nil
         reset()
     }
 
@@ -201,6 +281,7 @@ final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWork
         builder = nil
         kind = nil
         startDate = nil
+        ending = nil
         activeKcal = 0
         phase = .idle
     }
@@ -246,3 +327,14 @@ final class PhoneWorkoutRecorder: NSObject, HKWorkoutSessionDelegate, HKLiveWork
     nonisolated func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {}
 }
 #endif
+
+/// Picks up a workout left recording by a crash or a quit. A no-op where workouts can't be recorded.
+enum PhoneWorkoutRecovery {
+    @MainActor static func run() async {
+        #if os(iOS) && compiler(>=6.2)
+        if #available(iOS 26.0, *) {
+            await PhoneWorkoutRecorder.shared.recover()
+        }
+        #endif
+    }
+}
