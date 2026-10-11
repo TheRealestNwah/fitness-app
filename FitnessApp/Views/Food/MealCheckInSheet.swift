@@ -71,7 +71,7 @@ struct MealCheckInSheet: View {
         } else if hunger != nil || mood != nil {
             context.insert(MealCheckIn(day: day, mealType: mealType, hunger: hunger, mood: mood))
         }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

@@ -119,10 +119,10 @@ extension ModelContext {
         guard !entries.isEmpty else { return }
         let copies = entries.map { $0.restorableCopy() }
         for entry in entries { deleteDiaryEntry(entry) }
-        try? save()
+        saveReportingFailure()
         center.offer(entries.count == 1 ? "Deleted \(copies[0].foodName)" : "Deleted \(entries.count) entries") {
             for copy in copies { self.insertDiaryEntry(copy) }
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -134,11 +134,11 @@ extension ModelContext {
         let healthIDs = entries.compactMap(\.sourceID)
         HealthDismissals.dismiss(healthIDs, kind: .weight, defaults: defaults)
         for entry in entries { delete(entry) }
-        try? save()
+        saveReportingFailure()
         center.offer(entries.count == 1 ? "Deleted weigh-in" : "Deleted \(entries.count) weigh-ins") {
             HealthDismissals.restore(healthIDs, kind: .weight, defaults: defaults)
             for copy in copies { self.insert(copy) }
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -147,10 +147,10 @@ extension ModelContext {
         guard !entries.isEmpty else { return }
         let copies = entries.map { $0.restorableCopy() }
         for entry in entries { delete(entry) }
-        try? save()
+        saveReportingFailure()
         center.offer(entries.count == 1 ? "Removed \(copies[0].title)" : "Removed \(entries.count) planned items") {
             for copy in copies { self.insert(copy) }
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 
@@ -163,11 +163,11 @@ extension ModelContext {
         guard !models.isEmpty else { return }
         let records = models.map(snapshot)
         for model in models { delete(model) }
-        try? save()
+        saveReportingFailure()
         center.offer(message) {
             for record in records { self.insert(record.makeModel()) }
             restored()
-            try? self.save()
+            self.saveReportingFailure()
         }
     }
 

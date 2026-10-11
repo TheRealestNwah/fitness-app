@@ -29,7 +29,7 @@ enum SyncDeduplicator {
         let foods = mergeFoods(context)
         let recipes = mergeRecipes(context)
         guard profiles || foods || recipes else { return false }
-        try? context.save()
+        context.saveLoggingFailure()
         return true
     }
 

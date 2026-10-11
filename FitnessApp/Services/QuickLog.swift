@@ -51,7 +51,7 @@ enum QuickLog {
             Task { @MainActor in
                 if let id = try? await HealthKitManager.shared.saveWeight(kg: kg, date: now) {
                     entry.sourceID = id.uuidString
-                    try? context.save()
+                    context.saveLoggingFailure()
                 }
             }
         }

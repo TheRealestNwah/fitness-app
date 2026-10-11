@@ -385,7 +385,7 @@ struct DashboardView: View {
                                                   protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
                                                   fiber: e.fiber, sugar: e.sugar, sodium: e.sodium).withExtras(from: e))
         }
-        try? context.save()
+        context.saveReportingFailure()
     }
 
     private var quickActions: some View {
@@ -499,7 +499,7 @@ struct DashboardView: View {
                 .fixedSize(horizontal: false, vertical: true)
             Button("Switch to maintenance") {
                 profile.startMaintenance(atKg: profile.goalWeightKg)
-                try? context.save()
+                context.saveReportingFailure()
             }
             .buttonStyle(.borderedProminent)
             .font(.subheadline)
@@ -771,13 +771,13 @@ struct DashboardView: View {
 
     private func addWater() {
         context.insertWater(WaterEntry(date: .now, amountMl: units.glassMl))
-        try? context.save()
+        context.saveReportingFailure()
     }
 
     private func removeWater() {
         guard let last = todaysWater.sorted(by: { $0.date < $1.date }).last else { return }
         context.deleteWater(last)
-        try? context.save()
+        context.saveReportingFailure()
     }
 }
 

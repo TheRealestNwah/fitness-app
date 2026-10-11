@@ -102,7 +102,7 @@ struct MealsEditor: View {
         for checkIn in (try? context.fetch(FetchDescriptor<MealCheckIn>(predicate: #Predicate { $0.mealTypeRaw == old }))) ?? [] {
             checkIn.mealTypeRaw = new
         }
-        try? context.save()
+        context.saveReportingFailure()
     }
 
     static func timeText(hour: Int) -> String {

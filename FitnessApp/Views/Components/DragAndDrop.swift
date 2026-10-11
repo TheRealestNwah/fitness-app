@@ -53,7 +53,7 @@ struct FoodReference: Codable, Hashable, Transferable {
         case .entry:
             return false
         }
-        try? context.save()
+        context.saveReportingFailure()
         return true
     }
 
@@ -91,7 +91,7 @@ struct FoodReference: Codable, Hashable, Transferable {
             food.useCount += 1
         }
         context.insertDiaryEntry(entry)
-        try? context.save()
+        context.saveReportingFailure()
         return true
     }
 }

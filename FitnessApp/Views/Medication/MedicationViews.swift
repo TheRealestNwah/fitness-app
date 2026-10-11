@@ -153,7 +153,7 @@ struct MedicationView: View {
                     context.insert(entry)
                     added += 1
                 }
-                try? context.save()
+                context.saveReportingFailure()
                 importNote = added == 0 ? String(localized: "No new doses found in Health.")
                                         : String(localized: "Added \(added) doses from Health.")
             } catch {
@@ -252,7 +252,7 @@ struct LogDoseSheet: View {
                                   note: note.trimmingCharacters(in: .whitespacesAndNewlines))
         context.insert(dose)
         if profile.medicationStartDate == nil { profile.medicationStartDate = date }
-        try? context.save()
+        context.saveReportingFailure()
         NotificationManager.sync(with: profile)
         dismiss()
     }

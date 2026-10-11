@@ -16,7 +16,7 @@ enum DemoData {
             SeedData.seedIfNeeded(context: context)
             load(context: context)
         }
-        try? context.save()
+        context.saveLoggingFailure()
     }
 
     private static func deleteAll<T: PersistentModel>(_ type: T.Type, in context: ModelContext) {
@@ -39,7 +39,7 @@ enum DemoData {
         deleteAll(FoodItem.self, in: context)
         deleteAll(Recipe.self, in: context)
         deleteAll(UserProfile.self, in: context)
-        try? context.save()
+        context.saveLoggingFailure()
     }
 
     static func load(context: ModelContext, now: Date = .now) {

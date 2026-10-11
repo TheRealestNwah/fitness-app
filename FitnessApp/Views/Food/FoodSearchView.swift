@@ -100,7 +100,7 @@ struct FoodSearchView: View {
             return
         }
         context.insert(item)
-        try? context.save()
+        context.saveReportingFailure()
         selected = item
     }
 
@@ -132,7 +132,7 @@ struct FoodSearchView: View {
 
     private func logPortion(_ batch: MealPrepBatch) {
         guard batch.logPortion(on: date, as: mealType, context: context) != nil else { return }
-        try? context.save()
+        context.saveReportingFailure()
         withAnimation { loggedMealName = batch.name }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             dismiss()
@@ -141,7 +141,7 @@ struct FoodSearchView: View {
 
     private func logSavedMeal(_ meal: SavedMeal) {
         meal.log(on: date, as: mealType, context: context)
-        try? context.save()
+        context.saveReportingFailure()
         withAnimation { loggedMealName = meal.name }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             dismiss()
@@ -184,7 +184,7 @@ struct FoodSearchView: View {
                             .swipeActions(edge: .trailing) {
                                 Button(role: .destructive) {
                                     batch.portionsLeft = 0
-                                    try? context.save()
+                                    context.saveReportingFailure()
                                 } label: { Label("Finished", systemImage: "checkmark") }
                             }
                         }
@@ -338,7 +338,7 @@ struct FoodSearchView: View {
                     case .food(let food): context.delete(food)
                     case .meal(let meal): context.delete(meal)
                     }
-                    try? context.save()
+                    context.saveReportingFailure()
                     pendingDeletion = nil
                 }
             } message: { _ in
@@ -475,7 +475,7 @@ struct FoodSearchView: View {
         .swipeActions(edge: .leading) {
             Button {
                 food.isFavorite.toggle()
-                try? context.save()
+                context.saveReportingFailure()
             } label: {
                 Label(food.isFavorite ? "Unfavourite" : "Favourite", systemImage: food.isFavorite ? "star.slash" : "star")
             }
@@ -491,7 +491,7 @@ struct FoodSearchView: View {
         .contextMenu {
             Button {
                 food.isFavorite.toggle()
-                try? context.save()
+                context.saveReportingFailure()
             } label: {
                 Label(food.isFavorite ? "Unfavourite" : "Favourite", systemImage: food.isFavorite ? "star.slash" : "star")
             }
@@ -588,7 +588,7 @@ struct LogFoodSheet: View {
 
     private func log() {
         food.log(servings: servings, meal: meal, on: date, context: context)
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }
@@ -631,7 +631,7 @@ struct LogRecipeSheet: View {
                                                     protein: recipe.proteinPerServing * servings,
                                                     carbs: recipe.carbsPerServing * servings,
                                                     fat: recipe.fatPerServing * servings))
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                     }
                     .disabled(servings <= 0)
@@ -686,7 +686,7 @@ struct QuickAddSheet: View {
                                                     servings: 1, servingDescription: "",
                                                     calories: calories ?? 0, protein: protein ?? 0,
                                                     carbs: carbs ?? 0, fat: fat ?? 0))
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                     }
                     .disabled((calories ?? 0) <= 0)
@@ -862,7 +862,7 @@ struct CreateFoodSheet: View {
                             item.servingPresets = [ServingPreset(label: label, servings: amount)]
                         }
                         context.insert(item)
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                         onCreate?(item)
                     }

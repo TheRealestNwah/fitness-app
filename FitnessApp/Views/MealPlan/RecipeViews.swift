@@ -65,7 +65,7 @@ struct RecipeLibraryView: View {
                     .swipeActions(edge: .leading) {
                         Button {
                             recipe.isFavorite.toggle()
-                            try? context.save()
+                            context.saveReportingFailure()
                         } label: { Label("Favourite", systemImage: recipe.isFavorite ? "star.slash" : "star") }
                         .tint(.yellow)
                     }
@@ -120,7 +120,7 @@ struct RecipeLibraryView: View {
         newWindowButton(recipe)
         Button {
             recipe.isFavorite.toggle()
-            try? context.save()
+            context.saveReportingFailure()
         } label: {
             Label(recipe.isFavorite ? "Unfavourite" : "Favourite", systemImage: recipe.isFavorite ? "star.slash" : "star")
         }
@@ -301,7 +301,7 @@ struct RecipeDetailView: View {
                     Button { showEditor = true } label: { Label("Edit recipe", systemImage: "pencil") }
                     Button {
                         recipe.isFavorite.toggle()
-                        try? context.save()
+                        context.saveReportingFailure()
                     } label: {
                         Label(recipe.isFavorite ? "Remove favourite" : "Favourite", systemImage: recipe.isFavorite ? "star.slash" : "star")
                     }
@@ -359,7 +359,7 @@ struct StartBatchSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Start") {
                         context.insert(MealPrepBatch(recipe: recipe, portions: portions))
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                     }
                 }
@@ -400,7 +400,7 @@ struct AddToPlanSheet: View {
                                                      carbsPerServing: recipe.carbsPerServing,
                                                      fatPerServing: recipe.fatPerServing,
                                                      recipeID: recipe.uuid))
-                        try? context.save()
+                        context.saveReportingFailure()
                         dismiss()
                     }
                 }
@@ -539,7 +539,7 @@ struct RecipeEditorView: View {
                                   prepMinutes: prepMinutes, ingredients: ingredients, instructions: instructions,
                                   tags: tags, isCustom: true))
         }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

@@ -114,7 +114,7 @@ struct BarcodeScanSheet: View {
                                       source: "From Open Food Facts") {
                             let item = product.makeFoodItem()
                             context.insert(item)
-                            try? context.save()
+                            context.saveReportingFailure()
                             onFound(item)
                         }
                     }

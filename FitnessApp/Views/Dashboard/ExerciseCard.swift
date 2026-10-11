@@ -331,7 +331,7 @@ struct LogExerciseSheet: View {
         } else {
             context.insert(ExerciseEntry(date: when, activity: activityName, minutes: duration, calories: kcal))
         }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

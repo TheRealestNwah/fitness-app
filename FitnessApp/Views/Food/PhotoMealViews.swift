@@ -155,7 +155,7 @@ struct PhotoMealSheet: View {
                 let entry = suggestion.food.log(servings: suggestion.servings, meal: mealType, on: date, context: context)
                 if index == 0 { entry.photo = photo }
             }
-            try? context.save()
+            context.saveReportingFailure()
             dismiss()
             return
         }
@@ -167,7 +167,7 @@ struct PhotoMealSheet: View {
         entry.photo = photo
         entry.isEstimate = true
         context.insertDiaryEntry(entry)
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }
@@ -249,7 +249,7 @@ struct PhotoMealDetailSheet: View {
         entry.fat = fat ?? 0
         entry.servingDescription = "1 serving"
         entry.isEstimate = false
-        try? context.save()
+        context.saveReportingFailure()
         HealthKitManager.shared.recordDiaryEntry(entry)
         dismiss()
     }
@@ -402,7 +402,7 @@ struct SavedMealPhotoSheet: View {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
                             meal.photo = photo
-                            try? context.save()
+                            context.saveReportingFailure()
                             dismiss()
                         }
                     }

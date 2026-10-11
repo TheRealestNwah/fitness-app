@@ -71,7 +71,7 @@ struct RootView: View {
         try? await Task.sleep(for: .milliseconds(600))
         DemoData.wipe(context: context)
         SeedData.seedIfNeeded(context: context)
-        try? context.save()
+        context.saveReportingFailure()
         isResetting = false
     }
 }
@@ -385,9 +385,13 @@ struct MainTabView: View {
     }
 
     private var undoToast: some View {
-        UndoToastView()
-            .environment(undoCenter)
-            .padding(.bottom, 16)
+        VStack(spacing: 8) {
+            SaveFailureBanner()
+            UndoToastView()
+                .environment(undoCenter)
+        }
+        .animation(.snappy, value: SaveFailureCenter.shared.failure)
+        .padding(.bottom, 16)
     }
 
     /// For the menu bar and keyboard shortcuts.

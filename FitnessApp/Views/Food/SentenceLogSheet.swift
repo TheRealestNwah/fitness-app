@@ -196,7 +196,7 @@ struct SentenceLogSheet: View {
         for line in toLog {
             line.food?.log(servings: line.servings, meal: meal, on: date, context: context)
         }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
         onLogged()
     }

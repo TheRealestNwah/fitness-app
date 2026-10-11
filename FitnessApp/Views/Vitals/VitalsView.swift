@@ -528,7 +528,7 @@ struct AddVitalsSheet: View {
         target.bloodGlucose = glucose.map { glucoseUnit.mgdL(from: $0) }
         target.note = note
         if entry == nil { context.insert(target) }
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

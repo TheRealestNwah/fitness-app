@@ -52,7 +52,7 @@ struct SettingsView: View {
                     ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } }
                 }
             }
-            .onDisappear { try? context.save() }
+            .onDisappear { context.saveReportingFailure() }
         }
     }
 }
@@ -227,7 +227,7 @@ struct ProfileEditorView: View {
         profile.goalWeightKg = units.kg(fromDisplayWeight: goalWeight)
         profile.activityLevel = activity
         profile.weeklyLossKg = weeklyLoss
-        try? context.save()
+        context.saveReportingFailure()
         dismiss()
     }
 }

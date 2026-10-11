@@ -38,7 +38,7 @@ enum SeedData {
                 context.insert(r)
             }
         }
-        try? context.save()
+        context.saveLoggingFailure()
     }
 
     // name, serving, kcal, protein, carbs, fat, fiber
