@@ -424,16 +424,16 @@ enum SeedData {
 
     static let tips: [String] = [
         String(localized: "Weigh yourself at the same time each morning; the trend line matters more than any single day."),
-        String(localized: "Protein keeps you full longer. Aim to include a palm-sized portion in every meal."),
-        String(localized: "Drink a glass of water before meals. Thirst is often mistaken for hunger."),
-        String(localized: "Plan tomorrow's meals tonight. Decisions made hungry are rarely good ones."),
-        String(localized: "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week."),
-        String(localized: "Fibre-rich vegetables add volume to meals for very few calories."),
-        String(localized: "Sleep under 7 hours raises hunger hormones. Rest is part of the plan."),
-        String(localized: "Log the slip-up meal too. Data, not guilt, is what moves the needle."),
-        String(localized: "Walking after meals helps blunt blood sugar spikes and adds up over a week."),
-        String(localized: "Weight fluctuates 1–2 kg day to day from water alone. Judge progress by the weekly average."),
-        String(localized: "Keep easy high-protein snacks around so hunger never catches you unprepared."),
-        String(localized: "Cook once, eat twice. Batch cooking removes the biggest weeknight temptation."),
+        String(localized: "Many people find meals with some protein keep them full for longer."),
+        String(localized: "Keep a glass or bottle of water nearby. It's easier to drink when it's in reach."),
+        String(localized: "Planning tomorrow's meals tonight means one less thing to decide when you're busy."),
+        String(localized: "A small, steady change you can keep up beats a big one you can't."),
+        String(localized: "Vegetables add volume to meals for very few calories."),
+        String(localized: "Rest counts too. A good night's sleep can make the next day easier."),
+        String(localized: "Every meal is worth logging, including the unplanned ones. A rough entry is fine."),
+        String(localized: "A short walk counts. Ten minutes after a meal is an easy place to start."),
+        String(localized: "Weight goes up and down from day to day, mostly from water. The weekly average tells you more."),
+        String(localized: "Keep a few easy snacks you enjoy around for when you're hungry between meals."),
+        String(localized: "Cook once, eat twice. Leftovers make a busy evening easier."),
     ]
 }

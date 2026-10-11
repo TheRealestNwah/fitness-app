@@ -98,7 +98,7 @@ enum ReminderPlanner {
                     guard let date = calendar.date(bySettingHour: hour, minute: 0, second: 0, of: day), date > now else { continue }
                     reminders.append(Reminder(id: "water.\(key).\(hour)", date: date,
                                               title: String(localized: "Time for a glass of water"),
-                                              body: String(localized: "A quick sip now keeps hunger and headaches away.")))
+                                              body: String(localized: "A quick glass now counts towards today's water.")))
                 }
             }
 
@@ -113,8 +113,8 @@ enum ReminderPlanner {
                         id: "meal.\(key).\(slot.meal.rawValue)", date: date,
                         title: nothingYet ? String(localized: "Nothing logged yet today") : String(localized: "Log your \(slot.meal.inSentence)"),
                         body: nothingYet ? String(localized: "A quick log of breakfast and lunch keeps today's numbers useful.")
-                                         : settings.hideNumbers ? String(localized: "Logging right after you eat keeps your day honest.")
-                                         : String(localized: "Logging right after you eat keeps your calorie count honest.")))
+                                         : settings.hideNumbers ? String(localized: "Logging right after you eat is easiest while you still remember.")
+                                         : String(localized: "Logging right after you eat keeps your calorie count accurate.")))
                 }
             }
 
