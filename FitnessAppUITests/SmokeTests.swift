@@ -32,6 +32,9 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(start.waitForExistence(timeout: 5))
         start.tap()
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
+        // A new profile gets one clear next step and the short starter layout.
+        XCTAssertTrue(app.buttons["logFirstMeal"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Fasting"].exists)
     }
 
     func testAddingAGlassUpdatesTodaysWater() {

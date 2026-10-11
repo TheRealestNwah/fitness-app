@@ -12,6 +12,9 @@ enum DemoData {
     static func applyLaunchArguments(context: ModelContext) {
         guard shouldReset || shouldLoadDemo else { return }
         wipe(context: context)
+        // Onboarding saves a short starter Today layout; demo and test runs start from the full one.
+        UserDefaults.standard.removeObject(forKey: TodayLayoutEditor.storageKey)
+        UserDefaults.standard.removeObject(forKey: StreakSettings.graceDayKey)
         if shouldLoadDemo {
             SeedData.seedIfNeeded(context: context)
             load(context: context)

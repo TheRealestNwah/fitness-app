@@ -374,7 +374,11 @@ struct OnboardingView: View {
                                   weeklyLossKg: rate.rawValue,
                                   unitSystem: unitSystem)
         context.insert(profile)
-        context.insert(WeightEntry(date: .now, weightKg: currentKg, note: "Starting weight"))
+        context.insert(WeightEntry(date: .now, weightKg: currentKg, note: WeightEntry.startingWeightNote))
         context.saveReportingFailure()
+        // New profiles start with a short Today screen and a forgiving streak; both can be changed.
+        let defaults = UserDefaults.standard
+        defaults.set(TodayLayout.starter.storage, forKey: TodayLayoutEditor.storageKey)
+        defaults.set(true, forKey: StreakSettings.graceDayKey)
     }
 }

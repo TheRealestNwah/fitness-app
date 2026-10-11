@@ -1262,6 +1262,9 @@
     "Another day…" : {
 
     },
+    "Any movement counts. A 10-minute walk is a good place to start." : {
+
+    },
     "Appearance" : {
 
     },
@@ -2558,6 +2561,9 @@
     "Log a few weigh-ins to see your trend." : {
 
     },
+    "Log a meal" : {
+
+    },
     "Log a weigh-in" : {
 
     },
@@ -2597,6 +2603,9 @@
     "Log now" : {
 
     },
+    "Log one thing today to get going again. Anything counts." : {
+
+    },
     "Log recipe" : {
 
     },
@@ -2625,6 +2634,9 @@
 
     },
     "Log your %@" : {
+
+    },
+    "Log your first meal" : {
 
     },
     "Logged" : {
@@ -2986,12 +2998,6 @@
 
     },
     "Nothing logged this month" : {
-
-    },
-    "Nothing logged today." : {
-
-    },
-    "Nothing logged yet" : {
 
     },
     "Nothing logged yet today" : {
@@ -3389,6 +3395,9 @@
 
     },
     "Rough estimate" : {
+
+    },
+    "Rough is fine. You can edit it later." : {
 
     },
     "Rowing machine" : {
@@ -4114,6 +4123,9 @@
 
     },
     "Weight up %@ kg, no meals logged" : {
+
+    },
+    "Welcome back" : {
 
     },
     "Welcome to Stride" : {
