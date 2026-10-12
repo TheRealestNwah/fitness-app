@@ -72,9 +72,11 @@ struct NutrientPill: View {
     }
 
     private var text: String {
-        let amount = value.formatted(.number.precision(.fractionLength(0...fractionDigits)))
-        guard let goal, goal > 0 else { return unit.isEmpty ? amount : "\(amount) \(unit)" }
-        return "\(amount) / \(Int(goal.rounded())) \(unit)"
+        NutrientText.amount(value, unit: unit, goal: goal, fractionDigits: fractionDigits)
+    }
+
+    private var spokenText: String {
+        value > 0 ? "\(name) \(text)" : String(localized: "\(name), not listed for today's foods")
     }
 
     var body: some View {
@@ -93,7 +95,7 @@ struct NutrientPill: View {
         .padding(.vertical, 8)
         .background(tint.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(name) \(text)")
+        .accessibilityLabel(spokenText)
     }
 }
 

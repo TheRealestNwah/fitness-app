@@ -143,6 +143,17 @@ extension Date {
                                          : .dateTime.weekday(.wide).month(.abbreviated).day().year())
     }
 
+    /// "early March", "mid-March" or "late March", with the year added when it isn't the current one.
+    /// For forecasts, where an exact day would promise more precision than the estimate has.
+    func approximateDateLabel(relativeTo now: Date = .now) -> String {
+        let month = formatted(isInSameYear(as: now) ? .dateTime.month(.wide) : .dateTime.month(.wide).year())
+        switch Calendar.current.component(.day, from: self) {
+        case ..<11: return String(localized: "early \(month)")
+        case ..<21: return String(localized: "mid-\(month)")
+        default: return String(localized: "late \(month)")
+        }
+    }
+
     private func isInSameYear(as other: Date) -> Bool {
         Calendar.current.isDate(self, equalTo: other, toGranularity: .year)
     }

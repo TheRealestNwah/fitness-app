@@ -123,7 +123,7 @@ struct OnboardingView: View {
                 .buttonStyle(.bordered)
             Text("Your data stays on this device.")
                 .font(.footnote)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(Color.secondary)
         }
         .padding()
     }
@@ -149,13 +149,17 @@ struct OnboardingView: View {
                     Text(healthStatus ?? String(localized: "Uses your height, date of birth, sex and latest weight. You can change anything afterwards."))
                 }
             }
-            Section("About you") {
+            Section {
                 TextField("Name (optional)", text: $name)
                 Picker("Sex", selection: $sex) {
                     ForEach(BiologicalSex.allCases) { Text($0.label).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 DatePicker("Date of birth", selection: $birthDate, in: ...Date.now, displayedComponents: .date)
+            } header: {
+                Text("About you")
+            } footer: {
+                Text("Sex, age and height are only used to estimate how many calories your body uses.")
             }
             Section("Units") {
                 Picker("Units", selection: $unitSystem) {
@@ -275,6 +279,7 @@ struct OnboardingView: View {
         let bmr = NutritionCalculator.bmr(sex: sex, weightKg: currentKg, heightCm: resolvedHeightCm, age: age)
         let tdee = NutritionCalculator.tdee(bmr: bmr, activity: activity)
         let target = NutritionCalculator.dailyCalorieTarget(tdee: tdee, weeklyLossKg: rate.rawValue, sex: sex)
+        // The same split a new profile starts with, so these grams match Today's.
         let macros = NutritionCalculator.macroGrams(calories: target, proteinPercent: 30, carbsPercent: 40, fatPercent: 30)
         let goalDate = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: goalKg, weeklyLossKg: rate.rawValue)
         let atFloor = target == NutritionCalculator.calorieFloor(for: sex)
@@ -286,7 +291,7 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(spacing: 4) {
-                    Text("\(target)")
+                    Text(Energy.number(target))
                         .font(.system(size: targetSize, weight: .bold, design: .rounded).monospacedDigit())
                     Text("calories per day")
                         .foregroundStyle(Color.secondary)
@@ -295,19 +300,19 @@ struct OnboardingView: View {
                 .card()
 
                 StatGrid {
-                    StatTile(title: "Maintenance", value: "\(Energy.string(tdee))", subtitle: "what you burn now", systemImage: "flame.fill", tint: .orange)
-                    StatTile(title: "Daily deficit", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: units.weightString(kg: rate.rawValue, decimals: 2) + "/week", systemImage: "arrow.down.right", tint: .green)
-                    StatTile(title: "Protein", value: "\(Int(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
-                    StatTile(title: "Carbs · Fat", value: "\(Int(macros.carbs)) · \(Int(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
+                    StatTile(title: "You use now", value: "\(Energy.string(tdee))", subtitle: "on a typical day", systemImage: "flame.fill", tint: .orange)
+                    StatTile(title: "Daily gap", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: "less than you use", systemImage: "arrow.down.right", tint: .green)
+                    StatTile(title: "Protein", value: "\(NutrientText.grams(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
+                    StatTile(title: "Carbs · Fat", value: "\(NutrientText.grams(macros.carbs)) · \(NutrientText.grams(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
                 }
 
                 if let goalDate {
                     VStack(alignment: .leading, spacing: 6) {
-                        Label("Projected goal date", systemImage: "flag.checkered")
+                        Label("Rough goal date", systemImage: "flag.checkered")
                             .font(.headline)
-                        Text(goalDate.formatted(date: .long, time: .omitted))
+                        Text("Around \(goalDate.approximateDateLabel())")
                             .font(.title3.weight(.semibold))
-                        Text("Losing \(units.weightString(kg: currentKg - goalKg)) at \(units.weightString(kg: rate.rawValue, decimals: 2)) a week.")
+                        Text("Losing \(units.weightString(kg: currentKg - goalKg)) at about \(units.weightString(kg: rate.rawValue, decimals: 2)) a week. Real progress is rarely a straight line, and that's normal.")
                             .font(.footnote)
                             .foregroundStyle(Color.secondary)
                     }
@@ -325,7 +330,7 @@ struct OnboardingView: View {
 
                 Text("You can change any of this later in Settings.")
                     .font(.footnote)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(Color.secondary)
             }
             .padding()
         }

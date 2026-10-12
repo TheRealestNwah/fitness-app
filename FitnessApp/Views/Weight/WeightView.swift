@@ -310,13 +310,13 @@ struct WeightView: View {
             if let projected, remaining > 0, !profile.isMaintaining {
                 HStack(spacing: 10) {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(.purple)
-                    Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.formatted(date: .abbreviated, time: .omitted)).")
+                    Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.approximateDateLabel()).")
                 }
                 .font(.subheadline)
                 if let forecast {
                     HStack(spacing: 10) {
                         Image(systemName: "chart.line.downtrend.xyaxis").foregroundStyle(.teal)
-                        Text("At your current pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week, you'll get there around \(forecast.goalDate.formatted(date: .abbreviated, time: .omitted)).")
+                        Text("If your pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week holds, you'll get there around \(forecast.goalDate.approximateDateLabel()).")
                     }
                     .font(.subheadline)
                 } else if !forecastProgress.isReady, rateProgress.isReady {

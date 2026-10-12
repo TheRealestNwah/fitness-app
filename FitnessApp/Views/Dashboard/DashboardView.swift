@@ -518,14 +518,15 @@ struct DashboardView: View {
             } trailing: {
                 if remaining == 0 {
                     Text("Goal reached!")
-                } else if let projected {
-                    Text("ETA \(projected.shortDateLabel())")
+                } else if forecast == nil, let projected {
+                    // One date at a time: the plan's estimate until there's enough data for a real pace.
+                    Text("Plan: around \(projected.approximateDateLabel())")
                 }
             }
             .font(.footnote)
             .foregroundStyle(Color.secondary)
             if remaining > 0, let forecast {
-                Label("At your current pace, around \(forecast.goalDate.shortDateLabel())",
+                Label("If this pace holds, around \(forecast.goalDate.approximateDateLabel())",
                       systemImage: "chart.line.downtrend.xyaxis")
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
