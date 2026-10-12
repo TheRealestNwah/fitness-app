@@ -15,7 +15,9 @@ struct OnboardingView: View {
     @State private var heightFeet: Int = 5
     @State private var heightInches: Int = 7
     @State private var currentWeight: Double = 80
-    @State private var goalWeight: Double = 70
+    /// No goal is chosen for the person: they pick what they want, and type a goal weight only to lose.
+    @State private var goal: WeightGoal?
+    @State private var goalWeight: Double?
     @State private var activity: ActivityLevel = .light
     @State private var rate: WeeklyGoalRate = .steady
     @State private var healthStatus: String?
@@ -29,12 +31,20 @@ struct OnboardingView: View {
         unitSystem == .metric ? heightCm : Units.cm(feet: heightFeet, inches: heightInches)
     }
     private var currentKg: Double { units.kg(fromDisplayWeight: currentWeight) }
-    private var goalKg: Double { units.kg(fromDisplayWeight: goalWeight) }
+    private var goalKg: Double? { goalWeight.map { units.kg(fromDisplayWeight: $0) } }
+    private var losing: Bool { goal == .lose }
+
+    private var goalIsBelowCurrent: Bool {
+        guard let goalKg else { return false }
+        return goalKg > 30 && goalKg < currentKg
+    }
 
     private var canContinue: Bool {
         switch step {
         case 1: return resolvedHeightCm > 100 && resolvedHeightCm < 250
-        case 2: return currentKg > 30 && goalKg > 30 && goalKg < currentKg
+        case 2:
+            guard currentKg > 30, let goal else { return false }
+            return !goal.needsGoalWeight || goalIsBelowCurrent
         default: return true
         }
     }
@@ -91,9 +101,8 @@ struct OnboardingView: View {
             // Convert the numbers in the fields so the user does not have to retype them.
             let other = Units(system: newValue == .metric ? .imperial : .metric)
             let cKg = other.kg(fromDisplayWeight: currentWeight)
-            let gKg = other.kg(fromDisplayWeight: goalWeight)
             currentWeight = (Units(system: newValue).weightValue(kg: cKg) * 10).rounded() / 10
-            goalWeight = (Units(system: newValue).weightValue(kg: gKg) * 10).rounded() / 10
+            goalWeight = goalWeight.map { (Units(system: newValue).weightValue(kg: other.kg(fromDisplayWeight: $0)) * 10).rounded() / 10 }
             if newValue == .imperial {
                 let inches = heightCm * Units.inchPerCm
                 heightFeet = Int(inches / 12)
@@ -198,6 +207,26 @@ struct OnboardingView: View {
 
     private var weights: some View {
         Form {
+            Section("What would you like to do?") {
+                ForEach(WeightGoal.allCases) { option in
+                    Button {
+                        goal = option
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(option.label).foregroundStyle(Color.primary)
+                                Text(option.detail).font(.footnote).foregroundStyle(Color.secondary)
+                            }
+                            Spacer()
+                            if goal == option {
+                                Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.accentColor)
+                            }
+                        }
+                    }
+                    .accessibilityIdentifier("goal-\(option.rawValue)")
+                    .accessibilityAddTraits(goal == option ? .isSelected : [])
+                }
+            }
             Section("Where you are") {
                 HStack {
                     Text("Current weight")
@@ -209,27 +238,32 @@ struct OnboardingView: View {
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
             }
-            Section("Where you're going") {
-                HStack {
-                    Text("Goal weight")
-                    Spacer()
-                    TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
-                        .strideKeyboard(.decimalPad)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 100)
-                    Text(units.weightUnit).foregroundStyle(Color.secondary)
-                }
-                if goalKg >= currentKg && currentKg > 0 {
-                    Text("Your goal should be below your current weight.")
-                        .font(.footnote)
-                        .foregroundStyle(.red)
+            if losing {
+                Section("Where you're going") {
+                    HStack {
+                        Text("Goal weight")
+                        Spacer()
+                        TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
+                            .strideKeyboard(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: 100)
+                            .accessibilityIdentifier("goalWeightField")
+                        Text(units.weightUnit).foregroundStyle(Color.secondary)
+                    }
+                    if let goalKg, goalKg >= currentKg, currentKg > 0 {
+                        Text("To lose weight, choose a goal below your current weight. To stay where you are, pick “Keep my weight steady”.")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    }
                 }
             }
             Section {
                 let bmi = NutritionCalculator.bmi(weightKg: currentKg, heightCm: resolvedHeightCm)
                 LabeledContent("Current BMI", value: String(format: "%.1f · %@", bmi, NutritionCalculator.bmiCategory(bmi)))
-                let goalBmi = NutritionCalculator.bmi(weightKg: goalKg, heightCm: resolvedHeightCm)
-                LabeledContent("Goal BMI", value: String(format: "%.1f · %@", goalBmi, NutritionCalculator.bmiCategory(goalBmi)))
+                if losing, let goalKg {
+                    let goalBmi = NutritionCalculator.bmi(weightKg: goalKg, heightCm: resolvedHeightCm)
+                    LabeledContent("Goal BMI", value: String(format: "%.1f · %@", goalBmi, NutritionCalculator.bmiCategory(goalBmi)))
+                }
             } footer: {
                 Text("BMI is a rough guide only. A healthy range is 18.5–24.9.")
             }
@@ -257,18 +291,20 @@ struct OnboardingView: View {
                     }
                 }
             }
-            Section {
-                Picker("Weekly goal", selection: $rate) {
-                    ForEach(WeeklyGoalRate.allCases) { r in
-                        Text("\(r.label) · \(units.weightString(kg: r.rawValue, decimals: 2))/week").tag(r)
+            if losing {
+                Section {
+                    Picker("Weekly goal", selection: $rate) {
+                        ForEach(WeeklyGoalRate.allCases) { r in
+                            Text("\(r.label) · \(units.weightString(kg: r.rawValue, decimals: 2))/week").tag(r)
+                        }
                     }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                } header: {
+                    Text("How fast?")
+                } footer: {
+                    Text("Slower is easier to stick to and keeps more muscle. Most people do best at 0.5 kg (about 1 lb) a week.")
                 }
-                .pickerStyle(.inline)
-                .labelsHidden()
-            } header: {
-                Text("How fast?")
-            } footer: {
-                Text("Slower is easier to stick to and keeps more muscle. Most people do best at 0.5 kg (about 1 lb) a week.")
             }
         }
         .scrollContentBackground(.hidden)
@@ -278,11 +314,16 @@ struct OnboardingView: View {
         let age = NutritionCalculator.age(birthDate: birthDate)
         let bmr = NutritionCalculator.bmr(sex: sex, weightKg: currentKg, heightCm: resolvedHeightCm, age: age)
         let tdee = NutritionCalculator.tdee(bmr: bmr, activity: activity)
-        let target = NutritionCalculator.dailyCalorieTarget(tdee: tdee, weeklyLossKg: rate.rawValue, sex: sex)
+        // Worked out the way the new profile will: a deficit to lose, otherwise maintenance.
+        let target = losing
+            ? NutritionCalculator.dailyCalorieTarget(tdee: tdee, weeklyLossKg: rate.rawValue, sex: sex)
+            : MaintenanceCalculator.calorieTarget(tdee: tdee, sex: sex)
         // The same split a new profile starts with, so these grams match Today's.
         let macros = NutritionCalculator.macroGrams(calories: target, proteinPercent: 30, carbsPercent: 40, fatPercent: 30)
-        let goalDate = NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: goalKg, weeklyLossKg: rate.rawValue)
-        let atFloor = target == NutritionCalculator.calorieFloor(for: sex)
+        let goalDate = losing ? goalKg.flatMap {
+            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: $0, weeklyLossKg: rate.rawValue)
+        } : nil
+        let atFloor = losing && target == NutritionCalculator.calorieFloor(for: sex)
 
         return ScrollView {
             VStack(spacing: 16) {
@@ -301,12 +342,18 @@ struct OnboardingView: View {
 
                 StatGrid {
                     StatTile(title: "You use now", value: "\(Energy.string(tdee))", subtitle: "on a typical day", systemImage: "flame.fill", tint: .orange)
-                    StatTile(title: "Daily gap", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: "less than you use", systemImage: "arrow.down.right", tint: .green)
+                    if losing {
+                        StatTile(title: "Daily gap", value: "\(Energy.string(max(Int(tdee.rounded()) - target, 0)))", subtitle: "less than you use", systemImage: "arrow.down.right", tint: .green)
+                    } else if goal == .steady {
+                        StatTile(title: "Weight to hold", value: units.weightString(kg: currentKg), subtitle: "within a small range", systemImage: "equal.circle.fill", tint: .green)
+                    } else {
+                        StatTile(title: "Starting weight", value: units.weightString(kg: currentKg), subtitle: "no goal weight", systemImage: "scalemass.fill", tint: .indigo)
+                    }
                     StatTile(title: "Protein", value: "\(NutrientText.grams(macros.protein)) g", subtitle: "30% of calories", systemImage: "p.circle.fill", tint: .blue)
                     StatTile(title: "Carbs · Fat", value: "\(NutrientText.grams(macros.carbs)) · \(NutrientText.grams(macros.fat)) g", subtitle: "40% · 30%", systemImage: "chart.pie.fill", tint: .pink)
                 }
 
-                if let goalDate {
+                if let goalDate, let goalKg {
                     VStack(alignment: .leading, spacing: 6) {
                         Label("Rough goal date", systemImage: "flag.checkered")
                             .font(.headline)
@@ -360,11 +407,8 @@ struct OnboardingView: View {
             heightInches = min(Int((inches - Double(heightFeet) * 12).rounded()), 11)
         }
         if let kg = details.weightKg, (30...400).contains(kg) {
+            // Only the current weight: the goal is the person's to choose, not a suggested loss.
             currentWeight = (units.weightValue(kg: kg) * 10).rounded() / 10
-            if goalKg >= kg {
-                // A starting suggestion of 10% less; the weights step lets them change it.
-                goalWeight = (units.weightValue(kg: kg * 0.9) * 10).rounded() / 10
-            }
         }
     }
 
@@ -374,10 +418,13 @@ struct OnboardingView: View {
                                   birthDate: birthDate,
                                   heightCm: resolvedHeightCm,
                                   startWeightKg: currentKg,
-                                  goalWeightKg: goalKg,
+                                  goalWeightKg: losing ? goalKg ?? currentKg : currentKg,
                                   activityLevel: activity,
                                   weeklyLossKg: rate.rawValue,
                                   unitSystem: unitSystem)
+        // Keeping steady or just tracking runs in maintenance mode: the target is maintenance
+        // calories and there's no goal weight to count down to.
+        if !losing { profile.startMaintenance(atKg: currentKg) }
         context.insert(profile)
         context.insert(WeightEntry(date: .now, weightKg: currentKg, note: WeightEntry.startingWeightNote))
         context.saveReportingFailure()

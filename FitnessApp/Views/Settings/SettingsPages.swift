@@ -52,12 +52,22 @@ private struct ProfileSettingsPage: View {
     var body: some View {
         @Bindable var profile = profile
         Form {
-            Section("Profile") {
+            Section {
+                Picker("Goal", selection: Binding(
+                    get: { profile.isMaintaining ? WeightGoal.steady : .lose },
+                    set: { goal in
+                        if goal == .lose { profile.endMaintenance() } else if !profile.isMaintaining { profile.startMaintenance(atKg: currentKg) }
+                    })) {
+                    Text(WeightGoal.lose.label).tag(WeightGoal.lose)
+                    Text(WeightGoal.steady.label).tag(WeightGoal.steady)
+                }
                 NavigationLink {
                     ProfileEditorView()
                 } label: {
                     LabeledContent("Body & goals") {
-                        Text("\(units.weightString(kg: currentKg)) → \(units.weightString(kg: profile.goalWeightKg))")
+                        Text(profile.isMaintaining
+                             ? units.weightString(kg: currentKg)
+                             : "\(units.weightString(kg: currentKg)) → \(units.weightString(kg: profile.goalWeightKg))")
                     }
                 }
                 Picker("Units", selection: $profile.unitSystem) {
@@ -66,6 +76,12 @@ private struct ProfileSettingsPage: View {
                 UnitPreferenceRows(profile: profile)
                 Picker("Appearance", selection: $appearanceRaw) {
                     ForEach(Appearance.allCases) { Text($0.label).tag($0.rawValue) }
+                }
+            } header: {
+                Text("Profile")
+            } footer: {
+                if !profile.isMaintaining, profile.goalWeightKg >= currentKg {
+                    Text("To lose weight, set a goal weight below your current weight in Body & goals.")
                 }
             }
 

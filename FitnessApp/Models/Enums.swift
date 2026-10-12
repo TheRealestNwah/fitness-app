@@ -150,6 +150,32 @@ struct MealType: RawRepresentable, Codable, Hashable, Identifiable {
     }
 }
 
+/// What someone wants from Stride, asked in onboarding. Only losing weight needs a goal weight and
+/// a pace; the other two start in maintenance mode, with the calorie target at maintenance.
+enum WeightGoal: String, CaseIterable, Identifiable {
+    case lose, steady, track
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .lose: return String(localized: "Lose weight")
+        case .steady: return String(localized: "Keep my weight steady")
+        case .track: return String(localized: "Just track how I eat and move")
+        }
+    }
+
+    var detail: String {
+        switch self {
+        case .lose: return String(localized: "Set a goal weight and a pace that suits you")
+        case .steady: return String(localized: "Eat about what your body uses, and see if things drift")
+        case .track: return String(localized: "No goal weight. See your meals, water and movement")
+        }
+    }
+
+    var needsGoalWeight: Bool { self == .lose }
+}
+
 enum WeeklyGoalRate: Double, CaseIterable, Identifiable {
     case gentle = 0.25
     case steady = 0.5

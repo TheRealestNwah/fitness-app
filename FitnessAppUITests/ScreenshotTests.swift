@@ -27,7 +27,12 @@ final class ScreenshotTests: XCTestCase {
         next.tap()
         snap("02-onboarding-about-you")
         next.tap()
+        app.buttons["goal-lose"].tap()
         snap("03-onboarding-weights")
+        let goal = app.textFields["goalWeightField"]
+        XCTAssertTrue(goal.waitForExistence(timeout: 5))
+        goal.tap()
+        goal.typeText("70")
         next.tap()
         snap("04-onboarding-lifestyle")
         next.tap()

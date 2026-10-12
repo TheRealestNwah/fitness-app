@@ -1142,10 +1142,10 @@
     "A quick log of breakfast and lunch keeps today's numbers useful." : {
 
     },
-    "A short walk counts. Ten minutes after a meal is an easy place to start." : {
+    "A rough guide only" : {
 
     },
-    "A rough guide only" : {
+    "A short walk counts. Ten minutes after a meal is an easy place to start." : {
 
     },
     "A single missed day won't break your logging streak, once a week. Two missed days in a row still start it over." : {
@@ -1907,6 +1907,9 @@
     "Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings." : {
 
     },
+    "Eat about what your body uses, and see if things drift" : {
+
+    },
     "Eaten" : {
 
     },
@@ -2453,6 +2456,9 @@
     "Its ingredients, method and nutrition show here." : {
 
     },
+    "Just track how I eat and move" : {
+
+    },
     "Kale, raw" : {
 
     },
@@ -2460,6 +2466,9 @@
 
     },
     "Keep a glass or bottle of water nearby. It's easier to drink when it's in reach." : {
+
+    },
+    "Keep my weight steady" : {
 
     },
     "Keeps your diary, weigh-ins, vitals and plans the same on every iPhone, iPad and Mac signed in to your Apple ID. Changes take effect the next time Stride starts. Turning it off keeps this device's copy." : {
@@ -2713,6 +2722,9 @@
     "Lookups use Open Food Facts, a free community database. Nutrition on labels can differ; check the numbers before logging." : {
 
     },
+    "Lose weight" : {
+
+    },
     "Losing %@ at about %@ a week. Real progress is rarely a straight line, and that's normal." : {
       "localizations" : {
         "en" : {
@@ -2957,6 +2969,9 @@
 
     },
     "No doses yet" : {
+
+    },
+    "No goal weight. See your meals, water and movement" : {
 
     },
     "No match for “%@”." : {
@@ -3607,6 +3622,9 @@
     "Sesame oil" : {
 
     },
+    "Set a goal weight and a pace that suits you" : {
+
+    },
     "Set target manually" : {
 
     },
@@ -3900,6 +3918,12 @@
     "Tips will show next time you open the app" : {
 
     },
+    "To lose weight, choose a goal below your current weight. To stay where you are, pick “Keep my weight steady”." : {
+
+    },
+    "To lose weight, set a goal weight below your current weight in Body & goals." : {
+
+    },
     "Today" : {
 
     },
@@ -4171,6 +4195,9 @@
     "What was it? (optional)" : {
 
     },
+    "What would you like to do?" : {
+
+    },
     "What you're doing is working. Keep the same routine next week." : {
 
     },
@@ -4295,9 +4322,6 @@
 
     },
     "Your data stays on this device." : {
-
-    },
-    "Your goal should be below your current weight." : {
 
     },
     "Your measured maintenance appears after two weeks of logging food and weighing in." : {
