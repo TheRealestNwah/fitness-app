@@ -9,10 +9,32 @@ final class IPadScreenshotTests: XCTestCase {
 
     private func snap(_ name: String) {
         Thread.sleep(forTimeInterval: 0.8)
-        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let attachment = XCTAttachment(image: upright(XCUIScreen.main.screenshot().image))
         attachment.name = name
         attachment.lifetime = .keepAlways
         add(attachment)
+    }
+
+    /// The simulator captures the screen in its portrait frame, so landscape shots come out turned
+    /// on their side. Turn them back so the published screenshots can be reviewed.
+    private func upright(_ image: UIImage) -> UIImage {
+        let orientation = XCUIDevice.shared.orientation
+        guard orientation.isLandscape, image.size.height > image.size.width else { return image }
+        let size = CGSize(width: image.size.height, height: image.size.width)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = image.scale
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
+            let cg = context.cgContext
+            if orientation == .landscapeLeft {
+                // Captured turned clockwise: turn it back anticlockwise.
+                cg.translateBy(x: 0, y: size.height)
+                cg.rotate(by: -.pi / 2)
+            } else {
+                cg.translateBy(x: size.width, y: 0)
+                cg.rotate(by: .pi / 2)
+            }
+            image.draw(at: .zero)
+        }
     }
 
     private func open(_ tab: String, in app: XCUIApplication) {
@@ -82,19 +104,21 @@ final class IPadScreenshotTests: XCTestCase {
     func testSwitchingToCompactKeepsSectionAndSheet() {
         XCUIDevice.shared.orientation = .landscapeLeft
         let app = XCUIApplication()
-        app.launchArguments = ["-demoData", "-flipWidthAfter", "12"]
+        // Long enough for a slow CI simulator to open the sheet before the flip; at 12 s the width
+        // sometimes flipped first, so "Log food" was never found.
+        app.launchArguments = ["-demoData", "-flipWidthAfter", "30"]
         app.launch()
 
         XCTAssertTrue(app.descendants(matching: .any)["sidebar-Food"].waitForExistence(timeout: 20))
         open("Food", in: app)
         let addFood = app.buttons["Add food"].firstMatch
-        XCTAssertTrue(addFood.waitForExistence(timeout: 5))
+        XCTAssertTrue(addFood.waitForExistence(timeout: 10))
         addFood.tap()
-        XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 10))
 
-        // The width flips to compact about 12 s after launch.
+        // The width flips to compact about 30 s after launch.
         let foodTab = app.tabBars.buttons["Food"]
-        XCTAssertTrue(foodTab.waitForExistence(timeout: 20), "should switch to the tab bar")
+        XCTAssertTrue(foodTab.waitForExistence(timeout: 40), "should switch to the tab bar")
         snap("ipad-23-switched-to-compact")
         XCTAssertTrue(foodTab.isSelected, "the selected section should carry over")
         XCTAssertTrue(app.navigationBars["Log food"].exists, "the open sheet should survive the switch")
