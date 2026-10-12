@@ -29,7 +29,12 @@ final class FoodLogEntry {
     /// Milligrams.
     var caffeine: Double = 0
     /// Vitamins and minerals for this line; zero means not recorded.
-    var micros: Micronutrients = Micronutrients()
+    /// Optional so stores made before vitamins and minerals existed migrate without a default.
+    var storedMicros: Micronutrients?
+    var micros: Micronutrients {
+        get { storedMicros ?? Micronutrients() }
+        set { storedMicros = newValue }
+    }
     var foodItemID: UUID?
     /// A photo of the meal, stored outside the database file.
     @Attribute(.externalStorage) var photo: Data?
