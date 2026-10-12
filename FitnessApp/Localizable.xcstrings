@@ -1111,6 +1111,16 @@
     "500 g" : {
       "shouldTranslate" : false
     },
+    "%@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@"
+          }
+        }
+      }
+    },
     "%@, not listed for today's foods" : {
 
     },
@@ -1589,6 +1599,9 @@
 
     },
     "Choose a recipe" : {
+
+    },
+    "Choose a setting" : {
 
     },
     "Choose another" : {

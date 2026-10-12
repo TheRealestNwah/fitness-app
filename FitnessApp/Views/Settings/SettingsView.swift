@@ -57,6 +57,60 @@ struct SettingsView: View {
     }
 }
 
+#if os(macOS)
+/// Settings on the Mac: the pages in a sidebar beside the selected page, as in System Settings,
+/// rather than the iPhone's list that pushes each page. Searching filters the sidebar.
+struct MacSettingsView: View {
+    @Environment(\.modelContext) private var context
+    @Environment(\.resetAllData) private var resetAllData
+    @State private var selection: SettingsPage? = .profile
+    @State private var query = ""
+
+    private var results: [SettingsSearch.Entry] { SettingsSearch.search(query) }
+
+    var body: some View {
+        NavigationSplitView {
+            List(selection: $selection) {
+                if query.isEmpty {
+                    ForEach(SettingsPage.allCases) { page in
+                        Label(page.title, systemImage: page.systemImage)
+                            .tag(page)
+                    }
+                } else if results.isEmpty {
+                    ContentUnavailableView.search(text: query)
+                } else {
+                    ForEach(results) { entry in
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(entry.title)
+                            Text(entry.page.title)
+                                .font(.footnote)
+                                .foregroundStyle(Color.secondary)
+                        }
+                        // One element read as "Menu bar, Privacy & security"; on the Mac the bare texts
+                        // only carry values, so the row had no label to find or speak.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("\(entry.title), \(entry.page.title)")
+                        .tag(entry.page)
+                    }
+                }
+            }
+            .searchable(text: $query, placement: .sidebar, prompt: "Search settings")
+            .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
+        } detail: {
+            NavigationStack {
+                if let selection {
+                    SettingsPageView(page: selection) { resetAllData() }
+                        .id(selection)
+                } else {
+                    ContentUnavailableView("Choose a setting", systemImage: "gearshape")
+                }
+            }
+        }
+        .onDisappear { context.saveReportingFailure() }
+    }
+}
+#endif
+
 struct MacroSlider: View {
     var name: String
     @Binding var value: Double
