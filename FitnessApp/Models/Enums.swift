@@ -163,7 +163,7 @@ enum WeeklyGoalRate: Double, CaseIterable, Identifiable {
         case .gentle: return String(localized: "Gentle")
         case .steady: return String(localized: "Steady")
         case .brisk: return String(localized: "Brisk")
-        case .aggressive: return String(localized: "Aggressive")
+        case .aggressive: return String(localized: "Fastest, hardest to stick to")
         }
     }
 }
