@@ -22,7 +22,7 @@ The Xcode project uses synchronized folders, so new `.swift` files are picked up
 
 ## Building and testing
 
-Development happens on a MacBook Air with Xcode 27 and SwiftLint installed, but it has only 8 GB of RAM: local builds work, while simulators tend to freeze mid-run. **Treat CI as the source of truth for tests**, and don't burn time fighting a hung local simulator. A CI run takes about 20 minutes. So before pushing:
+Development happens on a MacBook Air with Xcode 27 and SwiftLint installed, but it has only 8 GB of RAM: local builds work, while simulators tend to freeze mid-run. **Treat CI as the source of truth for tests**, and don't burn time fighting a hung local simulator. A CI run takes about 12 minutes. So before pushing:
 
 - Run `swiftlint lint --strict` (CI fails on any warning) and, where practical, a local build.
 - Re-read the diff for compile errors: missing imports, typos in identifiers, wrong argument labels, unhandled optionals.
@@ -31,7 +31,7 @@ Development happens on a MacBook Air with Xcode 27 and SwiftLint installed, but 
 
 CI builds with Xcode 26 (iOS 26 SDK; local Xcode is newer, so check that APIs exist in the iOS 26 SDK) on the newest iOS simulator, but the deployment target is iOS 17. Wrap iOS 26-only APIs (Foundation Models, HealthKit medications, iPhone workout sessions, glass effects) in `#available(iOS 26, *)` and keep a fallback for older versions.
 
-CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then every UI test class except `ScreenshotTests`/`IPadScreenshotTests` on an iPhone simulator. New UI test classes are picked up without editing the workflow. UI tests launch with `-demoData` (Sam's profile, six weeks of weigh-ins, a week of food logs, a meal plan for today and tomorrow) or `-resetData` (onboarding). The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
+CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then every UI test class except `ScreenshotTests`/`IPadScreenshotTests` on an iPhone simulator, split across three parallel shards by `.github/scripts/ui-test-shard.sh`. New UI test classes are picked up and assigned to a shard without editing the workflow. The required check is a gate job that waits for the unit tests and every shard. UI tests launch with `-demoData` (Sam's profile, six weeks of weigh-ins, a week of food logs, a meal plan for today and tomorrow) or `-resetData` (onboarding). The required check on `main` is **"Build & test (iOS Simulator)"**. PRs that only touch docs (`docs/**`, `*.md`, `LICENSE`) skip the build and still pass that check.
 
 Online food search uses Stride's own USDA FoodData Central key, passed at build time as the `USDA_API_KEY` build setting (e.g. `xcodebuild ... USDA_API_KEY=xxxx`) and read from `USDAAPIKey` in `FitnessApp/Info.plist`. Never commit the key. Builds without it fall back to USDA's rate-limited `DEMO_KEY`, which is fine for development but not for App Store builds.
 

@@ -31,8 +31,10 @@ jobs:
               - '!**/*.md'
               - '!LICENSE'
 
-  build-and-test:
-    name: Build & test (iOS Simulator)
+  # Lint, build and unit tests. The UI tests run in parallel shards below, and
+  # the `ios` gate job at the end reports the required "Build & test" check.
+  unit-tests:
+    name: Lint & unit tests (iOS Simulator)
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: macos-15
@@ -96,7 +98,69 @@ jobs:
             | tee test.log | grep -E "Test Case|error:|failed|passed|\*\*" || true
           grep -qE "TEST (EXECUTE )?SUCCEEDED" test.log
 
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-logs
+          path: |
+            build.log
+            test.log
+
+  ui-tests:
+    name: UI tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: macos-15
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        # Raising this adds shards; .github/scripts/ui-test-shard.sh splits the classes.
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26
+        run: sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+
+      - name: Pick this shard's test classes
+        id: classes
+        run: |
+          ARGS=$(.github/scripts/ui-test-shard.sh "${{ matrix.shard }}" "${{ strategy.job-total }}" | tr '\n' ' ')
+          echo "Shard ${{ matrix.shard }}: $ARGS"
+          echo "args=$ARGS" >> "$GITHUB_OUTPUT"
+
+      - name: Pick an iPhone simulator
+        if: steps.classes.outputs.args != ''
+        id: sim
+        run: |
+          # Newest iOS runtime first, so iOS 26 code paths are exercised.
+          UDID=$(xcrun simctl list devices available -j \
+            | jq -r '[.devices | to_entries | map(select(.key | test("iOS-[0-9]+")))
+                | sort_by(.key | capture("iOS-(?<v>[0-9]+)").v | tonumber) | reverse
+                | .[].value[] | select(.name | startswith("iPhone"))][0].udid')
+          echo "Using simulator: $UDID"
+          echo "device=$UDID" >> "$GITHUB_OUTPUT"
+          # Boot it now: a cold first boot of a new runtime can outlast the UI tests' launch timeout.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+
+      - name: Build
+        if: steps.classes.outputs.args != ''
+        run: |
+          set -o pipefail
+          xcodebuild build-for-testing \
+            -project FitnessApp.xcodeproj \
+            -scheme FitnessApp \
+            -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" \
+            | tee build.log | grep -E "error:|warning: unre|BUILD|Compiling|\*\*" || true
+          grep -q "BUILD SUCCEEDED" build.log
+
       - name: UI tests
+        if: steps.classes.outputs.args != ''
         run: |
           set -o pipefail
           xcodebuild test-without-building \
@@ -104,9 +168,7 @@ jobs:
             -scheme FitnessApp \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
-            -only-testing:FitnessAppUITests \
-            -skip-testing:FitnessAppUITests/ScreenshotTests \
-            -skip-testing:FitnessAppUITests/IPadScreenshotTests \
+            ${{ steps.classes.outputs.args }} \
             -retry-tests-on-failure -test-iterations 3 \
             -resultBundlePath uitest.xcresult \
             CODE_SIGNING_ALLOWED=NO \
@@ -117,12 +179,35 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: xcodebuild-logs
+          name: xcodebuild-logs-ui-shard-${{ matrix.shard }}
           path: |
             build.log
-            test.log
             uitest.log
             uitest.xcresult
+
+  # Reports the required "Build & test (iOS Simulator)" check. It passes when the
+  # unit tests and every UI shard pass, and for docs-only changes, where those
+  # jobs are skipped.
+  ios:
+    name: Build & test (iOS Simulator)
+    needs: [changes, unit-tests, ui-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        env:
+          CHANGES: ${{ needs.changes.result }}
+          CODE: ${{ needs.changes.outputs.code }}
+          UNIT: ${{ needs.unit-tests.result }}
+          UI: ${{ needs.ui-tests.result }}
+        run: |
+          echo "changes=$CHANGES code=$CODE unit-tests=$UNIT ui-tests=$UI"
+          [ "$CHANGES" = success ] || exit 1
+          if [ "$CODE" != "true" ]; then
+            echo "Docs-only change: iOS jobs skipped."
+            exit 0
+          fi
+          [ "$UNIT" = success ] && [ "$UI" = success ]
 
   ipad:
     name: Test (iPadOS)
