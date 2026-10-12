@@ -1117,6 +1117,16 @@
     "500 g" : {
       "shouldTranslate" : false
     },
+    "%@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@"
+          }
+        }
+      }
+    },
     "A 500 kcal daily deficit adds up to roughly half a kilo of fat a week." : {
 
     },

@@ -86,6 +86,10 @@ struct MacSettingsView: View {
                                 .font(.footnote)
                                 .foregroundStyle(Color.secondary)
                         }
+                        // One element read as "Menu bar, Privacy & security"; on the Mac the bare texts
+                        // only carry values, so the row had no label to find or speak.
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("\(entry.title), \(entry.page.title)")
                         .tag(entry.page)
                     }
                 }
