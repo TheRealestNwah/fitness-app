@@ -48,6 +48,23 @@ struct ProgressRing: View {
     }
 }
 
+/// One entry in a chart legend: a swatch in the series colour beside readable secondary text.
+/// The colour stays on the swatch only, since pale series colours are too faint for text.
+struct LegendItem: View {
+    var title: LocalizedStringKey
+    var systemImage: String
+    var color: Color
+
+    var body: some View {
+        Label {
+            Text(title).foregroundStyle(Color.secondary)
+        } icon: {
+            Image(systemName: systemImage).foregroundStyle(color)
+        }
+        .font(.footnote)
+    }
+}
+
 /// Side by side normally, stacked at larger text sizes so nothing gets squeezed.
 struct AdaptiveStack<Content: View>: View {
     var spacing: CGFloat

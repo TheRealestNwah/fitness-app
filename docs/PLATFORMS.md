@@ -12,7 +12,7 @@ To build an installer package instead, run `scripts/build-mac-installer.sh`. It 
 
 The Mac scheme starts with a normal persistent store. Add `-demoData` to the scheme's launch arguments only for disposable previews: it replaces the local store contents with demo records. CI passes this argument explicitly for UI tests.
 
-The sidebar stays available as the window resizes. Wider windows show the diary calendar and two-column dashboards; narrower windows use single-column detail screens. Settings opens in its own window (Command-comma), as on other Mac apps; on iPad it's in the sidebar. Command-N opens food logging, Shift-Command-N opens another window, and Command-1 through Command-5 switch sections. Lists support right-click menus for the same actions as iPhone swipes, the Delete key removes the selected diary lines or recipe, and icon-only buttons show tooltips. Recipe windows share the same store.
+The sidebar stays available as the window resizes. Wider windows show the diary calendar and two-column dashboards; narrower windows use single-column detail screens. Settings opens in its own window (Command-comma), as on other Mac apps, with its pages in a sidebar like System Settings (searching filters the sidebar); on iPad it's in the sidebar. Command-N opens food logging, Shift-Command-N opens another window, and Command-1 through Command-5 switch sections. Lists support right-click menus for the same actions as iPhone swipes, the Delete key removes the selected diary lines or recipe, and icon-only buttons show tooltips. Recipe windows share the same store.
 
 ## Platform differences
 

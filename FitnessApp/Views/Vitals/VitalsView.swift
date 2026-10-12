@@ -375,11 +375,10 @@ struct VitalDetailView: View {
                         .accessibilityValue(ChartSummary.describe(points.map { (date: $0.date, value: $0.value) },
                                                                   format: { "\($0.cleanString) \(kind.unitLabel(units))" }))
                         if kind == .bloodPressure {
-                            HStack(spacing: 16) {
-                                Label("Systolic", systemImage: "circle.fill").foregroundStyle(kind.tint)
-                                Label("Diastolic", systemImage: "circle.fill").foregroundStyle(kind.tint.opacity(0.5))
+                            AdaptiveStack(spacing: 16) {
+                                LegendItem(title: "Systolic", systemImage: "circle.fill", color: kind.tint)
+                                LegendItem(title: "Diastolic", systemImage: "circle.fill", color: kind.tint.opacity(0.5))
                             }
-                            .font(.footnote)
                         }
                     }
                 }

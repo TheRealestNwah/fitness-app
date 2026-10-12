@@ -263,15 +263,17 @@ struct DashboardView: View {
         .strideSheet(isPresented: $showLayoutEditor) { TodayLayoutEditor() }
     }
 
+    /// The greeting and streak side by side, or stacked when they don't fit (large text sizes),
+    /// so neither gets squeezed into a word per line.
     private var header: some View {
-        HStack(alignment: .firstTextBaseline) {
+        ReflowRow(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(greeting)
                     .font(.title2.bold())
                 Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day()))
                     .foregroundStyle(Color.secondary)
             }
-            Spacer()
+        } trailing: {
             if streak > 0 {
                 HStack(spacing: 4) {
                     Label("\(streak) days", systemImage: "flame.fill")

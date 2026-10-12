@@ -185,13 +185,15 @@ struct WeightView: View {
     private var statsGrid: some View {
         StatGrid {
             StatTile(title: "Current", value: units.weightString(kg: currentKg), subtitle: entries.first.map { $0.date.relativeDayLabel }, systemImage: "scalemass.fill", tint: .indigo)
-            StatTile(title: "Lost so far", value: units.weightString(kg: lost), subtitle: "from \(units.weightString(kg: profile.startWeightKg))", systemImage: "arrow.down.right", tint: lost >= 0 ? .green : .orange)
+            StatTile(title: "Change since start", value: units.weightString(kg: -lost, signed: true), subtitle: "from \(units.weightString(kg: profile.startWeightKg))",
+                     systemImage: lost >= 0 ? "arrow.down.right" : "arrow.up.right", tint: lost >= 0 ? .green : .gray)
             if profile.isMaintaining {
                 StatTile(title: "Holding", value: units.weightString(kg: profile.maintenanceCenterKg), subtitle: "± \(units.weightString(kg: profile.maintenanceBandKg))", systemImage: "equal.circle.fill", tint: .green)
             } else {
                 StatTile(title: "To goal", value: units.weightString(kg: remaining), subtitle: "goal \(units.weightString(kg: profile.goalWeightKg))", systemImage: "flag.checkered", tint: .purple)
             }
-            StatTile(title: "BMI", value: String(format: "%.1f", bmi), subtitle: NutritionCalculator.bmiCategory(bmi), systemImage: "figure.stand", tint: .teal)
+            // The number with what it is, not a category label applied to the person.
+            StatTile(title: "BMI", value: String(format: "%.1f", bmi), subtitle: String(localized: "A rough guide only"), systemImage: "figure.stand", tint: .teal)
         }
     }
 
@@ -242,14 +244,13 @@ struct WeightView: View {
                 .accessibilityLabel("Weight chart")
                 .accessibilityValue(ChartSummary.describe(visible.map { (date: $0.date, value: $0.weightKg) },
                                                           format: { units.weightString(kg: $0) }))
-                HStack(spacing: 16) {
-                    Label("Weigh-ins", systemImage: "circle.fill").foregroundStyle(.indigo.opacity(0.5))
-                    Label("7-day average", systemImage: "line.diagonal").foregroundStyle(.indigo)
+                AdaptiveStack(spacing: 16) {
+                    LegendItem(title: "Weigh-ins", systemImage: "circle.fill", color: .indigo.opacity(0.5))
+                    LegendItem(title: "7-day average", systemImage: "line.diagonal", color: .indigo)
                     if !visibleRetentionDays.isEmpty {
-                        Label("Likely water retention", systemImage: "square.fill").foregroundStyle(.pink.opacity(0.5))
+                        LegendItem(title: "Likely water retention", systemImage: "square.fill", color: .pink.opacity(0.5))
                     }
                 }
-                .font(.footnote)
             }
         }
         .card()
@@ -380,9 +381,10 @@ struct WeightView: View {
                         Spacer()
                         if let previous {
                             let delta = entry.weightKg - previous
+                            // Neutral: day-to-day changes are mostly water, so they get no good or bad colour.
                             Text(units.weightString(kg: delta, signed: true))
                                 .font(.subheadline.monospacedDigit())
-                                .foregroundStyle(delta <= 0 ? .green : .orange)
+                                .foregroundStyle(Color.secondary)
                         }
                         Text(units.weightString(kg: entry.weightKg))
                             .font(.body.monospacedDigit().weight(.medium))

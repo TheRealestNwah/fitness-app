@@ -1111,6 +1111,16 @@
     "500 g" : {
       "shouldTranslate" : false
     },
+    "%@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@"
+          }
+        }
+      }
+    },
     "%@, not listed for today's foods" : {
 
     },
@@ -1130,6 +1140,9 @@
 
     },
     "A quick log of breakfast and lunch keeps today's numbers useful." : {
+
+    },
+    "A rough guide only" : {
 
     },
     "A short walk counts. Ten minutes after a meal is an easy place to start." : {
@@ -1586,6 +1599,9 @@
 
     },
     "Choose a recipe" : {
+
+    },
+    "Choose a setting" : {
 
     },
     "Choose another" : {
@@ -3227,6 +3243,9 @@
 
     },
     "Plan: around %@" : {
+
+    },
+    "Planned" : {
 
     },
     "Planner" : {
