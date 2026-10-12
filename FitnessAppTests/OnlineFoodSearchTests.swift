@@ -71,6 +71,39 @@ final class OnlineFoodSearchTests: XCTestCase {
         XCTAssertEqual(FoodDataCentralClient.resolvedKey(userKey: "", bundledKey: ""), "DEMO_KEY")
     }
 
+    func testKeySourceFollowsTheSameOrderAsTheResolvedKey() {
+        XCTAssertEqual(FoodDataCentralClient.keySource(userKey: " mine ", bundledKey: "stride"), .personal)
+        XCTAssertEqual(FoodDataCentralClient.keySource(userKey: "  ", bundledKey: "stride"), .stride)
+        XCTAssertEqual(FoodDataCentralClient.keySource(userKey: "", bundledKey: ""), .shared)
+    }
+
+    func testKeyExplanationsStateTheLimitsThatApply() {
+        typealias Source = FoodDataCentralClient.KeySource
+        XCTAssertTrue(Source.shared.explanation.contains("\(Source.demoSearchesPerHour) searches an hour"))
+        XCTAssertTrue(Source.shared.explanation.contains(Source.personalSearchesPerHour))
+        XCTAssertTrue(Source.stride.explanation.contains(Source.personalSearchesPerHour))
+        XCTAssertTrue(Source.personal.explanation.contains("your own USDA key"))
+        // Someone who already has their own key isn't told to go and add one.
+        XCTAssertFalse(Source.personal.rateLimitMessage.contains("of your own"))
+        XCTAssertFalse(Source.personal.rejectedMessage.contains("add a free key"))
+        XCTAssertTrue(Source.stride.rateLimitMessage.contains("of your own"))
+        XCTAssertTrue(Source.shared.rateLimitMessage.contains("\(Source.demoSearchesPerHour) searches an hour"))
+    }
+
+    func testUSDALimitMessageMatchesTheKeyTheSearchUsed() {
+        for source in [FoodDataCentralClient.KeySource.personal, .stride, .shared] {
+            let limited = OnlineFoodSearch.merge(usda: .failure(FoodDataCentralError.rateLimited),
+                                                 openFoodFacts: .success([]), usdaKeySource: source)
+            XCTAssertEqual(limited.failures.map(\.message), [source.rateLimitMessage])
+            let rejected = OnlineFoodSearch.merge(usda: .failure(FoodDataCentralError.badKey),
+                                                  openFoodFacts: .success([]), usdaKeySource: source)
+            XCTAssertEqual(rejected.failures.map(\.message), [source.rejectedMessage])
+        }
+        let offline = OnlineFoodSearch.merge(usda: .failure(FoodDataCentralError.badResponse),
+                                             openFoodFacts: .success([]), usdaKeySource: .personal)
+        XCTAssertEqual(offline.failures.map(\.message), [FoodDataCentralError.badResponse.errorDescription])
+    }
+
     func testUSDASearchURLUsesTheDemoKeyWhenNoneIsSet() throws {
         try XCTSkipUnless(FoodDataCentralClient.bundledKey.isEmpty, "This build has its own USDA key.")
         let url = FoodDataCentralClient.searchURL(for: "rice", apiKey: "", limit: 5).absoluteString

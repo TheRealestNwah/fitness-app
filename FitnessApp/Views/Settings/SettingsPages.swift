@@ -549,18 +549,20 @@ private struct OnlineFoodSearchSection: View {
     @AppStorage(OnlineFoodSearch.enabledKey) private var enabled = true
     @AppStorage(OnlineFoodSearch.usdaKeyKey) private var usdaKey = ""
 
+    private var keySource: FoodDataCentralClient.KeySource {
+        FoodDataCentralClient.keySource(userKey: usdaKey)
+    }
+
     private var footer: String {
         let about = "When a food isn't saved on your device, Stride can look it up on USDA FoodData Central and Open Food Facts. The words you search for are sent to those services, nothing else."
-        let key = FoodDataCentralClient.bundledKey.isEmpty
-            ? "Without your own USDA key, a shared one is used and may run out at busy times."
-            : "Your own USDA key is only needed if searches start failing at busy times."
-        return "\(about) \(key)"
+        return "\(about) \(keySource.explanation)"
     }
 
     var body: some View {
         Section {
             Toggle("Search food databases online", isOn: $enabled)
             if enabled {
+                LabeledContent("USDA key in use", value: keySource.label)
                 TextField("USDA API key (optional)", text: $usdaKey)
                     .withoutAutocapitalization()
                     .autocorrectionDisabled()

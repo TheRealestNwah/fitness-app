@@ -48,15 +48,18 @@ enum OnlineFoodSearch {
         guard query.count >= minimumQueryLength else { return OnlineSearchResult() }
         async let usda = capture { try await FoodDataCentralClient.search(query, apiKey: usdaKey, session: session) }
         async let off = capture { try await OpenFoodFactsClient.search(query, session: session) }
-        return merge(usda: await usda, openFoodFacts: await off)
+        return merge(usda: await usda, openFoodFacts: await off,
+                     usdaKeySource: FoodDataCentralClient.keySource(userKey: usdaKey))
     }
 
     private static func capture(_ work: () async throws -> [ScannedProduct]) async -> Result<[ScannedProduct], Error> {
         do { return .success(try await work()) } catch { return .failure(error) }
     }
 
-    /// USDA's generic foods lead; the same food from both sources is listed once.
+    /// USDA's generic foods lead; the same food from both sources is listed once. `usdaKeySource` words
+    /// a USDA limit or key error for the key the search used.
     static func merge(usda: Result<[ScannedProduct], Error>, openFoodFacts: Result<[ScannedProduct], Error>,
+                      usdaKeySource: FoodDataCentralClient.KeySource = .stride,
                       usdaLimit: Int = 12, openFoodFactsLimit: Int = 8) -> OnlineSearchResult {
         var result = OnlineSearchResult()
         var seen = Set<String>()
@@ -71,16 +74,23 @@ enum OnlineFoodSearch {
         }
         switch usda {
         case .success(let products): add(products, source: .usda, limit: usdaLimit)
-        case .failure(let error): result.failures.append(.init(source: .usda, message: message(for: error)))
+        case .failure(let error): result.failures.append(.init(source: .usda, message: message(for: error, usdaKeySource: usdaKeySource)))
         }
         switch openFoodFacts {
         case .success(let products): add(products, source: .openFoodFacts, limit: openFoodFactsLimit)
-        case .failure(let error): result.failures.append(.init(source: .openFoodFacts, message: message(for: error)))
+        case .failure(let error): result.failures.append(.init(source: .openFoodFacts, message: message(for: error, usdaKeySource: usdaKeySource)))
         }
         return result
     }
 
-    private static func message(for error: Error) -> String {
+    static func message(for error: Error, usdaKeySource: FoodDataCentralClient.KeySource) -> String {
+        if let usda = error as? FoodDataCentralError {
+            switch usda {
+            case .rateLimited: return usdaKeySource.rateLimitMessage
+            case .badKey: return usdaKeySource.rejectedMessage
+            default: break
+            }
+        }
         if let off = error as? OpenFoodFactsError {
             return off.isNetwork ? "Couldn't reach Open Food Facts." : "Open Food Facts sent something unexpected."
         }
