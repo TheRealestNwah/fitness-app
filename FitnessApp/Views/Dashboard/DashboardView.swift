@@ -160,6 +160,8 @@ struct DashboardView: View {
                     customiseButton
                 }
                 .padding()
+                // Pin to the screen's width so one over-wide card can't make the page pan sideways.
+                .containerRelativeFrame(.horizontal)
             }
             .background(Color.strideBackground)
             .navigationTitle("Today")
