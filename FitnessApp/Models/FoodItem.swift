@@ -32,7 +32,12 @@ final class FoodItem {
     /// Milligrams.
     var caffeine: Double = 0
     /// Vitamins and minerals per serving; zero means not recorded.
-    var micros: Micronutrients = Micronutrients()
+    /// Optional so stores made before vitamins and minerals existed migrate without a default.
+    var storedMicros: Micronutrients?
+    var micros: Micronutrients {
+        get { storedMicros ?? Micronutrients() }
+        set { storedMicros = newValue }
+    }
     var isFavorite: Bool = false
     var isCustom: Bool = false
     var lastUsed: Date?
