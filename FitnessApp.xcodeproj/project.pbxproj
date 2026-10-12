@@ -89,6 +89,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FA00000000000000000009C1 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Shared.xcconfig; sourceTree = "<group>"; };
 		FA0000000000000000000002 /* FitnessApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitnessApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000012 /* FitnessAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitnessAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA0000000000000000000022 /* FitnessAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitnessAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -245,6 +246,7 @@
 				FA0000000000000000000023 /* FitnessAppUITests */,
 				FA0000000000000000000033 /* StrideWidgets */,
 				FA0000000000000000000043 /* StrideWatch */,
+				FA00000000000000000009C1 /* Shared.xcconfig */,
 				FB0000000000000000000302,
 				FA0000000000000000000006 /* Products */,
 			);
@@ -634,6 +636,7 @@
 /* Begin XCBuildConfiguration section */
 		FA000000000000000000000C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA00000000000000000009C1 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -697,6 +700,7 @@
 		};
 		FA000000000000000000000D /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FA00000000000000000009C1 /* Shared.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;

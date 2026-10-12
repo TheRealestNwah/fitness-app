@@ -1,0 +1,2 @@
+// Copy to Local.xcconfig and fill in. Never commit the real file.
+USDA_API_KEY = your-key-here

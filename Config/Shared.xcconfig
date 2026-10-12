@@ -1,0 +1,2 @@
+// Settings shared by every build. Put your own values in Config/Local.xcconfig (gitignored).
+#include? "Local.xcconfig"
