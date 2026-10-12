@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Merged into the Mac app's generated Info.plist. The iOS app gets the same entry from FitnessApp/Info.plist. -->
+	<key>USDAAPIKey</key>
+	<string>$(USDA_API_KEY)</string>
+</dict>
+</plist>

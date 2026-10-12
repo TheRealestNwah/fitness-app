@@ -265,6 +265,15 @@ jobs:
             -destination 'platform=macOS' -parallel-testing-enabled NO \
             -resultBundlePath macos.xcresult CODE_SIGNING_ALLOWED=NO \
             > macos.log 2>&1 || { tail -120 macos.log; exit 1; }
+      - name: Check the Mac app has the USDA key entry
+        run: |
+          # CI builds without a key, so the value is empty, but the entry must exist
+          # for builds that do set USDA_API_KEY (#390).
+          DIR=$(xcodebuild -project FitnessApp.xcodeproj -scheme StrideMac -destination 'platform=macOS' -configuration Debug \
+            -showBuildSettings 2>/dev/null | awk '/^ *BUILT_PRODUCTS_DIR =/ {print $3; exit}')
+          PLIST="$DIR/Stride.app/Contents/Info.plist"
+          echo "Checking $PLIST"
+          /usr/libexec/PlistBuddy -c 'Print :USDAAPIKey' "$PLIST" >/dev/null
       - name: Export Mac UI screenshots
         if: always()
         run: |
