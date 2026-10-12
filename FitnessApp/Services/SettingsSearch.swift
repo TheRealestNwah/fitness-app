@@ -87,7 +87,7 @@ enum SettingsSearch {
         Entry(title: "Hide calorie and weight numbers", page: .privacy,
               keywords: ["focus", "numbers", "disordered eating", "break", "calories", "weight", "stress"]),
         Entry(title: "Online food search", page: .privacy,
-              keywords: ["USDA", "Open Food Facts", "food database", "API key", "lookup", "internet"]),
+              keywords: ["USDA", "Open Food Facts", "food database", "API key", "demo key", "limit", "rate limit", "lookup", "internet"]),
 
         Entry(title: "Show feature tips again", page: .about, keywords: ["tips", "help"]),
         Entry(title: "About Stride", page: .about, keywords: ["version", "disclaimer", "medical", "open source", "github", "tip", "coffee", "ko-fi", "donate", "support"]),

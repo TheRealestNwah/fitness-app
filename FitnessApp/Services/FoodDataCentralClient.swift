@@ -39,6 +39,16 @@ enum FoodDataCentralClient {
         if !user.isEmpty { return user }
         return bundledKey.isEmpty ? demoKey : bundledKey
     }
+
+    /// Which key a search uses, in the same order as `resolvedKey`.
+    enum KeySource: Equatable {
+        case personal, stride, shared
+    }
+
+    static func keySource(userKey: String, bundledKey: String = FoodDataCentralClient.bundledKey) -> KeySource {
+        if !userKey.trimmingCharacters(in: .whitespaces).isEmpty { return .personal }
+        return bundledKey.isEmpty ? .shared : .stride
+    }
     static let signupURL = URL(string: "https://fdc.nal.usda.gov/api-key-signup")!
 
     static func searchURL(for query: String, apiKey: String, limit: Int) -> URL {

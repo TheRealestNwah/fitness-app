@@ -375,6 +375,17 @@ struct OnboardingView: View {
                         .card()
                 }
 
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("Looking up foods online", systemImage: "magnifyingglass")
+                        .font(.headline)
+                    Text("When a food isn't saved on your device, Stride can look it up on USDA FoodData Central and Open Food Facts. Only the words you search for are sent. \(FoodDataCentralClient.keySource(userKey: "").explanation) You can add a key any time in Settings, under Privacy & security.")
+                        .font(.footnote)
+                        .foregroundStyle(Color.secondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .card()
+                .accessibilityElement(children: .combine)
+
                 Text("You can change any of this later in Settings.")
                     .font(.footnote)
                     .foregroundStyle(Color.secondary)
