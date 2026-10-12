@@ -42,7 +42,8 @@ struct ExerciseCard: View {
             }
             #endif
             if today.isEmpty {
-                Text("Nothing logged today.")
+                // A starting point rather than a bare "nothing": any movement counts.
+                Text("Any movement counts. A 10-minute walk is a good place to start.")
                     .font(.subheadline)
                     .foregroundStyle(Color.secondary)
             } else {

@@ -82,8 +82,20 @@ struct DashboardView: View {
     private var waterMl: Double { todaysWater.reduce(0) { $0 + $1.amountMl } }
 
     private var streakDetail: NutritionCalculator.Streak {
-        NutritionCalculator.streakDetail(logDates: recentFood.map(\.date) + recentWeights.map(\.date),
+        NutritionCalculator.streakDetail(logDates: recentFood.map(\.date) + loggedWeights.map(\.date),
                                          graceDay: streakGraceDay)
+    }
+
+    /// Weigh-ins the person made, leaving out the starting weight onboarding records.
+    private var loggedWeights: [WeightEntry] { recentWeights.filter { !$0.isStartingWeight } }
+
+    /// Days since the person last logged anything, when it's been more than a day and nothing
+    /// is logged today, so Today can welcome them back instead of silently dropping the streak.
+    private var daysAway: Int? {
+        guard todaysFood.isEmpty, !loggedWeights.contains(where: { $0.date.isToday }),
+              let last = (recentFood.map(\.date) + loggedWeights.map(\.date)).max() else { return nil }
+        let days = Calendar.current.dateComponents([.day], from: last.startOfDay, to: Date.now.startOfDay).day ?? 0
+        return days >= 2 ? days : nil
     }
 
     private var streak: Int { streakDetail.days }
@@ -143,6 +155,7 @@ struct DashboardView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     header
+                    if daysAway != nil { welcomeBack }
                     cards
                     customiseButton
                 }
@@ -150,6 +163,8 @@ struct DashboardView: View {
             }
             .background(Color.strideBackground)
             .navigationTitle("Today")
+            // The greeting is the screen's heading; a large "Today" above it said the same thing twice.
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -218,6 +233,24 @@ struct DashboardView: View {
         case .fasting: FastingCard()
         case .medication: MedicationCard()
         }
+    }
+
+    private var welcomeBack: some View {
+        Label {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Welcome back")
+                    .font(.subheadline.weight(.semibold))
+                Text("Log one thing today to get going again. Anything counts.")
+                    .font(.subheadline)
+                    .foregroundStyle(Color.secondary)
+            }
+        } icon: {
+            Image(systemName: "hand.wave.fill")
+                .foregroundStyle(Color.accentColor)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .card()
+        .accessibilityElement(children: .combine)
     }
 
     private var customiseButton: some View {
@@ -311,18 +344,33 @@ struct DashboardView: View {
                 }
                 .font(.subheadline.monospacedDigit())
             }
-            Button {
-                selectTab(.food)
-            } label: {
-                ReflowRow {
-                    Text(todaysFood.isEmpty ? "Nothing logged yet" : "\(todaysFood.count) items logged")
-                } trailing: {
-                    HStack {
-                        Text("Open diary")
-                        Image(systemName: "chevron.right")
+            if todaysFood.isEmpty {
+                // One clear next step while the day is empty, instead of a label that looked like a link.
+                VStack(spacing: 6) {
+                    Button { showAddFood = true } label: {
+                        Label(recentFood.isEmpty ? "Log your first meal" : "Log a meal", systemImage: "plus")
+                            .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("logFirstMeal")
+                    Text("Rough is fine. You can edit it later.")
+                        .font(.footnote)
+                        .foregroundStyle(Color.secondary)
                 }
-                .font(.subheadline)
+            } else {
+                Button {
+                    selectTab(.food)
+                } label: {
+                    ReflowRow {
+                        Text("\(todaysFood.count) items logged")
+                    } trailing: {
+                        HStack {
+                            Text("Open diary")
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                    .font(.subheadline)
+                }
             }
         }
         .card()

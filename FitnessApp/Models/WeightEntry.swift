@@ -19,3 +19,11 @@ final class WeightEntry {
         self.note = note
     }
 }
+
+extension WeightEntry {
+    /// The note on the weigh-in onboarding creates from the starting weight.
+    static let startingWeightNote = "Starting weight"
+
+    /// Created by onboarding rather than logged by the person, so it doesn't start a streak.
+    var isStartingWeight: Bool { note == Self.startingWeightNote }
+}
