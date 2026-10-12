@@ -52,6 +52,7 @@ struct PlannerView: View {
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Query(sort: \MealPlanEntry.day) private var allEntries: [MealPlanEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query private var recipes: [Recipe]
@@ -97,7 +98,13 @@ struct PlannerView: View {
                     .listRowBackground(Color.clear)
             }
             Section {
-                HStack {
+                // Side by side, with the totals keeping their room and Auto-plan shrinking to its icon
+                // if it must; stacked at accessibility sizes, where squeezing broke its label apart.
+                // (Stacking at every size pushed today's meals further down the lazy list.)
+                let stacked = dynamicTypeSize.isAccessibilitySize
+                let layout = stacked ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                                     : AnyLayout(HStackLayout(spacing: 8))
+                layout {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Energy.number(plannedCalories)) of \(Energy.string(target)) planned")
                             .font(.subheadline.weight(.medium))
@@ -105,7 +112,8 @@ struct PlannerView: View {
                                      carbs: dayEntries.reduce(0) { $0 + $1.totalCarbs },
                                      fat: dayEntries.reduce(0) { $0 + $1.totalFat })
                     }
-                    Spacer()
+                    .layoutPriority(1)
+                    if !stacked { Spacer(minLength: 0) }
                     Menu {
                         Button { autoFill(replace: false) } label: { Label("Fill empty meals", systemImage: "wand.and.stars") }
                         Button { showAutoFillConfirm = true } label: { Label("Replace whole day", systemImage: "arrow.clockwise") }
@@ -114,8 +122,12 @@ struct PlannerView: View {
                             Button(role: .destructive) { clearDay() } label: { Label("Clear day", systemImage: "trash") }
                         }
                     } label: {
-                        Label("Auto-plan", systemImage: "wand.and.stars")
-                            .font(.subheadline)
+                        ViewThatFits(in: .horizontal) {
+                            Label("Auto-plan", systemImage: "wand.and.stars")
+                            Image(systemName: "wand.and.stars")
+                                .accessibilityLabel("Auto-plan")
+                        }
+                        .font(.subheadline)
                     }
                     .buttonStyle(.bordered)
                 }
@@ -166,7 +178,43 @@ struct PlannerView: View {
         }
     }
 
-    private var weekStrip: some View {
+    @ViewBuilder private var weekStrip: some View {
+        // Seven day buttons can't fit at accessibility text sizes, so step through days one at a time.
+        if dynamicTypeSize.isAccessibilitySize {
+            dayStepper
+        } else {
+            weekRow
+        }
+    }
+
+    private var dayStepper: some View {
+        HStack(spacing: 8) {
+            Button { selectedDay = selectedDay.adding(days: -1) } label: {
+                Image(systemName: "chevron.left").frame(minWidth: 44, minHeight: 44)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Previous day")
+            VStack(spacing: 4) {
+                Text(selectedDay.relativeDayLabel)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                if calories(on: selectedDay) > 0 {
+                    Text("Planned")
+                        .font(.footnote)
+                        .foregroundStyle(Color.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .accessibilityElement(children: .combine)
+            Button { selectedDay = selectedDay.adding(days: 1) } label: {
+                Image(systemName: "chevron.right").frame(minWidth: 44, minHeight: 44)
+            }
+            .buttonStyle(.borderless)
+            .accessibilityLabel("Next day")
+        }
+    }
+
+    private var weekRow: some View {
         HStack(spacing: 4) {
             Button { selectedDay = selectedDay.adding(days: -7) } label: {
                 Image(systemName: "chevron.left").frame(width: 24, height: 44)

@@ -244,14 +244,13 @@ struct WeightView: View {
                 .accessibilityLabel("Weight chart")
                 .accessibilityValue(ChartSummary.describe(visible.map { (date: $0.date, value: $0.weightKg) },
                                                           format: { units.weightString(kg: $0) }))
-                HStack(spacing: 16) {
-                    Label("Weigh-ins", systemImage: "circle.fill").foregroundStyle(.indigo.opacity(0.5))
-                    Label("7-day average", systemImage: "line.diagonal").foregroundStyle(.indigo)
+                AdaptiveStack(spacing: 16) {
+                    LegendItem(title: "Weigh-ins", systemImage: "circle.fill", color: .indigo.opacity(0.5))
+                    LegendItem(title: "7-day average", systemImage: "line.diagonal", color: .indigo)
                     if !visibleRetentionDays.isEmpty {
-                        Label("Likely water retention", systemImage: "square.fill").foregroundStyle(.pink.opacity(0.5))
+                        LegendItem(title: "Likely water retention", systemImage: "square.fill", color: .pink.opacity(0.5))
                     }
                 }
-                .font(.footnote)
             }
         }
         .card()
