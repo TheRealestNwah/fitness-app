@@ -115,6 +115,10 @@ final class IPadScreenshotTests: XCTestCase {
         XCTAssertTrue(addFood.waitForExistence(timeout: 10))
         addFood.tap()
         XCTAssertTrue(app.navigationBars["Log food"].waitForExistence(timeout: 10))
+        let search = app.searchFields["Search foods"]
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.tap()
+        search.typeText("banana")
 
         // The width flips to compact about 30 s after launch.
         let foodTab = app.tabBars.buttons["Food"]
@@ -122,5 +126,8 @@ final class IPadScreenshotTests: XCTestCase {
         snap("ipad-23-switched-to-compact")
         XCTAssertTrue(foodTab.isSelected, "the selected section should carry over")
         XCTAssertTrue(app.navigationBars["Log food"].exists, "the open sheet should survive the switch")
+        XCTAssertEqual(search.value as? String, "banana", "the search draft should survive the switch")
+        app.navigationBars["Log food"].buttons["Done"].tap()
+        XCTAssertTrue(foodTab.isSelected, "dismissing the sheet should return to Food")
     }
 }
