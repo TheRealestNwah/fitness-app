@@ -10,16 +10,16 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 
 <table>
   <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/10-today.png" width="180" alt="Today"><br><sub>Today</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/12-food-diary.png" width="180" alt="Food diary"><br><sub>Food diary</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/14-weight.png" width="180" alt="Weight"><br><sub>Weight</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/16-vitals.png" width="180" alt="Vitals"><br><sub>Vitals</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/18-meal-planner.png" width="180" alt="Meal plan"><br><sub>Meal plan</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/TheRealestNwah/fitness-app/screenshots/30-dark-today.png" width="180" alt="Dark mode"><br><sub>Dark mode</sub></td>
+    <td align="center"><img src="docs/screenshots/10-today.png" width="180" alt="Today"><br><sub>Today</sub></td>
+    <td align="center"><img src="docs/screenshots/12-food-diary.png" width="180" alt="Food diary"><br><sub>Food diary</sub></td>
+    <td align="center"><img src="docs/screenshots/14-weight.png" width="180" alt="Weight"><br><sub>Weight</sub></td>
+    <td align="center"><img src="docs/screenshots/16-vitals.png" width="180" alt="Vitals"><br><sub>Vitals</sub></td>
+    <td align="center"><img src="docs/screenshots/18-meal-planner.png" width="180" alt="Meal plan"><br><sub>Meal plan</sub></td>
+    <td align="center"><img src="docs/screenshots/30-dark-today.png" width="180" alt="Dark mode"><br><sub>Dark mode</sub></td>
   </tr>
 </table>
 
-<sub>Captured from the demo data by the manual [Screenshots workflow](.github/workflows/screenshots.yml). More (iPad, accessibility sizes) are on the [`screenshots` branch](https://github.com/TheRealestNwah/fitness-app/tree/screenshots).</sub>
+<sub>Captured from the demo data and stored in [`docs/screenshots`](docs/screenshots). Screenshots are refreshed only on request.</sub>
 
 ## Features
 
@@ -128,7 +128,7 @@ Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and loa
 
 `.github/workflows/ci.yml` lints the Swift sources with SwiftLint (`swiftlint lint --strict`, configured in `.swiftlint.yml`), builds the app (with its widget and watch targets), then runs the unit tests and the UI tests on an iOS simulator (macOS runner, Xcode 26) for every pull request and push to `main`. Pull requests that only touch docs skip the build. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
 
-`.github/workflows/screenshots.yml` runs on demand on iPhone and iPad simulators and publishes the PNGs to the `screenshots` branch (and as a workflow artifact). Start it from Actions → Screenshots → Run workflow when fresh images are needed. The README screenshots come from there.
+`.github/workflows/screenshots.yml` runs only on request on iPhone and iPad simulators and uploads the PNGs as a workflow artifact. Start it from Actions → Screenshots → Run workflow when fresh images are needed, then copy the selected captures into `docs/screenshots/` through a PR to update the README. No separate publishing branch is used.
 
 ## AI disclosure
 
