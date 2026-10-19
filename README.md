@@ -19,7 +19,7 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
   </tr>
 </table>
 
-<sub>Captured from the demo data by the nightly [Screenshots workflow](.github/workflows/screenshots.yml), so they track `main`. More (iPad, accessibility sizes) are on the [`screenshots` branch](https://github.com/TheRealestNwah/fitness-app/tree/screenshots).</sub>
+<sub>Captured from the demo data by the manual [Screenshots workflow](.github/workflows/screenshots.yml). More (iPad, accessibility sizes) are on the [`screenshots` branch](https://github.com/TheRealestNwah/fitness-app/tree/screenshots).</sub>
 
 ## Features
 
@@ -128,7 +128,7 @@ Launch with `-demoData` (Scheme → Run → Arguments) to wipe the store and loa
 
 `.github/workflows/ci.yml` lints the Swift sources with SwiftLint (`swiftlint lint --strict`, configured in `.swiftlint.yml`), builds the app (with its widget and watch targets), then runs the unit tests and the UI tests on an iOS simulator (macOS runner, Xcode 26) for every pull request and push to `main`. Pull requests that only touch docs skip the build. The shared `FitnessApp` scheme in `FitnessApp.xcodeproj/xcshareddata` is what the workflow drives.
 
-`.github/workflows/screenshots.yml` runs nightly (and on demand) on iPhone and iPad simulators and publishes the PNGs to the `screenshots` branch (and as a workflow artifact). The README screenshots come from there.
+`.github/workflows/screenshots.yml` runs on demand on iPhone and iPad simulators and publishes the PNGs to the `screenshots` branch (and as a workflow artifact). Start it from Actions → Screenshots → Run workflow when fresh images are needed. The README screenshots come from there.
 
 ## AI disclosure
 
