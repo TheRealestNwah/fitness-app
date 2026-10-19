@@ -236,6 +236,7 @@ jobs:
           xcodebuild test -project FitnessApp.xcodeproj -scheme FitnessApp \
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -only-testing:FitnessAppUITests/IPadSupportTests \
+            -only-testing:FitnessAppUITests/IPadScreenshotTests/testSwitchingToCompactKeepsSectionAndSheet \
             -parallel-testing-enabled NO -resultBundlePath ipad.xcresult \
             CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" > ipad.log 2>&1 || {
               tail -100 ipad.log; exit 1;

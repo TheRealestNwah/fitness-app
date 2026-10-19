@@ -8,6 +8,7 @@ import AppKit
 #endif
 
 struct FoodDiaryView: View {
+    let addFood: (Date, MealType) -> Void
     @Environment(\.strideSizeClass) private var sizeClass
     @State private var date = Date.now
     @State private var showCalendar = false
@@ -69,7 +70,7 @@ struct FoodDiaryView: View {
     }
 
     private var day: some View {
-        DayDiaryView(date: date.startOfDay)
+        DayDiaryView(date: date.startOfDay, addFood: addFood)
             .id(date.startOfDay)
             .transition(.opacity)
             // Rows keep their own swipe-to-delete; a horizontal swipe elsewhere changes day.
@@ -243,7 +244,7 @@ struct DayDiaryView: View {
     @Query private var history: [FoodLogEntry]
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
 
-    @State private var addingTo: MealType?
+    let addFood: (Date, MealType) -> Void
     @State private var editing: FoodLogEntry?
     @State private var relocating: Relocation?
     @State private var savingFavourite: MealType?
@@ -256,8 +257,9 @@ struct DayDiaryView: View {
     @State private var selection: Set<PersistentIdentifier> = []
     @ScaledMetric(relativeTo: .headline) private var ringSize: CGFloat = 104
 
-    init(date: Date) {
+    init(date: Date, addFood: @escaping (Date, MealType) -> Void) {
         self.date = date
+        self.addFood = addFood
         let start = date.startOfDay
         let end = start.adding(days: 1)
         let yesterday = start.adding(days: -1)
@@ -402,7 +404,7 @@ struct DayDiaryView: View {
                     } description: {
                         Text("Log what you eat to see calories and macros against your target.")
                     } actions: {
-                        Button("Log \(meal.inSentence)") { addingTo = meal }
+                        Button("Log \(meal.inSentence)") { addFood(date, meal) }
                             .buttonStyle(.borderedProminent)
                     }
                 }
@@ -437,9 +439,6 @@ struct DayDiaryView: View {
         .toolbar { selectionToolbar }
         .onChange(of: entries.isEmpty) { _, empty in
             if empty { endSelecting() }
-        }
-        .strideSheet(item: $addingTo) { meal in
-            FoodSearchView(date: date, mealType: meal)
         }
         .strideSheet(item: $relocating) { relocation in
             RelocateEntrySheet(entries: relocation.entries, copying: relocation.copying) { meal, day in
@@ -533,7 +532,7 @@ struct DayDiaryView: View {
     private func mealActions(_ meal: MealType, items: [FoodLogEntry]) -> some View {
         HStack {
             Button {
-                addingTo = meal
+                addFood(date, meal)
             } label: {
                 Label("Add food", systemImage: "plus.circle.fill")
                     .font(.subheadline.weight(.medium))

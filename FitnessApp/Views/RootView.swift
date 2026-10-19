@@ -250,8 +250,15 @@ struct MainTabView: View {
 
     /// Sheets opened from a Home Screen quick action.
     enum QuickSheet: Identifiable {
-        case food, weight, settings
-        var id: Self { self }
+        case food(Date, MealType)
+        case weight, settings
+        var id: String {
+            switch self {
+            case .food: "food"
+            case .weight: "weight"
+            case .settings: "settings"
+            }
+        }
     }
 
     @ViewBuilder
@@ -261,7 +268,7 @@ struct MainTabView: View {
             DashboardView(day: today, selectTab: select,
                           openSettings: usesSidebar ? openSettings : nil)
                 .id(today)
-        case .food: FoodDiaryView()
+        case .food: FoodDiaryView { date, meal in quickSheet = .food(date, meal) }
         case .weight: WeightView()
         case .vitals: VitalsView()
         case .plan: MealPlanView()
@@ -323,7 +330,7 @@ struct MainTabView: View {
         .animation(.snappy, value: undoCenter.toast)
         .strideSheet(item: $quickSheet) { sheet in
             switch sheet {
-            case .food: FoodSearchView(date: Date.now.startOfDay, mealType: MealType.current())
+            case .food(let date, let meal): FoodSearchView(date: date, mealType: meal)
             case .weight: AddWeightSheet()
             case .settings: SettingsView()
             }
@@ -397,7 +404,7 @@ struct MainTabView: View {
     /// For the menu bar and keyboard shortcuts.
     private var sceneActions: SceneActions {
         SceneActions(select: select,
-                     logFood: { quickSheet = .food },
+                     logFood: { quickSheet = .food(Date.now.startOfDay, MealType.current()) },
                      logWeight: { quickSheet = .weight },
                      logWater: { _ = try? QuickLog.water(ml: nil, context: context) },
                      openSettings: {
@@ -425,7 +432,7 @@ struct MainTabView: View {
         quickActions.pending = nil
         select(.today)
         switch action {
-        case .logFood: quickSheet = .food
+        case .logFood: quickSheet = .food(Date.now.startOfDay, MealType.current())
         case .logWeight: quickSheet = .weight
         case .logWater: _ = try? QuickLog.water(ml: nil, context: context)
         case .toggleFast: _ = try? QuickLog.toggleFast(context: context)
