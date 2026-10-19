@@ -1,17 +1,11 @@
 name: Screenshots
 
-# Nightly rather than on every push to main: a run takes ~35 minutes and
-# screenshots only need to be roughly current. Run it by hand from the
-# Actions tab when you want fresh ones sooner.
+# Run from the Actions tab when fresh screenshots are needed.
 on:
-  schedule:
-    - cron: '0 8 * * *'
-  push:
-    branches: ['claude/**']
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: screenshots-${{ github.ref }}
@@ -56,7 +50,7 @@ jobs:
             -destination "platform=iOS Simulator,id=${{ steps.sim.outputs.device }}" \
             -derivedDataPath build \
             -resultBundlePath build/UITests.xcresult \
-            -only-testing:FitnessAppUITests \
+            -only-testing:FitnessAppUITests/ScreenshotTests \
             CODE_SIGNING_ALLOWED=NO CODE_SIGN_IDENTITY="" \
             | tee uitest.log | grep -E "Test Case|Test case|error:|failed|passed|\*\*" || true
           if grep -qE "TEST (EXECUTE )?SUCCEEDED" uitest.log; then
@@ -159,19 +153,6 @@ jobs:
           path: |
             uitest.log
             ipadtest.log
-
-      - name: Publish to the screenshots branch
-        run: |
-          set -e
-          cd screenshots
-          git init -q -b screenshots
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -q -m "Screenshots from ${GITHUB_SHA} (${GITHUB_REF_NAME}, iPhone tests ${{ steps.uitest.outputs.status }}, iPad tests ${{ steps.ipadtest.outputs.status }})"
-          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" screenshots
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fail if the UI tests failed
         if: steps.uitest.outputs.status != 'passed' || steps.ipadtest.outputs.status != 'passed'

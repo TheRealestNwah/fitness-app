@@ -35,14 +35,14 @@ CI (`.github/workflows/ci.yml`) runs lint, then build, then unit tests, then eve
 
 Online food search uses Stride's own USDA FoodData Central key, passed at build time as the `USDA_API_KEY` build setting (e.g. `xcodebuild ... USDA_API_KEY=xxxx`) and read from `USDAAPIKey` in `FitnessApp/Info.plist` (iOS) and `Config/StrideMac-Info.plist` (Mac; CI checks the entry is there). For local and device builds, copy `Config/Local.xcconfig.example` to the gitignored `Config/Local.xcconfig` and put the key there. Never commit the key. Builds without it fall back to USDA's rate-limited `DEMO_KEY`, which is fine for development but not for App Store builds.
 
-Screenshots (`.github/workflows/screenshots.yml`) run nightly, on pushes to `claude/**` branches, and on demand (Actions → Screenshots → Run workflow). They publish to the `screenshots` branch.
+Screenshots (`.github/workflows/screenshots.yml`) run only on request (Actions → Screenshots → Run workflow) and upload a workflow artifact. When asked to refresh the README images, copy the selected captures into `docs/screenshots/` and merge them through a PR. There is no screenshot publishing branch. Normal pull request CI runs independently, including the iPad width-transition regression.
 
 CI also runs `IPadSupportTests` on an iPad simulator and the `StrideMac` scheme on macOS. All three platform jobs must pass before merging. See [docs/PLATFORMS.md](docs/PLATFORMS.md) for platform differences and Mac signing setup. macOS deployment is 14; include `macOS 26` in availability checks for new shared APIs. Keep UIKit/AppKit adaptation in the platform helpers and guard mobile-only services with `#if os(iOS)`.
 
 ## Conventions
 
 - Only `main` is branch-protected. Branch names use `feature/`, `fix/`, `chore/` or `docs/`.
-- Always delete a branch (remote and local) once its PR merges, without asking. Squash merges make merged branches look unmerged to git, so check `gh pr list --head <branch> --state all` when sweeping stale ones. Never delete `main` or `screenshots`.
+- Always delete a branch (remote and local) once its PR merges, without asking. Squash merges make merged branches look unmerged to git, so check `gh pr list --head <branch> --state all` when sweeping stale ones. Never delete `main`.
 - Labels: `bug`, `enhancement`, `documentation`, `accessibility`, `chore`, `ci`, `refactor`, `parked` (blocked on something external, e.g. the paid developer account).
 - The data model is versioned (`StrideSchemaV1` and `StrideMigrationPlan` in `Services/CloudSync.swift`). Adding an optional property or a new model is a lightweight change; renaming, retyping or removing a property needs a new schema version and a migration stage. If the store can't be opened, the app shows `StoreRecoveryView` rather than crashing.
 - The UI is English only. There are no other localisations to keep in sync.
