@@ -27,3 +27,6 @@ dist/
 
 # Local build settings (USDA key)
 Config/Local.xcconfig
+
+# Private agent notes (CLAUDE.md is shared)
+CLAUDE.local.md
