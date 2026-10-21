@@ -47,3 +47,17 @@ CI also runs `IPadSupportTests` on an iPad simulator and the `StrideMac` scheme 
 - The data model is versioned (`StrideSchemaV1` and `StrideMigrationPlan` in `Services/CloudSync.swift`). Adding an optional property or a new model is a lightweight change; renaming, retyping or removing a property needs a new schema version and a migration stage. If the store can't be opened, the app shows `StoreRecoveryView` rather than crashing.
 - The UI is English only. There are no other localisations to keep in sync.
 - User-facing PR titles use plain sentences ("Track saturated fat, potassium and cholesterol").
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in this repo's GitHub Issues, managed with the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
