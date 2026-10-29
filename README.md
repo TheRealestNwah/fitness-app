@@ -21,6 +21,10 @@ A SwiftUI app for anyone starting a weight-loss journey. Everything lives on-dev
 
 <sub>Captured from the demo data and stored in [`docs/screenshots`](docs/screenshots). Screenshots are refreshed only on request.</sub>
 
+## Install
+
+Download the iPhone/iPad (`.ipa`) or Mac (`.dmg`) build from [Releases](https://github.com/TheRealestNwah/fitness-app/releases). The builds aren't from the App Store, so they need a few extra steps the first time. See [docs/INSTALL.md](docs/INSTALL.md).
+
 ## Features
 
 **Today dashboard**
