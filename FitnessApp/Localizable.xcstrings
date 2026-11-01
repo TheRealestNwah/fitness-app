@@ -730,6 +730,9 @@
         }
       }
     },
+    "+%@ added to today's budget from Apple Health activity, which counts instead of logged exercise when it's more." : {
+
+    },
     "× %@" : {
 
     },

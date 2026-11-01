@@ -26,17 +26,28 @@ struct WidgetSnapshot: Codable, Equatable {
 
     var remainingKcal: Double { Double(targetKcal) - consumedKcal }
 
+    /// - Parameters:
+    ///   - food: Recent entries, not just today's, so weekly budgeting can see earlier days this week.
+    ///   - exercise, healthCredit, earnBackPercent: Today's activity, so the target matches Today's (see `DayBudget`).
     static func make(profile: UserProfile, food: [(date: Date, calories: Double)], water: [(date: Date, ml: Double)],
                      latestWeightKg: Double?, logDates: [Date], protein: [(date: Date, grams: Double)] = [],
+                     exercise: [(date: Date, calories: Double)] = [], healthCredit: Int = 0, earnBackPercent: Int = 0,
                      now: Date = .now, calendar: Calendar = .current) -> WidgetSnapshot {
         let start = calendar.startOfDay(for: now)
         let end = calendar.date(byAdding: .day, value: 1, to: start) ?? now
         let today = { (date: Date) in date >= start && date < end }
         let currentKg = latestWeightKg ?? profile.startWeightKg
+        var intakeByDay: [Date: Double] = [:]
+        for entry in food { intakeByDay[entry.date.startOfDay, default: 0] += entry.calories }
+        let todaysExercise = exercise.filter { today($0.date) }
+        let budget = DayBudget.make(profile: profile, currentKg: currentKg, date: now, today: now, intakeByDay: intakeByDay,
+                                    exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories },
+                                    hasWorkout: !todaysExercise.isEmpty, healthCredit: healthCredit,
+                                    earnBackPercent: earnBackPercent)
         return WidgetSnapshot(
             day: start,
             consumedKcal: food.filter { today($0.date) }.reduce(0) { $0 + $1.calories },
-            targetKcal: profile.calorieTarget(currentWeightKg: currentKg),
+            targetKcal: budget.calories,
             waterMl: water.filter { today($0.date) }.reduce(0) { $0 + $1.ml },
             waterGoalMl: profile.waterGoalMl,
             weightText: latestWeightKg.map { profile.units.weightString(kg: $0) },
@@ -44,7 +55,7 @@ struct WidgetSnapshot: Codable, Equatable {
             energyUnit: EnergyUnit.current.rawValue,
             glassMl: profile.units.glassMl,
             proteinG: protein.filter { today($0.date) }.reduce(0) { $0 + $1.grams },
-            proteinTargetG: profile.macroTargets(currentWeightKg: currentKg).protein,
+            proteinTargetG: budget.macros.protein,
             waterUnit: profile.units.volumeUnit)
     }
 
@@ -71,11 +82,16 @@ struct WidgetSnapshot: Codable, Equatable {
         var latest = FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
         latest.fetchLimit = 1
         let weights = (try? context.fetch(FetchDescriptor<WeightEntry>(predicate: #Predicate { $0.date >= since }))) ?? []
+        let start = now.startOfDay
+        let exercise = (try? context.fetch(FetchDescriptor<ExerciseEntry>(predicate: #Predicate { $0.date >= start }))) ?? []
         return make(profile: profile,
                     food: food.map { (date: $0.date, calories: $0.calories) },
                     water: water.map { (date: $0.date, ml: $0.amountMl) },
                     latestWeightKg: (try? context.fetch(latest))?.first?.weightKg,
                     logDates: food.map(\.date) + weights.map(\.date),
-                    protein: food.map { (date: $0.date, grams: $0.protein) }, now: now)
+                    protein: food.map { (date: $0.date, grams: $0.protein) },
+                    exercise: exercise.map { (date: $0.date, calories: $0.calories) },
+                    healthCredit: HealthKitManager.shared.activeEnergyCredit,
+                    earnBackPercent: ExerciseSettings.earnBackPercent, now: now)
     }
 }

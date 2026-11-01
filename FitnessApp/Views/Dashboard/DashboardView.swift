@@ -231,7 +231,7 @@ struct DashboardView: View {
             if !todaysPlan.isEmpty { planCard }
         case .vitals: vitalsCard
         case .tip: tipCard
-        case .exercise: ExerciseCard(weightKg: currentKg)
+        case .exercise: ExerciseCard(weightKg: currentKg, activeCredit: activeCredit)
         case .fasting: FastingCard()
         case .medication: MedicationCard()
         }

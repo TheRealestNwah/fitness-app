@@ -4,6 +4,8 @@ import SwiftData
 /// Today's workouts and how many calories they add back.
 struct ExerciseCard: View {
     var weightKg: Double
+    /// What today's budget actually adds back: the larger of Health active energy and logged exercise (see `DayBudget`).
+    var activeCredit: Int
 
     @Environment(\.modelContext) private var context
     @Environment(UndoCenter.self) private var undoCenter
@@ -13,8 +15,9 @@ struct ExerciseCard: View {
     @State private var showLog = false
     @State private var editing: ExerciseEntry?
 
-    init(weightKg: Double) {
+    init(weightKg: Double, activeCredit: Int) {
         self.weightKg = weightKg
+        self.activeCredit = activeCredit
         let start = Calendar.current.startOfDay(for: .now)
         let end = start.adding(days: 1)
         _today = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end },
@@ -61,11 +64,17 @@ struct ExerciseCard: View {
                         } label: { Label("Delete", systemImage: "trash") }
                     }
                 }
-                Text(earnBackPercent > 0
-                     ? "+\(Energy.string(ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent))) added to today's budget (\(earnBackPercent)% of \(Energy.string(total)))."
-                     : "Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings.")
-                    .font(.footnote)
-                    .foregroundStyle(Color.secondary)
+                Group {
+                    if activeCredit > ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent) {
+                        Text("+\(Energy.string(activeCredit)) added to today's budget from Apple Health activity, which counts instead of logged exercise when it's more.")
+                    } else if earnBackPercent > 0 {
+                        Text("+\(Energy.string(ExerciseCatalog.earnBack(exerciseKcal: total, percent: earnBackPercent))) added to today's budget (\(earnBackPercent)% of \(Energy.string(total))).")
+                    } else {
+                        Text("Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings.")
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(Color.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

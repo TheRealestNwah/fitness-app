@@ -35,6 +35,33 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.proteinTargetG, profile.macroTargets(currentWeightKg: 68.4).protein)
     }
 
+    func testTargetMatchesTodayOnATrainingDayWithEarnBack() {
+        let now = Date.now
+        let profile = UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 165, startWeightKg: 70,
+                                  goalWeightKg: 62, activityLevel: .light, weeklyLossKg: 0.5, unitSystem: .metric)
+        profile.trainingDaysEnabled = true
+        profile.dayTypeOverrideDay = now
+        profile.dayTypeOverrideIsTraining = true
+        let plain = profile.calorieTarget(currentWeightKg: 68.4)
+        let snapshot = WidgetSnapshot.make(profile: profile, food: [], water: [], latestWeightKg: 68.4, logDates: [],
+                                           exercise: [(now, 400)], healthCredit: 0, earnBackPercent: 50, now: now)
+        // Base, plus the training-day bonus, plus half the 400 kcal workout.
+        XCTAssertEqual(snapshot.targetKcal, plain + profile.trainingBonusKcal + 200)
+        XCTAssertEqual(snapshot.proteinTargetG,
+                       profile.macroTargets(currentWeightKg: 68.4, dayType: .training, baseCalories: plain).protein)
+    }
+
+    func testTargetUsesHealthCreditWhenItIsLarger() {
+        let now = Date.now
+        let yesterday = now.adding(days: -1)
+        let profile = UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 165, startWeightKg: 70,
+                                  goalWeightKg: 62, activityLevel: .light, weeklyLossKg: 0.5, unitSystem: .metric)
+        let snapshot = WidgetSnapshot.make(profile: profile, food: [], water: [], latestWeightKg: 68.4, logDates: [],
+                                           exercise: [(now, 200), (yesterday, 2000)], healthCredit: 300,
+                                           earnBackPercent: 50, now: now)
+        XCTAssertEqual(snapshot.targetKcal, profile.calorieTarget(currentWeightKg: 68.4) + 300)
+    }
+
     func testDecodesSnapshotsSavedBeforeProtein() throws {
         let old = #"{"day":0,"consumedKcal":1,"targetKcal":2,"waterMl":3,"waterGoalMl":4,"streak":5,"energyUnit":"kcal"}"#
         let decoded = try JSONDecoder().decode(WidgetSnapshot.self, from: Data(old.utf8))
