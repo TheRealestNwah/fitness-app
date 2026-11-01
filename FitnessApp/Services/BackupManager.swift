@@ -223,6 +223,15 @@ struct ProfileRecord: Codable {
     var maintenanceWeightKg: Double?
     var maintenanceBandKg: Double
     var weeklyBudgetEnabled: Bool
+    // Optional so backups made before these were added still decode; nil leaves the profile's value alone.
+    var mealSlotsJSON: String?
+    var trainingDaysEnabled: Bool?
+    var trainingWeekdayMask: Int?
+    var trainingFromWorkouts: Bool?
+    var trainingBonusKcal: Int?
+    var trainingCarbShift: Int?
+    var dayTypeOverrideDay: Date?
+    var dayTypeOverrideIsTraining: Bool?
     var dietBreakStart: Date?
     var dietBreakEnd: Date?
     var proteinPercent: Double
@@ -259,6 +268,11 @@ struct ProfileRecord: Codable {
         customCalorieTarget = p.customCalorieTarget
         maintenanceStartedAt = p.maintenanceStartedAt; maintenanceWeightKg = p.maintenanceWeightKg
         maintenanceBandKg = p.maintenanceBandKg; weeklyBudgetEnabled = p.weeklyBudgetEnabled
+        mealSlotsJSON = p.mealSlotsJSON
+        trainingDaysEnabled = p.trainingDaysEnabled; trainingWeekdayMask = p.trainingWeekdayMask
+        trainingFromWorkouts = p.trainingFromWorkouts; trainingBonusKcal = p.trainingBonusKcal
+        trainingCarbShift = p.trainingCarbShift
+        dayTypeOverrideDay = p.dayTypeOverrideDay; dayTypeOverrideIsTraining = p.dayTypeOverrideIsTraining
         dietBreakStart = p.dietBreakStart; dietBreakEnd = p.dietBreakEnd
         proteinPercent = p.proteinPercent; carbsPercent = p.carbsPercent; fatPercent = p.fatPercent
         weightUnitRaw = p.weightUnitRaw
@@ -284,6 +298,15 @@ struct ProfileRecord: Codable {
         p.customCalorieTarget = customCalorieTarget
         p.maintenanceStartedAt = maintenanceStartedAt; p.maintenanceWeightKg = maintenanceWeightKg
         p.maintenanceBandKg = maintenanceBandKg; p.weeklyBudgetEnabled = weeklyBudgetEnabled
+        if let mealSlotsJSON { p.mealSlotsJSON = mealSlotsJSON }
+        if let trainingDaysEnabled { p.trainingDaysEnabled = trainingDaysEnabled }
+        if let trainingWeekdayMask { p.trainingWeekdayMask = trainingWeekdayMask }
+        if let trainingFromWorkouts { p.trainingFromWorkouts = trainingFromWorkouts }
+        if let trainingBonusKcal { p.trainingBonusKcal = trainingBonusKcal }
+        if let trainingCarbShift { p.trainingCarbShift = trainingCarbShift }
+        if let dayTypeOverrideIsTraining {
+            p.dayTypeOverrideDay = dayTypeOverrideDay; p.dayTypeOverrideIsTraining = dayTypeOverrideIsTraining
+        }
         p.dietBreakStart = dietBreakStart; p.dietBreakEnd = dietBreakEnd
         p.proteinPercent = proteinPercent; p.carbsPercent = carbsPercent; p.fatPercent = fatPercent
         p.weightUnitRaw = weightUnitRaw
