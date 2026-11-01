@@ -88,11 +88,10 @@ enum NotificationManager {
         var today = ReminderPlanner.Today(waterMl: water.reduce(0) { $0 + $1.amountMl }, loggedMeals: Set(food.map(\.mealType)))
         today.weighedIn = weighIns > 0
         guard profile.proteinReminderEnabled else { return today }
-        let latestKg = (try? context.fetch(FetchDescriptor<WeightEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])).first?.weightKg)
-            ?? profile.startWeightKg
-        let target = profile.macroTargets(currentWeightKg: latestKg)
-        today.proteinShortG = max(target.protein - food.reduce(0) { $0 + $1.protein }, 0)
-        let kcalLeft = Double(profile.calorieTarget(currentWeightKg: latestKg)) - food.reduce(0) { $0 + $1.calories }
+        // The same targets as Today, the widgets and Siri.
+        guard let snapshot = WidgetSnapshot.current(profile: profile, now: now) else { return today }
+        today.proteinShortG = max((snapshot.proteinTargetG ?? 0) - (snapshot.proteinG ?? 0), 0)
+        let kcalLeft = snapshot.remainingKcal
         let saved = ((try? context.fetch(FetchDescriptor<FoodItem>())) ?? [])
             .filter { $0.isFavorite || $0.lastUsed != nil }
             .map { (name: $0.displayName, protein: $0.protein, kcal: $0.calories) }
