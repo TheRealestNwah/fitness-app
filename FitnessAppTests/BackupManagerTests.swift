@@ -208,4 +208,65 @@ final class BackupManagerTests: XCTestCase {
         XCTAssertEqual(url.pathExtension, "stridebackup")
         XCTAssertNoThrow(try BackupManager.decode(Data(contentsOf: url)))
     }
+
+    func testProfileRecordCoversEveryProfileProperty() throws {
+        let entity = try XCTUnwrap(AppStore.schema.entitiesByName["UserProfile"])
+        let stored = Set(entity.attributes.map(\.name))
+        let record = ProfileRecord(UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 170,
+                                               startWeightKg: 80, goalWeightKg: 70, activityLevel: .light,
+                                               weeklyLossKg: 0.5, unitSystem: .metric))
+        let backedUp = Set(Mirror(reflecting: record).children.compactMap(\.label))
+        XCTAssertEqual(stored.subtracting(backedUp), [], "UserProfile properties missing from ProfileRecord")
+    }
+
+    func testRestoresTrainingDaysAndMealSlots() throws {
+        let source = try makeContext()
+        try populate(source)
+        let profile = try XCTUnwrap(source.fetch(FetchDescriptor<UserProfile>()).first)
+        let override = Date(timeIntervalSince1970: 1_700_000_000)
+        profile.mealSlotsJSON = #"["Breakfast","Lunch"]"#
+        profile.trainingDaysEnabled = true
+        profile.trainingWeekdayMask = 21
+        profile.trainingFromWorkouts = true
+        profile.trainingBonusKcal = 300
+        profile.trainingCarbShift = 15
+        profile.dayTypeOverrideDay = override
+        profile.dayTypeOverrideIsTraining = true
+        try source.save()
+
+        let data = try BackupManager.encode(BackupManager.makeBackup(context: source))
+        let target = try makeContext()
+        try BackupManager.restore(BackupManager.decode(data), mode: .replace, context: target)
+
+        let restored = try XCTUnwrap(target.fetch(FetchDescriptor<UserProfile>()).first)
+        XCTAssertEqual(restored.mealSlotsJSON, #"["Breakfast","Lunch"]"#)
+        XCTAssertTrue(restored.trainingDaysEnabled)
+        XCTAssertEqual(restored.trainingWeekdayMask, 21)
+        XCTAssertTrue(restored.trainingFromWorkouts)
+        XCTAssertEqual(restored.trainingBonusKcal, 300)
+        XCTAssertEqual(restored.trainingCarbShift, 15)
+        XCTAssertEqual(restored.dayTypeOverrideDay, override)
+        XCTAssertTrue(restored.dayTypeOverrideIsTraining)
+    }
+
+    func testOlderProfileRecordWithoutTrainingFieldsKeepsDefaults() throws {
+        let profile = UserProfile(name: "Sam", sex: .male, birthDate: .now, heightCm: 181, startWeightKg: 95,
+                                  goalWeightKg: 80, activityLevel: .moderate, weeklyLossKg: 0.75, unitSystem: .metric)
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(ProfileRecord(profile)))
+                                 as? [String: Any])
+        for key in ["mealSlotsJSON", "trainingDaysEnabled", "trainingWeekdayMask", "trainingFromWorkouts",
+                    "trainingBonusKcal", "trainingCarbShift", "dayTypeOverrideDay", "dayTypeOverrideIsTraining"] {
+            json[key] = nil
+        }
+        let old = try JSONDecoder().decode(ProfileRecord.self, from: JSONSerialization.data(withJSONObject: json))
+
+        let target = UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 170, startWeightKg: 80,
+                                 goalWeightKg: 70, activityLevel: .light, weeklyLossKg: 0.5, unitSystem: .metric)
+        target.trainingDaysEnabled = true
+        target.trainingBonusKcal = 400
+        old.apply(to: target)
+        XCTAssertEqual(target.name, "Sam")
+        XCTAssertTrue(target.trainingDaysEnabled)
+        XCTAssertEqual(target.trainingBonusKcal, 400)
+    }
 }
