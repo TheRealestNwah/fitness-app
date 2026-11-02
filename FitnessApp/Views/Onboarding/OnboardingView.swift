@@ -22,6 +22,11 @@ struct OnboardingView: View {
     @State private var rate: WeeklyGoalRate = .steady
     @State private var healthStatus: String?
     @State private var readingHealth = false
+    @FocusState private var focusedField: Field?
+
+    private enum Field: Hashable {
+        case name, height, currentWeight, goalWeight
+    }
 
     private let totalSteps = 5
 
@@ -80,11 +85,15 @@ struct OnboardingView: View {
 
             HStack {
                 if step > 0 {
-                    Button("Back") { step -= 1 }
-                        .buttonStyle(.bordered)
+                    Button("Back") {
+                        focusedField = nil
+                        step -= 1
+                    }
+                    .buttonStyle(.bordered)
                 }
                 Spacer()
                 Button(step == totalSteps - 1 ? "Start my journey" : "Continue") {
+                    focusedField = nil
                     if step == totalSteps - 1 {
                         finish()
                     } else {
@@ -97,6 +106,19 @@ struct OnboardingView: View {
             .padding()
         }
         .readableWidth()
+        .dismissKeyboardOnTap()
+        #if os(iOS)
+        // Declared here, outside the page TabView: a keyboard toolbar on a view inside one never
+        // shows, which left the number pads with no way to close them.
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { focusedField = nil }
+                    .fontWeight(.semibold)
+                    .accessibilityIdentifier("keyboardDone")
+            }
+        }
+        #endif
         .onChange(of: unitSystem) { _, newValue in
             // Convert the numbers in the fields so the user does not have to retype them.
             let other = Units(system: newValue == .metric ? .imperial : .metric)
@@ -160,6 +182,10 @@ struct OnboardingView: View {
             }
             Section {
                 TextField("Name (optional)", text: $name)
+                    .focused($focusedField, equals: .name)
+                    .submitLabel(.done)
+                    .onSubmit { focusedField = nil }
+                    .accessibilityIdentifier("nameField")
                 Picker("Sex", selection: $sex) {
                     ForEach(BiologicalSex.allCases) { Text($0.label).tag($0) }
                 }
@@ -181,7 +207,9 @@ struct OnboardingView: View {
                 if unitSystem == .metric {
                     HStack {
                         TextField("Height", value: $heightCm, format: .number)
-                            .strideKeyboard(.decimalPad)
+                            .strideKeyboard(.decimalPad, doneButton: false)
+                            .focused($focusedField, equals: .height)
+                            .accessibilityIdentifier("heightField")
                         Text("cm").foregroundStyle(Color.secondary)
                     }
                 } else {
@@ -203,6 +231,7 @@ struct OnboardingView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     private var weights: some View {
@@ -232,9 +261,11 @@ struct OnboardingView: View {
                     Text("Current weight")
                     Spacer()
                     TextField("Weight", value: $currentWeight, format: .number.precision(.fractionLength(0...1)))
-                        .strideKeyboard(.decimalPad)
+                        .strideKeyboard(.decimalPad, doneButton: false)
+                        .focused($focusedField, equals: .currentWeight)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
+                        .accessibilityIdentifier("currentWeightField")
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
             }
@@ -244,7 +275,8 @@ struct OnboardingView: View {
                         Text("Goal weight")
                         Spacer()
                         TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
-                            .strideKeyboard(.decimalPad)
+                            .strideKeyboard(.decimalPad, doneButton: false)
+                            .focused($focusedField, equals: .goalWeight)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 100)
                             .accessibilityIdentifier("goalWeightField")
@@ -269,6 +301,7 @@ struct OnboardingView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     private var lifestyle: some View {

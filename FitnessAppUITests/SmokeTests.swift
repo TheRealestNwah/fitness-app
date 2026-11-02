@@ -63,6 +63,41 @@ final class SmokeTests: XCTestCase {
         XCTAssertTrue(app.tabBars.buttons["Today"].waitForExistence(timeout: 10))
     }
 
+    func testOnboardingKeyboardCanBeDismissed() {
+        let app = launch(["-resetData"])
+        let next = app.buttons["Continue"]
+        XCTAssertTrue(next.waitForExistence(timeout: 15))
+        next.tap()      // welcome
+
+        // Every onboarding field gets a Done button above the keyboard.
+        let name = app.textFields["nameField"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.tap()
+        name.typeText("Sam")
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        let done = app.buttons["keyboardDone"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+        XCTAssertTrue(keyboard.waitForNonExistence(timeout: 5))
+
+        // The number pad has no Return key: Done puts it away, and so does tapping elsewhere.
+        next.tap()      // about you
+        let weight = app.textFields["currentWeightField"]
+        XCTAssertTrue(weight.waitForExistence(timeout: 5))
+        weight.tap()
+        weight.typeText("2")
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        XCTAssertTrue(done.waitForExistence(timeout: 5))
+        done.tap()
+        XCTAssertTrue(keyboard.waitForNonExistence(timeout: 5))
+
+        weight.tap()
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 5))
+        app.staticTexts["Current weight"].tap()
+        XCTAssertTrue(keyboard.waitForNonExistence(timeout: 5))
+    }
+
     func testAddingAGlassUpdatesTodaysWater() {
         let app = launch(["-demoData"])
         let total = app.staticTexts["waterTotal"]

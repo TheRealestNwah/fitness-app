@@ -132,16 +132,30 @@ extension View {
         #endif
     }
 
+    /// Picks the keyboard for a text field. Number pads have no return key, so they get a Done
+    /// button above them; pass `doneButton: false` when the screen provides its own.
     @ViewBuilder
-    func strideKeyboard(_ keyboard: StrideKeyboard) -> some View {
+    func strideKeyboard(_ keyboard: StrideKeyboard, doneButton: Bool = true) -> some View {
         #if os(iOS)
         if keyboard == .URL {
             keyboardType(.URL)
-        } else {
-            // Number pads have no return key, so they get a Done button above them.
+        } else if doneButton {
             keyboardType(keyboard == .decimalPad ? .decimalPad : .numberPad)
                 .modifier(NumberPadDoneButton())
+        } else {
+            keyboardType(keyboard == .decimalPad ? .decimalPad : .numberPad)
         }
+        #else
+        self
+        #endif
+    }
+
+    /// Puts the keyboard away when the person taps anywhere that isn't a text field or a control.
+    /// Nothing changes on the Mac, where the keyboard is physical.
+    @ViewBuilder
+    func dismissKeyboardOnTap() -> some View {
+        #if os(iOS)
+        background(KeyboardDismissingTap())
         #else
         self
         #endif
@@ -221,6 +235,48 @@ private struct NumberPadDoneButton: ViewModifier {
                     }
                 }
             }
+    }
+}
+
+/// Installs a tap recogniser on the window that ends editing. It recognises alongside every other
+/// gesture and never cancels the touch, so buttons, pickers and scrolling keep working, and it
+/// ignores taps on text fields and controls so tapping another field still moves focus there.
+private struct KeyboardDismissingTap: UIViewRepresentable {
+    func makeUIView(context: Context) -> InstallerView { InstallerView() }
+    func updateUIView(_ uiView: InstallerView, context: Context) {}
+
+    final class InstallerView: UIView, UIGestureRecognizerDelegate {
+        private lazy var recognizer: UITapGestureRecognizer = {
+            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+            tap.cancelsTouchesInView = false
+            tap.delaysTouchesEnded = false
+            tap.delegate = self
+            return tap
+        }()
+
+        override func willMove(toWindow newWindow: UIWindow?) {
+            super.willMove(toWindow: newWindow)
+            window?.removeGestureRecognizer(recognizer)
+            newWindow?.addGestureRecognizer(recognizer)
+        }
+
+        @objc private func handleTap(_ sender: UITapGestureRecognizer) {
+            sender.view?.endEditing(true)
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
+                               shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+            true
+        }
+
+        func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+            var view = touch.view
+            while let current = view {
+                if current is UITextField || current is UITextView || current is UIControl { return false }
+                view = current.superview
+            }
+            return true
+        }
     }
 }
 #endif
