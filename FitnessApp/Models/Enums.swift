@@ -290,10 +290,11 @@ enum MacTextSize: String, CaseIterable, Identifiable {
         .callout: 12, .subheadline: 11, .footnote: 10, .caption: 10, .caption2: 10,
     ]
 
-    /// The default text style sizes on iOS (body 17).
+    /// The default text style sizes on iOS (body 17), except caption2, lifted from 11 to 12 so
+    /// Larger is never smaller than Large (10 × 1.15).
     static let iOSSizes: [Font.TextStyle: CGFloat] = [
         .largeTitle: 34, .title: 28, .title2: 22, .title3: 20, .headline: 17, .body: 17,
-        .callout: 16, .subheadline: 15, .footnote: 13, .caption: 12, .caption2: 11,
+        .callout: 16, .subheadline: 15, .footnote: 13, .caption: 12, .caption2: 12,
     ]
 }
 
