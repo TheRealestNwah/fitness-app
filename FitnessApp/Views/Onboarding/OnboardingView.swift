@@ -10,11 +10,13 @@ struct OnboardingView: View {
     @State private var name = ""
     @State private var sex: BiologicalSex = .female
     @State private var birthDate = Calendar.current.date(byAdding: .year, value: -30, to: .now) ?? .now
-    @State private var unitSystem: UnitSystem = .metric
+    /// Starts on the region's usual units; the picker lets people change them.
+    private static let regionUnits = UnitSystem.preferred()
+    @State private var unitSystem: UnitSystem = OnboardingView.regionUnits
     @State private var heightCm: Double = 170
     @State private var heightFeet: Int = 5
     @State private var heightInches: Int = 7
-    @State private var currentWeight: Double = 80
+    @State private var currentWeight: Double = (Units(system: OnboardingView.regionUnits).weightValue(kg: 80) * 10).rounded() / 10
     /// No goal is chosen for the person: they pick what they want, and type a goal weight only to lose.
     @State private var goal: WeightGoal?
     @State private var goalWeight: Double?
@@ -22,6 +24,11 @@ struct OnboardingView: View {
     @State private var rate: WeeklyGoalRate = .steady
     @State private var healthStatus: String?
     @State private var readingHealth = false
+    @FocusState private var focusedField: Field?
+
+    private enum Field: Hashable {
+        case name, height, currentWeight, goalWeight
+    }
 
     private let totalSteps = 5
 
@@ -80,11 +87,15 @@ struct OnboardingView: View {
 
             HStack {
                 if step > 0 {
-                    Button("Back") { step -= 1 }
-                        .buttonStyle(.bordered)
+                    Button("Back") {
+                        focusedField = nil
+                        step -= 1
+                    }
+                    .buttonStyle(.bordered)
                 }
                 Spacer()
                 Button(step == totalSteps - 1 ? "Start my journey" : "Continue") {
+                    focusedField = nil
                     if step == totalSteps - 1 {
                         finish()
                     } else {
@@ -97,6 +108,19 @@ struct OnboardingView: View {
             .padding()
         }
         .readableWidth()
+        .dismissKeyboardOnTap()
+        #if os(iOS)
+        // Declared here, outside the page TabView: a keyboard toolbar on a view inside one never
+        // shows, which left the number pads with no way to close them.
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") { focusedField = nil }
+                    .fontWeight(.semibold)
+                    .accessibilityIdentifier("keyboardDone")
+            }
+        }
+        #endif
         .onChange(of: unitSystem) { _, newValue in
             // Convert the numbers in the fields so the user does not have to retype them.
             let other = Units(system: newValue == .metric ? .imperial : .metric)
@@ -160,6 +184,10 @@ struct OnboardingView: View {
             }
             Section {
                 TextField("Name (optional)", text: $name)
+                    .focused($focusedField, equals: .name)
+                    .submitLabel(.done)
+                    .onSubmit { focusedField = nil }
+                    .accessibilityIdentifier("nameField")
                 Picker("Sex", selection: $sex) {
                     ForEach(BiologicalSex.allCases) { Text($0.label).tag($0) }
                 }
@@ -181,7 +209,9 @@ struct OnboardingView: View {
                 if unitSystem == .metric {
                     HStack {
                         TextField("Height", value: $heightCm, format: .number)
-                            .strideKeyboard(.decimalPad)
+                            .strideKeyboard(.decimalPad, doneButton: false)
+                            .focused($focusedField, equals: .height)
+                            .accessibilityIdentifier("heightField")
                         Text("cm").foregroundStyle(Color.secondary)
                     }
                 } else {
@@ -203,6 +233,7 @@ struct OnboardingView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     private var weights: some View {
@@ -232,9 +263,11 @@ struct OnboardingView: View {
                     Text("Current weight")
                     Spacer()
                     TextField("Weight", value: $currentWeight, format: .number.precision(.fractionLength(0...1)))
-                        .strideKeyboard(.decimalPad)
+                        .strideKeyboard(.decimalPad, doneButton: false)
+                        .focused($focusedField, equals: .currentWeight)
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: 100)
+                        .accessibilityIdentifier("currentWeightField")
                     Text(units.weightUnit).foregroundStyle(Color.secondary)
                 }
             }
@@ -244,7 +277,8 @@ struct OnboardingView: View {
                         Text("Goal weight")
                         Spacer()
                         TextField("Goal", value: $goalWeight, format: .number.precision(.fractionLength(0...1)))
-                            .strideKeyboard(.decimalPad)
+                            .strideKeyboard(.decimalPad, doneButton: false)
+                            .focused($focusedField, equals: .goalWeight)
                             .multilineTextAlignment(.trailing)
                             .frame(maxWidth: 100)
                             .accessibilityIdentifier("goalWeightField")
@@ -269,6 +303,7 @@ struct OnboardingView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.immediately)
     }
 
     private var lifestyle: some View {

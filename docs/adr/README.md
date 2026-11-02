@@ -16,6 +16,7 @@ Domain terms are defined in [GLOSSARY.md](../../GLOSSARY.md).
 | [0008](0008-versioned-json-backup.md) | Backups are one versioned JSON file | Accepted, amended by 0012 |
 | [0009](0009-native-mac-app.md) | A native macOS app, not Mac Catalyst | Accepted |
 | [0010](0010-weight-progress-module.md) | One Weight Progress module for Today and the Weight screen | Accepted |
+| [0011](0011-health-store-adapter.md) | Apple Health sits behind a `HealthStore` adapter | Accepted |
 | [0012](0012-profile-backup-from-the-model.md) | The profile's backup format comes from `UserProfile` | Accepted |
 
 ## Writing a new one

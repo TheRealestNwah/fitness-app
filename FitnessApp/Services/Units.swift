@@ -204,3 +204,15 @@ enum Energy {
     }
     static func number(_ kcal: Int) -> String { number(Double(kcal)) }
 }
+
+// MARK: Region default
+
+extension UnitSystem {
+    /// What people in the device's region usually use: imperial where the locale measures the
+    /// US or UK way (the US, UK, Liberia and Myanmar), metric everywhere else. Onboarding starts
+    /// here, and the Units picker lets people change it.
+    static func preferred(for locale: Locale = .current) -> UnitSystem {
+        let system = locale.measurementSystem
+        return system == .us || system == .uk ? .imperial : .metric
+    }
+}
