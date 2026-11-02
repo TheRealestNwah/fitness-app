@@ -1,6 +1,6 @@
 # 0007. One Day Nutrition module for every screen's day numbers
 
-- Status: Accepted, in progress
+- Status: Accepted (implemented in #413)
 - Date: 2026-11-02
 
 ## Context
@@ -28,3 +28,16 @@ Inputs that don't live in the store, today's Health active energy and the credit
 - Screens that show the plain daily target on purpose (for example Settings explaining how the target is worked out) need to say so, and use the module's base or daily target rather than reaching round it.
 - It mostly removes the need for a separate shared day-fetch helper (idea 5 in the review), and makes a swappable HealthKit layer (idea 6) smaller if it's ever needed.
 - The exact API is settled in the implementing PR; update this ADR if it ends up different.
+
+## As built (#413)
+
+`FitnessApp/Services/DayNutrition.swift`:
+
+- `DayNutrition.make(profile:day:food:exercise:latestWeightKg:healthCredit:earnBackPercent:now:calendar:)` is the pure core. It takes plain values (`DayNutrition.Food`, `DayNutrition.Workout`) and is what the tests use, so they need no store or in-memory container.
+- A `@MainActor` overload takes `FoodLogEntry` and `ExerciseEntry`, for views that already have them from `@Query`. It's the one seam that reads today's Health credit (`HealthKitManager.shared.activeEnergyCredit`) and the earn-back percent.
+- `DayNutrition.for(day, in: context, profile:)` fetches the day's records (from the start of its week, for weekly budgeting) and the latest weigh-in itself.
+- The result has `eaten`, `budget` (the `DayBudget`), `target` (the day's budget), `macros`, `base`, `activeCredit`, `dayType` and `remaining`. Other nutrients are not totalled yet.
+- `DayNutrition.dailyTarget` and `dailyMacros` give the plain daily target. Summaries over many days use them (weekly review, monthly report, partner share, Settings export, both plateau checks, the protein streak, onboarding), because weekly budgeting, day type and activity are per-day adjustments that average out over a week.
+- `UserProfile.currentWeightKg(latestWeighIn:)` is the one place the current weight falls back to the starting weight.
+
+Settings still shows the daily target from `profile.calorieTarget`, on purpose, since it explains how that number is worked out.
