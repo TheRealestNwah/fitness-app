@@ -118,6 +118,17 @@ extension View {
         .frame(minWidth: 760, minHeight: 560)
         .formStyle(.grouped)
         .menuStyle(.borderlessButton)
+        .macTextSize()
+        #else
+        self
+        #endif
+    }
+
+    /// The Mac text size setting (Settings › Profile); nothing on iOS, where the system setting applies.
+    @ViewBuilder
+    func macTextSize() -> some View {
+        #if os(macOS)
+        modifier(MacTextSizeModifier())
         #else
         self
         #endif
@@ -277,6 +288,32 @@ private struct KeyboardDismissingTap: UIViewRepresentable {
             }
             return true
         }
+    }
+}
+#endif
+
+extension Font {
+    /// A text style at the Mac text size setting (Settings › Profile); the plain system style on iOS,
+    /// where Dynamic Type applies. Font modifiers chain as usual: `.stride(.headline).weight(.semibold)`.
+    static func stride(_ style: Font.TextStyle) -> Font {
+        #if os(macOS)
+        .system(size: MacTextSize.current.size(for: style), weight: style == .headline ? .bold : .regular)
+        #else
+        .system(style)
+        #endif
+    }
+}
+
+#if os(macOS)
+/// Sets the window's default font to the chosen size and rebuilds the window when it changes, since
+/// `Font.stride` reads the setting when a view's body runs.
+private struct MacTextSizeModifier: ViewModifier {
+    @AppStorage(MacTextSize.storageKey) private var textSizeRaw = MacTextSize.default.rawValue
+
+    func body(content: Content) -> some View {
+        content
+            .font(.stride(.body))
+            .id(textSizeRaw)
     }
 }
 #endif

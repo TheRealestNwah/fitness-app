@@ -84,7 +84,7 @@ struct RecipeLibraryView: View {
                     } label: {
                         Label("Add recipe", systemImage: "plus")
                     }
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                 }
             }
         }
@@ -151,7 +151,7 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.stride(.subheadline).weight(.medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(isOn ? Color.accentColor : Color.strideFill, in: Capsule())
@@ -174,7 +174,7 @@ struct RecipeRow: View {
                 HStack(spacing: 4) {
                     Text(recipe.name)
                     if recipe.isFavorite {
-                        Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
+                        Image(systemName: "star.fill").font(.stride(.caption2)).foregroundStyle(.yellow)
                     }
                 }
                 HStack(spacing: 6) {
@@ -184,7 +184,7 @@ struct RecipeRow: View {
                     Text("·")
                     Text("\(recipe.prepMinutes) min")
                 }
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
             }
         }
@@ -219,14 +219,14 @@ struct RecipeDetailView: View {
                     Spacer()
                     Label(recipe.mealType.label, systemImage: recipe.mealType.systemImage)
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 .foregroundStyle(Color.secondary)
 
                 if !recipe.tags.isEmpty {
                     HStack {
                         ForEach(recipe.tags, id: \.self) { tag in
                             Text(tag)
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(Color.strideFill, in: Capsule())
@@ -249,11 +249,11 @@ struct RecipeDetailView: View {
 
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Text("Ingredients").font(.headline)
+                        Text("Ingredients").font(.stride(.headline))
                         Spacer()
                         Stepper(value: Binding(get: { servingsShown }, set: { scaledServings = $0 }), in: 1...40) {
                             Text("for \(servingsShown)")
-                                .font(.subheadline.monospacedDigit())
+                                .font(.stride(.subheadline).monospacedDigit())
                                 .foregroundStyle(servingsShown == recipe.servings ? Color.secondary : Color.accentColor)
                         }
                         .fixedSize()
@@ -266,11 +266,11 @@ struct RecipeDetailView: View {
                             Spacer()
                             Text(RecipeScaler.scale(ing.amount, by: factor)).foregroundStyle(Color.secondary)
                         }
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                     }
                     if servingsShown != recipe.servings {
                         Text("Scaled from \(recipe.servings) servings. Nutrition per serving is unchanged.")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 }
@@ -279,9 +279,9 @@ struct RecipeDetailView: View {
 
                 if !recipe.instructions.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Method").font(.headline)
+                        Text("Method").font(.stride(.headline))
                         Text(recipe.instructions)
-                            .font(.subheadline)
+                            .font(.stride(.subheadline))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .card()
@@ -449,11 +449,11 @@ struct RecipeEditorView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(ing.name)
-                                Text(ing.amount).font(.subheadline).foregroundStyle(Color.secondary)
+                                Text(ing.amount).font(.stride(.subheadline)).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Energy.string(ing.calories))")
-                                .font(.subheadline.monospacedDigit())
+                                .font(.stride(.subheadline).monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
                     }

@@ -47,11 +47,11 @@ struct MenuBarExtraContent: View {
     private func summary(_ snapshot: WidgetSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(MenuBarSummary.caloriesLine(remainingKcal: snapshot.remainingKcal))
-                .font(.title3.bold())
+                .font(.stride(.title3).bold())
             Text(MenuBarSummary.proteinLine(grams: snapshot.proteinG ?? 0, targetGrams: snapshot.proteinTargetG))
             ProgressView(value: MenuBarSummary.waterProgress(ml: snapshot.waterMl, goalMl: snapshot.waterGoalMl)) {
                 Text("\(Int(snapshot.waterMl.rounded())) of \(Int(snapshot.waterGoalMl.rounded())) ml water")
-                    .font(.callout)
+                    .font(.stride(.callout))
             }
         }
     }
@@ -71,7 +71,7 @@ struct MenuBarExtraContent: View {
             Label("Search foods…", systemImage: "magnifyingglass")
         }
         if !quickFoods.isEmpty {
-            Text("Log again").font(.caption).foregroundStyle(Color.secondary)
+            Text("Log again").font(.stride(.caption)).foregroundStyle(Color.secondary)
             ForEach(quickFoods) { food in
                 Button {
                     log(food)

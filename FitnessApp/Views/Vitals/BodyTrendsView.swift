@@ -60,7 +60,7 @@ struct BodyTrendsView: View {
 
     private var measurementsCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Measurements").font(.headline)
+            Text("Measurements").font(.stride(.headline))
             if Set(measurements.map(\.date)).count < 2 {
                 ContentUnavailableView("Not enough measurements", systemImage: "ruler",
                                        description: Text("Log waist, hips or chest in Vitals on two or more days to see them change together."))
@@ -94,14 +94,14 @@ struct BodyTrendsView: View {
         }
         if !lines.isEmpty {
             Text("Since first reading: " + lines.joined(separator: " · "))
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
         }
     }
 
     private var bodyFatCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Body fat and weight").font(.headline)
+            Text("Body fat and weight").font(.stride(.headline))
             if let domain = fatDomain {
                 Chart(bodyFat) { p in
                     LineMark(x: .value("Date", p.date), y: .value("Body fat", p.value))
@@ -160,7 +160,7 @@ struct BodyTrendsView: View {
                         .foregroundStyle(Color.secondary)
                 }
             }
-            .font(.footnote)
+            .font(.stride(.footnote))
         }
     }
 }

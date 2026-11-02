@@ -155,7 +155,7 @@ struct WeightView: View {
     private var chartCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Trend").font(.headline)
+                Text("Trend").font(.stride(.headline))
                 Spacer()
                 Picker("Range", selection: $range) {
                     ForEach(ChartRange.allCases) { Text($0.rawValue).tag($0) }
@@ -177,7 +177,7 @@ struct WeightView: View {
                         .foregroundStyle(.purple.opacity(0.6))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 5]))
                         .annotation(position: .top, alignment: .leading) {
-                            Text("Goal").font(.footnote).foregroundStyle(.purple)
+                            Text("Goal").font(.stride(.footnote)).foregroundStyle(.purple)
                         }
                     ForEach(visible) { entry in
                         PointMark(x: .value("Date", entry.date),
@@ -217,7 +217,7 @@ struct WeightView: View {
         let forecastReadiness = progress.forecastReadiness
         let remaining = progress.remainingKg
         return VStack(alignment: .leading, spacing: 10) {
-            Text("Insights").font(.headline)
+            Text("Insights").font(.stride(.headline))
             if profile.isMaintaining {
                 MaintenanceBandView(trendKg: progress.trendKg ?? progress.currentKg,
                                     centerKg: profile.maintenanceCenterKg, bandKg: profile.maintenanceBandKg,
@@ -236,7 +236,7 @@ struct WeightView: View {
                             .foregroundStyle(Color.secondary)
                     }
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
             } else {
                 TrendProgressView(title: "Your real rate of loss appears after a few weigh-ins.",
                                   progress: rateReadiness, logWeighIn: { showAdd = true })
@@ -246,14 +246,14 @@ struct WeightView: View {
                     Image(systemName: "trophy.fill").foregroundStyle(.yellow)
                     Text("\(latest.percent)% of your starting weight lost, reached \(latest.reachedOn.formatted(date: .abbreviated, time: .omitted)).")
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
             }
             if let next = progress.nextMilestone, remaining > 0 {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "flag.checkered").foregroundStyle(.indigo)
                     Text("\(units.weightString(kg: next.remainingKg)) on your 7-day average to reach \(next.percent)%.")
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
             }
             if let plateau = progress.plateau {
                 HStack(alignment: .top, spacing: 10) {
@@ -265,20 +265,20 @@ struct WeightView: View {
                         }
                     }
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
             }
             if let projected = progress.plannedGoalDate, remaining > 0, !profile.isMaintaining {
                 HStack(spacing: 10) {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(.purple)
                     Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.approximateDateLabel()).")
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 if let forecast = progress.forecast {
                     HStack(spacing: 10) {
                         Image(systemName: "chart.line.downtrend.xyaxis").foregroundStyle(.teal)
                         Text("If your pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week holds, you'll get there around \(forecast.goalDate.approximateDateLabel()).")
                     }
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                 } else if !forecastReadiness.isReady, rateReadiness.isReady {
                     TrendProgressView(title: "A goal date from your actual pace needs two weeks of weigh-ins.",
                                       progress: forecastReadiness)
@@ -293,7 +293,7 @@ struct WeightView: View {
                     }
                     .buttonStyle(.bordered)
                 }
-                .font(.subheadline)
+                .font(.stride(.subheadline))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -303,14 +303,14 @@ struct WeightView: View {
     private var historyList: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("History").font(.headline)
+                Text("History").font(.stride(.headline))
                 Spacer()
                 if entries.filter({ $0.photo != nil }).count >= 2 {
                     NavigationLink {
                         ProgressPhotoCompareView()
                     } label: {
                         Label("Compare photos", systemImage: "rectangle.split.2x1")
-                            .font(.subheadline)
+                            .font(.stride(.subheadline))
                     }
                 }
             }
@@ -328,13 +328,13 @@ struct WeightView: View {
                                 Text(entry.date.formatted(date: .abbreviated, time: .omitted))
                                 if entry.photo != nil {
                                     Image(systemName: "camera.fill")
-                                        .font(.caption2)
+                                        .font(.stride(.caption2))
                                         .foregroundStyle(Color.secondary)
                                         .accessibilityLabel("Has progress photo")
                                 }
                             }
                             if !entry.note.isEmpty {
-                                Text(entry.note).font(.footnote).foregroundStyle(Color.secondary)
+                                Text(entry.note).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                             }
                         }
                         Spacer()
@@ -342,11 +342,11 @@ struct WeightView: View {
                             let delta = entry.weightKg - previous
                             // Neutral: day-to-day changes are mostly water, so they get no good or bad colour.
                             Text(units.weightString(kg: delta, signed: true))
-                                .font(.subheadline.monospacedDigit())
+                                .font(.stride(.subheadline).monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
                         Text(units.weightString(kg: entry.weightKg))
-                            .font(.body.monospacedDigit().weight(.medium))
+                            .font(.stride(.body).monospacedDigit().weight(.medium))
                     }
                     .contentShape(Rectangle())
                 }
@@ -378,10 +378,10 @@ struct WeighInDetailCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(entry.date.formatted(date: .complete, time: .shortened))
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 .foregroundStyle(Color.secondary)
             Text(units.weightString(kg: entry.weightKg))
-                .font(.largeTitle.bold().monospacedDigit())
+                .font(.stride(.largeTitle).bold().monospacedDigit())
             if !entry.note.isEmpty {
                 Text(entry.note)
             }
@@ -431,7 +431,7 @@ struct AddWeightSheet: View {
                         TextField("Weight", value: $weight, format: .number.precision(.fractionLength(0...1)))
                             .strideKeyboard(.decimalPad)
                             .multilineTextAlignment(.trailing)
-                            .font(.title2.monospacedDigit())
+                            .font(.stride(.title2).monospacedDigit())
                         Text(units.weightUnit).foregroundStyle(Color.secondary)
                     }
                     HStack(spacing: 8) {
@@ -445,7 +445,7 @@ struct AddWeightSheet: View {
                                                            : "Decrease by \(abs(delta).cleanString) \(units.weightUnit)")
                         }
                     }
-                    .font(.body.monospacedDigit())
+                    .font(.stride(.body).monospacedDigit())
                 } footer: {
                     if entry == nil, let last = entries.first {
                         Text("Last weigh-in \(units.weightString(kg: last.weightKg)), \(last.date.formatted(.relative(presentation: .named))).")

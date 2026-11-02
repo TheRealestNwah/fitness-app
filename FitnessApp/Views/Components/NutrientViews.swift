@@ -82,10 +82,10 @@ struct NutrientPill: View {
     var body: some View {
         VStack(spacing: 4) {
             Text(name)
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
             Text(text)
-                .font(.subheadline.monospacedDigit().weight(.medium))
+                .font(.stride(.subheadline).monospacedDigit().weight(.medium))
                 .foregroundStyle(tint == .secondary ? Color.primary : tint)
         }
         .multilineTextAlignment(.center)

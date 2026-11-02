@@ -19,28 +19,28 @@ struct MedicationCard: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Label("Medication", systemImage: "syringe")
-                        .font(.headline)
+                        .font(.stride(.headline))
                     Spacer()
                     NavigationLink {
                         MedicationView()
                     } label: {
-                        Text("History").font(.subheadline)
+                        Text("History").font(.stride(.subheadline))
                     }
                 }
                 Text(profile.medicationName.isEmpty ? String(localized: "Your medication") : profile.medicationName)
-                    .font(.subheadline.weight(.medium))
+                    .font(.stride(.subheadline).weight(.medium))
                 Label(MedicationPlanner.countdown(due), systemImage: overdue ? "exclamationmark.circle" : "calendar")
                     .foregroundStyle(overdue ? Color.orange : Color.primary)
                 if medication?.isInjection ?? true, let last = doses.first {
                     Text("Next site: \(MedicationPlanner.nextSite(after: last.site).label)")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 if let start = profile.medicationStartDate,
                    let change = MedicationPlanner.weightChange(since: start,
                                                                weights: weights.map { (date: $0.date, kg: $0.weightKg) }) {
                     Text("\(profile.units.weightString(kg: change, decimals: 1, signed: true)) since starting")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 Button {
@@ -91,11 +91,11 @@ struct MedicationView: View {
                     }
                     Text(dose.date.formatted(date: .abbreviated, time: .shortened)
                          + (dose.site.map { " · \($0.label)" } ?? ""))
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                     if !dose.sideEffects.isEmpty || !dose.note.isEmpty {
                         Text((dose.sideEffects + (dose.note.isEmpty ? [] : [dose.note])).joined(separator: ", "))
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 }

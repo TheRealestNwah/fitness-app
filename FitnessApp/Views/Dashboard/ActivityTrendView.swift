@@ -67,7 +67,7 @@ struct ActivityTrendView: View {
                     .foregroundStyle(Color.secondary)
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))
                     .annotation(position: .top, alignment: .trailing) {
-                        Text("Goal \(stepGoal.formatted())").font(.caption2).foregroundStyle(Color.secondary)
+                        Text("Goal \(stepGoal.formatted())").font(.stride(.caption2)).foregroundStyle(Color.secondary)
                     }
             }
         }

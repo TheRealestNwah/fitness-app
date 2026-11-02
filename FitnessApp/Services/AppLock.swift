@@ -130,10 +130,10 @@ struct LockCover: View {
             if locked {
                 VStack(spacing: 16) {
                     Image(systemName: "lock.fill")
-                        .font(.largeTitle)
+                        .font(.stride(.largeTitle))
                         .foregroundStyle(Color.accentColor)
                     Text("Stride is locked")
-                        .font(.headline)
+                        .font(.stride(.headline))
                     Button("Unlock with \(AppLock.methodName)", action: unlock)
                         .buttonStyle(.borderedProminent)
                 }

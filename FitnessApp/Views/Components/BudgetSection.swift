@@ -50,7 +50,7 @@ struct ICloudSyncSection: View {
         Section {
             Toggle("Sync with iCloud", isOn: $requested)
             Text(status)
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(CloudSync.problem == nil ? Color.secondary : Color.orange)
         } header: {
             Text("iCloud")
@@ -94,7 +94,7 @@ struct TrainingDaysSection: View {
                             toggle(weekday)
                         } label: {
                             Text(Calendar.current.veryShortWeekdaySymbols[weekday - 1])
-                                .font(.subheadline.weight(.semibold))
+                                .font(.stride(.subheadline).weight(.semibold))
                                 .frame(maxWidth: .infinity, minHeight: 36)
                                 .background(on ? Color.accentColor : Color.secondary.opacity(0.15), in: Circle())
                                 .foregroundStyle(on ? Color.white : Color.primary)

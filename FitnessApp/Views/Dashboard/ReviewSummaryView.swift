@@ -17,7 +17,7 @@ struct ReviewSummaryView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
                         Label("Summary", systemImage: "sparkles")
-                            .font(.footnote.weight(.semibold))
+                            .font(.stride(.footnote).weight(.semibold))
                         Spacer()
                         Button {
                             Task { await write(force: true) }
@@ -30,7 +30,7 @@ struct ReviewSummaryView: View {
                     }
                     if let text {
                         Text(text)
-                            .font(.subheadline)
+                            .font(.stride(.subheadline))
                             .fixedSize(horizontal: false, vertical: true)
                             .accessibilityIdentifier("weeklySummaryText")
                     } else if isWriting {
@@ -38,7 +38,7 @@ struct ReviewSummaryView: View {
                     }
                     if text != nil {
                         Text("Written by AI on this device. It can make mistakes, and it isn't medical advice.")
-                            .font(.caption2)
+                            .font(.stride(.caption2))
                             .foregroundStyle(Color.secondary)
                     }
                 }

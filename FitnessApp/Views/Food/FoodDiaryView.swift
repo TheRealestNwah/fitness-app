@@ -104,7 +104,7 @@ struct DiaryCalendarPane: View {
                                loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
                                onSelect: {})
             Label("Days with food logged", systemImage: "circle.fill")
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
                 .labelStyle(DotLabelStyle())
                 .padding(.horizontal)
@@ -132,7 +132,7 @@ struct DiaryCalendarSheet: View {
                                    loggedDays: Set(entries.map { Calendar.current.startOfDay(for: $0.date) }),
                                    onSelect: { dismiss() })
                 Label("Days with food logged", systemImage: "circle.fill")
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
                     .labelStyle(DotLabelStyle())
                     .padding(.horizontal)
@@ -481,13 +481,13 @@ struct DayDiaryView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(entry.foodName).foregroundStyle(Color.primary)
                 Text(entry.isEstimate ? "Estimate · tap to fill in" : entry.servingsLabel)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(entry.isEstimate ? Color.orange : Color.secondary)
             }
             Spacer()
         }
         let kcal = Text(NumberPrivacy.hide("\(Int(entry.calories.rounded()))"))
-            .font(.body.monospacedDigit())
+            .font(.stride(.body).monospacedDigit())
             .foregroundStyle(Color.secondary)
         if isSelecting {
             HStack {
@@ -518,7 +518,7 @@ struct DayDiaryView: View {
                 addFood(date, meal)
             } label: {
                 Label("Add food", systemImage: "plus.circle.fill")
-                    .font(.subheadline.weight(.medium))
+                    .font(.stride(.subheadline).weight(.medium))
             }
             .buttonStyle(.borderless)
             .foodDropDestination { references in
@@ -529,7 +529,7 @@ struct DayDiaryView: View {
                 photographing = meal
             } label: {
                 Label("Photo", systemImage: "camera")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
             }
             .buttonStyle(.borderless)
             .accessibilityLabel("Log \(meal.inSentence) from a photo")
@@ -543,9 +543,9 @@ struct DayDiaryView: View {
                 Label {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Copy yesterday's \(meal.inSentence)")
-                            .font(.subheadline.weight(.medium))
+                            .font(.stride(.subheadline).weight(.medium))
                         Text("\(fromYesterday.count) items · \(Energy.string(kcal))")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 } icon: {
@@ -558,7 +558,7 @@ struct DayDiaryView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     Text("Log again")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                         .accessibilityHidden(true)
                     ForEach(again) { entry in
@@ -566,7 +566,7 @@ struct DayDiaryView: View {
                             diary.logAgain(entry, as: meal, on: date)
                         } label: {
                             Label(entry.foodName, systemImage: "plus")
-                                .font(.footnote.weight(.medium))
+                                .font(.stride(.footnote).weight(.medium))
                                 .lineLimit(1)
                         }
                         .buttonStyle(.bordered)
@@ -589,7 +589,7 @@ struct DayDiaryView: View {
             if let rated = checkIn(for: meal), rated.hunger != nil || rated.mood != nil {
                 Button { checkingIn = meal } label: {
                     Image(systemName: "face.smiling")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                 }
                 .buttonStyle(.borderless)
                 .accessibilityLabel(MealCheckInSheet.summary(rated))
@@ -627,7 +627,7 @@ struct DayDiaryView: View {
                 }
             } label: {
                 Image(systemName: "ellipsis.circle")
-                    .font(.body)
+                    .font(.stride(.body))
                     .accessibilityLabel("\(meal.label) options")
             }
             .textCase(nil)
@@ -675,7 +675,7 @@ struct DayDiaryView: View {
                 .disabled(chosen.isEmpty)
                 Spacer()
                 Text(chosen.isEmpty ? "Select entries" : "\(chosen.count) selected")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(Color.secondary)
                 Spacer()
                 Button(role: .destructive) {
@@ -696,10 +696,10 @@ struct DayDiaryView: View {
                     ProgressRing(progress: target > 0 ? consumed / Double(target) : 0, lineWidth: 10)
                     VStack(spacing: 0) {
                         Text(Energy.number(consumed))
-                            .font(.headline.monospacedDigit())
+                            .font(.stride(.headline).monospacedDigit())
                             .minimumScaleFactor(0.85)
                         Text("of \(Energy.string(target))")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                             .lineLimit(2)
                             .multilineTextAlignment(.center)
@@ -737,13 +737,13 @@ struct DayDiaryView: View {
                     MicronutrientsView(date: date)
                 } label: {
                     Label("Vitamins and minerals", systemImage: "pills")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                 }
                 .accessibilityIdentifier("micronutrientsLink")
             }
             let remaining = Double(target) - consumed
             Text(remaining >= 0 ? "\(Energy.string(remaining)) remaining" : "\(Energy.string((-remaining))) over budget")
-                .font(.subheadline.weight(.medium))
+                .font(.stride(.subheadline).weight(.medium))
                 .foregroundStyle(remaining >= 0 ? Color.primary : Color.orange)
         }
         .padding(.vertical, 4)
@@ -844,7 +844,7 @@ struct ServingsControl: View {
                     Text(metric.unit).foregroundStyle(Color.secondary)
                 }
                 Text("= \(servings.formatted(.number.precision(.fractionLength(0...2)))) servings")
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
             } else {
                 HStack {
@@ -858,7 +858,7 @@ struct ServingsControl: View {
                 }
                 if !description.isEmpty {
                     Text("1 serving = \(description)")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -913,11 +913,11 @@ struct SaveFavouriteMealSheet: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(e.foodName)
-                                Text(e.servingsLabel).font(.footnote).foregroundStyle(Color.secondary)
+                                Text(e.servingsLabel).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text(NumberPrivacy.hide("\(Int(e.calories.rounded()))"))
-                                .font(.body.monospacedDigit())
+                                .font(.stride(.body).monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
                     }
@@ -988,7 +988,7 @@ struct ServingsMenu: View {
             }
         } label: {
             Text("\(servings.cleanString)×")
-                .font(.subheadline.monospacedDigit().weight(.semibold))
+                .font(.stride(.subheadline).monospacedDigit().weight(.semibold))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Color.strideFill, in: Capsule())

@@ -77,7 +77,7 @@ struct MonthlyReportView: View {
                 .help("Previous month")
             Spacer()
             Text(monthDay.formatted(.dateTime.month(.wide).year()))
-                .font(.headline)
+                .font(.stride(.headline))
             Spacer()
             Button { shift(1) } label: { Image(systemName: "chevron.right") }
                 .accessibilityLabel("Next month")
@@ -124,10 +124,10 @@ struct MonthlyReportCard: View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(monthName)
-                    .font(.title2.bold())
+                    .font(.stride(.title2).bold())
                 Text(report.isComplete ? String(localized: "Whole month")
                                        : String(localized: "So far: \(report.daysSoFar) days"))
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(Color.secondary)
             }
             VStack(spacing: 12) {
@@ -162,7 +162,7 @@ struct MonthlyReportCard: View {
                 }
             }
             Text("Tracked with Stride")
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
         }
     }

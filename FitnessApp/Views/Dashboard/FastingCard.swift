@@ -19,7 +19,7 @@ struct FastingCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Fasting", systemImage: "timer")
-                .font(.headline)
+                .font(.stride(.headline))
             if let session = active.first {
                 running(session)
             } else {
@@ -40,9 +40,9 @@ struct FastingCard: View {
                     ProgressRing(progress: min(progress, 1), lineWidth: 10, color: progress >= 1 ? .green : .indigo)
                     VStack(spacing: 0) {
                         Text("\(Int(elapsed))h \(Int((elapsed * 60).truncatingRemainder(dividingBy: 60)))m")
-                            .font(.headline.monospacedDigit())
+                            .font(.stride(.headline).monospacedDigit())
                         Text("of \(session.targetHours.cleanString)h")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 }
@@ -52,16 +52,16 @@ struct FastingCard: View {
                 .accessibilityValue("\(Int(elapsed)) hours \(Int((elapsed * 60).truncatingRemainder(dividingBy: 60))) minutes of \(session.targetHours.cleanString) hours")
                 VStack(alignment: .leading, spacing: 6) {
                     Text(progress >= 1 ? "Target reached" : "Ends \(FastingCalculator.targetEnd(fast).formatted(date: .omitted, time: .shortened))")
-                        .font(.subheadline.weight(.semibold))
+                        .font(.stride(.subheadline).weight(.semibold))
                     Text("Started \(session.start.formatted(date: .omitted, time: .shortened))")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                     Button(progress >= 1 ? "End fast" : "End early") {
                         if progress >= 1 { end(session) } else { confirmEnd = true }
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(progress >= 1 ? .green : .orange)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                 }
             }
         }
@@ -75,7 +75,7 @@ struct FastingCard: View {
     private var start: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Start a fast now. You'll see the countdown here.")
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 .foregroundStyle(Color.secondary)
             HStack {
                 ForEach(FastingCalculator.presets) { preset in
@@ -85,14 +85,14 @@ struct FastingCard: View {
                 Button("Custom") { showCustom.toggle() }
                     .buttonStyle(.bordered)
             }
-            .font(.subheadline)
+            .font(.stride(.subheadline))
             if showCustom {
                 Stepper(value: $customHours, in: FastingCalculator.customRange, step: 1) {
                     Text("\(customHours.cleanString) hours").monospacedDigit()
                 }
                 Button("Start \(customHours.cleanString)-hour fast") { begin(hours: customHours) }
                     .buttonStyle(.borderedProminent)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
             }
         }
     }

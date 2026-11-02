@@ -30,11 +30,11 @@ struct ExerciseCard: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Label("Exercise", systemImage: "figure.run")
-                    .font(.headline)
+                    .font(.stride(.headline))
                 Spacer()
                 Button { showLog = true } label: {
                     Label("Log", systemImage: "plus")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                 }
                 .buttonStyle(.bordered)
             }
@@ -47,13 +47,13 @@ struct ExerciseCard: View {
             if today.isEmpty {
                 // A starting point rather than a bare "nothing": any movement counts.
                 Text("Any movement counts. A 10-minute walk is a good place to start.")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(Color.secondary)
             } else {
                 ForEach(today) { entry in
                     Button { editing = entry } label: {
                         ExerciseRow(entry: entry)
-                            .font(.subheadline)
+                            .font(.stride(.subheadline))
                     }
                     .buttonStyle(.plain)
                     .accessibilityHint("Edits this workout")
@@ -73,7 +73,7 @@ struct ExerciseCard: View {
                         Text("Earn-back is off, so exercise doesn't change your budget. Turn it on in Settings.")
                     }
                 }
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
             }
         }
@@ -110,7 +110,7 @@ private struct PhoneWorkoutPanel: View {
                     }
                 } label: {
                     Label("Start workout", systemImage: "play.fill")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                 }
                 .buttonStyle(.bordered)
             case .starting, .saving:
@@ -123,17 +123,17 @@ private struct PhoneWorkoutPanel: View {
             }
             if let error = recorder.lastError {
                 Text(error)
-                    .font(.caption)
+                    .font(.stride(.caption))
                     .foregroundStyle(.red)
             }
             if let notice = recorder.notice {
                 HStack(alignment: .firstTextBaseline) {
                     Text(notice)
-                        .font(.caption)
+                        .font(.stride(.caption))
                         .foregroundStyle(Color.secondary)
                     Spacer()
                     Button("OK") { recorder.notice = nil }
-                        .font(.caption)
+                        .font(.stride(.caption))
                 }
             }
         }
@@ -144,24 +144,24 @@ private struct PhoneWorkoutPanel: View {
         ReflowRow(verticalAlignment: .center) {
             HStack {
                 Label(kind.name, systemImage: kind.systemImage)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.stride(.subheadline).weight(.semibold))
                 if recorder.phase == .paused {
                     Text("Paused")
-                        .font(.caption)
+                        .font(.stride(.caption))
                         .foregroundStyle(Color.secondary)
                 }
             }
         } trailing: {
             TimelineView(.periodic(from: .now, by: 1)) { timeline in
                 Text(PhoneWorkoutRules.elapsedString(recorder.elapsed(at: timeline.date)))
-                    .font(.title3.weight(.semibold))
+                    .font(.stride(.title3).weight(.semibold))
                     .monospacedDigit()
             }
         }
         .accessibilityElement(children: .combine)
         if recorder.activeKcal > 0 {
             Text("\(Energy.string(recorder.activeKcal)) active energy")
-                .font(.caption)
+                .font(.stride(.caption))
                 .foregroundStyle(Color.secondary)
                 .monospacedDigit()
         }
@@ -198,7 +198,7 @@ private struct PhoneWorkoutPanel: View {
     @ViewBuilder private var unsaved: some View {
         let kind = recorder.kind ?? .walking
         Label("\(kind.name) not saved yet", systemImage: kind.systemImage)
-            .font(.subheadline.weight(.semibold))
+            .font(.stride(.subheadline).weight(.semibold))
         HStack {
             Button("Discard", role: .destructive) {
                 Task { await recorder.discard() }
@@ -224,7 +224,7 @@ struct ExerciseRow: View {
                 Text(entry.activity)
                     .foregroundStyle(Color.primary)
                 if entry.sourceID != nil {
-                    Image(systemName: "heart.fill").font(.caption2).foregroundStyle(.pink)
+                    Image(systemName: "heart.fill").font(.stride(.caption2)).foregroundStyle(.pink)
                         .accessibilityLabel("From Apple Health")
                 }
             }
@@ -296,7 +296,7 @@ struct LogExerciseSheet: View {
                 if entry?.sourceID != nil {
                     Section {
                         Text("This workout came from Apple Health. Changes here only affect Stride.")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 }
@@ -404,7 +404,7 @@ private struct RecordingBar: View {
                                 .foregroundStyle(Color.secondary)
                         }
                     }
-                    .font(.headline)
+                    .font(.stride(.headline))
                     .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
                     .contentShape(Rectangle())
                 }

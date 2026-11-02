@@ -63,13 +63,13 @@ struct PartnerShareView: View {
                         .foregroundStyle(Color.secondary)
                 } else {
                     Text(text)
-                        .font(.callout)
+                        .font(.stride(.callout))
                         .textSelection(.enabled)
                         .accessibilityIdentifier("partnerSummaryPreview")
                 }
                 if NumberPrivacy.shared.isOn {
                     Text("Numbers are hidden, so they show as dots. Turn off Hide numbers to share them.")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
             }

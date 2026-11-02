@@ -57,7 +57,7 @@ struct CorrelationsView: View {
                               emptyText: "Rate hunger before meals from the diary's meal menu to see how it tracks with how much you eat.",
                               summary: hungerSummary(hungerCaloriePairs, measure: { Energy.string($0) }))
                 Text("These show what happened together, not what caused what.")
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
             }
             .padding()
@@ -103,7 +103,7 @@ private struct PairChartCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(title).font(.headline)
+            Text(title).font(.stride(.headline))
             if pairs.count < CorrelationCalculator.minimumForChart {
                 ContentUnavailableView("Not enough days yet", systemImage: "chart.dots.scatter",
                                        description: Text(emptyText))
@@ -120,7 +120,7 @@ private struct PairChartCard: View {
                 .frame(height: 220)
                 .accessibilityLabel(title)
                 Text(summary ?? "\(pairs.count) days so far. A pattern summary appears after \(CorrelationCalculator.minimumForSummary).")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(summary == nil ? Color.secondary : Color.primary)
                     .fixedSize(horizontal: false, vertical: true)
             }

@@ -26,7 +26,7 @@ struct LoggedDaysCalendar: View {
                     .accessibilityLabel("Previous month")
                     .help("Previous month")
                 Spacer()
-                Text(month, format: .dateTime.month(.wide).year()).font(.headline)
+                Text(month, format: .dateTime.month(.wide).year()).font(.stride(.headline))
                 Spacer()
                 Button { moveMonth(1) } label: { Image(systemName: "chevron.right") }
                     .accessibilityLabel("Next month")

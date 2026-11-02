@@ -43,7 +43,7 @@ struct WeeklySummaryImage: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             Text("My last 7 days")
-                .font(.title.bold())
+                .font(.stride(.title).bold())
             Grid(horizontalSpacing: 16, verticalSpacing: 16) {
                 GridRow {
                     tile("Days logged", "\(review.daysLogged)/7", "calendar")
@@ -55,14 +55,14 @@ struct WeeklySummaryImage: View {
                 }
             }
             Text(review.headline)
-                .font(.headline)
+                .font(.stride(.headline))
             if review.completedFasts > 0 {
                 Label("\(review.completedFasts) fasts completed", systemImage: "timer")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
             }
             Spacer(minLength: 0)
             Text("Tracked with Stride")
-                .font(.caption)
+                .font(.stride(.caption))
                 .foregroundStyle(.secondary)
         }
         .padding(28)
@@ -75,8 +75,8 @@ struct WeeklySummaryImage: View {
 
     private func tile(_ title: LocalizedStringKey, _ value: String, _ icon: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label(title, systemImage: icon).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.title3.bold().monospacedDigit())
+            Label(title, systemImage: icon).font(.stride(.caption)).foregroundStyle(.secondary)
+            Text(value).font(.stride(.title3).bold().monospacedDigit())
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
