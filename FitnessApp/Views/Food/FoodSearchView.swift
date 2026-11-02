@@ -131,8 +131,7 @@ struct FoodSearchView: View {
     }
 
     private func logPortion(_ batch: MealPrepBatch) {
-        guard batch.logPortion(on: date, as: mealType, context: context) != nil else { return }
-        context.saveReportingFailure()
+        guard Diary(context).logPortion(of: batch, as: mealType, on: date) != nil else { return }
         withAnimation { loggedMealName = batch.name }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             dismiss()
@@ -140,8 +139,7 @@ struct FoodSearchView: View {
     }
 
     private func logSavedMeal(_ meal: SavedMeal) {
-        meal.log(on: date, as: mealType, context: context)
-        context.saveReportingFailure()
+        Diary(context).log(meal, as: mealType, on: date)
         withAnimation { loggedMealName = meal.name }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
             dismiss()
@@ -587,8 +585,7 @@ struct LogFoodSheet: View {
     }
 
     private func log() {
-        food.log(servings: servings, meal: meal, on: date, context: context)
-        context.saveReportingFailure()
+        Diary(context).log(food, servings: servings, as: meal, on: date)
         dismiss()
     }
 }
@@ -625,13 +622,7 @@ struct LogRecipeSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: date), mealType: meal, foodName: recipe.name,
-                                                    servings: servings, servingDescription: "serving",
-                                                    calories: recipe.caloriesPerServing * servings,
-                                                    protein: recipe.proteinPerServing * servings,
-                                                    carbs: recipe.carbsPerServing * servings,
-                                                    fat: recipe.fatPerServing * servings))
-                        context.saveReportingFailure()
+                        Diary(context).log(recipe, servings: servings, as: meal, on: date)
                         dismiss()
                     }
                     .disabled(servings <= 0)
@@ -681,12 +672,8 @@ struct QuickAddSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") {
-                        context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: date), mealType: meal,
-                                                    foodName: name.isEmpty ? "Quick add" : name,
-                                                    servings: 1, servingDescription: "",
-                                                    calories: calories ?? 0, protein: protein ?? 0,
-                                                    carbs: carbs ?? 0, fat: fat ?? 0))
-                        context.saveReportingFailure()
+                        Diary(context).quickAdd(name, calories: calories ?? 0, protein: protein ?? 0,
+                                                carbs: carbs ?? 0, fat: fat ?? 0, as: meal, on: date)
                         dismiss()
                     }
                     .disabled((calories ?? 0) <= 0)

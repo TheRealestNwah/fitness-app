@@ -264,18 +264,7 @@ struct PlannerView: View {
     // MARK: Actions
 
     private func log(_ entry: MealPlanEntry) {
-        let logDate = entry.mealType.logDate(on: selectedDay)
-        context.insertDiaryEntry(FoodLogEntry(date: logDate, mealType: entry.mealType, foodName: entry.title,
-                                    servings: entry.servings, servingDescription: "serving",
-                                    calories: entry.totalCalories, protein: entry.totalProtein,
-                                    carbs: entry.totalCarbs, fat: entry.totalFat,
-                                    foodItemID: entry.foodItemID))
-        entry.isLogged = true
-        if let id = entry.batchID,
-           let batch = try? context.fetch(FetchDescriptor<MealPrepBatch>(predicate: #Predicate { $0.uuid == id })).first {
-            batch.usePortion()
-        }
-        context.saveReportingFailure()
+        Diary(context, undo: undoCenter).log(entry)
     }
 
     private func clearDay() {

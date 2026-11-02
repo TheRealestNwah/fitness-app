@@ -114,18 +114,6 @@ extension FoodLogEntry {
         micros = other.micros.scaled(by: scale)
         return self
     }
-
-    /// The same, from a food for `servings` of it.
-    @discardableResult
-    func withExtras(from food: FoodItem, servings: Double) -> FoodLogEntry {
-        saturatedFat = food.saturatedFat * servings
-        potassium = food.potassium * servings
-        cholesterol = food.cholesterol * servings
-        alcohol = food.alcohol * servings
-        caffeine = food.caffeine * servings
-        micros = food.micros.scaled(by: servings)
-        return self
-    }
 }
 
 extension FoodLogEntry {
@@ -136,86 +124,5 @@ extension FoodLogEntry {
         copy.mealType = meal
         copy.date = meal.logDate(on: day)
         return copy
-    }
-}
-
-extension ModelContext {
-    /// Moves a diary line to another meal or day, updating Health, with undo.
-    @MainActor
-    func moveDiaryEntry(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
-        let previous = (meal: entry.mealType, date: entry.date)
-        let target = meal.logDate(on: day)
-        guard previous.meal != meal || !Calendar.current.isDate(previous.date, inSameDayAs: target) else { return }
-        entry.mealType = meal
-        entry.date = target
-        saveReportingFailure()
-        HealthKitManager.shared.recordDiaryEntry(entry)
-        center?.offer(String(localized: "Moved \(entry.foodName) to \(meal.inSentence)")) {
-            entry.mealType = previous.meal
-            entry.date = previous.date
-            self.saveReportingFailure()
-            HealthKitManager.shared.recordDiaryEntry(entry)
-        }
-    }
-
-    /// Copies a diary line to another meal or day, with undo.
-    @MainActor
-    func copyDiaryEntry(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
-        let copy = entry.copy(to: meal, on: day)
-        insertDiaryEntry(copy)
-        saveReportingFailure()
-        center?.offer(String(localized: "Copied \(entry.foodName) to \(meal.inSentence)")) {
-            self.deleteDiaryEntry(copy)
-            self.saveReportingFailure()
-        }
-    }
-
-    /// Logs a past diary line again in `meal` on `day`, with undo.
-    @MainActor
-    func logAgain(_ entry: FoodLogEntry, to meal: MealType, on day: Date, undo center: UndoCenter?) {
-        let copy = entry.copy(to: meal, on: day)
-        insertDiaryEntry(copy)
-        saveReportingFailure()
-        center?.offer(String(localized: "Logged \(entry.foodName)")) {
-            self.deleteDiaryEntry(copy)
-            self.saveReportingFailure()
-        }
-    }
-
-    /// Moves several diary lines at once, with a single undo.
-    @MainActor
-    func moveDiaryEntries(_ entries: [FoodLogEntry], to meal: MealType, on day: Date, undo center: UndoCenter?) {
-        guard !entries.isEmpty else { return }
-        if entries.count == 1 { return moveDiaryEntry(entries[0], to: meal, on: day, undo: center) }
-        let previous = entries.map { (entry: $0, meal: $0.mealType, date: $0.date) }
-        let target = meal.logDate(on: day)
-        for entry in entries {
-            entry.mealType = meal
-            entry.date = target
-            HealthKitManager.shared.recordDiaryEntry(entry)
-        }
-        saveReportingFailure()
-        center?.offer(String(localized: "Moved \(entries.count) entries to \(meal.inSentence)")) {
-            for old in previous {
-                old.entry.mealType = old.meal
-                old.entry.date = old.date
-                HealthKitManager.shared.recordDiaryEntry(old.entry)
-            }
-            self.saveReportingFailure()
-        }
-    }
-
-    /// Copies several diary lines at once, with a single undo.
-    @MainActor
-    func copyDiaryEntries(_ entries: [FoodLogEntry], to meal: MealType, on day: Date, undo center: UndoCenter?) {
-        guard !entries.isEmpty else { return }
-        if entries.count == 1 { return copyDiaryEntry(entries[0], to: meal, on: day, undo: center) }
-        let copies = entries.map { $0.copy(to: meal, on: day) }
-        for copy in copies { insertDiaryEntry(copy) }
-        saveReportingFailure()
-        center?.offer(String(localized: "Copied \(entries.count) entries to \(meal.inSentence)")) {
-            for copy in copies { self.deleteDiaryEntry(copy) }
-            self.saveReportingFailure()
-        }
     }
 }

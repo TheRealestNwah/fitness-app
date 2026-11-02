@@ -57,41 +57,26 @@ struct FoodReference: Codable, Hashable, Transferable {
         return true
     }
 
-    /// Logs one serving (a food's last amount) to a diary meal. False when it no longer exists.
+    /// Logs one serving (a food's last amount) to a diary meal, or moves a dropped diary entry
+    /// there. False when it no longer exists.
     @MainActor
     func log(on day: Date, as meal: MealType, context: ModelContext, undo center: UndoCenter? = nil) -> Bool {
         let id = id
-        let entry: FoodLogEntry
+        let diary = Diary(context, undo: center)
         switch kind {
         case .entry:
-            // Dropping a diary line on another meal moves it there.
             guard let existing = try? context.fetch(FetchDescriptor<FoodLogEntry>(predicate: #Predicate { $0.uuid == id })).first
             else { return false }
-            context.moveDiaryEntry(existing, to: meal, on: day, undo: center)
-            return true
+            diary.move([existing], to: meal, on: day)
         case .recipe:
             guard let recipe = try? context.fetch(FetchDescriptor<Recipe>(predicate: #Predicate { $0.uuid == id })).first
             else { return false }
-            entry = FoodLogEntry(date: meal.logDate(on: day), mealType: meal, foodName: recipe.name,
-                                 servings: 1, servingDescription: "serving",
-                                 calories: recipe.caloriesPerServing, protein: recipe.proteinPerServing,
-                                 carbs: recipe.carbsPerServing, fat: recipe.fatPerServing)
+            diary.log(recipe, as: meal, on: day)
         case .food:
             guard let food = try? context.fetch(FetchDescriptor<FoodItem>(predicate: #Predicate { $0.uuid == id })).first
             else { return false }
-            let servings = food.lastServings ?? 1
-            entry = FoodLogEntry(date: meal.logDate(on: day), mealType: meal, foodName: food.displayName,
-                                 servings: servings, servingDescription: food.servingDescription,
-                                 calories: food.calories * servings, protein: food.protein * servings,
-                                 carbs: food.carbs * servings, fat: food.fat * servings, foodItemID: food.uuid,
-                                 fiber: food.fiber * servings, sugar: food.sugar * servings,
-                                 sodium: food.sodium * servings)
-                .withExtras(from: food, servings: servings)
-            food.lastUsed = .now
-            food.useCount += 1
+            diary.log(food, as: meal, on: day)
         }
-        context.insertDiaryEntry(entry)
-        context.saveReportingFailure()
         return true
     }
 }

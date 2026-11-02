@@ -84,8 +84,7 @@ struct MenuBarExtraContent: View {
     }
 
     private func log(_ food: FoodItem) {
-        food.log(servings: food.lastServings ?? 1, meal: .current(), on: .now, context: context)
-        context.saveReportingFailure()
+        Diary(context).log(food, as: .current(), on: .now)
         refresh()
     }
 

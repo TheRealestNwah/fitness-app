@@ -121,7 +121,13 @@ Decisions behind these terms are in [docs/adr/](docs/adr/).
 : _Avoid:_ "log" as a noun for one item; the **diary** is all the entries.
 
 **Diary** (Food diary)
-: A day's entries grouped by meal, and the screen that shows them.
+: A day's entries grouped by meal, and the screen that shows them. Every change to entries (logging from a food, recipe, saved meal, batch or plan item, quick add, logging again, copying, moving, changing the amount, deleting) goes through `Diary` (`Services/Diary.swift`), which builds the full snapshot, mirrors it to Apple Health, saves, and offers undo. See [ADR 0004](docs/adr/0004-diary-entries-are-snapshots.md).
+
+**Other nutrients**
+: Everything an entry records past calories and the three macros: fibre, sugar, sodium, saturated fat, potassium, cholesterol, alcohol, caffeine, and vitamins and minerals (`OtherNutrients`). Recipe ingredients picked from a saved food carry them too, so logging a recipe keeps them.
+
+**Last amount** (last servings)
+: The amount of a food last logged (`FoodItem.lastServings`), the default the next time it's logged anywhere: search, suggestions, drag and drop, the Mac menu bar and the Watch.
 
 **Meal slot** (meal)
 : One of the person's meals (`MealSlot`, `MealType`): name, icon, usual time, whether it reminds, and its share of the day's budget. The defaults are Breakfast, Lunch, Dinner and Snacks; the list lives on the profile.

@@ -193,10 +193,8 @@ struct SentenceLogSheet: View {
     }
 
     private func log() {
-        for line in toLog {
-            line.food?.log(servings: line.servings, meal: meal, on: date, context: context)
-        }
-        context.saveReportingFailure()
+        Diary(context).log(toLog.compactMap { line in line.food.map { (food: $0, servings: line.servings) } },
+                           as: meal, on: date)
         dismiss()
         onLogged()
     }

@@ -91,28 +91,4 @@ final class SavedMeal {
     static func firstPhoto(in entries: [FoodLogEntry]) -> Data? {
         entries.lazy.compactMap(\.photo).first
     }
-
-    /// Inserts a diary entry for each item and returns them.
-    @MainActor
-    @discardableResult
-    func log(on day: Date, as meal: MealType, context: ModelContext) -> [FoodLogEntry] {
-        let stamp = meal.logDate(on: day)
-        let entries = items.map { item in
-            let entry = FoodLogEntry(date: stamp, mealType: meal, foodName: item.foodName, servings: item.servings,
-                                     servingDescription: item.servingDescription, calories: item.calories,
-                                     protein: item.protein, carbs: item.carbs, fat: item.fat, foodItemID: item.foodItemID,
-                                     fiber: item.fiber ?? 0, sugar: item.sugar ?? 0, sodium: item.sodium ?? 0)
-            entry.saturatedFat = item.saturatedFat ?? 0
-            entry.potassium = item.potassium ?? 0
-            entry.cholesterol = item.cholesterol ?? 0
-            entry.alcohol = item.alcohol ?? 0
-            entry.caffeine = item.caffeine ?? 0
-            entry.micros = item.micros ?? Micronutrients()
-            return entry
-        }
-        for e in entries { context.insertDiaryEntry(e) }
-        lastUsed = .now
-        useCount += 1
-        return entries
-    }
 }

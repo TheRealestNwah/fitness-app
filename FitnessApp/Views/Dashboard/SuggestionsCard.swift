@@ -7,6 +7,7 @@ struct SuggestionsCard: View {
     var target: MealSuggester.Macros
 
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Query(filter: #Predicate<FoodItem> { $0.isFavorite || $0.useCount > 0 }, sort: \FoodItem.useCount, order: .reverse)
     private var foods: [FoodItem]
     @Query(sort: \SavedMeal.useCount, order: .reverse) private var meals: [SavedMeal]
@@ -70,28 +71,18 @@ struct SuggestionsCard: View {
 
     private func log(_ pick: MealSuggester.Candidate) {
         let meal = MealType.current()
+        let diary = Diary(context, undo: undoCenter)
         switch pick.kind {
         case .food(let id):
             guard let food = foods.first(where: { $0.uuid == id }) else { return }
-            let s = food.lastServings ?? 1
-            context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: .now), mealType: meal, foodName: food.displayName,
-                                                  servings: s, servingDescription: food.servingDescription,
-                                                  calories: food.calories * s, protein: food.protein * s,
-                                                  carbs: food.carbs * s, fat: food.fat * s, foodItemID: food.uuid,
-                                                  fiber: food.fiber * s, sugar: food.sugar * s, sodium: food.sodium * s)
-                .withExtras(from: food, servings: s))
-            food.lastUsed = .now
-            food.useCount += 1
+            diary.log(food, as: meal, on: .now)
         case .meal(let id):
-            meals.first { $0.uuid == id }?.log(on: .now, as: meal, context: context)
+            guard let saved = meals.first(where: { $0.uuid == id }) else { return }
+            diary.log(saved, as: meal, on: .now)
         case .recipe(let id):
             guard let recipe = recipes.first(where: { $0.uuid == id }) else { return }
-            context.insertDiaryEntry(FoodLogEntry(date: meal.logDate(on: .now), mealType: meal, foodName: recipe.name,
-                                                  servings: 1, servingDescription: "serving",
-                                                  calories: recipe.caloriesPerServing, protein: recipe.proteinPerServing,
-                                                  carbs: recipe.carbsPerServing, fat: recipe.fatPerServing))
+            diary.log(recipe, as: meal, on: .now)
         }
-        context.saveReportingFailure()
         logged = pick.name
     }
 }
