@@ -328,22 +328,17 @@ struct DayDiaryView: View {
 
     private func copyYesterday(_ meal: MealType) {
         CopyYesterdayTip().invalidate(reason: .actionPerformed)
-        let stamp = meal.logDate(on: date)
-        for e in yesterday(for: meal) {
-            context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
-                                        servingDescription: e.servingDescription, calories: e.calories,
-                                        protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
-                                        fiber: e.fiber, sugar: e.sugar, sodium: e.sodium).withExtras(from: e))
-        }
-        context.saveReportingFailure()
+        diary.copy(yesterday(for: meal), to: meal, on: date)
     }
+
+    private var diary: Diary { Diary(context, undo: undoCenter) }
 
     /// Move or copy a diary line: other meals today, tomorrow, or any day.
     @ViewBuilder
     private func relocateMenu(_ entry: FoodLogEntry) -> some View {
         Menu {
             ForEach(MealType.allCases.filter { $0 != entry.mealType }) { meal in
-                Button(meal.label) { context.moveDiaryEntry(entry, to: meal, on: date, undo: undoCenter) }
+                Button(meal.label) { diary.move([entry], to: meal, on: date) }
             }
             Divider()
             Button("Another day…") { relocating = Relocation(entries: [entry], copying: false) }
@@ -352,11 +347,11 @@ struct DayDiaryView: View {
         }
         Menu {
             ForEach(MealType.allCases) { meal in
-                Button(meal.label) { context.copyDiaryEntry(entry, to: meal, on: date, undo: undoCenter) }
+                Button(meal.label) { diary.copy([entry], to: meal, on: date) }
             }
             Divider()
             Button("Tomorrow") {
-                context.copyDiaryEntry(entry, to: entry.mealType, on: date.adding(days: 1), undo: undoCenter)
+                diary.copy([entry], to: entry.mealType, on: date.adding(days: 1))
             }
             Button("Another day…") { relocating = Relocation(entries: [entry], copying: true) }
         } label: {
@@ -366,20 +361,11 @@ struct DayDiaryView: View {
 
     /// Changes an entry's servings from its row, with undo.
     private func setServings(_ entry: FoodLogEntry, to servings: Double) {
-        let previous = entry.servings
-        guard servings != previous else { return }
-        entry.scale(toServings: servings)
-        context.saveReportingFailure()
-        HealthKitManager.shared.recordDiaryEntry(entry)
-        undoCenter.offer(String(localized: "Changed \(entry.foodName) to \(servings.cleanString) servings")) {
-            entry.scale(toServings: previous)
-            context.saveReportingFailure()
-            HealthKitManager.shared.recordDiaryEntry(entry)
-        }
+        diary.change(entry, servings: servings)
     }
 
     private func clear(_ meal: MealType) {
-        context.deleteDiaryEntries(entries(for: meal), undo: undoCenter)
+        diary.delete(entries(for: meal))
     }
 
     var body: some View {
@@ -414,7 +400,7 @@ struct DayDiaryView: View {
                             .tag(entry.persistentModelID)
                     }
                     .onDelete { offsets in
-                        context.deleteDiaryEntries(offsets.map { items[$0] }, undo: undoCenter)
+                        diary.delete(offsets.map { items[$0] })
                     }
                     if !isSelecting {
                         mealActions(meal, items: items)
@@ -429,7 +415,7 @@ struct DayDiaryView: View {
         }
         .strideListStyle()
         .deleteCommand(perform: selection.isEmpty ? nil : {
-            context.deleteDiaryEntries(selectedEntries, undo: undoCenter)
+            diary.delete(selectedEntries)
             selection = []
         })
         .diarySelectionMode($isSelecting)
@@ -440,9 +426,9 @@ struct DayDiaryView: View {
         .strideSheet(item: $relocating) { relocation in
             RelocateEntrySheet(entries: relocation.entries, copying: relocation.copying) { meal, day in
                 if relocation.copying {
-                    context.copyDiaryEntries(relocation.entries, to: meal, on: day, undo: undoCenter)
+                    diary.copy(relocation.entries, to: meal, on: day)
                 } else {
-                    context.moveDiaryEntries(relocation.entries, to: meal, on: day, undo: undoCenter)
+                    diary.move(relocation.entries, to: meal, on: day)
                 }
                 endSelecting()
             }
@@ -577,7 +563,7 @@ struct DayDiaryView: View {
                         .accessibilityHidden(true)
                     ForEach(again) { entry in
                         Button {
-                            context.logAgain(entry, to: meal, on: date, undo: undoCenter)
+                            diary.logAgain(entry, as: meal, on: date)
                         } label: {
                             Label(entry.foodName, systemImage: "plus")
                                 .font(.footnote.weight(.medium))
@@ -663,7 +649,7 @@ struct DayDiaryView: View {
                 Menu {
                     ForEach(MealType.allCases) { meal in
                         Button(meal.label) {
-                            context.moveDiaryEntries(chosen, to: meal, on: date, undo: undoCenter)
+                            diary.move(chosen, to: meal, on: date)
                             endSelecting()
                         }
                     }
@@ -677,7 +663,7 @@ struct DayDiaryView: View {
                 Menu {
                     ForEach(MealType.allCases) { meal in
                         Button(meal.label) {
-                            context.copyDiaryEntries(chosen, to: meal, on: date, undo: undoCenter)
+                            diary.copy(chosen, to: meal, on: date)
                             endSelecting()
                         }
                     }
@@ -693,7 +679,7 @@ struct DayDiaryView: View {
                     .foregroundStyle(Color.secondary)
                 Spacer()
                 Button(role: .destructive) {
-                    context.deleteDiaryEntries(chosen, undo: undoCenter)
+                    diary.delete(chosen)
                     endSelecting()
                 } label: {
                     Label("Delete", systemImage: "trash")
@@ -792,7 +778,7 @@ struct EditLogEntrySheet: View {
                 }
                 Section {
                     Button("Delete entry", role: .destructive) {
-                        context.deleteDiaryEntries([entry], undo: undoCenter)
+                        Diary(context, undo: undoCenter).delete([entry])
                         dismiss()
                     }
                 }
@@ -804,10 +790,7 @@ struct EditLogEntrySheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        entry.scale(toServings: servings)
-                        entry.mealType = meal
-                        context.saveReportingFailure()
-                        HealthKitManager.shared.recordDiaryEntry(entry)
+                        Diary(context, undo: undoCenter).change(entry, servings: servings, meal: meal)
                         dismiss()
                     }
                     .disabled(servings <= 0)

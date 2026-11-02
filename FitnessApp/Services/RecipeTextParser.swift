@@ -154,6 +154,7 @@ enum RecipeIngredientMatcher {
                                                    presets: food.servingPresets)
         return Ingredient(name: line, amount: "\(servings.cleanString) × \(food.displayName) (\(food.servingDescription))",
                           calories: food.calories * servings, protein: food.protein * servings,
-                          carbs: food.carbs * servings, fat: food.fat * servings)
+                          carbs: food.carbs * servings, fat: food.fat * servings,
+                          otherNutrients: food.otherNutrients.scaled(by: servings))
     }
 }

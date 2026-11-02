@@ -173,15 +173,9 @@ final class WatchSync: NSObject {
         if let foodID = log.foodID {
             guard let food = try? context.fetch(FetchDescriptor<FoodItem>(predicate: #Predicate { $0.uuid == foodID })).first
             else { return }
-            let s = log.servings
-            entry = FoodLogEntry(date: log.date, mealType: meal, foodName: food.displayName, servings: s,
-                                 servingDescription: food.servingDescription, calories: food.calories * s,
-                                 protein: food.protein * s, carbs: food.carbs * s, fat: food.fat * s, foodItemID: food.uuid,
-                                 fiber: food.fiber * s, sugar: food.sugar * s, sodium: food.sodium * s)
-                .withExtras(from: food, servings: s)
-            food.lastServings = s
-            food.lastUsed = .now
-            food.useCount += 1
+            // The same snapshot and remembered amount as logging on the phone (see Diary).
+            entry = FoodLogEntry(food: food, servings: log.servings, meal: meal, at: log.date)
+            food.noteLogged(servings: log.servings)
         } else {
             entry = FoodLogEntry(date: log.date, mealType: meal, foodName: String(localized: "Quick add"), servings: 1,
                                  servingDescription: "", calories: log.kcal, protein: 0, carbs: 0, fat: 0)

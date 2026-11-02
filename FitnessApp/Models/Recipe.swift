@@ -9,8 +9,12 @@ struct Ingredient: Codable, Hashable, Identifiable {
     var protein: Double
     var carbs: Double
     var fat: Double
+    /// Fibre, vitamins and the rest for this amount, when the ingredient came from a saved food.
+    /// Optional so recipes saved before it existed still decode.
+    var otherNutrients: OtherNutrients?
 
-    init(name: String, amount: String, calories: Double, protein: Double, carbs: Double, fat: Double) {
+    init(name: String, amount: String, calories: Double, protein: Double, carbs: Double, fat: Double,
+         otherNutrients: OtherNutrients? = nil) {
         self.id = UUID()
         self.name = name
         self.amount = amount
@@ -18,6 +22,7 @@ struct Ingredient: Codable, Hashable, Identifiable {
         self.protein = protein
         self.carbs = carbs
         self.fat = fat
+        self.otherNutrients = otherNutrients
     }
 }
 

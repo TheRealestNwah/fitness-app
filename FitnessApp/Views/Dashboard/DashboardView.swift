@@ -8,6 +8,7 @@ struct DashboardView: View {
 
     @Environment(UserProfile.self) private var profile
     @Environment(\.modelContext) private var context
+    @Environment(UndoCenter.self) private var undoCenter
     @Environment(\.strideSizeClass) private var sizeClass
 
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
@@ -435,14 +436,7 @@ struct DashboardView: View {
     }
 
     private func copyYesterday(_ entries: [FoodLogEntry], as meal: MealType) {
-        let stamp = meal.logDate(on: Date.now.startOfDay)
-        for e in entries {
-            context.insertDiaryEntry(FoodLogEntry(date: stamp, mealType: meal, foodName: e.foodName, servings: e.servings,
-                                                  servingDescription: e.servingDescription, calories: e.calories,
-                                                  protein: e.protein, carbs: e.carbs, fat: e.fat, foodItemID: e.foodItemID,
-                                                  fiber: e.fiber, sugar: e.sugar, sodium: e.sodium).withExtras(from: e))
-        }
-        context.saveReportingFailure()
+        Diary(context, undo: undoCenter).copy(entries, to: meal, on: Date.now.startOfDay)
     }
 
     private var quickActions: some View {

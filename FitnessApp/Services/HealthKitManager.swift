@@ -534,21 +534,6 @@ final class HealthKitManager {
 }
 
 extension ModelContext {
-    /// Inserts a diary line and mirrors it to Apple Health when sync is enabled.
-    @MainActor
-    func insertDiaryEntry(_ entry: FoodLogEntry) {
-        insert(entry)
-        HealthKitManager.shared.recordDiaryEntry(entry)
-    }
-
-    /// Deletes a diary line and its Health samples.
-    @MainActor
-    func deleteDiaryEntry(_ entry: FoodLogEntry) {
-        let id = entry.uuid
-        delete(entry)
-        HealthKitManager.shared.removeDiaryEntry(id: id)
-    }
-
     /// Inserts a glass of water and mirrors it to Apple Health when sync is enabled.
     @MainActor
     func insertWater(_ entry: WaterEntry) {

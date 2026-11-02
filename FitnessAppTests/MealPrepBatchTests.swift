@@ -29,10 +29,10 @@ final class MealPrepBatchTests: XCTestCase {
     func testLoggingCountsDownUntilUsedUp() throws {
         let batch = MealPrepBatch(recipe: chili(), portions: 2)
         context.insert(batch)
-        XCTAssertNotNil(batch.logPortion(on: .now, as: .lunch, context: context))
-        XCTAssertNotNil(batch.logPortion(on: .now, as: .dinner, context: context))
+        XCTAssertNotNil(Diary(context).logPortion(of: batch, as: .lunch, on: .now))
+        XCTAssertNotNil(Diary(context).logPortion(of: batch, as: .dinner, on: .now))
         XCTAssertTrue(batch.isUsedUp)
-        XCTAssertNil(batch.logPortion(on: .now, as: .dinner, context: context))
+        XCTAssertNil(Diary(context).logPortion(of: batch, as: .dinner, on: .now))
         let logged = try context.fetch(FetchDescriptor<FoodLogEntry>())
         XCTAssertEqual(logged.count, 2)
         XCTAssertEqual(logged.first?.calories ?? 0, 800, accuracy: 0.001)

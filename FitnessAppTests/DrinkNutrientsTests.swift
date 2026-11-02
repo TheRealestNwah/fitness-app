@@ -25,9 +25,7 @@ final class DrinkNutrientsTests: XCTestCase {
     func testEntriesCarryAndScaleAlcoholAndCaffeine() {
         let beer = FoodItem(name: "Beer", servingDescription: "12 fl oz", calories: 153, protein: 1.6, carbs: 13, fat: 0)
         beer.alcohol = 14
-        let entry = FoodLogEntry(date: .now, mealType: .dinner, foodName: "Beer", servings: 2, servingDescription: "12 fl oz",
-                                 calories: 306, protein: 3.2, carbs: 26, fat: 0)
-            .withExtras(from: beer, servings: 2)
+        let entry = FoodLogEntry(food: beer, servings: 2, meal: .dinner, at: .now)
         XCTAssertEqual(entry.alcohol, 28)
         entry.scale(toServings: 1)
         XCTAssertEqual(entry.alcohol, 14)

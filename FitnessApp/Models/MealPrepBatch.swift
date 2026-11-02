@@ -42,17 +42,4 @@ final class MealPrepBatch {
         portionsLeft -= 1
         return true
     }
-
-    /// Logs one portion to the diary (and Health) and counts it down.
-    @MainActor
-    @discardableResult
-    func logPortion(on day: Date, as meal: MealType, context: ModelContext) -> FoodLogEntry? {
-        guard usePortion() else { return nil }
-        let entry = FoodLogEntry(date: meal.logDate(on: day), mealType: meal, foodName: name,
-                                 servings: 1, servingDescription: String(localized: "portion"),
-                                 calories: caloriesPerPortion, protein: proteinPerPortion,
-                                 carbs: carbsPerPortion, fat: fatPerPortion)
-        context.insertDiaryEntry(entry)
-        return entry
-    }
 }

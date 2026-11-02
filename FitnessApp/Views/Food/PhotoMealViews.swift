@@ -150,24 +150,15 @@ struct PhotoMealSheet: View {
     }
 
     private func log() {
+        let diary = Diary(context)
         if !chosenSuggestions.isEmpty {
-            for (index, suggestion) in chosenSuggestions.enumerated() {
-                let entry = suggestion.food.log(servings: suggestion.servings, meal: mealType, on: date, context: context)
-                if index == 0 { entry.photo = photo }
-            }
-            context.saveReportingFailure()
+            diary.log(chosenSuggestions.map { (food: $0.food, servings: $0.servings) }, as: mealType, on: date, photo: photo)
             dismiss()
             return
         }
-        let trimmed = name.trimmingCharacters(in: .whitespaces)
-        let entry = FoodLogEntry(date: mealType.logDate(on: date), mealType: mealType,
-                                 foodName: trimmed.isEmpty ? "Photo meal" : trimmed, servings: 1,
-                                 servingDescription: String(localized: "\(portion.inSentence) portion, estimated"),
-                                 calories: calories ?? Double(estimate), protein: 0, carbs: 0, fat: 0)
-        entry.photo = photo
-        entry.isEstimate = true
-        context.insertDiaryEntry(entry)
-        context.saveReportingFailure()
+        diary.logEstimate(name.trimmingCharacters(in: .whitespaces), calories: calories ?? Double(estimate),
+                          servingDescription: String(localized: "\(portion.inSentence) portion, estimated"),
+                          photo: photo, as: mealType, on: date)
         dismiss()
     }
 }
@@ -213,7 +204,7 @@ struct PhotoMealDetailSheet: View {
                 }
                 Section {
                     Button("Delete entry", role: .destructive) {
-                        context.deleteDiaryEntries([entry], undo: undoCenter)
+                        Diary(context, undo: undoCenter).delete([entry])
                         dismiss()
                     }
                 }

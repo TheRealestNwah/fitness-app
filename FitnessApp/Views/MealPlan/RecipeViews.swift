@@ -613,8 +613,10 @@ struct IngredientEditor: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
+                        // A picked food brings its fibre, vitamins and minerals along too.
                         onAdd(Ingredient(name: name.trimmingCharacters(in: .whitespaces), amount: amount,
-                                         calories: calories ?? 0, protein: protein ?? 0, carbs: carbs ?? 0, fat: fat ?? 0))
+                                         calories: calories ?? 0, protein: protein ?? 0, carbs: carbs ?? 0, fat: fat ?? 0,
+                                         otherNutrients: picked?.otherNutrients.scaled(by: quantity)))
                         dismiss()
                     }
                     .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
