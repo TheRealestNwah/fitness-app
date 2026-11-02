@@ -234,12 +234,13 @@ final class BackupManagerTests: XCTestCase {
     }
 
     func testEveryProfileSettingRoundTrips() throws {
-        let source = makeProfile()
-        let original = ProfileRecord(source)
-        let data = try JSONEncoder().encode(original)
+        // Sorted keys, as in a real backup: an unsorted encoder writes keys in a different order each time.
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        let data = try encoder.encode(ProfileRecord(makeProfile()))
         let target = makeProfile()
         try JSONDecoder().decode(ProfileRecord.self, from: data).apply(to: target)
-        XCTAssertEqual(try JSONEncoder().encode(ProfileRecord(target)), data)
+        XCTAssertEqual(try encoder.encode(ProfileRecord(target)), data)
     }
 
     func testRestoresTrainingDaysAndMealSlots() throws {
