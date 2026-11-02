@@ -47,7 +47,7 @@ private struct ProfileSettingsPage: View {
     @AppStorage(StreakSettings.graceDayKey) private var streakGraceDay = false
 
     private var units: Units { profile.units }
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: weights.first?.weightKg) }
 
     var body: some View {
         @Bindable var profile = profile
@@ -113,7 +113,7 @@ private struct NutritionSettingsPage: View {
     @Query private var foodLogs: [FoodLogEntry]
 
     private var units: Units { profile.units }
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: weights.first?.weightKg) }
 
     private var maintenanceEstimate: MaintenanceEstimate? {
         AdaptiveTargetCalculator.estimate(
@@ -333,7 +333,7 @@ private struct HealthDataSettingsPage: View {
     @State private var exportURLs: [URL] = []
     @State private var showExport = false
 
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: weights.first?.weightKg) }
 
     var body: some View {
         Form {
@@ -454,7 +454,7 @@ private struct HealthDataSettingsPage: View {
         let review = WeeklyReviewCalculator.review(
             foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) },
-            budget: profile.calorieTarget(currentWeightKg: currentKg),
+            budget: DayNutrition.dailyTarget(profile: profile, latestWeightKg: weights.first?.weightKg),
             plannedWeeklyLossKg: profile.weeklyLossKg)
         let streak = NutritionCalculator.streak(logDates: foodLogs.map(\.date) + weights.map(\.date))
         if let u = ReportRenderer.weeklySummaryImage(review: review, streak: streak, units: units) { urls.insert(u, at: 0) }

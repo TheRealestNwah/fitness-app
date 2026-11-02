@@ -31,7 +31,7 @@ struct WeightView: View {
     }
 
     private var units: Units { profile.units }
-    private var currentKg: Double { entries.first?.weightKg ?? profile.startWeightKg }
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: entries.first?.weightKg) }
     private var lost: Double { profile.startWeightKg - currentKg }
     private var remaining: Double { max(currentKg - profile.goalWeightKg, 0) }
     private var bmi: Double { NutritionCalculator.bmi(weightKg: currentKg, heightCm: profile.heightCm) }
@@ -98,7 +98,7 @@ struct WeightView: View {
             weights: weightDays)
         return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays),
                                           goalKg: profile.goalWeightKg,
-                                          currentTarget: profile.calorieTarget(currentWeightKg: currentKg),
+                                          currentTarget: DayNutrition.dailyTarget(profile: profile, latestWeightKg: entries.first?.weightKg),
                                           maintenance: estimate, weeklyLossKg: profile.weeklyLossKg,
                                           sex: profile.sex)
     }
@@ -526,7 +526,7 @@ struct AddWeightSheet: View {
                     note = entry.note
                     photo = entry.photo
                 } else {
-                    let latest = entries.first?.weightKg ?? profile.startWeightKg
+                    let latest = profile.currentWeightKg(latestWeighIn: entries.first?.weightKg)
                     weight = (units.weightValue(kg: latest) * 10).rounded() / 10
                 }
             }

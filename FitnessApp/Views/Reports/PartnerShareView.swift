@@ -18,7 +18,6 @@ struct PartnerShareView: View {
     }
 
     private var summary: String {
-        let currentKg = weights.last?.weightKg ?? profile.startWeightKg
         let weightDays = weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
         var calories: [Date: Double] = [:]
         var protein: [Date: Double] = [:]
@@ -29,14 +28,15 @@ struct PartnerShareView: View {
         let review = WeeklyReviewCalculator.review(
             foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: weightDays,
-            budget: profile.calorieTarget(currentWeightKg: currentKg),
+            budget: DayNutrition.dailyTarget(profile: profile, latestWeightKg: weights.last?.weightKg),
             plannedWeeklyLossKg: profile.weeklyLossKg)
         let input = PartnerSummary.Input(
             weights: weightDays,
             review: review,
             loggingStreak: NutritionCalculator.streak(logDates: foodLogs.map(\.date) + weights.map(\.date)),
             proteinStreak: NutritionCalculator.proteinStreak(proteinByDay: protein,
-                                                             target: profile.macroTargets(currentWeightKg: currentKg).protein),
+                                                             target: DayNutrition.dailyMacros(profile: profile,
+                                                                                              latestWeightKg: weights.last?.weightKg).protein),
             caloriesByDay: calories,
             units: profile.units)
         return PartnerSummary.text(input, options: options)

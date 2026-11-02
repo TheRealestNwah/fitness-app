@@ -297,23 +297,20 @@ struct DayDiaryView: View {
         return keys.compactMap { latest[$0] }
     }
 
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    /// The same targets Today shows for this day.
-    private var budget: DayBudget {
-        var byDay: [Date: Double] = [:]
-        for e in earlierThisWeek { byDay[e.date.startOfDay, default: 0] += e.calories }
-        return DayBudget.make(profile: profile, currentKg: currentKg, date: date, intakeByDay: byDay,
-                              exerciseKcal: exercise.reduce(0) { $0 + $1.calories }, hasWorkout: !exercise.isEmpty,
-                              healthCredit: HealthKitManager.shared.activeEnergyCredit,
-                              earnBackPercent: ExerciseSettings.earnBackPercent)
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: weights.first?.weightKg) }
+    /// The same numbers Today shows for this day.
+    private var nutrition: DayNutrition {
+        DayNutrition.make(profile: profile, day: date, food: earlierThisWeek + entries, exercise: exercise,
+                          latestWeightKg: weights.first?.weightKg)
     }
+    private var budget: DayBudget { nutrition.budget }
     private var target: Int { budget.calories }
     private var macroTargets: MacroTargets { budget.macros }
 
-    private var consumed: Double { entries.reduce(0) { $0 + $1.calories } }
-    private var protein: Double { entries.reduce(0) { $0 + $1.protein } }
-    private var carbs: Double { entries.reduce(0) { $0 + $1.carbs } }
-    private var fat: Double { entries.reduce(0) { $0 + $1.fat } }
+    private var consumed: Double { nutrition.eaten.calories }
+    private var protein: Double { nutrition.eaten.protein }
+    private var carbs: Double { nutrition.eaten.carbs }
+    private var fat: Double { nutrition.eaten.fat }
 
     private func entries(for meal: MealType) -> [FoodLogEntry] {
         entries.filter { $0.mealType == meal }

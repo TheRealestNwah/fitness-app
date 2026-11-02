@@ -13,6 +13,8 @@ struct DashboardView: View {
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @Query(sort: \VitalsEntry.date, order: .reverse) private var vitals: [VitalsEntry]
     @Query private var todaysFood: [FoodLogEntry]
+    /// This week up to the end of today, for weekly budgeting.
+    @Query private var thisWeeksFood: [FoodLogEntry]
     @Query private var todaysWater: [WaterEntry]
     @Query private var recentFood: [FoodLogEntry]
     @Query private var recentWeights: [WeightEntry]
@@ -42,6 +44,8 @@ struct DashboardView: View {
                             sort: \FoodLogEntry.date)
         _todaysWater = Query(filter: #Predicate<WaterEntry> { $0.date >= start && $0.date < end })
         _recentFood = Query(filter: #Predicate<FoodLogEntry> { $0.date >= sixtyDaysAgo })
+        let weekStart = Calendar.current.dateInterval(of: .weekOfYear, for: start)?.start ?? start
+        _thisWeeksFood = Query(filter: #Predicate<FoodLogEntry> { $0.date >= weekStart && $0.date < end })
         _recentWeights = Query(filter: #Predicate<WeightEntry> { $0.date >= sixtyDaysAgo })
         _todaysPlan = Query(filter: #Predicate<MealPlanEntry> { $0.day >= start && $0.day < end })
         _todaysExercise = Query(filter: #Predicate<ExerciseEntry> { $0.date >= start && $0.date < end })
@@ -50,8 +54,9 @@ struct DashboardView: View {
     // MARK: Derived
 
     private var units: Units { profile.units }
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var dailyTarget: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    private var currentKg: Double { profile.currentWeightKg(latestWeighIn: weights.first?.weightKg) }
+    /// The plain daily target, for summaries over many days (weekly review, plateau, protein streak).
+    private var dailyTarget: Int { DayNutrition.dailyTarget(profile: profile, latestWeightKg: weights.first?.weightKg) }
 
     private var intakeByDay: [Date: Double] {
         var totals: [Date: Double] = [:]
@@ -59,13 +64,12 @@ struct DashboardView: View {
         return totals
     }
 
-    /// Today's targets, worked out the same way as the Food diary's.
-    private var budget: DayBudget {
-        DayBudget.make(profile: profile, currentKg: currentKg, date: .now, intakeByDay: intakeByDay,
-                       exerciseKcal: todaysExercise.reduce(0) { $0 + $1.calories }, hasWorkout: !todaysExercise.isEmpty,
-                       healthCredit: HealthKitManager.shared.activeEnergyCredit,
-                       earnBackPercent: ExerciseSettings.earnBackPercent)
+    /// Today's numbers, from the same place as the Food diary's, the widgets' and Siri's.
+    private var nutrition: DayNutrition {
+        DayNutrition.make(profile: profile, day: .now, food: thisWeeksFood, exercise: todaysExercise,
+                          latestWeightKg: weights.first?.weightKg)
     }
+    private var budget: DayBudget { nutrition.budget }
     /// Today's share of the week when weekly budgeting is on (not during a break or maintenance).
     private var baseTarget: Int { budget.base }
     /// Calories added back from activity: Health active energy or logged exercise, whichever is larger.
@@ -75,10 +79,10 @@ struct DashboardView: View {
     private var calorieTarget: Int { budget.calories }
     private var macroTargets: MacroTargets { budget.macros }
 
-    private var consumed: Double { todaysFood.reduce(0) { $0 + $1.calories } }
-    private var protein: Double { todaysFood.reduce(0) { $0 + $1.protein } }
-    private var carbs: Double { todaysFood.reduce(0) { $0 + $1.carbs } }
-    private var fat: Double { todaysFood.reduce(0) { $0 + $1.fat } }
+    private var consumed: Double { nutrition.eaten.calories }
+    private var protein: Double { nutrition.eaten.protein }
+    private var carbs: Double { nutrition.eaten.carbs }
+    private var fat: Double { nutrition.eaten.fat }
     private var waterMl: Double { todaysWater.reduce(0) { $0 + $1.amountMl } }
 
     private var streakDetail: NutritionCalculator.Streak {
@@ -121,7 +125,7 @@ struct DashboardView: View {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
             weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
-            budget: baseTarget + activeCredit,
+            budget: dailyTarget,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
     }
@@ -141,7 +145,7 @@ struct DashboardView: View {
             weights: weightDays)
         return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
                                           goalKg: profile.goalWeightKg,
-                                          currentTarget: baseTarget, maintenance: estimate,
+                                          currentTarget: dailyTarget, maintenance: estimate,
                                           weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
     }
 
@@ -385,7 +389,8 @@ struct DashboardView: View {
     private var proteinStreak: Int {
         var byDay: [Date: Double] = [:]
         for entry in recentFood { byDay[entry.date.startOfDay, default: 0] += entry.protein }
-        return NutritionCalculator.proteinStreak(proteinByDay: byDay, target: macroTargets.protein)
+        return NutritionCalculator.proteinStreak(
+            proteinByDay: byDay, target: DayNutrition.dailyMacros(profile: profile, latestWeightKg: weights.first?.weightKg).protein)
     }
 
     private var budgetNote: String? {

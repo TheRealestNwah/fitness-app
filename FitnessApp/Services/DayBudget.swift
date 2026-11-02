@@ -1,6 +1,6 @@
 import Foundation
 
-/// A day's calorie and macro targets, worked out one way so Today and the Food diary always agree.
+/// A day's calorie and macro targets from inputs already gathered. Screens use `DayNutrition`, which gathers them.
 struct DayBudget {
     /// The daily target after weekly budgeting, before day-type offsets and activity.
     var base: Int
@@ -18,15 +18,15 @@ struct DayBudget {
     ///   - healthCredit: Earn-back from Apple Health active energy, already worked out.
     static func make(profile: UserProfile, currentKg: Double, date: Date, today: Date = .now,
                      intakeByDay: [Date: Double], exerciseKcal: Double, hasWorkout: Bool,
-                     healthCredit: Int, earnBackPercent: Int) -> DayBudget {
-        let isToday = Calendar.current.isDate(date, inSameDayAs: today)
+                     healthCredit: Int, earnBackPercent: Int, calendar: Calendar = .current) -> DayBudget {
+        let isToday = calendar.isDate(date, inSameDayAs: today)
         let daily = profile.calorieTarget(currentWeightKg: currentKg)
         let floor = NutritionCalculator.calorieFloor(for: profile.sex)
         var base = daily
         if isToday, profile.weeklyBudgetEnabled, !profile.isOnDietBreak, !profile.isMaintaining,
            profile.customCalorieTarget == nil {
             base = BudgetCalculator.weeklyAdjustedTarget(dailyTarget: daily, intakeByDay: intakeByDay,
-                                                         floor: floor, today: today)
+                                                         floor: floor, today: today, calendar: calendar)
         }
         let credit = isToday
             ? ExerciseCatalog.combinedCredit(health: healthCredit,
