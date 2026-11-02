@@ -39,7 +39,8 @@ enum BackupError: LocalizedError {
 
 enum BackupManager {
     /// Bump when the file format changes in a way older apps can't read.
-    static let currentVersion = 1
+    /// 2: the profile writes nil settings as `null` instead of leaving them out (ADR 0012).
+    static let currentVersion = 2
     static let fileExtension = "stridebackup"
 
     static var contentType: UTType {
@@ -101,12 +102,15 @@ enum BackupManager {
 
     // MARK: Import
 
-    /// Decodes a backup, rejecting files from a newer format than this app understands.
+    /// Decodes a backup, rejecting files from a newer format than this app understands
+    /// and bringing older ones up to the current format.
     static func decode(_ data: Data) throws -> BackupFile {
         struct Header: Decodable { var version: Int }
         guard let header = try? JSONDecoder().decode(Header.self, from: data) else { throw BackupError.unreadable }
         if header.version > currentVersion { throw BackupError.newerVersion(header.version) }
-        guard let file = try? JSONDecoder().decode(BackupFile.self, from: data) else { throw BackupError.unreadable }
+        guard var file = try? JSONDecoder().decode(BackupFile.self, from: data) else { throw BackupError.unreadable }
+        file.profile?.upgrade(fromVersion: header.version)
+        file.version = currentVersion
         return file
     }
 
@@ -207,127 +211,108 @@ protocol BackupRecord: Codable {
 
 // MARK: - Records
 
-struct ProfileRecord: Codable {
-    var name: String
-    var sexRaw: String
-    var birthDate: Date
-    var heightCm: Double
-    var startWeightKg: Double
-    var goalWeightKg: Double
-    var activityLevelRaw: String
-    var weeklyLossKg: Double
-    var unitSystemRaw: String
-    var waterGoalMl: Double
-    var customCalorieTarget: Int?
-    var maintenanceStartedAt: Date?
-    var maintenanceWeightKg: Double?
-    var maintenanceBandKg: Double
-    var weeklyBudgetEnabled: Bool
-    // Optional so backups made before these were added still decode; nil leaves the profile's value alone.
-    var mealSlotsJSON: String?
-    var trainingDaysEnabled: Bool?
-    var trainingWeekdayMask: Int?
-    var trainingFromWorkouts: Bool?
-    var trainingBonusKcal: Int?
-    var trainingCarbShift: Int?
-    var dayTypeOverrideDay: Date?
-    var dayTypeOverrideIsTraining: Bool?
-    var dietBreakStart: Date?
-    var dietBreakEnd: Date?
-    var proteinPercent: Double
-    var carbsPercent: Double
-    var fatPercent: Double
-    var weightUnitRaw: String
-    var fiberTargetG: Double?
-    var sugarLimitG: Double?
-    var sodiumLimitMg: Double?
-    var saturatedFatLimitG: Double?
-    var potassiumTargetMg: Double?
-    var cholesterolLimitMg: Double?
-    var startDate: Date
-    var weighInReminderEnabled: Bool
-    var weighInReminderHour: Int
-    var waterReminderEnabled: Bool
-    var mealReminderEnabled: Bool
-    var dayCloseReminderHour: Int?
-    var proteinReminderEnabled: Bool
-    var pauseRemindersOnDietBreak: Bool
-    var medicationEnabled: Bool
-    var medicationName: String
-    var medicationDoseMg: Double
-    var medicationIntervalDays: Int
-    var medicationStartDate: Date?
-    var medicationReminderEnabled: Bool
-    var medicationReminderHour: Int
-
-    init(_ p: UserProfile) {
-        name = p.name; sexRaw = p.sexRaw; birthDate = p.birthDate; heightCm = p.heightCm
-        startWeightKg = p.startWeightKg; goalWeightKg = p.goalWeightKg
-        activityLevelRaw = p.activityLevelRaw; weeklyLossKg = p.weeklyLossKg
-        unitSystemRaw = p.unitSystemRaw; waterGoalMl = p.waterGoalMl
-        customCalorieTarget = p.customCalorieTarget
-        maintenanceStartedAt = p.maintenanceStartedAt; maintenanceWeightKg = p.maintenanceWeightKg
-        maintenanceBandKg = p.maintenanceBandKg; weeklyBudgetEnabled = p.weeklyBudgetEnabled
-        mealSlotsJSON = p.mealSlotsJSON
-        trainingDaysEnabled = p.trainingDaysEnabled; trainingWeekdayMask = p.trainingWeekdayMask
-        trainingFromWorkouts = p.trainingFromWorkouts; trainingBonusKcal = p.trainingBonusKcal
-        trainingCarbShift = p.trainingCarbShift
-        dayTypeOverrideDay = p.dayTypeOverrideDay; dayTypeOverrideIsTraining = p.dayTypeOverrideIsTraining
-        dietBreakStart = p.dietBreakStart; dietBreakEnd = p.dietBreakEnd
-        proteinPercent = p.proteinPercent; carbsPercent = p.carbsPercent; fatPercent = p.fatPercent
-        weightUnitRaw = p.weightUnitRaw
-        fiberTargetG = p.fiberTargetG; sugarLimitG = p.sugarLimitG; sodiumLimitMg = p.sodiumLimitMg
-        saturatedFatLimitG = p.saturatedFatLimitG; potassiumTargetMg = p.potassiumTargetMg
-        cholesterolLimitMg = p.cholesterolLimitMg
-        startDate = p.startDate
-        weighInReminderEnabled = p.weighInReminderEnabled; weighInReminderHour = p.weighInReminderHour
-        waterReminderEnabled = p.waterReminderEnabled; mealReminderEnabled = p.mealReminderEnabled
-        dayCloseReminderHour = p.dayCloseReminderHour; proteinReminderEnabled = p.proteinReminderEnabled
-        pauseRemindersOnDietBreak = p.pauseRemindersOnDietBreak
-        medicationEnabled = p.medicationEnabled; medicationName = p.medicationName
-        medicationDoseMg = p.medicationDoseMg; medicationIntervalDays = p.medicationIntervalDays
-        medicationStartDate = p.medicationStartDate
-        medicationReminderEnabled = p.medicationReminderEnabled; medicationReminderHour = p.medicationReminderHour
+/// One `UserProfile` setting as a backup writes and reads it. The list lives on the profile
+/// (`UserProfile.backupFields`), so the file format follows the model instead of a hand-copied record.
+struct ProfileField {
+    struct Key: CodingKey {
+        var stringValue: String
+        var intValue: Int? { nil }
+        init(_ string: String) { stringValue = string }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { nil }
     }
 
-    func apply(to p: UserProfile) {
-        p.name = name; p.sexRaw = sexRaw; p.birthDate = birthDate; p.heightCm = heightCm
-        p.startWeightKg = startWeightKg; p.goalWeightKg = goalWeightKg
-        p.activityLevelRaw = activityLevelRaw; p.weeklyLossKg = weeklyLossKg
-        p.unitSystemRaw = unitSystemRaw; p.waterGoalMl = waterGoalMl
-        p.customCalorieTarget = customCalorieTarget
-        p.maintenanceStartedAt = maintenanceStartedAt; p.maintenanceWeightKg = maintenanceWeightKg
-        p.maintenanceBandKg = maintenanceBandKg; p.weeklyBudgetEnabled = weeklyBudgetEnabled
-        if let mealSlotsJSON { p.mealSlotsJSON = mealSlotsJSON }
-        if let trainingDaysEnabled { p.trainingDaysEnabled = trainingDaysEnabled }
-        if let trainingWeekdayMask { p.trainingWeekdayMask = trainingWeekdayMask }
-        if let trainingFromWorkouts { p.trainingFromWorkouts = trainingFromWorkouts }
-        if let trainingBonusKcal { p.trainingBonusKcal = trainingBonusKcal }
-        if let trainingCarbShift { p.trainingCarbShift = trainingCarbShift }
-        if let dayTypeOverrideIsTraining {
-            p.dayTypeOverrideDay = dayTypeOverrideDay; p.dayTypeOverrideIsTraining = dayTypeOverrideIsTraining
+    let key: String
+    /// The setting can be nil. Version 1 backups left nil settings out of the file.
+    let isOptional: Bool
+    /// The setting's nil, typed for `write`; nil for a setting that can't be nil.
+    let nilValue: Any?
+    let read: (UserProfile) -> Any
+    let write: (Any, UserProfile) -> Void
+    let encode: (Any, inout KeyedEncodingContainer<Key>) throws -> Void
+    let decode: (KeyedDecodingContainer<Key>) throws -> Any
+
+    /// A setting that always has a value.
+    static func value<V: Codable>(_ key: String, _ path: ReferenceWritableKeyPath<UserProfile, V>) -> ProfileField {
+        ProfileField(key: key, isOptional: false, nilValue: nil,
+                     read: { $0[keyPath: path] },
+                     write: { value, profile in
+                         if let value = value as? V { profile[keyPath: path] = value }
+                     },
+                     encode: { value, container in
+                         if let value = value as? V { try container.encode(value, forKey: Key(key)) }
+                     },
+                     decode: { container in try container.decode(V.self, forKey: Key(key)) })
+    }
+
+    /// A setting that can be nil. Nil is written as `null`, so a missing key only ever means
+    /// "this backup predates the setting".
+    static func optional<V: Codable>(_ key: String, _ path: ReferenceWritableKeyPath<UserProfile, V?>) -> ProfileField {
+        ProfileField(key: key, isOptional: true, nilValue: (nil as V?) as Any,
+                     read: { $0[keyPath: path] as Any },
+                     write: { value, profile in
+                         if let value = value as? V? { profile[keyPath: path] = value }
+                     },
+                     encode: { value, container in
+                         if let value = value as? V {
+                             try container.encode(value, forKey: Key(key))
+                         } else {
+                             try container.encodeNil(forKey: Key(key))
+                         }
+                     },
+                     decode: { container in try container.decodeIfPresent(V.self, forKey: Key(key)) as Any })
+    }
+}
+
+/// The profile's settings in a backup, keyed as in `UserProfile.backupFields`.
+/// A key that's missing (a backup made before that setting existed) leaves the profile's value alone.
+struct ProfileRecord: Codable {
+    private(set) var values: [String: Any] = [:]
+
+    init(_ profile: UserProfile) {
+        for field in UserProfile.backupFields {
+            values[field.key] = field.read(profile)
         }
-        p.dietBreakStart = dietBreakStart; p.dietBreakEnd = dietBreakEnd
-        p.proteinPercent = proteinPercent; p.carbsPercent = carbsPercent; p.fatPercent = fatPercent
-        p.weightUnitRaw = weightUnitRaw
-        p.fiberTargetG = fiberTargetG; p.sugarLimitG = sugarLimitG; p.sodiumLimitMg = sodiumLimitMg
-        p.saturatedFatLimitG = saturatedFatLimitG; p.potassiumTargetMg = potassiumTargetMg
-        p.cholesterolLimitMg = cholesterolLimitMg
-        p.startDate = startDate
-        p.weighInReminderEnabled = weighInReminderEnabled; p.weighInReminderHour = weighInReminderHour
-        p.waterReminderEnabled = waterReminderEnabled; p.mealReminderEnabled = mealReminderEnabled
-        p.dayCloseReminderHour = dayCloseReminderHour; p.proteinReminderEnabled = proteinReminderEnabled
-        p.pauseRemindersOnDietBreak = pauseRemindersOnDietBreak
-        p.medicationEnabled = medicationEnabled; p.medicationName = medicationName
-        p.medicationDoseMg = medicationDoseMg; p.medicationIntervalDays = medicationIntervalDays
-        p.medicationStartDate = medicationStartDate
-        p.medicationReminderEnabled = medicationReminderEnabled; p.medicationReminderHour = medicationReminderHour
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: ProfileField.Key.self)
+        for field in UserProfile.backupFields where container.contains(ProfileField.Key(field.key)) {
+            values[field.key] = try field.decode(container)
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: ProfileField.Key.self)
+        for field in UserProfile.backupFields {
+            if let value = values[field.key] { try field.encode(value, &container) }
+        }
+    }
+
+    /// Reads an older file's profile as the current format.
+    ///
+    /// Version 1 left nil settings out, so there a missing optional key means nil, not "unknown".
+    /// The exception is `dayTypeOverrideDay` in files from before training days were backed up (#407):
+    /// those have no `dayTypeOverrideIsTraining` either, and the override is left alone.
+    mutating func upgrade(fromVersion version: Int) {
+        guard version < 2 else { return }
+        let hasTrainingDays = values["dayTypeOverrideIsTraining"] != nil
+        for field in UserProfile.backupFields where field.isOptional && values[field.key] == nil {
+            if field.key == "dayTypeOverrideDay" && !hasTrainingDays { continue }
+            values[field.key] = field.nilValue
+        }
+    }
+
+    func apply(to profile: UserProfile) {
+        for field in UserProfile.backupFields {
+            if let value = values[field.key] { field.write(value, profile) }
+        }
     }
 
     func makeModel() -> UserProfile {
-        let p = UserProfile(name: name, sex: .female, birthDate: birthDate, heightCm: heightCm,
-                            startWeightKg: startWeightKg, goalWeightKg: goalWeightKg, activityLevel: .light,
-                            weeklyLossKg: weeklyLossKg, unitSystem: .metric)
+        let p = UserProfile(name: "", sex: .female, birthDate: Date(timeIntervalSince1970: 0), heightCm: 170,
+                            startWeightKg: 80, goalWeightKg: 70, activityLevel: .light,
+                            weeklyLossKg: 0.5, unitSystem: .metric)
         apply(to: p)
         return p
     }
