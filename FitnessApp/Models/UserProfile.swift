@@ -203,7 +203,7 @@ final class UserProfile {
 // MARK: - Backup
 
 extension UserProfile {
-    /// Every setting a backup saves and restores, under its key in the file (ADR 0011).
+    /// Every setting a backup saves and restores, under its key in the file (ADR 0012).
     /// Add a line here when you add a stored property; `BackupManagerTests` fails until you do.
     /// Use `.optional` for a property that can be nil and `.value` for the rest. Don't rename a key:
     /// older backups use it.

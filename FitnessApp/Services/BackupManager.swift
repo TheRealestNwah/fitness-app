@@ -39,7 +39,7 @@ enum BackupError: LocalizedError {
 
 enum BackupManager {
     /// Bump when the file format changes in a way older apps can't read.
-    /// 2: the profile writes nil settings as `null` instead of leaving them out (ADR 0011).
+    /// 2: the profile writes nil settings as `null` instead of leaving them out (ADR 0012).
     static let currentVersion = 2
     static let fileExtension = "stridebackup"
 
