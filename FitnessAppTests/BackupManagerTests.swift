@@ -139,8 +139,9 @@ final class BackupManagerTests: XCTestCase {
         XCTAssertEqual(restored.batches.first?.portionsLeft, 2)
         XCTAssertEqual(restored.checkIns.first?.hunger, 3)
         XCTAssertEqual(restored.doses.first?.sideEffects, ["nausea"])
-        XCTAssertEqual(restored.profile?.customCalorieTarget, 2100)
-        XCTAssertEqual(restored.profile?.dayCloseReminderHour, 20)
+        XCTAssertEqual(restored.profile?.values["customCalorieTarget"] as? Int, 2100)
+        XCTAssertEqual(restored.profile?.values["dayCloseReminderHour"] as? Int, 20)
+        XCTAssertEqual(restored.profile?.values["sodiumLimitMg"] as? Double, 2300)
     }
 
     func testReplaceUpdatesTheExistingProfileAndDropsOtherData() throws {
@@ -209,14 +210,36 @@ final class BackupManagerTests: XCTestCase {
         XCTAssertNoThrow(try BackupManager.decode(Data(contentsOf: url)))
     }
 
-    func testProfileRecordCoversEveryProfileProperty() throws {
+    private func makeProfile() -> UserProfile {
+        UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 170, startWeightKg: 80, goalWeightKg: 70,
+                    activityLevel: .light, weeklyLossKg: 0.5, unitSystem: .metric)
+    }
+
+    func testBackupFieldsCoverEveryProfileProperty() throws {
         let entity = try XCTUnwrap(AppStore.schema.entitiesByName["UserProfile"])
         let stored = Set(entity.attributes.map(\.name))
-        let record = ProfileRecord(UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 170,
-                                               startWeightKg: 80, goalWeightKg: 70, activityLevel: .light,
-                                               weeklyLossKg: 0.5, unitSystem: .metric))
-        let backedUp = Set(Mirror(reflecting: record).children.compactMap(\.label))
-        XCTAssertEqual(stored.subtracting(backedUp), [], "UserProfile properties missing from ProfileRecord")
+        let keys = UserProfile.backupFields.map(\.key)
+        XCTAssertEqual(Set(keys).count, keys.count, "A key is listed twice in UserProfile.backupFields")
+        XCTAssertEqual(stored.subtracting(keys), [], "UserProfile properties missing from UserProfile.backupFields")
+        XCTAssertEqual(Set(keys).subtracting(stored), [], "UserProfile.backupFields lists properties that don't exist")
+    }
+
+    func testOptionalSettingsAreListedAsOptional() {
+        // A property that can be nil needs `.optional`, so nil is written as null and old backups migrate.
+        let profile = makeProfile()
+        for field in UserProfile.backupFields {
+            let isOptional = Mirror(reflecting: field.read(profile)).displayStyle == .optional
+            XCTAssertEqual(field.isOptional, isOptional, "\(field.key) should use .\(isOptional ? "optional" : "value")")
+        }
+    }
+
+    func testEveryProfileSettingRoundTrips() throws {
+        let source = makeProfile()
+        let original = ProfileRecord(source)
+        let data = try JSONEncoder().encode(original)
+        let target = makeProfile()
+        try JSONDecoder().decode(ProfileRecord.self, from: data).apply(to: target)
+        XCTAssertEqual(try JSONEncoder().encode(ProfileRecord(target)), data)
     }
 
     func testRestoresTrainingDaysAndMealSlots() throws {
@@ -249,24 +272,148 @@ final class BackupManagerTests: XCTestCase {
         XCTAssertTrue(restored.dayTypeOverrideIsTraining)
     }
 
-    func testOlderProfileRecordWithoutTrainingFieldsKeepsDefaults() throws {
-        let profile = UserProfile(name: "Sam", sex: .male, birthDate: .now, heightCm: 181, startWeightKg: 95,
-                                  goalWeightKg: 80, activityLevel: .moderate, weeklyLossKg: 0.75, unitSystem: .metric)
-        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(ProfileRecord(profile)))
-                                 as? [String: Any])
-        for key in ["mealSlotsJSON", "trainingDaysEnabled", "trainingWeekdayMask", "trainingFromWorkouts",
-                    "trainingBonusKcal", "trainingCarbShift", "dayTypeOverrideDay", "dayTypeOverrideIsTraining"] {
-            json[key] = nil
-        }
-        let old = try JSONDecoder().decode(ProfileRecord.self, from: JSONSerialization.data(withJSONObject: json))
+    // MARK: Format versions
 
-        let target = UserProfile(name: "", sex: .female, birthDate: .now, heightCm: 170, startWeightKg: 80,
-                                 goalWeightKg: 70, activityLevel: .light, weeklyLossKg: 0.5, unitSystem: .metric)
-        target.trainingDaysEnabled = true
-        target.trainingBonusKcal = 400
-        old.apply(to: target)
-        XCTAssertEqual(target.name, "Sam")
-        XCTAssertTrue(target.trainingDaysEnabled)
-        XCTAssertEqual(target.trainingBonusKcal, 400)
+    /// A profile as format 1 wrote it: every setting except the ones that were nil, which were left out.
+    private func version1Backup(withTrainingDays: Bool) throws -> Data {
+        var profile: [String: Any] = [
+            "name": "Sam", "sexRaw": "male", "birthDate": -878_000_000.0, "heightCm": 181.0,
+            "startWeightKg": 95.0, "goalWeightKg": 80.0, "activityLevelRaw": "moderate", "weeklyLossKg": 0.75,
+            "unitSystemRaw": "imperial", "waterGoalMl": 3000.0, "maintenanceBandKg": 1.5,
+            "weeklyBudgetEnabled": true, "proteinPercent": 35.0, "carbsPercent": 35.0, "fatPercent": 30.0,
+            "weightUnitRaw": "lb", "startDate": 780_000_000.0, "weighInReminderEnabled": true,
+            "weighInReminderHour": 6, "waterReminderEnabled": false, "mealReminderEnabled": true,
+            "proteinReminderEnabled": false, "pauseRemindersOnDietBreak": false, "medicationEnabled": false,
+            "medicationName": "", "medicationDoseMg": 0.0, "medicationIntervalDays": 7,
+            "medicationReminderEnabled": false, "medicationReminderHour": 9,
+            "fiberTargetG": 30.0
+        ]
+        if withTrainingDays {
+            profile["mealSlotsJSON"] = #"["Breakfast","Lunch"]"#
+            profile["trainingDaysEnabled"] = true
+            profile["trainingWeekdayMask"] = 21
+            profile["trainingFromWorkouts"] = false
+            profile["trainingBonusKcal"] = 300
+            profile["trainingCarbShift"] = 15
+            profile["dayTypeOverrideIsTraining"] = false
+        }
+        let none: [Any] = []
+        let file: [String: Any] = ["version": 1, "createdAt": 780_000_000.0, "appVersion": "1.0", "profile": profile,
+                                   "weights": none, "foods": none, "foodLogs": none, "vitals": none,
+                                   "water": none, "recipes": none, "mealPlan": none, "savedMeals": none,
+                                   "fasts": none, "exercise": none, "batches": none, "checkIns": none,
+                                   "doses": none]
+        return try JSONSerialization.data(withJSONObject: file)
+    }
+
+    /// A profile with every optional setting filled in, so a restore that clears them shows.
+    private func profileWithEverythingSet(in context: ModelContext) -> UserProfile {
+        let profile = makeProfile()
+        profile.name = "Old"
+        profile.customCalorieTarget = 1800
+        profile.maintenanceStartedAt = .now
+        profile.maintenanceWeightKg = 70
+        profile.dietBreakStart = .now
+        profile.dietBreakEnd = .now.addingTimeInterval(86_400 * 7)
+        profile.sodiumLimitMg = 2000
+        profile.dayCloseReminderHour = 21
+        profile.medicationStartDate = .now
+        profile.dayTypeOverrideDay = .now
+        profile.dayTypeOverrideIsTraining = true
+        profile.trainingDaysEnabled = true
+        profile.trainingBonusKcal = 400
+        context.insert(profile)
+        return profile
+    }
+
+    func testBackupsAreWrittenAsTheCurrentVersionWithNilSettingsAsNull() throws {
+        let context = try makeContext()
+        try populate(context)
+        let data = try BackupManager.encode(BackupManager.makeBackup(context: context))
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(json["version"] as? Int, 2)
+        let profile = try XCTUnwrap(json["profile"] as? [String: Any])
+        XCTAssertEqual(Set(profile.keys), Set(UserProfile.backupFields.map(\.key)))
+        XCTAssertTrue(profile["fiberTargetG"] is NSNull)
+        XCTAssertEqual(profile["sodiumLimitMg"] as? Double, 2300)
+    }
+
+    func testVersion1BackupClearsTheSettingsItLeftOut() throws {
+        let context = try makeContext()
+        let profile = profileWithEverythingSet(in: context)
+        let file = try BackupManager.decode(version1Backup(withTrainingDays: true))
+        XCTAssertEqual(file.version, BackupManager.currentVersion)
+        try BackupManager.restore(file, mode: .replace, context: context)
+
+        XCTAssertEqual(profile.name, "Sam")
+        XCTAssertEqual(profile.sex, .male)
+        XCTAssertEqual(profile.weightUnitRaw, "lb")
+        XCTAssertEqual(profile.fiberTargetG, 30)
+        XCTAssertNil(profile.customCalorieTarget)
+        XCTAssertNil(profile.maintenanceStartedAt)
+        XCTAssertNil(profile.maintenanceWeightKg)
+        XCTAssertNil(profile.dietBreakStart)
+        XCTAssertNil(profile.dietBreakEnd)
+        XCTAssertNil(profile.sodiumLimitMg)
+        XCTAssertNil(profile.dayCloseReminderHour)
+        XCTAssertNil(profile.medicationStartDate)
+        XCTAssertNil(profile.dayTypeOverrideDay)
+        XCTAssertFalse(profile.dayTypeOverrideIsTraining)
+        XCTAssertEqual(profile.mealSlotsJSON, #"["Breakfast","Lunch"]"#)
+        XCTAssertEqual(profile.trainingWeekdayMask, 21)
+        XCTAssertEqual(profile.trainingBonusKcal, 300)
+    }
+
+    func testVersion1BackupFromBeforeTrainingDaysKeepsThem() throws {
+        let context = try makeContext()
+        let profile = profileWithEverythingSet(in: context)
+        let override = try XCTUnwrap(profile.dayTypeOverrideDay)
+        try BackupManager.restore(BackupManager.decode(version1Backup(withTrainingDays: false)),
+                                  mode: .replace, context: context)
+
+        XCTAssertEqual(profile.name, "Sam")
+        XCTAssertNil(profile.customCalorieTarget)
+        XCTAssertTrue(profile.trainingDaysEnabled)
+        XCTAssertEqual(profile.trainingBonusKcal, 400)
+        XCTAssertEqual(profile.dayTypeOverrideDay, override)
+        XCTAssertTrue(profile.dayTypeOverrideIsTraining)
+        XCTAssertEqual(profile.mealSlotsJSON, "")
+    }
+
+    func testVersion1BackupIntoAnEmptyStoreCreatesTheProfile() throws {
+        let context = try makeContext()
+        try BackupManager.restore(BackupManager.decode(version1Backup(withTrainingDays: true)),
+                                  mode: .replace, context: context)
+        let profile = try XCTUnwrap(context.fetch(FetchDescriptor<UserProfile>()).first)
+        XCTAssertEqual(profile.name, "Sam")
+        XCTAssertEqual(profile.heightCm, 181)
+        XCTAssertEqual(profile.birthDate, Date(timeIntervalSinceReferenceDate: -878_000_000))
+        XCTAssertEqual(profile.waterGoalMl, 3000)
+        XCTAssertNil(profile.customCalorieTarget)
+    }
+
+    func testCurrentBackupWithoutANewerSettingLeavesItAlone() throws {
+        // Stands in for a backup made before a setting was added: its key is missing, not null.
+        let source = try makeContext()
+        try populate(source)
+        let data = try BackupManager.encode(BackupManager.makeBackup(context: source))
+        var json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        var profileJSON = try XCTUnwrap(json["profile"] as? [String: Any])
+        profileJSON["proteinReminderEnabled"] = nil
+        profileJSON["sodiumLimitMg"] = nil
+        profileJSON["customCalorieTarget"] = NSNull()
+        json["profile"] = profileJSON
+
+        let target = try makeContext()
+        let profile = profileWithEverythingSet(in: target)
+        profile.proteinReminderEnabled = true
+        try BackupManager.restore(BackupManager.decode(JSONSerialization.data(withJSONObject: json)),
+                                  mode: .replace, context: target)
+
+        XCTAssertEqual(profile.name, "Sam")
+        XCTAssertTrue(profile.proteinReminderEnabled)
+        XCTAssertEqual(profile.sodiumLimitMg, 2000)
+        XCTAssertNil(profile.customCalorieTarget)
+        XCTAssertNil(profile.dayTypeOverrideDay)
     }
 }

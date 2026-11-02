@@ -20,4 +20,4 @@ If the store still can't be opened, the app runs on an empty in-memory store and
 
 - Prefer adding properties to changing them. Changing one is a migration, so it needs a reason.
 - A store from before versioning still opens without the plan.
-- Changes to `UserProfile` also touch the backup format ([ADR 0008](0008-versioned-json-backup.md)).
+- Changes to `UserProfile` also touch the backup format: add the setting to `UserProfile.backupFields` ([ADR 0011](0011-profile-backup-from-the-model.md)).

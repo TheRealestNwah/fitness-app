@@ -199,3 +199,66 @@ final class UserProfile {
                                               carbsPercent: split.carbs, fatPercent: split.fat)
     }
 }
+
+// MARK: - Backup
+
+extension UserProfile {
+    /// Every setting a backup saves and restores, under its key in the file (ADR 0011).
+    /// Add a line here when you add a stored property; `BackupManagerTests` fails until you do.
+    /// Use `.optional` for a property that can be nil and `.value` for the rest. Don't rename a key:
+    /// older backups use it.
+    static var backupFields: [ProfileField] {
+        [
+            .value("name", \.name),
+            .value("sexRaw", \.sexRaw),
+            .value("birthDate", \.birthDate),
+            .value("heightCm", \.heightCm),
+            .value("startWeightKg", \.startWeightKg),
+            .value("goalWeightKg", \.goalWeightKg),
+            .value("activityLevelRaw", \.activityLevelRaw),
+            .value("weeklyLossKg", \.weeklyLossKg),
+            .value("unitSystemRaw", \.unitSystemRaw),
+            .value("waterGoalMl", \.waterGoalMl),
+            .optional("customCalorieTarget", \.customCalorieTarget),
+            .optional("maintenanceStartedAt", \.maintenanceStartedAt),
+            .optional("maintenanceWeightKg", \.maintenanceWeightKg),
+            .value("maintenanceBandKg", \.maintenanceBandKg),
+            .value("weeklyBudgetEnabled", \.weeklyBudgetEnabled),
+            .value("mealSlotsJSON", \.mealSlotsJSON),
+            .value("trainingDaysEnabled", \.trainingDaysEnabled),
+            .value("trainingWeekdayMask", \.trainingWeekdayMask),
+            .value("trainingFromWorkouts", \.trainingFromWorkouts),
+            .value("trainingBonusKcal", \.trainingBonusKcal),
+            .value("trainingCarbShift", \.trainingCarbShift),
+            .optional("dayTypeOverrideDay", \.dayTypeOverrideDay),
+            .value("dayTypeOverrideIsTraining", \.dayTypeOverrideIsTraining),
+            .optional("dietBreakStart", \.dietBreakStart),
+            .optional("dietBreakEnd", \.dietBreakEnd),
+            .value("proteinPercent", \.proteinPercent),
+            .value("carbsPercent", \.carbsPercent),
+            .value("fatPercent", \.fatPercent),
+            .value("weightUnitRaw", \.weightUnitRaw),
+            .optional("fiberTargetG", \.fiberTargetG),
+            .optional("sugarLimitG", \.sugarLimitG),
+            .optional("sodiumLimitMg", \.sodiumLimitMg),
+            .optional("saturatedFatLimitG", \.saturatedFatLimitG),
+            .optional("potassiumTargetMg", \.potassiumTargetMg),
+            .optional("cholesterolLimitMg", \.cholesterolLimitMg),
+            .value("startDate", \.startDate),
+            .value("weighInReminderEnabled", \.weighInReminderEnabled),
+            .value("weighInReminderHour", \.weighInReminderHour),
+            .value("waterReminderEnabled", \.waterReminderEnabled),
+            .value("mealReminderEnabled", \.mealReminderEnabled),
+            .optional("dayCloseReminderHour", \.dayCloseReminderHour),
+            .value("proteinReminderEnabled", \.proteinReminderEnabled),
+            .value("pauseRemindersOnDietBreak", \.pauseRemindersOnDietBreak),
+            .value("medicationEnabled", \.medicationEnabled),
+            .value("medicationName", \.medicationName),
+            .value("medicationDoseMg", \.medicationDoseMg),
+            .value("medicationIntervalDays", \.medicationIntervalDays),
+            .optional("medicationStartDate", \.medicationStartDate),
+            .value("medicationReminderEnabled", \.medicationReminderEnabled),
+            .value("medicationReminderHour", \.medicationReminderHour)
+        ]
+    }
+}

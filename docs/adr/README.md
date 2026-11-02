@@ -13,9 +13,10 @@ Domain terms are defined in [GLOSSARY.md](../../GLOSSARY.md).
 | [0005](0005-activity-credit-is-the-larger-credit.md) | Activity credit is the larger of Health and exercise, today only | Accepted |
 | [0006](0006-widget-snapshot.md) | Widgets, Watch and menu bar read a snapshot, not the store | Accepted |
 | [0007](0007-day-nutrition-module.md) | One Day Nutrition module for every screen's day numbers | Accepted, in progress |
-| [0008](0008-versioned-json-backup.md) | Backups are one versioned JSON file | Accepted |
+| [0008](0008-versioned-json-backup.md) | Backups are one versioned JSON file | Accepted, amended by 0011 |
 | [0009](0009-native-mac-app.md) | A native macOS app, not Mac Catalyst | Accepted |
 | [0010](0010-weight-progress-module.md) | One Weight Progress module for Today and the Weight screen | Accepted |
+| [0011](0011-profile-backup-from-the-model.md) | The profile's backup format comes from `UserProfile` | Accepted |
 
 ## Writing a new one
 
