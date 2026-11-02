@@ -31,9 +31,9 @@ struct WeightView: View {
     }
 
     private var units: Units { profile.units }
+    /// Lost, remaining, rate, forecast, milestones and plateau: the same numbers Today shows.
+    private var progress: WeightProgress { WeightProgress(profile: profile, weighIns: entries, food: foodLogs) }
     private var currentKg: Double { profile.currentWeightKg(latestWeighIn: entries.first?.weightKg) }
-    private var lost: Double { profile.startWeightKg - currentKg }
-    private var remaining: Double { max(currentKg - profile.goalWeightKg, 0) }
     private var bmi: Double { NutritionCalculator.bmi(weightKg: currentKg, heightCm: profile.heightCm) }
 
     private var chronological: [WeightEntry] { entries.reversed() }
@@ -59,17 +59,6 @@ struct WeightView: View {
         return points.filter { $0.date >= cutoff }
     }
 
-    private var rateProgress: TrendProgress { TrendReadiness.rate(weights: weightDays) }
-    private var forecastProgress: TrendProgress {
-        TrendReadiness.forecast(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays))
-    }
-
-    private var weeklyRate: Double? {
-        let cutoff = Date.now.adding(days: -TrendReadiness.rateWindowDays)
-        let recent = chronological.filter { $0.date >= cutoff }.map { (date: $0.date, weightKg: $0.weightKg) }
-        return NutritionCalculator.weeklyRate(points: recent)
-    }
-
     private var retentionDays: Set<Date> { HealthKitManager.shared.retentionDays }
 
     /// Retention days in the chart's range, for shading.
@@ -77,41 +66,6 @@ struct WeightView: View {
         guard let first = visible.map(\.date).min() else { return [] }
         let start = Calendar.current.startOfDay(for: first)
         return retentionDays.filter { $0 >= start }.sorted()
-    }
-
-    private var weightDays: [WeeklyReviewCalculator.WeightDay] {
-        entries.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
-    }
-
-    private var milestones: [Milestone] {
-        ProgressCalculator.milestones(startKg: profile.startWeightKg, weights: weightDays)
-    }
-
-    private var nextMilestone: (percent: Int, remainingKg: Double)? {
-        ProgressCalculator.nextMilestone(startKg: profile.startWeightKg, weights: weightDays)
-    }
-
-    private var plateau: Plateau? {
-        guard !profile.isMaintaining else { return nil }      // holding steady is the point
-        let estimate = AdaptiveTargetCalculator.estimate(
-            foodLogs: foodLogs.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
-            weights: weightDays)
-        return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays),
-                                          goalKg: profile.goalWeightKg,
-                                          currentTarget: DayNutrition.dailyTarget(profile: profile, latestWeightKg: entries.first?.weightKg),
-                                          maintenance: estimate, weeklyLossKg: profile.weeklyLossKg,
-                                          sex: profile.sex)
-    }
-
-    private var projected: Date? {
-        BudgetCalculator.goalDate(
-            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
-            breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
-    }
-
-    private var forecast: TrendForecast? {
-        ProgressCalculator.trendForecast(weights: CycleCalculator.excludingRetention(weightDays, days: retentionDays),
-                                         goalKg: profile.goalWeightKg)
     }
 
     private var yDomain: ClosedRange<Double> {
@@ -183,14 +137,15 @@ struct WeightView: View {
     }
 
     private var statsGrid: some View {
-        StatGrid {
+        let progress = progress
+        return StatGrid {
             StatTile(title: "Current", value: units.weightString(kg: currentKg), subtitle: entries.first.map { $0.date.relativeDayLabel }, systemImage: "scalemass.fill", tint: .indigo)
-            StatTile(title: "Change since start", value: units.weightString(kg: -lost, signed: true), subtitle: "from \(units.weightString(kg: profile.startWeightKg))",
-                     systemImage: lost >= 0 ? "arrow.down.right" : "arrow.up.right", tint: lost >= 0 ? .green : .gray)
+            StatTile(title: "Change since start", value: units.weightString(kg: -progress.lostKg, signed: true), subtitle: "from \(units.weightString(kg: profile.startWeightKg))",
+                     systemImage: progress.lostKg >= 0 ? "arrow.down.right" : "arrow.up.right", tint: progress.lostKg >= 0 ? .green : .gray)
             if profile.isMaintaining {
                 StatTile(title: "Holding", value: units.weightString(kg: profile.maintenanceCenterKg), subtitle: "± \(units.weightString(kg: profile.maintenanceBandKg))", systemImage: "equal.circle.fill", tint: .green)
             } else {
-                StatTile(title: "To goal", value: units.weightString(kg: remaining), subtitle: "goal \(units.weightString(kg: profile.goalWeightKg))", systemImage: "flag.checkered", tint: .purple)
+                StatTile(title: "To goal", value: units.weightString(kg: progress.remainingKg), subtitle: "goal \(units.weightString(kg: profile.goalWeightKg))", systemImage: "flag.checkered", tint: .purple)
             }
             // The number with what it is, not a category label applied to the person.
             StatTile(title: "BMI", value: String(format: "%.1f", bmi), subtitle: String(localized: "A rough guide only"), systemImage: "figure.stand", tint: .teal)
@@ -257,14 +212,18 @@ struct WeightView: View {
     }
 
     private var insightsCard: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        let progress = progress
+        let rateReadiness = progress.rateReadiness
+        let forecastReadiness = progress.forecastReadiness
+        let remaining = progress.remainingKg
+        return VStack(alignment: .leading, spacing: 10) {
             Text("Insights").font(.headline)
             if profile.isMaintaining {
-                MaintenanceBandView(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays) ?? currentKg,
+                MaintenanceBandView(trendKg: progress.trendKg ?? progress.currentKg,
                                     centerKg: profile.maintenanceCenterKg, bandKg: profile.maintenanceBandKg,
                                     units: units)
             }
-            if let rate = weeklyRate, rateProgress.isReady {
+            if let rate = progress.weeklyChangeKg {
                 let losing = rate < 0
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: losing ? "arrow.down.right.circle.fill" : "arrow.up.right.circle.fill")
@@ -280,23 +239,23 @@ struct WeightView: View {
                 .font(.subheadline)
             } else {
                 TrendProgressView(title: "Your real rate of loss appears after a few weigh-ins.",
-                                  progress: rateProgress, logWeighIn: { showAdd = true })
+                                  progress: rateReadiness, logWeighIn: { showAdd = true })
             }
-            if let latest = milestones.last {
+            if let latest = progress.milestones.last {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "trophy.fill").foregroundStyle(.yellow)
                     Text("\(latest.percent)% of your starting weight lost, reached \(latest.reachedOn.formatted(date: .abbreviated, time: .omitted)).")
                 }
                 .font(.subheadline)
             }
-            if let next = nextMilestone, remaining > 0 {
+            if let next = progress.nextMilestone, remaining > 0 {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "flag.checkered").foregroundStyle(.indigo)
                     Text("\(units.weightString(kg: next.remainingKg)) on your 7-day average to reach \(next.percent)%.")
                 }
                 .font(.subheadline)
             }
-            if let plateau {
+            if let plateau = progress.plateau {
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "chart.line.flattrend.xyaxis").foregroundStyle(.orange)
                     VStack(alignment: .leading, spacing: 2) {
@@ -308,21 +267,21 @@ struct WeightView: View {
                 }
                 .font(.subheadline)
             }
-            if let projected, remaining > 0, !profile.isMaintaining {
+            if let projected = progress.plannedGoalDate, remaining > 0, !profile.isMaintaining {
                 HStack(spacing: 10) {
                     Image(systemName: "calendar.badge.checkmark").foregroundStyle(.purple)
                     Text("On plan, you'll reach \(units.weightString(kg: profile.goalWeightKg)) around \(projected.approximateDateLabel()).")
                 }
                 .font(.subheadline)
-                if let forecast {
+                if let forecast = progress.forecast {
                     HStack(spacing: 10) {
                         Image(systemName: "chart.line.downtrend.xyaxis").foregroundStyle(.teal)
                         Text("If your pace of \(units.weightString(kg: forecast.weeklyLossKg)) a week holds, you'll get there around \(forecast.goalDate.approximateDateLabel()).")
                     }
                     .font(.subheadline)
-                } else if !forecastProgress.isReady, rateProgress.isReady {
+                } else if !forecastReadiness.isReady, rateReadiness.isReady {
                     TrendProgressView(title: "A goal date from your actual pace needs two weeks of weigh-ins.",
-                                      progress: forecastProgress)
+                                      progress: forecastReadiness)
                 }
             } else if remaining == 0, !profile.isMaintaining {
                 VStack(alignment: .leading, spacing: 8) {
