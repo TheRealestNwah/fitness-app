@@ -10,11 +10,13 @@ struct OnboardingView: View {
     @State private var name = ""
     @State private var sex: BiologicalSex = .female
     @State private var birthDate = Calendar.current.date(byAdding: .year, value: -30, to: .now) ?? .now
-    @State private var unitSystem: UnitSystem = .metric
+    /// Starts on the region's usual units; the picker lets people change them.
+    private static let regionUnits = UnitSystem.preferred()
+    @State private var unitSystem: UnitSystem = OnboardingView.regionUnits
     @State private var heightCm: Double = 170
     @State private var heightFeet: Int = 5
     @State private var heightInches: Int = 7
-    @State private var currentWeight: Double = 80
+    @State private var currentWeight: Double = (Units(system: OnboardingView.regionUnits).weightValue(kg: 80) * 10).rounded() / 10
     /// No goal is chosen for the person: they pick what they want, and type a goal weight only to lose.
     @State private var goal: WeightGoal?
     @State private var goalWeight: Double?
