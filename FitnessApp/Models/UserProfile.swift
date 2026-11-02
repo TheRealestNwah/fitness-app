@@ -139,6 +139,9 @@ final class UserProfile {
         maintenanceWeightKg = nil
     }
 
+    /// The weight targets are worked out from: the latest weigh-in, or the starting weight before there is one.
+    func currentWeightKg(latestWeighIn: Double?) -> Double { latestWeighIn ?? startWeightKg }
+
     /// Daily calorie budget, honouring a manual override if the user set one.
     func calorieTarget(currentWeightKg: Double) -> Int {
         if let custom = customCalorieTarget, custom > 0 { return custom }

@@ -22,12 +22,11 @@ struct MonthlyReportView: View {
     }
 
     private var report: MonthlyReport? {
-        let currentKg = weights.last?.weightKg ?? profile.startWeightKg
-        return MonthlyReportCalculator.report(
+        MonthlyReportCalculator.report(
             month: monthDay,
             foodLogs: foodLogs.map { .init(date: $0.date, calories: $0.calories) },
             weights: weights.map { .init(date: $0.date, weightKg: $0.weightKg) },
-            budget: profile.calorieTarget(currentWeightKg: currentKg),
+            budget: DayNutrition.dailyTarget(profile: profile, latestWeightKg: weights.last?.weightKg),
             fasts: fasts.map { .init(start: $0.start, end: $0.end, targetHours: $0.targetHours) },
             workoutDates: exercise.map(\.date))
     }

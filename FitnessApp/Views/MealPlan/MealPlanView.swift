@@ -61,8 +61,13 @@ struct PlannerView: View {
     @State private var pickingFor: MealType?
     @State private var showAutoFillConfirm = false
 
-    private var currentKg: Double { weights.first?.weightKg ?? profile.startWeightKg }
-    private var target: Int { profile.calorieTarget(currentWeightKg: currentKg) }
+    /// The selected day's budget: the same number Today and the Food diary show for that day, so a
+    /// training day plans more food and a rest day less. Fetched, since the selected day changes.
+    private var dayBudget: Int {
+        let records = DayNutrition.Records.fetch(for: selectedDay, in: context)
+        return DayNutrition.make(profile: profile, day: selectedDay, food: records.food, exercise: records.exercise,
+                                 latestWeightKg: weights.first?.weightKg).target
+    }
 
     private var weekDays: [Date] {
         let cal = Calendar.current
@@ -91,6 +96,7 @@ struct PlannerView: View {
     }
 
     var body: some View {
+        let target = dayBudget
         List {
             Section {
                 weekStrip
@@ -301,6 +307,7 @@ struct PlannerView: View {
         let copies = replaced.map { $0.restorableCopy() }
         for e in replaced { context.delete(e) }
         var added: [MealPlanEntry] = []
+        let target = dayBudget
         let window = allEntries.filter { abs($0.day.timeIntervalSince(selectedDay)) < 3 * 86_400 }
         let recentlyUsed = Set(window.compactMap(\.recipeID))
         for meal in MealType.allCases {

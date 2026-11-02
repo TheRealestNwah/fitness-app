@@ -311,15 +311,11 @@ struct OnboardingView: View {
     }
 
     private var summary: some View {
-        let age = NutritionCalculator.age(birthDate: birthDate)
-        let bmr = NutritionCalculator.bmr(sex: sex, weightKg: currentKg, heightCm: resolvedHeightCm, age: age)
-        let tdee = NutritionCalculator.tdee(bmr: bmr, activity: activity)
-        // Worked out the way the new profile will: a deficit to lose, otherwise maintenance.
-        let target = losing
-            ? NutritionCalculator.dailyCalorieTarget(tdee: tdee, weeklyLossKg: rate.rawValue, sex: sex)
-            : MaintenanceCalculator.calorieTarget(tdee: tdee, sex: sex)
-        // The same split a new profile starts with, so these grams match Today's.
-        let macros = NutritionCalculator.macroGrams(calories: target, proteinPercent: 30, carbsPercent: 40, fatPercent: 30)
+        // Worked out from the profile Finish will save, so these numbers match Today's on day one.
+        let draft = draftProfile()
+        let tdee = draft.tdee(currentWeightKg: currentKg)
+        let target = DayNutrition.dailyTarget(profile: draft, latestWeightKg: currentKg)
+        let macros = DayNutrition.dailyMacros(profile: draft, latestWeightKg: currentKg)
         let goalDate = losing ? goalKg.flatMap {
             NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: $0, weeklyLossKg: rate.rawValue)
         } : nil
@@ -423,7 +419,8 @@ struct OnboardingView: View {
         }
     }
 
-    private func finish() {
+    /// The profile as entered so far, not yet saved.
+    private func draftProfile() -> UserProfile {
         let profile = UserProfile(name: name.trimmingCharacters(in: .whitespaces),
                                   sex: sex,
                                   birthDate: birthDate,
@@ -436,6 +433,11 @@ struct OnboardingView: View {
         // Keeping steady or just tracking runs in maintenance mode: the target is maintenance
         // calories and there's no goal weight to count down to.
         if !losing { profile.startMaintenance(atKg: currentKg) }
+        return profile
+    }
+
+    private func finish() {
+        let profile = draftProfile()
         context.insert(profile)
         context.insert(WeightEntry(date: .now, weightKg: currentKg, note: WeightEntry.startingWeightNote))
         context.saveReportingFailure()
