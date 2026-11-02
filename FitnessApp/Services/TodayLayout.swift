@@ -70,11 +70,28 @@ struct TodayLayout: Equatable {
 
     var isDefault: Bool { self == .default }
 
-    /// Two columns for wide layouts, alternating so each keeps the chosen order top to bottom.
-    static func columns(_ cards: [TodayCard]) -> (left: [TodayCard], right: [TodayCard]) {
-        let indexed = cards.enumerated()
-        return (indexed.filter { $0.offset.isMultiple(of: 2) }.map(\.element),
-                indexed.filter { !$0.offset.isMultiple(of: 2) }.map(\.element))
+    // MARK: Columns
+
+    /// How many columns of cards fit `width`, from one up to `maximum`, so a wide window fills
+    /// across instead of stretching two cards to its edges.
+    static func columnCount(fitting width: CGFloat, minimumColumnWidth: CGFloat = 340,
+                            spacing: CGFloat = 16, maximum: Int = 3) -> Int {
+        guard width.isFinite, width > 0 else { return 1 }
+        let fit = Int((width + spacing) / (minimumColumnWidth + spacing))
+        return min(max(fit, 1), maximum)
+    }
+
+    /// The column for each card, taking the cards in order and putting each into the shortest
+    /// column so far (the leftmost on a tie). The chosen order still reads top to bottom and left
+    /// to right, but a tall card no longer leaves the column beside it empty.
+    static func pack(heights: [CGFloat], into columns: Int, spacing: CGFloat = 16) -> [Int] {
+        guard columns > 1 else { return Array(repeating: 0, count: heights.count) }
+        var totals = Array(repeating: CGFloat(0), count: columns)
+        return heights.map { height in
+            let column = totals.indices.min { totals[$0] < totals[$1] } ?? 0
+            totals[column] += height + (totals[column] > 0 ? spacing : 0)
+            return column
+        }
     }
 
     // MARK: Storage
