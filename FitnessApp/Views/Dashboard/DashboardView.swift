@@ -125,29 +125,15 @@ struct DashboardView: View {
     private var weeklyReview: WeeklyReview {
         WeeklyReviewCalculator.review(
             foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
-            weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
+            weights: weightProgress.trendWeighIns,
             budget: dailyTarget,
             plannedWeeklyLossKg: profile.weeklyLossKg,
             fasts: fasts.map { FastingCalculator.Fast(start: $0.start, end: $0.end, targetHours: $0.targetHours) })
     }
 
-    private var weightDays: [WeeklyReviewCalculator.WeightDay] {
-        weights.map { WeeklyReviewCalculator.WeightDay(date: $0.date, weightKg: $0.weightKg) }
-    }
-
-    private var recentMilestone: Milestone? {
-        ProgressCalculator.recentMilestone(startKg: profile.startWeightKg, weights: weightDays)
-    }
-
-    private var plateau: Plateau? {
-        guard !profile.isMaintaining else { return nil }      // holding steady is the point
-        let estimate = AdaptiveTargetCalculator.estimate(
-            foodLogs: recentFood.map { WeeklyReviewCalculator.FoodDay(date: $0.date, calories: $0.calories) },
-            weights: weightDays)
-        return ProgressCalculator.plateau(weights: CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays),
-                                          goalKg: profile.goalWeightKg,
-                                          currentTarget: dailyTarget, maintenance: estimate,
-                                          weeklyLossKg: profile.weeklyLossKg, sex: profile.sex)
+    /// Lost, remaining, forecast, milestones and plateau: the same numbers the Weight screen shows.
+    private var weightProgress: WeightProgress {
+        WeightProgress(profile: profile, weighIns: weights, food: recentFood)
     }
 
     private var tip: String {
@@ -225,8 +211,9 @@ struct DashboardView: View {
                                           carbs: macroTargets.carbs, fat: macroTargets.fat))
         case .weight: weightCard
         case .progress:
-            if let milestone = recentMilestone { milestoneCard(milestone) }
-            if let plateau { plateauCard(plateau) }
+            let progress = weightProgress
+            if let milestone = progress.recentMilestone { milestoneCard(milestone) }
+            if let plateau = progress.plateau { plateauCard(plateau) }
         case .activity:
             if HealthSettings.isEnabled, HealthKitManager.isAvailable { activityCard }
         case .weeklyReview:
@@ -462,7 +449,7 @@ struct DashboardView: View {
                     }
                     weightHeadline
                     if profile.isMaintaining {
-                        MaintenanceBandView(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays) ?? currentKg,
+                        MaintenanceBandView(trendKg: weightProgress.trendKg ?? currentKg,
                                             centerKg: profile.maintenanceCenterKg,
                                             bandKg: profile.maintenanceBandKg, units: units)
                     } else {
@@ -472,7 +459,7 @@ struct DashboardView: View {
             }
             .buttonStyle(.plain)
             .strideHoverEffect()
-            if MaintenanceCalculator.shouldOffer(trendKg: ProgressCalculator.trend(on: .now, weights: weightDays),
+            if MaintenanceCalculator.shouldOffer(trendKg: weightProgress.trendKg,
                                                  goalKg: profile.goalWeightKg,
                                                  isMaintaining: profile.isMaintaining) {
                 Divider()
@@ -483,7 +470,7 @@ struct DashboardView: View {
     }
 
     private var weightHeadline: some View {
-        let lost = profile.startWeightKg - currentKg
+        let lost = weightProgress.lostKg
         let daysSinceWeighIn = weights.first.map { Calendar.current.dateComponents([.day], from: $0.date.startOfDay, to: Date.now.startOfDay).day ?? 0 }
         return ReflowRow {
             HStack(alignment: .firstTextBaseline) {
@@ -503,18 +490,13 @@ struct DashboardView: View {
     }
 
     private var goalProgress: some View {
-        let lost = profile.startWeightKg - currentKg
-        let remaining = max(currentKg - profile.goalWeightKg, 0)
-        let total = max(profile.startWeightKg - profile.goalWeightKg, 0.001)
-        let progress = min(max(lost / total, 0), 1)
-        let projected = BudgetCalculator.goalDate(
-            NutritionCalculator.projectedGoalDate(currentKg: currentKg, goalKg: profile.goalWeightKg, weeklyLossKg: profile.weeklyLossKg),
-            breakStart: profile.dietBreakStart, breakEnd: profile.dietBreakEnd)
-        let trendWeights = CycleCalculator.excludingRetention(weightDays, days: HealthKitManager.shared.retentionDays)
-        let forecast = ProgressCalculator.trendForecast(weights: trendWeights, goalKg: profile.goalWeightKg)
-        let forecastProgress = TrendReadiness.forecast(weights: trendWeights)
+        let progress = weightProgress
+        let remaining = progress.remainingKg
+        let projected = progress.plannedGoalDate
+        let forecast = progress.forecast
+        let forecastProgress = progress.forecastReadiness
         return VStack(alignment: .leading, spacing: 12) {
-            ProgressView(value: progress)
+            ProgressView(value: progress.goalFraction)
                 .tint(.indigo)
             ReflowRow {
                 Text("\(units.weightString(kg: remaining)) to go")

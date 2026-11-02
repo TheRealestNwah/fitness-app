@@ -15,6 +15,7 @@ Domain terms are defined in [GLOSSARY.md](../../GLOSSARY.md).
 | [0007](0007-day-nutrition-module.md) | One Day Nutrition module for every screen's day numbers | Accepted, in progress |
 | [0008](0008-versioned-json-backup.md) | Backups are one versioned JSON file | Accepted |
 | [0009](0009-native-mac-app.md) | A native macOS app, not Mac Catalyst | Accepted |
+| [0010](0010-weight-progress-module.md) | One Weight Progress module for Today and the Weight screen | Accepted |
 
 ## Writing a new one
 

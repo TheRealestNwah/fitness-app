@@ -93,20 +93,26 @@ Decisions behind these terms are in [docs/adr/](docs/adr/).
 : The mean of the weigh-ins in the 7 days ending on a day (`ProgressCalculator.trend`). Milestones, plateaus and maintenance status use the trend, not a single weigh-in, so one light morning doesn't count.
 : _Avoid:_ average weight, moving average (in user-facing text "your average" is fine).
 
+**Weight progress**
+: Everything below about where someone is on the way to their goal weight, worked out in one place for Today and the Weight screen (`WeightProgress`): current weight, **lost** (since the start weight; negative after a gain), **remaining** (to the goal; zero once reached), rate, forecast, planned goal date, milestones and plateau. See [ADR 0010](docs/adr/0010-weight-progress-module.md).
+
 **Rate** (rate of loss)
-: Loss per week from a straight-line fit through recent weigh-ins (`NutritionCalculator.weeklyRate`). Positive means losing.
+: Weight change per week from a straight-line fit through the last four weeks of weigh-ins (`WeightProgress.weeklyChangeKg`, from `NutritionCalculator.weeklyRate`). Negative means losing. Shown once there are 3 weigh-ins over 7 days.
 
 **Forecast** (goal date)
-: When the trend reaches the goal weight at the actual rate (`ProgressCalculator.trendForecast`). Nil without enough data, when weight is flat or rising, or when it's too far off. Moved later by a diet break.
+: When the trend reaches the goal weight at the actual rate (`WeightProgress.forecast`, from `ProgressCalculator.trendForecast`). Its `weeklyLossKg` is positive when losing. Nil without enough data, when weight is flat or rising, or when it's too far off.
+
+**Planned goal date**
+: When the goal would be reached at the planned pace from the current weight, moved later by a diet break still ahead (`WeightProgress.plannedGoalDate`). Shown until there's enough data for a forecast.
 
 **Milestone**
 : Every 5% of starting weight lost, measured on the trend (`Milestone`).
 
 **Plateau**
-: The trend has moved less than a tolerance for a minimum number of days, with regular weigh-ins, while there's still weight to lose (`ProgressCalculator.plateau`).
+: The trend has moved less than a tolerance for a minimum number of days, with regular weigh-ins, while there's still weight to lose (`WeightProgress.plateau`, from `ProgressCalculator.plateau`). Its suggestions compare the measured maintenance with the plain daily target. Never shown in maintenance mode.
 
 **Retention days**
-: Days likely to show water retention, from cycle data when cycle-aware weight is on (`CycleCalculator`). Left out of plateau checks.
+: Days likely to show water retention, from cycle data when cycle-aware weight is on (`CycleCalculator`). Left out of the forecast and plateau checks.
 
 **Trend readiness**
 : How close the data is to supporting a trend-based insight ("3 of 5 weigh-ins") (`TrendProgress`).
