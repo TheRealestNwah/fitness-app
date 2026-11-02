@@ -54,11 +54,11 @@ struct UndoToastView: View {
         if let toast = center.toast {
             HStack(spacing: 12) {
                 Text(toast.message)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .lineLimit(2)
                 Spacer(minLength: 8)
                 Button("Undo") { center.undo() }
-                    .font(.subheadline.weight(.semibold))
+                    .font(.stride(.subheadline).weight(.semibold))
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

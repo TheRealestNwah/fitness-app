@@ -133,7 +133,7 @@ struct VitalsView: View {
                                 Text(entry.date.formatted(date: .abbreviated, time: .shortened))
                                     .foregroundStyle(Color.primary)
                                 Text(summary(for: entry))
-                                    .font(.footnote)
+                                    .font(.stride(.footnote))
                                     .foregroundStyle(Color.secondary)
                             }
                         }
@@ -183,16 +183,16 @@ struct VitalRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(kind.label)
                 Text(entry.date.relativeDayLabel)
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
                 Text(kind.display(entry: entry, units: units))
-                    .font(.body.monospacedDigit().weight(.medium))
+                    .font(.stride(.body).monospacedDigit().weight(.medium))
                 if let note = kind.assessment(entry: entry) {
                     Text(note)
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -334,7 +334,7 @@ struct VitalDetailView: View {
             VStack(spacing: 16) {
                 if embedded {
                     Label(kind.label, systemImage: kind.systemImage)
-                        .font(.title2.bold())
+                        .font(.stride(.title2).bold())
                         .foregroundStyle(kind.tint)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -347,7 +347,7 @@ struct VitalDetailView: View {
                     }
                 }
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("History").font(.headline)
+                    Text("History").font(.stride(.headline))
                     if points.count < 2 {
                         ContentUnavailableView("Not enough data", systemImage: "chart.xyaxis.line",
                                                description: Text("Log at least two readings to see a trend."))
@@ -385,7 +385,7 @@ struct VitalDetailView: View {
                 .card()
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Readings").font(.headline)
+                    Text("Readings").font(.stride(.headline))
                     ForEach(points.reversed()) { p in
                         HStack {
                             Text(p.date.formatted(date: .abbreviated, time: .shortened))
@@ -396,7 +396,7 @@ struct VitalDetailView: View {
                                 Text(String(format: "%.1f %@", p.value, kind.unitLabel(units)))
                             }
                         }
-                        .font(.subheadline.monospacedDigit())
+                        .font(.stride(.subheadline).monospacedDigit())
                         .padding(.vertical, 4)
                         Divider()
                     }

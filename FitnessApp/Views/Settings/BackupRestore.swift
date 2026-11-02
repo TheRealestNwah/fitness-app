@@ -59,7 +59,7 @@ struct BackupRestoreButtons: View {
                 List {
                     ShareLink(item: item.url) { Label("Save or share backup", systemImage: "square.and.arrow.up") }
                     Text("The backup holds every log, recipe, photo and your profile in one file, including health and medication details. It isn't encrypted or protected by the app lock, so keep it somewhere private, and open it in Stride to restore.")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 .navigationTitle("Backup")

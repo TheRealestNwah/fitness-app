@@ -41,13 +41,13 @@ struct SuggestionsCard: View {
         if !picks.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 Label("Fits what's left", systemImage: "sparkles")
-                    .font(.headline)
+                    .font(.stride(.headline))
                 ForEach(picks, id: \.name) { pick in
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(pick.name).font(.subheadline.weight(.semibold)).lineLimit(1)
+                            Text(pick.name).font(.stride(.subheadline).weight(.semibold)).lineLimit(1)
                             Text("\(pick.detail) · \(Energy.string(pick.macros.kcal)) · \(Int(pick.macros.protein.rounded())) g protein")
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .foregroundStyle(Color.secondary)
                                 .lineLimit(1)
                         }
@@ -56,7 +56,7 @@ struct SuggestionsCard: View {
                             log(pick)
                         } label: {
                             Image(systemName: logged == pick.name ? "checkmark.circle.fill" : "plus.circle.fill")
-                                .font(.title3)
+                                .font(.stride(.title3))
                         }
                         .buttonStyle(.borderless)
                         .accessibilityLabel("Log \(pick.name)")

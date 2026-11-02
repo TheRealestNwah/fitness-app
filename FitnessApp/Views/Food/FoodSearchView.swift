@@ -171,12 +171,12 @@ struct FoodSearchView: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(batch.name).foregroundStyle(Color.primary)
                                         Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
-                                            .font(.footnote)
+                                            .font(.stride(.footnote))
                                             .foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(batch.caloriesPerPortion.rounded()))")
-                                        .font(.body.monospacedDigit())
+                                        .font(.stride(.body).monospacedDigit())
                                 }
                             }
                             .swipeActions(edge: .trailing) {
@@ -199,19 +199,19 @@ struct FoodSearchView: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         HStack(spacing: 6) {
                                             Text(meal.name).foregroundStyle(Color.primary)
-                                            Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
+                                            Image(systemName: "star.fill").font(.stride(.caption2)).foregroundStyle(.yellow)
                                         }
                                         Text(meal.summary)
-                                            .font(.footnote)
+                                            .font(.stride(.footnote))
                                             .foregroundStyle(Color.secondary)
                                             .lineLimit(1)
                                     }
                                     Spacer()
                                     VStack(alignment: .trailing, spacing: 2) {
                                         Text("\(Int(meal.totalCalories.rounded()))")
-                                            .font(.body.monospacedDigit())
+                                            .font(.stride(.body).monospacedDigit())
                                         Text("\(meal.items.count) items")
-                                            .font(.footnote)
+                                            .font(.stride(.footnote))
                                             .foregroundStyle(Color.secondary)
                                     }
                                 }
@@ -252,7 +252,7 @@ struct FoodSearchView: View {
                             Text("Recent searches")
                             Spacer()
                             Button("Clear") { recentSearches = "" }
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .textCase(nil)
                         }
                     }
@@ -295,11 +295,11 @@ struct FoodSearchView: View {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(recipe.name).foregroundStyle(Color.primary)
-                                        Text("1 serving").font(.footnote).foregroundStyle(Color.secondary)
+                                        Text("1 serving").font(.stride(.footnote)).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
-                                        .font(.body.monospacedDigit())
+                                        .font(.stride(.body).monospacedDigit())
                                         .foregroundStyle(Color.secondary)
                                 }
                             }
@@ -401,7 +401,7 @@ struct FoodSearchView: View {
             } else {
                 ForEach(online.foods) { result in onlineRow(result) }
                 ForEach(online.failures, id: \.source) { failure in
-                    Text(failure.message).font(.footnote).foregroundStyle(Color.secondary)
+                    Text(failure.message).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                 }
                 if online.foods.isEmpty, online.failures.isEmpty {
                     Text("No online results for “\(search)”.").foregroundStyle(Color.secondary)
@@ -429,15 +429,15 @@ struct FoodSearchView: View {
                     Text(product.brand.isEmpty ? product.name : "\(product.name) (\(product.brand))")
                         .foregroundStyle(Color.primary)
                     Text("\(product.servingDescription) · \(result.source.rawValue)")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                         .foregroundStyle(Color.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(product.calories.rounded()))")
-                        .font(.body.monospacedDigit())
+                        .font(.stride(.body).monospacedDigit())
                     Text("P\(Int(product.protein)) C\(Int(product.carbs)) F\(Int(product.fat))")
-                        .font(.footnote.monospacedDigit())
+                        .font(.stride(.footnote).monospacedDigit())
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -455,17 +455,17 @@ struct FoodSearchView: View {
                     HStack(spacing: 4) {
                         Text(food.displayName).foregroundStyle(Color.primary)
                         if food.isFavorite {
-                            Image(systemName: "star.fill").font(.caption2).foregroundStyle(.yellow)
+                            Image(systemName: "star.fill").font(.stride(.caption2)).foregroundStyle(.yellow)
                         }
                     }
-                    Text(food.servingDescription).font(.subheadline).foregroundStyle(Color.secondary)
+                    Text(food.servingDescription).font(.stride(.subheadline)).foregroundStyle(Color.secondary)
                 }
                 Spacer()
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("\(Int(food.calories.rounded()))")
-                        .font(.body.monospacedDigit())
+                        .font(.stride(.body).monospacedDigit())
                     Text("P\(Int(food.protein)) C\(Int(food.carbs)) F\(Int(food.fat))")
-                        .font(.footnote.monospacedDigit())
+                        .font(.stride(.footnote).monospacedDigit())
                         .foregroundStyle(Color.secondary)
                 }
             }

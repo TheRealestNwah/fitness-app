@@ -146,7 +146,7 @@ struct OnboardingView: View {
                 .font(.system(size: welcomeIconSize))
                 .foregroundStyle(Color.accentColor)
             Text("Welcome to Stride")
-                .font(.largeTitle.bold())
+                .font(.stride(.largeTitle).bold())
             Text("Track your weight, calories, vitals and meals in one place. Answer a few questions and we'll build a plan that fits you.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(Color.secondary)
@@ -155,7 +155,7 @@ struct OnboardingView: View {
             RestoreBackupButton()
                 .buttonStyle(.bordered)
             Text("Your data stays on this device.")
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
         }
         .padding()
@@ -246,7 +246,7 @@ struct OnboardingView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(option.label).foregroundStyle(Color.primary)
-                                Text(option.detail).font(.footnote).foregroundStyle(Color.secondary)
+                                Text(option.detail).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             if goal == option {
@@ -286,7 +286,7 @@ struct OnboardingView: View {
                     }
                     if let goalKg, goalKg >= currentKg, currentKg > 0 {
                         Text("To lose weight, choose a goal below your current weight. To stay where you are, pick “Keep my weight steady”.")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(.red)
                     }
                 }
@@ -316,7 +316,7 @@ struct OnboardingView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(level.label).foregroundStyle(Color.primary)
-                                Text(level.detail).font(.footnote).foregroundStyle(Color.secondary)
+                                Text(level.detail).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             if activity == level {
@@ -359,7 +359,7 @@ struct OnboardingView: View {
         return ScrollView {
             VStack(spacing: 16) {
                 Text("Your plan")
-                    .font(.largeTitle.bold())
+                    .font(.stride(.largeTitle).bold())
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(spacing: 4) {
@@ -387,11 +387,11 @@ struct OnboardingView: View {
                 if let goalDate, let goalKg {
                     VStack(alignment: .leading, spacing: 6) {
                         Label("Rough goal date", systemImage: "flag.checkered")
-                            .font(.headline)
+                            .font(.stride(.headline))
                         Text("Around \(goalDate.approximateDateLabel())")
-                            .font(.title3.weight(.semibold))
+                            .font(.stride(.title3).weight(.semibold))
                         Text("Losing \(units.weightString(kg: currentKg - goalKg)) at about \(units.weightString(kg: rate.rawValue, decimals: 2)) a week. Real progress is rarely a straight line, and that's normal.")
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -400,7 +400,7 @@ struct OnboardingView: View {
 
                 if atFloor {
                     Label("We've capped your target at \(Energy.string(target)), the lowest we recommend without medical supervision. Your loss may be a little slower than chosen.", systemImage: "exclamationmark.triangle.fill")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(.orange)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .card()
@@ -408,9 +408,9 @@ struct OnboardingView: View {
 
                 VStack(alignment: .leading, spacing: 6) {
                     Label("Looking up foods online", systemImage: "magnifyingglass")
-                        .font(.headline)
+                        .font(.stride(.headline))
                     Text("When a food isn't saved on your device, Stride can look it up on USDA FoodData Central and Open Food Facts. Only the words you search for are sent. \(FoodDataCentralClient.keySource(userKey: "").explanation) You can add a key any time in Settings, under Privacy & security.")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -418,7 +418,7 @@ struct OnboardingView: View {
                 .accessibilityElement(children: .combine)
 
                 Text("You can change any of this later in Settings.")
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
             }
             .padding()

@@ -85,11 +85,11 @@ struct SaveFailureBanner: View {
                     .foregroundStyle(.orange)
                     .accessibilityHidden(true)
                 Text(failure.message)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .lineLimit(2)
                 Spacer(minLength: 8)
                 Button("Try Again") { center.tryAgain() }
-                    .font(.subheadline.weight(.semibold))
+                    .font(.stride(.subheadline).weight(.semibold))
                 Button { center.dismiss() } label: {
                     Image(systemName: "xmark")
                 }

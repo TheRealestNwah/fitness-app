@@ -61,7 +61,7 @@ struct LegendItem: View {
         } icon: {
             Image(systemName: systemImage).foregroundStyle(color)
         }
-        .font(.footnote)
+        .font(.stride(.footnote))
     }
 }
 
@@ -142,7 +142,7 @@ struct MacroBar: View {
                         .monospacedDigit()
                 }
             }
-            .font(.subheadline)
+            .font(.stride(.subheadline))
             .fixedSize(horizontal: false, vertical: true)
             .frame(maxWidth: .infinity, alignment: .leading)
             GeometryReader { geo in
@@ -179,15 +179,15 @@ struct StatTile: View {
                         .foregroundStyle(tint)
                 }
                 Text(title)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(Color.secondary)
             }
             Text(value)
-                .font(.title3.weight(.semibold).monospacedDigit())
+                .font(.stride(.title3).weight(.semibold).monospacedDigit())
                 .fixedSize(horizontal: false, vertical: true)
             if let subtitle {
                 Text(subtitle)
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -208,11 +208,11 @@ struct SectionHeader: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.headline)
+                .font(.stride(.headline))
             Spacer()
             if let actionTitle, let action {
                 Button(actionTitle, action: action)
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
             }
         }
     }
@@ -232,7 +232,7 @@ struct MacroSummary: View {
             Label("\(NutrientText.grams(carbs))\u{00A0}g", systemImage: "c.circle.fill").foregroundStyle(.orange)
             Label("\(NutrientText.grams(fat))\u{00A0}g", systemImage: "f.circle.fill").foregroundStyle(.pink)
         }
-        .font(.subheadline.monospacedDigit())
+        .font(.stride(.subheadline).monospacedDigit())
         .labelStyle(.titleAndIcon)
     }
 }
@@ -253,10 +253,10 @@ struct DayStepper: View {
             Spacer()
             VStack(spacing: 2) {
                 Text(date.relativeDayLabel)
-                    .font(.headline)
+                    .font(.stride(.headline))
                 if !date.isToday {
                     Button("Back to today") { withAnimation { date = .now } }
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                 }
             }
             Spacer()
@@ -333,14 +333,14 @@ struct TrendProgressView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 .foregroundStyle(Color.secondary)
             ProgressView(value: progress.fraction)
                 .tint(.indigo)
                 .accessibilityLabel(Text(title))
                 .accessibilityValue(progress.summary)
             Text(progress.summary)
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
                 .accessibilityHidden(true)
             if progress.needsWeighIns, let logWeighIn {

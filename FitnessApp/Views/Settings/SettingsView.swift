@@ -30,7 +30,7 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(entry.title)
                                 Text(entry.page.title)
-                                    .font(.footnote)
+                                    .font(.stride(.footnote))
                                     .foregroundStyle(Color.secondary)
                             }
                         }
@@ -83,7 +83,7 @@ struct MacSettingsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(entry.title)
                             Text(entry.page.title)
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .foregroundStyle(Color.secondary)
                         }
                         // One element read as "Menu bar, Privacy & security"; on the Mac the bare texts

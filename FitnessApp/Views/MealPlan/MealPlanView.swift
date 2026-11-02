@@ -113,7 +113,7 @@ struct PlannerView: View {
                 layout {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Energy.number(plannedCalories)) of \(Energy.string(target)) planned")
-                            .font(.subheadline.weight(.medium))
+                            .font(.stride(.subheadline).weight(.medium))
                         MacroSummary(protein: dayEntries.reduce(0) { $0 + $1.totalProtein },
                                      carbs: dayEntries.reduce(0) { $0 + $1.totalCarbs },
                                      fat: dayEntries.reduce(0) { $0 + $1.totalFat })
@@ -133,7 +133,7 @@ struct PlannerView: View {
                             Image(systemName: "wand.and.stars")
                                 .accessibilityLabel("Auto-plan")
                         }
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                     }
                     .buttonStyle(.bordered)
                 }
@@ -161,7 +161,7 @@ struct PlannerView: View {
                     }
                     Button { pickingFor = meal } label: {
                         Label("Add to \(meal.inSentence)", systemImage: "plus.circle.fill")
-                            .font(.subheadline.weight(.medium))
+                            .font(.stride(.subheadline).weight(.medium))
                     }
                     .foodDropDestination { references in
                         references.map { $0.plan(on: selectedDay, as: meal, context: context) }.contains(true)
@@ -202,11 +202,11 @@ struct PlannerView: View {
             .accessibilityLabel("Previous day")
             VStack(spacing: 4) {
                 Text(selectedDay.relativeDayLabel)
-                    .font(.headline)
+                    .font(.stride(.headline))
                     .multilineTextAlignment(.center)
                 if calories(on: selectedDay) > 0 {
                     Text("Planned")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -235,9 +235,9 @@ struct PlannerView: View {
                 Button { selectedDay = day } label: {
                     VStack(spacing: 4) {
                         Text(day.formatted(.dateTime.weekday(.narrow)))
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                         Text(day.formatted(.dateTime.day()))
-                            .font(.subheadline.weight(.semibold))
+                            .font(.stride(.subheadline).weight(.semibold))
                         Circle()
                             .fill(kcal > 0 ? Color.accentColor : Color.clear)
                             .frame(width: 5, height: 5)
@@ -357,7 +357,7 @@ struct PlanEntryRow: View {
                         Text("× \(entry.servings.cleanString)")
                     }
                 }
-                .font(.footnote)
+                .font(.stride(.footnote))
                 .foregroundStyle(Color.secondary)
             }
             Spacer()
@@ -456,11 +456,11 @@ struct PlanItemPicker: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(batch.name).foregroundStyle(Color.primary)
                                         Text("\(batch.portionsLeft) of \(batch.portionsTotal) portions left")
-                                            .font(.footnote).foregroundStyle(Color.secondary)
+                                            .font(.stride(.footnote)).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(batch.caloriesPerPortion.rounded()))")
-                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
+                                        .font(.stride(.body).monospacedDigit()).foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -473,11 +473,11 @@ struct PlanItemPicker: View {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(recipe.name).foregroundStyle(Color.primary)
                                         Text("\(recipe.mealType.label) · \(recipe.prepMinutes) min")
-                                            .font(.footnote).foregroundStyle(Color.secondary)
+                                            .font(.stride(.footnote)).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(recipe.caloriesPerServing.rounded()))")
-                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
+                                        .font(.stride(.body).monospacedDigit()).foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -489,11 +489,11 @@ struct PlanItemPicker: View {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(food.displayName).foregroundStyle(Color.primary)
-                                        Text(food.servingDescription).font(.footnote).foregroundStyle(Color.secondary)
+                                        Text(food.servingDescription).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                                     }
                                     Spacer()
                                     Text("\(Int(food.calories.rounded()))")
-                                        .font(.body.monospacedDigit()).foregroundStyle(Color.secondary)
+                                        .font(.stride(.body).monospacedDigit()).foregroundStyle(Color.secondary)
                                 }
                             }
                         }
@@ -591,7 +591,7 @@ struct GroceryListView: View {
                         .help("Previous week")
                     Spacer()
                     Text("\(weekStart.shortDateLabel()) – \(weekEnd.adding(days: -1).shortDateLabel())")
-                        .font(.headline)
+                        .font(.stride(.headline))
                     Spacer()
                     Button { weekStart = weekStart.adding(days: 7) } label: { Image(systemName: "chevron.right") }
                         .accessibilityLabel("Next week")
@@ -633,10 +633,10 @@ struct GroceryListView: View {
                                         .strikethrough(isChecked)
                                         .foregroundStyle(isChecked ? Color.secondary : Color.primary)
                                     Text(item.amounts.joined(separator: " + "))
-                                        .font(.footnote)
+                                        .font(.stride(.footnote))
                                         .foregroundStyle(Color.secondary)
                                     Text(item.usedIn.sorted().joined(separator: ", "))
-                                        .font(.footnote)
+                                        .font(.stride(.footnote))
                                         .foregroundStyle(Color.secondary)
                                 }
                             }
@@ -647,7 +647,7 @@ struct GroceryListView: View {
                         Text("\(items.count) items")
                         Spacer()
                         Button("Uncheck all") { setChecked([]) }
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                     }
                 }
             }

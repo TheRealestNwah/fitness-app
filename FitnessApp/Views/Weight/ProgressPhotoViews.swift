@@ -74,11 +74,11 @@ struct ProgressPhotoCompareView: View {
                         let change = after.weightKg - before.weightKg
                         let days = Calendar.current.dateComponents([.day], from: before.date, to: after.date).day ?? 0
                         Text("\(units.weightString(kg: change, signed: true)) over \(days) days")
-                            .font(.headline)
+                            .font(.stride(.headline))
                             .foregroundStyle(change <= 0 ? .green : .orange)
                     }
                     Text("Same spot, same light and same time of day make the change easiest to see.")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
             }
@@ -105,10 +105,10 @@ struct ProgressPhotoCompareView: View {
                 }
             } label: {
                 VStack(spacing: 2) {
-                    Text(title).font(.footnote).foregroundStyle(Color.secondary)
+                    Text(title).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                     if let entry {
-                        Text(entry.date.formatted(date: .abbreviated, time: .omitted)).font(.subheadline.weight(.semibold))
-                        Text(units.weightString(kg: entry.weightKg)).font(.footnote.monospacedDigit())
+                        Text(entry.date.formatted(date: .abbreviated, time: .omitted)).font(.stride(.subheadline).weight(.semibold))
+                        Text(units.weightString(kg: entry.weightKg)).font(.stride(.footnote).monospacedDigit())
                     }
                 }
             }

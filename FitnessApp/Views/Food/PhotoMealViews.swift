@@ -106,7 +106,7 @@ struct PhotoMealSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(value.food.displayName)
                     Text("Seen as “\(value.source)” · \(Energy.string(value.food.calories * value.servings))")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,7 +114,7 @@ struct PhotoMealSheet: View {
             if isChosen {
                 Stepper(value: suggestion.servings, in: 0.25...20, step: 0.25) {
                     Text("\(value.servings.cleanString) × \(value.food.servingDescription)")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                         .monospacedDigit()
                 }
             }

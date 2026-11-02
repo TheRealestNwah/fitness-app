@@ -58,7 +58,7 @@ struct SentenceLogSheet: View {
                         } label: {
                             Label(dictation.isListening ? "Stop" : "Speak",
                                   systemImage: dictation.isListening ? "stop.circle.fill" : "mic.circle.fill")
-                                .font(.headline)
+                                .font(.stride(.headline))
                                 .symbolEffect(.pulse, isActive: dictation.isListening)
                         }
                         .buttonStyle(.borderless)
@@ -154,7 +154,7 @@ struct SentenceLogSheet: View {
                             .foregroundStyle(value.food == nil ? Color.secondary : Color.primary)
                         Text(value.food == nil ? String(localized: "No match. Tap to search.")
                                                : String(localized: "From “\(value.item.name)”. Tap to change."))
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(value.food == nil ? Color.orange : Color.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -163,14 +163,14 @@ struct SentenceLogSheet: View {
                 .buttonStyle(.plain)
                 if let food = value.food {
                     Text(Energy.string(food.calories * value.servings))
-                        .font(.subheadline.monospacedDigit())
+                        .font(.stride(.subheadline).monospacedDigit())
                         .foregroundStyle(Color.secondary)
                 }
             }
             if let food = value.food {
                 Stepper(value: line.servings, in: 0.25...50, step: 0.25) {
                     Text("\(value.servings.cleanString) × \(food.servingDescription)")
-                        .font(.subheadline)
+                        .font(.stride(.subheadline))
                         .monospacedDigit()
                 }
                 .disabled(!value.included)
@@ -232,11 +232,11 @@ struct FoodPickerSheet: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(food.displayName).foregroundStyle(Color.primary)
-                                Text(food.servingDescription).font(.footnote).foregroundStyle(Color.secondary)
+                                Text(food.servingDescription).font(.stride(.footnote)).foregroundStyle(Color.secondary)
                             }
                             Spacer()
                             Text("\(Int(food.calories.rounded()))")
-                                .font(.body.monospacedDigit())
+                                .font(.stride(.body).monospacedDigit())
                                 .foregroundStyle(Color.secondary)
                         }
                     }
@@ -257,7 +257,7 @@ struct CheckmarkToggleStyle: ToggleStyle {
     func makeBody(configuration: Configuration) -> some View {
         Button { configuration.isOn.toggle() } label: {
             Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
-                .font(.title3)
+                .font(.stride(.title3))
                 .foregroundStyle(configuration.isOn ? Color.accentColor : Color.secondary)
         }
         .buttonStyle(.plain)

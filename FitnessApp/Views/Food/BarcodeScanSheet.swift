@@ -95,7 +95,7 @@ struct BarcodeScanSheet: View {
                         .frame(maxHeight: 320)
                         .overlay(alignment: .bottom) {
                             Text("Point the camera at the barcode")
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .padding(8)
                                 .floatingBackground(.ultraThinMaterial, in: Capsule())
                                 .padding()
@@ -123,7 +123,7 @@ struct BarcodeScanSheet: View {
                         if !scannerSupported {
                             Label("Camera scanning isn't available on this device. Type the number under the barcode instead.",
                                   systemImage: "camera.metering.unknown")
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .foregroundStyle(Color.secondary)
                         }
                         HStack {
@@ -142,7 +142,7 @@ struct BarcodeScanSheet: View {
                         }
                         if let errorMessage {
                             Label(errorMessage, systemImage: offlineCode == nil ? "exclamationmark.triangle" : "wifi.slash")
-                                .font(.footnote)
+                                .font(.stride(.footnote))
                                 .foregroundStyle(.orange)
                         }
                         if let offlineCode {
@@ -171,9 +171,9 @@ struct BarcodeScanSheet: View {
                                source: String, action: @escaping () -> Void) -> some View {
         Section {
             VStack(alignment: .leading, spacing: 4) {
-                Text(name).font(.headline)
+                Text(name).font(.stride(.headline))
                 Text("Per \(serving) · \(Energy.string(kcal))")
-                    .font(.subheadline)
+                    .font(.stride(.subheadline))
                     .foregroundStyle(Color.secondary)
                 MacroSummary(protein: protein, carbs: carbs, fat: fat)
             }
@@ -181,7 +181,7 @@ struct BarcodeScanSheet: View {
                 action()
             } label: {
                 Label("Log this food", systemImage: "plus.circle.fill")
-                    .font(.headline)
+                    .font(.stride(.headline))
             }
             Button("Scan another") {
                 product = nil

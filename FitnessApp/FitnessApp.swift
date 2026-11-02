@@ -49,6 +49,7 @@ struct FitnessApp: App {
         Settings {
             MacSettingsWindow()
                 .appLockGate()
+                .macTextSize()
         }
         .modelContainer(container)
 

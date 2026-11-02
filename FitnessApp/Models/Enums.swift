@@ -251,6 +251,52 @@ enum BloodPressureCategory: String {
     }
 }
 
+/// How large the app's text is on the Mac, whose text styles run smaller than iOS's and which has
+/// no system text size setting to compensate. Stored in UserDefaults under "macTextSize". Every
+/// text style goes through `Font.stride(_:)`, which applies this on macOS only.
+enum MacTextSize: String, CaseIterable, Identifiable {
+    case standard, large, larger
+
+    static let storageKey = "macTextSize"
+    /// Large out of the box: the standard Mac sizes read small in a big window.
+    static let `default` = MacTextSize.large
+
+    static var current: MacTextSize {
+        MacTextSize(rawValue: UserDefaults.standard.string(forKey: storageKey) ?? "") ?? .default
+    }
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .standard: return String(localized: "Standard")
+        case .large: return String(localized: "Large")
+        case .larger: return String(localized: "Larger")
+        }
+    }
+
+    /// Point size for a text style: the Mac's own sizes, about 15% more, or the iPhone's.
+    func size(for style: Font.TextStyle) -> CGFloat {
+        switch self {
+        case .standard: return Self.macSizes[style] ?? 13
+        case .large: return (Self.macSizes[style] ?? 13) * 1.15
+        case .larger: return Self.iOSSizes[style] ?? 17
+        }
+    }
+
+    /// The default text style sizes on macOS (body 13).
+    static let macSizes: [Font.TextStyle: CGFloat] = [
+        .largeTitle: 26, .title: 22, .title2: 17, .title3: 15, .headline: 13, .body: 13,
+        .callout: 12, .subheadline: 11, .footnote: 10, .caption: 10, .caption2: 10,
+    ]
+
+    /// The default text style sizes on iOS (body 17).
+    static let iOSSizes: [Font.TextStyle: CGFloat] = [
+        .largeTitle: 34, .title: 28, .title2: 22, .title3: 20, .headline: 17, .body: 17,
+        .callout: 16, .subheadline: 15, .footnote: 13, .caption: 12, .caption2: 11,
+    ]
+}
+
 /// User-selectable colour scheme, stored in UserDefaults under "appearance".
 enum Appearance: String, CaseIterable, Identifiable {
     case system

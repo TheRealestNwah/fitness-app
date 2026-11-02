@@ -82,9 +82,9 @@ struct ResetProgressView: View {
             ProgressView()
                 .controlSize(.large)
             Text("Deleting your data…")
-                .font(.headline)
+                .font(.stride(.headline))
             Text("You'll be taken to setup when it's done.")
-                .font(.subheadline)
+                .font(.stride(.subheadline))
                 .foregroundStyle(Color.secondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -105,7 +105,7 @@ struct StoreRecoveryView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Label("Stride couldn't open your data", systemImage: "exclamationmark.triangle.fill")
-                    .font(.title2.bold())
+                    .font(.stride(.title2).bold())
                     .foregroundStyle(Color.primary)
                 if movedAside {
                     Text("Done. Your old data is kept on this device. Close Stride completely and open it again to start fresh, then restore a backup from Settings › Data if you have one.")
@@ -121,7 +121,7 @@ struct StoreRecoveryView: View {
                 }
                 DisclosureGroup("Details") {
                     Text(failure)
-                        .font(.footnote.monospaced())
+                        .font(.stride(.footnote).monospaced())
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }

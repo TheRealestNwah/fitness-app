@@ -44,6 +44,7 @@ private struct ProfileSettingsPage: View {
     @Environment(UserProfile.self) private var profile
     @Query(sort: \WeightEntry.date, order: .reverse) private var weights: [WeightEntry]
     @AppStorage(Appearance.storageKey) private var appearanceRaw = Appearance.system.rawValue
+    @AppStorage(MacTextSize.storageKey) private var macTextSizeRaw = MacTextSize.default.rawValue
     @AppStorage(StreakSettings.graceDayKey) private var streakGraceDay = false
 
     private var units: Units { profile.units }
@@ -77,6 +78,11 @@ private struct ProfileSettingsPage: View {
                 Picker("Appearance", selection: $appearanceRaw) {
                     ForEach(Appearance.allCases) { Text($0.label).tag($0.rawValue) }
                 }
+                #if os(macOS)
+                Picker("Text size", selection: $macTextSizeRaw) {
+                    ForEach(MacTextSize.allCases) { Text($0.label).tag($0.rawValue) }
+                }
+                #endif
             } header: {
                 Text("Profile")
             } footer: {
@@ -214,7 +220,7 @@ private struct NutritionSettingsPage: View {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .foregroundStyle(Color.secondary)
                     Text("Based on \(estimate.daysLogged) logged days and \(estimate.weighIns) weigh-ins over the last \(estimate.windowDays) days: you averaged \(Energy.string(estimate.meanIntakeKcal)) and your weight moved \(units.weightString(kg: estimate.weeklyWeightChangeKg, decimals: 2, signed: true)) a week. Confidence: \(estimate.confidence.rawValue).")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(Color.secondary)
                 }
                 if suggested != profile.calorieTarget(currentWeightKg: currentKg) {
@@ -277,7 +283,7 @@ private struct ReminderSettingsPage: View {
                 Toggle("Pause during diet breaks", isOn: $profile.pauseRemindersOnDietBreak)
                 if notificationsDenied {
                     Text("Notifications are turned off for this app. Enable them in iOS Settings to receive reminders.")
-                        .font(.footnote)
+                        .font(.stride(.footnote))
                         .foregroundStyle(.orange)
                 }
             } footer: {
@@ -369,7 +375,7 @@ private struct HealthDataSettingsPage: View {
                     Toggle("Cycle-aware weight", isOn: $cycleAware)
                     if let healthStatus {
                         Text(healthStatus)
-                            .font(.footnote)
+                            .font(.stride(.footnote))
                             .foregroundStyle(Color.secondary)
                     }
                 }
@@ -516,7 +522,7 @@ private struct AboutSettingsPage: View {
             Section {
                 LabeledContent("Version", value: version)
                 Text("Calorie and macro targets use the Mifflin-St Jeor equation and standard activity multipliers. They are estimates for healthy adults. Talk to a doctor before starting a diet if you are pregnant, under 18, or have a medical condition.")
-                    .font(.footnote)
+                    .font(.stride(.footnote))
                     .foregroundStyle(Color.secondary)
             } header: {
                 Text("About Stride")

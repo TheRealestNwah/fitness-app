@@ -79,7 +79,7 @@ private struct MicronutrientRow: View {
                 Text(nutrient.name)
                 Spacer()
                 Text(hasData ? amountText : "No data")
-                    .font(.subheadline.monospacedDigit())
+                    .font(.stride(.subheadline).monospacedDigit())
                     .foregroundStyle(hasData ? Color.primary : Color.secondary)
             }
             if hasData {
