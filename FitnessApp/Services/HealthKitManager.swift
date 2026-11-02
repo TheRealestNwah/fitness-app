@@ -196,8 +196,10 @@ final class HealthKitManager {
     /// Likely water-retention days from cycle data, when cycle-aware weight is on.
     var retentionDays: Set<Date> = []
 
-    init(store: HealthStore = HealthKitStore(), defaults: UserDefaults = .standard, now: @escaping () -> Date = { .now }) {
-        self.store = store
+    /// `store` defaults to HealthKit. (It's built here rather than as a default argument,
+    /// since default arguments aren't main-actor isolated.)
+    init(store: HealthStore? = nil, defaults: UserDefaults = .standard, now: @escaping () -> Date = { .now }) {
+        self.store = store ?? HealthKitStore()
         self.defaults = defaults
         self.now = now
     }
