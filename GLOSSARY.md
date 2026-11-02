@@ -171,7 +171,7 @@ Decisions behind these terms are in [docs/adr/](docs/adr/).
 : The built-in foods and recipes, given ids derived from their names so every device seeds the same ones (`SyncDeduplicator.stableID`).
 
 **Backup**
-: The whole app in one versioned JSON file (`BackupFile`), with one hand-written record type per model (`ProfileRecord`, `FoodLogRecord`…). See [ADR 0008](docs/adr/0008-versioned-json-backup.md).
+: The whole app in one versioned JSON file (`BackupFile`), with one record type per model (`FoodLogRecord`, `WeightRecord`…). The profile's record is built from `UserProfile.backupFields`, so each setting is listed once. See [ADR 0008](docs/adr/0008-versioned-json-backup.md) and [ADR 0012](docs/adr/0012-profile-backup-from-the-model.md).
 
 **Widget snapshot**
 : Today's numbers written as JSON to the shared App Group after every change (`WidgetSnapshot`). The widgets, Watch app and Mac menu bar read it instead of the store. See [ADR 0006](docs/adr/0006-widget-snapshot.md).

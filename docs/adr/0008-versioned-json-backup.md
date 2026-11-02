@@ -1,6 +1,6 @@
 # 0008. Backups are one versioned JSON file
 
-- Status: Accepted
+- Status: Accepted, amended by [0012](0012-profile-backup-from-the-model.md) for the profile
 - Date: 2026-11-02 (recorded; the decision predates 1.0)
 
 ## Context
@@ -15,4 +15,4 @@ A backup is one JSON file holding every model, the profile and photos (`BackupFi
 
 - Backups are readable, diffable and independent of SwiftData internals.
 - Every new setting on `UserProfile` has to be added to `ProfileRecord` by hand, in both directions. Forgetting is silent: #407 lost meal slots and all training-day settings on restore. #410 added a test that every `UserProfile` property is covered by the backup, which catches this at CI time.
-- Adding one setting touches about five places. The architecture review of 1 Nov 2026 suggests deriving the profile record from `UserProfile` itself; that's worth exploring, but it interacts with the versioned schema ([ADR 0002](0002-versioned-schema-and-store-recovery.md)) and would need its own ADR.
+- Adding one setting touched about five places. [ADR 0012](0012-profile-backup-from-the-model.md) replaced the hand-written `ProfileRecord` with a field list on `UserProfile`, and moved the format to version 2.
