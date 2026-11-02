@@ -52,11 +52,30 @@ final class TodayLayoutTests: XCTestCase {
         XCTAssertEqual(layout.order.filter { $0 == .tip }.count, 1)
     }
 
-    func testColumnsAlternateAndKeepOrder() {
-        let split = TodayLayout.columns([.calories, .quickActions, .weight, .water, .tip])
-        XCTAssertEqual(split.left, [.calories, .weight, .tip])
-        XCTAssertEqual(split.right, [.quickActions, .water])
-        XCTAssertTrue(TodayLayout.columns([]).left.isEmpty)
+    func testColumnCountFollowsWidth() {
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 390), 1)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 695), 1)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 696), 2)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 1024), 2)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 1052), 3)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 1700), 3, "Never more than three columns")
+        XCTAssertEqual(TodayLayout.columnCount(fitting: 0), 1)
+        XCTAssertEqual(TodayLayout.columnCount(fitting: .infinity), 1)
+    }
+
+    func testPackFillsTheShortestColumn() {
+        // Calories (tall), quick actions, weight (tall), exercise, water. Alternating would put the
+        // three tall cards on the left; packing sends weight to the right, beside the quick actions.
+        XCTAssertEqual(TodayLayout.pack(heights: [300, 80, 200, 100, 90], into: 2, spacing: 16),
+                       [0, 1, 1, 1, 0])
+        XCTAssertEqual(TodayLayout.pack(heights: [300, 80, 200, 100, 90], into: 3, spacing: 16),
+                       [0, 1, 2, 1, 1])
+    }
+
+    func testPackTiesGoLeftAndOneColumnTakesEverything() {
+        XCTAssertEqual(TodayLayout.pack(heights: [100, 100, 100], into: 2), [0, 1, 0])
+        XCTAssertEqual(TodayLayout.pack(heights: [100, 100, 100], into: 1), [0, 0, 0])
+        XCTAssertEqual(TodayLayout.pack(heights: [], into: 2), [])
     }
 
     func testARequiredHiddenCardShowsFirst() {

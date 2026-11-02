@@ -182,18 +182,15 @@ struct DashboardView: View {
 
     // MARK: Sections
 
-    /// One column on iPhone; two side by side on iPad and other wide windows.
+    /// One column on iPhone; as many as fit, with the cards packed to balance them, on iPad and
+    /// other wide windows.
     @ViewBuilder
     private var cards: some View {
         // A recording workout keeps its controls on screen even if the Exercise card is hidden.
         let visible = TodayLayout(storage: layoutStorage)
             .visible(alsoShowing: PhoneWorkoutStatus.isActive ? [.exercise] : [])
         if sizeClass == .regular {
-            let split = TodayLayout.columns(visible)
-            HStack(alignment: .top, spacing: 16) {
-                VStack(spacing: 16) { ForEach(split.left) { cardView($0) } }
-                VStack(spacing: 16) { ForEach(split.right) { cardView($0) } }
-            }
+            TodayColumns(spacing: 16) { ForEach(visible) { cardView($0) } }
         } else {
             ForEach(visible) { cardView($0) }
         }
