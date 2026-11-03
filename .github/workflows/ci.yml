@@ -5,6 +5,12 @@ on:
     branches: [main]
   pull_request:
 
+# The account gets five macOS runners at a time, shared by every run. A job
+# that waits too long for one is cancelled rather than started, and the gate
+# below then fails with nothing actually broken. So each run asks for at most
+# three macOS runners at once: lint/unit tests and two UI shards start
+# together, and the Mac and iPad jobs follow one after another once the unit
+# tests pass. A new push to the same branch cancels the run in progress.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -116,8 +122,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Raising this adds shards; .github/scripts/ui-test-shard.sh splits the classes.
-        shard: [1, 2, 3]
+        # Raising this adds shards (and macOS runners in use at once);
+        # .github/scripts/ui-test-shard.sh splits the classes.
+        shard: [1, 2]
     steps:
       - uses: actions/checkout@v4
 
@@ -209,10 +216,11 @@ jobs:
           fi
           [ "$UNIT" = success ] && [ "$UI" = success ]
 
+  # Runs after the Mac job so a run holds at most three macOS runners at once.
   ipad:
     name: Test (iPadOS)
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
+    needs: [changes, unit-tests, macos]
+    if: always() && needs.changes.outputs.code == 'true' && needs.unit-tests.result == 'success'
     runs-on: macos-15
     timeout-minutes: 35
     steps:
@@ -249,10 +257,12 @@ jobs:
             ipad.log
             ipad.xcresult
 
+  # Waits for lint and the unit tests, so a lint or compile error doesn't
+  # spend a second runner, and so the run never needs more than three at once.
   macos:
     name: Build & test (native macOS)
-    needs: changes
-    if: needs.changes.outputs.code == 'true'
+    needs: [changes, unit-tests]
+    if: needs.changes.outputs.code == 'true' && needs.unit-tests.result == 'success'
     runs-on: macos-15
     timeout-minutes: 30
     steps:
